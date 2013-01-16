@@ -115,6 +115,7 @@ class Cmf
 		if (\Cli::prompt('Would you like to run the new migration now?', array('y','n')) == 'y')
 		{
 			Migrate::latest($name, $type);
+			\CMF\Admin::createAllStaticInstances();
 		}
 		
 	}

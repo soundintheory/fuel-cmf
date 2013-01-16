@@ -136,6 +136,7 @@ class Controller_Install extends Controller_Base {
 			$cmf_install = new \CMF\Install;
 			if($cmf_install->install_migration()){
 				$status = array('status' => true);
+				\CMF\Admin::createAllStaticInstances();
 			}
 		}
 		if($status['status']){

@@ -276,6 +276,24 @@ class Admin
 		
 	}
 	
+	/**
+	 * Populates the 'tables > classes' and 'classes > tables' maps.
+	 * @return void
+	 */
+	protected static function createAllStaticInstances()
+	{
+		$em = DoctrineFuel::manager();
+		$driver = $em->getConfiguration()->getMetadataDriverImpl();
+		
+		// Loop through all Doctrine's class names, get metadata for each and populate the maps
+		foreach ($driver->getAllClassNames() as $class_name)
+		{
+		    if ($class::_static()) {
+				$class::instance();
+			}
+		}
+	}
+	
     /**
 	 * Gets installation settings for the installer at admin/install
 	 *  
