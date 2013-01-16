@@ -36,7 +36,7 @@ class Cmf
 	public function createSuperUser()
 	{
 	    $em = \DoctrineFuel::manager();
-		$user = new \CMF\Model\User();
+		$user = new \Admin\Model_User();
 		
 		$email = \Cli::prompt('Enter an email address', 'cmf@soundintheory.co.uk');
 		$user->set('email', $email);
