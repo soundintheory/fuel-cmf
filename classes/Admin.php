@@ -268,8 +268,10 @@ class Admin
 		array_unshift($classes, $metadata->name);
 		foreach ($classes as $class) {
 			
-			if ($class::_static()) {
-				$class::instance();
+			if (is_subclass_of($class, 'CMF\\Model\\Base')) {
+				if ($class::_static() === true) {
+					$class::instance();
+				}
 			}
 			
 		}
@@ -288,10 +290,15 @@ class Admin
 		// Loop through all Doctrine's class names, get metadata for each and populate the maps
 		foreach ($driver->getAllClassNames() as $class)
 		{
-		    if ($class::_static()) {
-				$class::instance();
+			$metadata = $em->getClassMetadata($class);
+			
+			if (!$metadata->isMappedSuperclass && is_subclass_of($class, 'CMF\\Model\\Base')) {
+				if ($class::_static() === true) {
+					$class::instance();
+				}
 			}
 		}
+		
 	}
 	
     /**

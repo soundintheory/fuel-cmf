@@ -245,7 +245,7 @@ class Base extends \Doctrine\Fuel\Model
 	{
         $called_class = get_called_class();
         if ($called_class::$_template !== null) return $called_class::group().'/'.$called_class::$_template;
-	    $called_class::$_template = str_replace("model_", "", strtolower(\Inflector::denamespace(get_called_class()))).'.twig';
+	    $called_class::$_template = str_replace(array("model_", "_"), array("", "/"), strtolower(\Inflector::denamespace(get_called_class()))).'.twig';
         return $called_class::group().'/'.$called_class::$_template;
 	}
     
