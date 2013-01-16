@@ -280,7 +280,7 @@ class Admin
 	 * Populates the 'tables > classes' and 'classes > tables' maps.
 	 * @return void
 	 */
-	protected static function createAllStaticInstances()
+	public static function createAllStaticInstances()
 	{
 		$em = DoctrineFuel::manager();
 		$driver = $em->getConfiguration()->getMetadataDriverImpl();
