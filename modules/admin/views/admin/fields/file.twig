@@ -1,0 +1,14 @@
+{% if settings.title %}<label for="form_{{ settings.mapping.fieldName }}" class="item-label">{{ settings.title }}</label>{% endif %}
+<div class="fileupload{{ value ? ' fileupload-exists' : ' fileupload-new' }}" data-provides="fileupload">
+    <div class="fileupload-preview fileupload-exists uneditable-input">
+        {% if value %}<a href="/{{ value }}" target="_blank">{{ preview_value }}</a>{% endif %}
+    </div>
+    <div class="file-actions">
+        <span class="btn btn-file btn-small" title="Upload File">
+            <span class="fileupload-new"><i class="icon icon-folder-open"></i> Select file</span>
+            <span class="fileupload-exists"><i class="icon icon-upload-alt"></i> New</span>
+            <input type="file" name="{{ settings.mapping.fieldName }}" />
+        </span>
+        <span class="fileupload-exists btn btn-small btn-remove-file" title="Clear File" data-dismiss="fileupload" style="float: none"><i class="icon icon-remove"></i></span>
+    </div>
+</div>

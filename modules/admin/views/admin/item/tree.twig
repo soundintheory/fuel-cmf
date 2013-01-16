@@ -1,0 +1,59 @@
+{% extends "admin/shared/interface.twig" %}
+
+{% block html_title %}{{ singular }} Tree : {{ admin_title }}{% endblock %}
+
+{% block main_pane %}
+    
+    {% include 'admin/shared/alert.twig' %}
+    
+    <div class="inner">
+        <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }}</h2>
+        <div class="clear"></div>
+        
+    	<div id="item-tree">
+            
+        </div> <!-- .item-list -->
+        
+        {% if num_nodes == 0 %}
+        
+        <div class="no-items">
+            
+            <p>There are no {{ plural|lower }} added yet.</p>
+            {% if not superlock %}
+            <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
+            {% endif %}
+        
+        </div>
+        
+        {% endif %}
+        
+    </div> <!-- .inner -->
+    
+{% endblock %}
+
+{% block bottom %}
+    
+    <div id="controls-fixed-bot"><div class="inner">
+        
+        <div class="status pull-left">
+            <!-- span>Page rendered in {exec_time}s using {mem_usage}mb of memory.</span -->
+        </div>
+        
+        {% if not superlock %}
+        <!-- <div class="actions pull-right">
+            <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="icon-plus icon-white"></i> Add New {{ singular }}...</a>
+        </div> -->
+        {% endif %}
+        
+        <div class="clear"></div>
+
+    </div></div>
+    
+{% endblock %}
+
+{% block breadcrumb %}
+
+<li><a href="/admin">Dashboard</a> <span class="divider">/</span></li>
+<li class="active">{{ plural }}</li>
+
+{% endblock %}

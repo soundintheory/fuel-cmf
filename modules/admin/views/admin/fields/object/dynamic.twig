@@ -1,0 +1,50 @@
+<div class="dynamic-object-tabular form-inline{{ (form.settings.widget == false) ? ' field-type-object-dynamic controls control-group' : '' }}">
+
+{% set fieldName = form.settings.mapping.fieldName %}
+
+<input type="hidden" name="{{ fieldName }}[keys]" value="" />
+<input type="hidden" name="{{ fieldName }}[values]" value="" />
+
+{% if form.settings.widget == false %}<h5>{{ form.settings.title }}</h5>{% endif %}
+<table class="table-striped table-hover">
+	<tr class="item-template">
+		<td class="object-key">
+			<div class="controls control-group">
+				<input placeholder="Type label..." data-name="{{ fieldName }}[keys][]" value="" class="input dynamic" type="text" />
+			</div>
+		</td>
+		<td class="object-value">
+			<div class="controls control-group">
+				<input placeholder="Type value..." data-name="{{ fieldName }}[values][]" value="" class="input-xxlarge" type="text" />
+			</div>
+		</td>
+		<td class="object-actions"><span><a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a></span></td>
+	</tr>
+{% for field in form.settings.fields %}
+	<tr class="object-item">
+		<td class="object-key">
+			{% if field.dynamic %}
+			<div class="controls control-group"><input placeholder="Type label..." name="{{ fieldName }}[keys][]" value="{{ field.original_name }}" class="input dynamic" type="text" /></div>
+			{% else %}
+			<div class="controls control-group"><input value="{{ field.title }}" class="input" type="text" readonly="readonly" /></div>
+			<input type="hidden" name="{{ fieldName }}[keys][]" value="{{ field.original_name }}" />
+			{% endif %}
+		</td>
+		<td class="object-value">
+			{{ field.content }}
+		</td>
+		<td class="object-actions">
+			{% if field.dynamic %}<span><a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a></span>{% endif %}
+		</td>
+	</tr>
+{% endfor %}
+	<tr class="last">
+		<td colspan="3">
+			<div class="actions">
+				<a href="#" class="btn {{ (form.settings.widget == false) ? 'btn-small' : 'btn-medium' }} btn-add"><i class="icon icon-plus"></i> Add entry</a>
+			</div>
+		</td>
+	</tr>
+</table>
+
+</div>

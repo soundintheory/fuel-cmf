@@ -1,0 +1,35 @@
+<div class="controls control-group field-type-permissions">
+	<input type="hidden" name="{{ settings.mapping.fieldName }}" value="" />
+	<table class="table table-condensed table-striped table-hover">
+		<tr>
+			<th class="resource-label">Content type</th>
+			{% for action in actions %}
+		    <th class="resource-action"><label><span>{{ action }}</span> <input type="checkbox" data-action="{{ action }}" class="all-resources" value="1" /></label></th>
+		    {% endfor %}
+		    <th class="resource-action"><label><span>all</span> <input type="checkbox" data-action="all" class="all-resources" value="1" /></label></th>
+		</tr>
+		{% for resource_group in resources %}
+			
+			{% if resource_group.title %}
+			<tr>
+				<td class="row-divider" colspan="{{ actions|length + 2 }}">{{ resource_group.title }}</td>
+			</tr>
+			{% endif %}
+			{% for resource_id, resource in resource_group.classes %}
+			<tr class="resource-row" data-resource="{{ resource_id }}">
+			    <td class="resource-label"><i class="resource-icon icon-{{ resource.icon }}"></i> {{ resource.title }}</td>
+			    {% for action in actions %}
+			    <td class="resource-action"><label>
+			    	<input type="checkbox" data-action="{{ action }}" name="{{ settings.mapping.fieldName }}[{{ resource_id }}][{{ action }}]" value="1" />
+			    </label></td>
+			    {% endfor %}
+			    <td class="resource-action"><label>
+			    	<input type="checkbox" class="all-actions" data-action="all" name="{{ settings.mapping.fieldName }}[{{ resource_id }}][all]" value="1" />
+			    </label></td>
+			</tr>
+			    
+			{% endfor %}
+			
+		{% endfor %}
+	</table>
+</div>

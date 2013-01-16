@@ -1,0 +1,40 @@
+<input type="hidden" name="{{ settings.mapping.fieldName }}" value="" />
+{% if settings.transfer %}
+
+<div class="clear"></div>
+<div class="field-type-multiselect-transfer field-with-controls controls control-group" id="{{ settings.cid }}">
+	<h4><i class="icon icon-{{ settings.icon }}"></i> &nbsp;{{ settings.title }}</h4>
+	<hr />
+	{{ form_select(settings.mapping.fieldName, [], [], { 'style':'display:none;' }) }}
+	<div class="transfer-wrap"></div>
+	<div class="controls-top">
+		<a href="{{ settings.add_link }}" class="btn btn-mini btn-add"><i class="icon icon-plus"></i> &nbsp;add {{ settings.singular|lower }}</a>
+	</div>
+</div>
+<div class="clear"></div>
+
+{% elseif settings.is_select2 %}
+
+<div class="clear"></div>
+<div class="field-with-controls controls control-group" id="{{ settings.cid }}">
+	{{ form_label(settings.title, settings.mapping.fieldName, { 'class':'item-label' }) }}
+	{{ form_select(settings.mapping.fieldName, values, options, settings.input_attributes) }}
+	<div class="controls-top">
+		<a href="{{ settings.add_link }}" class="btn btn-mini btn-add"><i class="icon icon-plus"></i> &nbsp;add {{ settings.singular|lower }}</a>
+	</div>
+</div>
+<div class="clear"></div>
+
+{% else %}
+
+<div class="clear"></div>
+<div class="field-type-collection field-with-controls controls control-group" id="{{ settings.cid }}">
+	{{ form_label(settings.title, settings.mapping.fieldName, { 'class':'item-label' }) }}
+	{{ form_select(settings.mapping.fieldName, values, options, settings.input_attributes) }}
+	<div class="controls-top">
+		<a href="{{ settings.add_link }}" class="btn btn-mini btn-add"><i class="icon icon-plus"></i> &nbsp;add {{ settings.singular|lower }}</a>
+	</div>
+</div>
+<div class="clear"></div>
+
+{% endif %}

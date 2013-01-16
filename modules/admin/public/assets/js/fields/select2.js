@@ -1,0 +1,105 @@
+(function($) {
+	
+	$(document).ready(init);
+	
+	function init() {
+		
+		$('select.select2').each(initItem);
+		
+		
+		function initItem() {
+			
+			var $select = $(this),
+			$wrap = $select.parent(),
+			cid = $wrap.attr('id'),
+			name = $select.attr('name').replace('[]', '');
+			
+			// Don't run on temporary fields...
+			if (name.indexOf('%TEMP%') >= 0) { return; }
+			
+			var opts = (typeof(field_settings[name]) != 'undefined') ? field_settings[name] : {},
+			$addBut = $('#' + cid + ' .btn-add');
+			
+			// So the iframe can call this field on save...
+			window[cid] = { 'onSave':onSave };
+			
+			if ($addBut.length > 0) {
+				
+				$addBut.fancybox({
+					width: '100%',
+					height: '100%',
+					maxWidth: 1200,
+					type : 'iframe',
+					padding : 2,
+					margin: 20,
+					preload : false,
+					helpers : {
+						overlay: {
+							css: { 'background' : "url('/admin/assets/fancybox/fancybox_overlay.png')" }
+						}
+					}
+				});
+				
+				$addBut.click(function(evt) {
+					evt.preventDefault();
+				});
+				
+			}
+			
+			opts.matcher = function(term, text, option) {
+				
+				if (term === '') { return true; }
+				
+				text = text.toUpperCase();
+				term = term.toUpperCase();
+				var terms = term.split(' '),
+				matches = 0;
+				
+				for (var i = terms.length - 1; i >= 0; i--) {
+					if (text.indexOf(terms[i])>=0) {
+						matches++;
+					}
+				};
+				
+				return matches == terms.length;
+			}
+			
+			$select.select2(opts);
+			
+			function onSave(data) {
+				
+				var pos = data['pos'],
+				title = data['title'],
+				id = data['id'],
+				$options = $select.find('option'),
+				newOption = $('<option value="' + id + '" style="text-indent: 0px;" selected="selected">' + title + '</option>');
+				
+				if (pos > $options.length) {
+					pos = $options.length;
+				} else if (pos < 0) {
+					pos = 0;
+				}
+				
+				if (pos == $options.length) {
+					newOption.appendTo($select);
+				} else {
+					newOption.insertBefore($options.eq(pos));
+				}
+				
+				var selectHtml = $select.html();
+				$select.html(selectHtml).trigger('change');
+				//$select.scrollTop($select.find('option[value="' + id + '"]').offset().top);
+				//$select.select2("data", { 'id':id, 'text':title });
+				
+			}
+			
+		}
+		
+		// When a new form is added, run it again!
+		$(window).bind('cmf.newform', function(e, data) {
+			data.wrap.find('select.select2').each(initItem);
+		});
+		
+	}
+	
+})(jQuery);

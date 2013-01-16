@@ -1,0 +1,48 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block content %}
+	
+	<div id="login-container" class="row-fluid">
+		
+		<div id="login-header">
+			<h3>Finishing Up</h3>
+		</div> <!-- #login-header -->
+		<div class="progress progress-success">
+    		<div class="bar" style="width: 100%;"></div>
+    	</div>
+		<div id="login-content" class="clearfix">
+			<p>All the steps are completed, click the button below to get started and automatically turn off this installer.
+				<br/></p>
+			<p><a class="btn btn-success span6 offset3" href="/admin/install/finishing/go">Get Started</a></p>
+			<!-- <form method="post" action="/admin/login">
+				
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label" for="form_username">Username</label>
+						<div class="controls-row">
+							<input type="text" class="span12" id="form_username" name="username">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="form_password">Password</label>
+						<div class="controls-row">
+							<input type="password" class="span12" id="form_password" name="password">
+						</div>
+					</div>
+				</fieldset>
+				
+				<div class="pull-right">
+					<button type="submit" class="btn-primary btn-large">Login</button>
+				</div>
+				
+			</form> -->
+			
+		</div> <!-- #login-content -->
+		
+		<!-- div id="login-extra">
+			<p><a href="#">Forgotten your password?</a></p>
+		</div --> <!-- #login-extra -->
+		
+	</div> <!-- #login-container -->
+	
+{% endblock %}

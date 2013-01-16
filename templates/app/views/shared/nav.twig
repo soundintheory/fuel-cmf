@@ -1,0 +1,7 @@
+<ul id="nav">
+    {% for page in pageTree %}
+	<li class="{{ (loop.index == loop.length) ? 'last' : '' }}{{ page.active ? ' active' : '' }}">
+	    <a href="{{ page.url }}">{{ page.name }}</a>
+	</li>
+	{% endfor %}
+</ul>

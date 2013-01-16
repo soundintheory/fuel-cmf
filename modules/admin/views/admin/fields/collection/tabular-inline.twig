@@ -1,0 +1,28 @@
+<table class="table table-striped table-hover table-bordered" style="min-width:{{ cols|length * 160 }}px;">
+	<tr >
+		{% for col in cols %}
+		<th class="{{ loop.index == 1 ? 'first' : '' }}">{{ form.fields[col].title }}</th>
+		{% endfor %}
+		<th class="actions"></th>
+	</tr>
+	<tr class="item-template">
+		{% for field_name, field in template %}
+		<td class="col-type-{{ form.fields[field_name].field_type }}{{ loop.index == 1 ? ' first' : '' }}">{{ field }}</td>
+		{% endfor %}
+		<td class="actions"><a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a></td>
+	</tr>
+	{% for row in rows %}
+	<tr class="item">
+		{% for field_name, field in row.fields %}
+		<td class="col-type-{{ form.fields[field_name].field_type }}{{ loop.index == 1 ? ' first' : '' }}">{{ field }}</td>
+		{% endfor %}
+		<td class="actions">
+			{{ row.hidden_fields.id }}
+			<a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+<div class="widget-actions-top">
+	<a href="#" class="widget-action btn-add" title="Add {{ singular|lower }}"><i class="icon icon-plus"></i></a>
+</div>
