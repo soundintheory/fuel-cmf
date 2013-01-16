@@ -5,8 +5,6 @@ namespace CMF\View;
 class Base extends \ViewModel
 {
     
-    protected $staticUrls = array();
-    
     public function placeholder($text, $name, $template = '', $data = array())
     {
         $pattern = '/\\{\\{ '.$name.' \\}\\}/sUi';
@@ -32,23 +30,6 @@ class Base extends \ViewModel
             
             return implode('', $parts);
         }
-    }
-    
-    public function getRoute($name)
-    {
-        return \Router::get($name);
-    }
-    
-    public function getStaticUrl($model)
-    {
-        if (isset($this->staticUrls[$model])) return $this->staticUrls[$model];
-        
-        $url = $model::select('url.url')
-        ->leftJoin('item.url', 'url')
-        ->setMaxResults(1)
-        ->getQuery()->getSingleScalarResult();
-        
-        return $this->staticUrls[$model] = $url;
     }
     
     protected function pageTree()

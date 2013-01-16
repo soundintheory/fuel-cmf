@@ -31,8 +31,16 @@ class Admin extends Twig_Extension
 		return array(
 			'field_list_value' => new Twig_Function_Method($this, 'fieldListValue'),
 			'get_flash' => new Twig_Function_Function('Session::get_flash'),
-			'get_link' => new Twig_Function_Function('CMF::getLink')
+			'get_link' => new Twig_Function_Function('CMF::getLink'),
+			'get_route' => new Twig_Function_Function('Router::get'),
+			'get_setting' => new Twig_Function_Method($this, 'settings'),
+			'static_url' => new Twig_Function_Function('CMF::getStaticUrl'),
 		);
+	}
+	
+	public function settings($name, $default=null)
+	{
+		return \CMF\Model\Settings::instance()->get($name, $default);
 	}
 	
 	public function fieldListValue($value, $edit_link, $settings, $model)

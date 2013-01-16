@@ -11,6 +11,7 @@ namespace CMF;
 class CMF
 {
     protected static $model;
+    protected static $static_urls = array();
     
     public static $module = '';
     public static $path = '';
@@ -178,6 +179,23 @@ class CMF
     public static function settings($class = '\\Model_Settings')
     {
         return $class::instance();
+    }
+    
+    /**
+     * Retrieves the url to a static model
+     * @param string $model The fully qualified class name of the static model
+     * @return string Url of the model
+     */
+    public function getStaticUrl($model)
+    {
+        if (isset(static::$static_urls[$model])) return static::$static_urls[$model];
+        
+        $url = $model::select('url.url')
+        ->leftJoin('item.url', 'url')
+        ->setMaxResults(1)
+        ->getQuery()->getSingleScalarResult();
+        
+        return static::$static_urls[$model] = $url;
     }
     
     /**
