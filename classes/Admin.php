@@ -286,7 +286,7 @@ class Admin
 		$driver = $em->getConfiguration()->getMetadataDriverImpl();
 		
 		// Loop through all Doctrine's class names, get metadata for each and populate the maps
-		foreach ($driver->getAllClassNames() as $class_name)
+		foreach ($driver->getAllClassNames() as $class)
 		{
 		    if ($class::_static()) {
 				$class::instance();
