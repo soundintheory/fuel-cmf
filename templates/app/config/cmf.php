@@ -10,6 +10,6 @@ return array(
 			array( 'model' => 'Admin\\Model_User' ),
 			array( 'model' => 'CMF\\Model\\Role' )
 		),
-		'install' => false
+		'install' => true
 	),
 );
