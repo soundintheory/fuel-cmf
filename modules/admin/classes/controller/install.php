@@ -103,7 +103,7 @@ class Controller_Install extends Controller_Base {
 		$pwgen = new \PWGen();
 	   $password = $pwgen->generate();
 
-	   $email_address = "system.admin@soundintheory.co.uk";
+	   $email_address = "your@emailaddress.com";
 
 	   $username = "administrator";
 
