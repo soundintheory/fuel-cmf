@@ -5,13 +5,8 @@
 <head>
 	
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>{{ model.title }}</title>
+	<title>{% block html_title %} | {{ settings.site_title|default('Title Not Set') }}{% endblock %}</title>
 	
-	<link rel="stylesheet" href="/assets/less/less.php?f=/assets/less/core.less" type="text/css" media="screen" title="Default Style" charset="utf-8"/>
-	<link rel="shortcut icon" type="image/x-icon" href="/assets/images/global/favicon.ico">
-	<script src="/assets/js/jquery.1.7.min.js" type="text/javascript" charset="utf-8"></script>
-	
-
 </head>
 <body>
 	
@@ -21,11 +16,15 @@
 			{% include 'shared/nav.twig' %}
 		</div> <!-- header -->
 		
-		{% block content %}
-			
-	        <h1>{{ model.getTitle() }}</h1>
-	        
-	    {% endblock %}
+		<div id="content">
+			{% block content %}
+				
+	        	<h1>{{ model.title }}</h1>
+	        	
+	        	{{ model.content }}
+	        	
+	    	{% endblock %}
+		</div>
 		
 	</div> <!-- wrap -->
 	

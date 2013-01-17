@@ -172,8 +172,8 @@ class Install
      */
     public static function email_user($username, $password, $email)
     {
-        $site = \Config::get('cmf.admin.site');
-        $message = "A new super user has been created on ".$site."\n
+        $title = \Config::get('cmf.admin.title');
+        $message = "A new super user has been created on ".$title."\n
         Username: ".$username."\n
         Password: ".$password."\n";
         
@@ -187,7 +187,7 @@ class Install
         $new_email->to($email);
         
         // Set a subject
-        $new_email->subject("Account creation on ".$site);
+        $new_email->subject("Account creation on ".$title);
         
         // And set the body.
         $new_email->body($message);

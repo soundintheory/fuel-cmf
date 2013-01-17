@@ -31,7 +31,7 @@ class Controller_Install extends Controller_Base {
 			if (\Input::post()) {
 				$project_name = \Input::post('project_name');
 				$admin_title = \Input::post('admin_title');
-				$config_settings = array( "site" => $project_name, "title" => $admin_title );
+				$config_settings = array( "title" => $admin_title );
 				\CMF\Install::setup_admin_config($config_settings);
 			}
 			

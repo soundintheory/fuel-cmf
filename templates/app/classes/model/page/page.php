@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="_type", type="string")
  **/
-class Model_Page extends PageNode
+class Model_Page_Page extends PageNode
 {
     protected static $_fields = array(
         'url' => array(),
@@ -23,13 +23,13 @@ class Model_Page extends PageNode
     
     /**
      * @Gedmo\TreeParent
-     * @ORM\ManyToOne(targetEntity="Model_Page", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="Model_Page_Page", inversedBy="children")
      * @ORM\JoinColumn(onDelete="SET NULL")
      */
     protected $parent;
     
     /**
-     * @ORM\OneToMany(targetEntity="Model_Page", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="Model_Page_Page", mappedBy="parent")
      * @ORM\OrderBy({"lft" = "ASC"})
      */
     protected $children;

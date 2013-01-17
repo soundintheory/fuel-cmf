@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\Table(name="homepage")
  * @ORM\Entity(repositoryClass="Gedmo\Tree\Entity\Repository\NestedTreeRepository")
  **/
-class Model_Homepage extends Model_Page
+class Model_Page_Homepage extends Model_Page_Page
 {
     protected static $_fields = array(
         'content' => array(  ),

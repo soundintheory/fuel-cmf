@@ -19,7 +19,7 @@ class View_Base extends \CMF\View\Base
         parent::before();
         
         // Generates the page tree for navs... comment out if not necessary
-        $this->pageTree = $this->pageTree();
+        $this->pageTree();
     }
     
 }

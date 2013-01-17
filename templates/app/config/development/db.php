@@ -1,17 +1,13 @@
 <?php
-/**
- * The development database settings.
- */
-
 return array(
 	'default' => array(
 		'profiling' => false,
-		'connection'  => array(
-			'dsn'        => 'mysql:host=localhost;dbname=cmftemp',
-			'username'   => 'root',
-			'password'   => 'root',
-			'driver'   => 'pdo_mysql',
-		    'dbname'   => 'cmftemp'
+		'connection' => array(
+			'dsn' => 'mysql:host=localhost;dbname=changeme',
+			'username' => 'root',
+			'password' => 'root',
+			'driver' => 'pdo_mysql',
+			'dbname' => 'changeme',
 		),
 	),
 );
