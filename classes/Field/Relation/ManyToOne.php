@@ -22,6 +22,14 @@ class ManyToOne extends \CMF\Field\Base {
         return (is_null($value)) ? '(empty)' : '<a href="'.$edit_link.'" class="item-link">'.$value->display().'</a>';
     }
     
+    public static function getAssets()
+    {
+        return array(
+            'js' => array('/admin/assets/fancybox/jquery.fancybox.pack.js'),
+            'css' => array('/admin/assets/fancybox/jquery.fancybox.css')
+        );
+    }
+    
     /** inheritdoc */
     public static function displayForm($value, &$settings, $model)
     {
@@ -32,6 +40,9 @@ class ManyToOne extends \CMF\Field\Base {
         $required = isset($settings['required']) ? $settings['required'] : false;
         $include_label = isset($settings['label']) ? $settings['label'] : true;
     	$target_class = $settings['mapping']['targetEntity'];
+        $target_prop = ($settings['mapping']['isOwningSide'] === true) ? $settings['mapping']['inversedBy'] : $settings['mapping']['mappedBy'];
+        if (empty($target_prop) || is_null($model->id)) $target_prop = false;
+        $add_link = '/admin/'.\CMF\Admin::getTableForClass($target_class).'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
     	$options = $target_class::options();
         $null_option = array( '' => '' );
         $options = $null_option + $options;
@@ -40,6 +51,9 @@ class ManyToOne extends \CMF\Field\Base {
         $has_errors = count($errors) > 0;
         $input_attributes = $settings['input_attributes'];
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
+        
+        $add_link = html_tag('a', array( 'href' => $add_link, 'class' => 'btn btn-mini btn-add' ), '<i class="icon icon-plus"></i> &nbsp;add '.strtolower($target_class::singular()));
+        $controls_top = html_tag('div', array( 'class' => 'controls-top' ), $add_link);
         
         if (is_array($settings['select2'])) {
             
@@ -52,7 +66,7 @@ class ManyToOne extends \CMF\Field\Base {
             }
             
             return array(
-                'content' => html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input),
+                'content' => html_tag('div', array( 'class' => 'controls control-group field-with-controls'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input.$controls_top),
                 'widget' => false,
                 'assets' => array(
                     'css' => array('/admin/assets/select2/select2.css'),
@@ -67,7 +81,7 @@ class ManyToOne extends \CMF\Field\Base {
         
         $input = \Form::select($settings['mapping']['fieldName'], $id, $options, $input_attributes);
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
-        return html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input);
+        return html_tag('div', array( 'class' => 'controls control-group field-with-controls'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input);
     }
     
     /** inheritdoc */

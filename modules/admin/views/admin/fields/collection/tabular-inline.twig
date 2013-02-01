@@ -21,6 +21,17 @@
 			<a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a>
 		</td>
 	</tr>
+	{% else %}
+    <tr class="no-items-row">
+        <td class="no-items" colspan="{{ cols|length + 1 }}">
+            
+            <p>There are no {{ plural|lower }} added yet.</p>
+            {% if not superlock %}
+            <a href="#" class="btn-add btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
+            {% endif %}
+        
+        </td>
+    </tr>
 	{% endfor %}
 </table>
 <div class="widget-actions-top">

@@ -10,7 +10,8 @@
 			$template = $wrap.find('.item-template').eq(0),
 			$items = $wrap.find('.item'),
 			$table = $wrap.find('table').eq(0),
-			inc = $items.length;
+			inc = $items.length,
+			$noItemsRow = $wrap.find('.no-items-row');
 			
 			$wrap.find('.btn-add').click(function() {
 				addItem();
@@ -22,6 +23,7 @@
 			function addItem() {
 				
 				var $item = $template.clone();
+				$noItemsRow.detach();
 				
 				$item.addClass('item').removeClass('item-template').find('*[name]').each(function() {
 					
