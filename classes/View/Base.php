@@ -32,9 +32,9 @@ class Base extends \ViewModel
         }
     }
     
-    protected function pageTree()
+    protected function pageTree($model = 'Model_Page_Page')
     {
-        $nodes = \Model_Page_Page::select('page.title, page.menu_title, page.lvl, page.lft, page.rgt, url.url, url.slug', 'page')
+        $nodes = $model::select('page.title, page.menu_title, page.lvl, page.lft, page.rgt, url.url, url.slug', 'page')
         ->leftJoin('page.url', 'url')
         ->where('page.lvl > 0')
         ->andWhere('page.visible = true')
@@ -45,7 +45,7 @@ class Base extends \ViewModel
         if (empty($uri)) { $uri = '/'; }
         else { $uri .= '/'; }
         
-        $nodes = \DoctrineFuel::manager()->getRepository('Model_Page_Page')->buildTree($nodes, array());
+        $nodes = \DoctrineFuel::manager()->getRepository($model)->buildTree($nodes, array());
         $this->processNodes($nodes, $uri, 1);
         
         return $this->level1 = $nodes;

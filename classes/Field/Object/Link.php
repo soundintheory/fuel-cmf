@@ -72,7 +72,7 @@ class Link extends Object {
     {
     	if (static::$options !== null && is_array(static::$options)) return static::$options;
     	
-    	$options = (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable']) ? array( null => '---' ) : array();
+    	$options = (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable']) ? array( null => '' ) : array();
         $target_class = 'CMF\\Model\\URL';
         $filters = array();
         $tree_types = array();
