@@ -52,14 +52,14 @@ class ManyToOne extends \CMF\Field\Base {
         $input_attributes = $settings['input_attributes'];
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         
-        $add_link = html_tag('a', array( 'href' => $add_link, 'class' => 'btn btn-mini btn-add' ), '<i class="icon icon-plus"></i> &nbsp;add '.strtolower($target_class::singular()));
+        $add_link = html_tag('a', array( 'href' => $add_link, 'class' => 'btn btn-mini btn-add' ), '<i class="icon icon-plus"></i> &nbsp;create '.strtolower($target_class::singular()));
         $controls_top = html_tag('div', array( 'class' => 'controls-top' ), $add_link);
         
         if (is_array($settings['select2'])) {
             
             $input_attributes['class'] .= ' select2';
             $input = \Form::select($settings['mapping']['fieldName'], $id, $options, $input_attributes);
-            $settings['select2']['placeholder'] = 'Select a '.$target_class::singular();
+            $settings['select2']['placeholder'] = 'click to select a '.strtolower($target_class::singular()) . '...';
             
             if (!$required) {
                 $settings['select2']['allowClear'] = true;
