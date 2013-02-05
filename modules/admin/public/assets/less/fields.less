@@ -130,7 +130,7 @@
 		font-size: 13px;
 		
 		span {
-			padding-right: 60px;
+			padding-right: 40px;
 		}
 	}
 	
@@ -241,7 +241,7 @@
 	}
 	
 	.add-on {
-		max-width: 200px;
+		max-width: 260px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
@@ -864,11 +864,23 @@ select option {
 
 
 .item-form .widget-type-tabular-inline {
+	padding: 0 0 41px 0;
 	
+	&.closed {
+		padding-bottom: 0px;
+	}
 	
 	.widget-content {
 		padding: 0;
-		overflow: auto;
+		overflow-y: hidden; overflow-x: auto;
+	}
+	
+	.no-items {
+		border-left: none;
+	}
+	
+	table.populated .no-items-row {
+		display: none;
 	}
 	
 	td {

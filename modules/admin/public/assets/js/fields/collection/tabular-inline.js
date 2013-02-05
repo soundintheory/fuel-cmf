@@ -23,7 +23,6 @@
 			function addItem() {
 				
 				var $item = $template.clone();
-				$noItemsRow.detach();
 				
 				$item.addClass('item').removeClass('item-template').find('*[name]').each(function() {
 					
@@ -67,6 +66,8 @@
 				// So all the various plugins can run their magic on relevant inputs...
 				$(window).trigger('cmf.newform', { 'wrap':$item });
 				
+				update();
+				
 			}
 			
 			function removeButtonHandler() {
@@ -75,7 +76,20 @@
 				var $item = $(this).parents('.item').eq(0);
 				$item.remove();
 				$items = $wrap.find('.item');
+				
+				update();
+				
 				return false;
+				
+			}
+			
+			function update() {
+				
+				if ($items.length > 0) {
+					$table.addClass('populated');
+				} else {
+					$table.removeClass('populated');
+				}
 				
 			}
 			
