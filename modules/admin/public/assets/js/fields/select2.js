@@ -11,8 +11,23 @@
 			
 			var $select = $(this),
 			$wrap = $select.parent(),
+			multiple = $select.attr('multiple') == 'multiple',
 			cid = $wrap.attr('id'),
-			name = $select.attr('name').replace('[]', '');
+			name = $select.attr('name').replace('[]', ''),
+			fancyBoxOpts = {
+				width: '100%',
+				height: '100%',
+				maxWidth: 1200,
+				type : 'iframe',
+				padding : 2,
+				margin: 20,
+				preload : false,
+				helpers : {
+					overlay: {
+						css: { 'background' : "url('/admin/assets/fancybox/fancybox_overlay.png')" }
+					}
+				}
+			};
 			
 			// Don't run on temporary fields...
 			if (name.indexOf('%TEMP%') >= 0) { return; }
@@ -25,20 +40,7 @@
 			
 			if ($addBut.length > 0) {
 				
-				$addBut.fancybox({
-					width: '100%',
-					height: '100%',
-					maxWidth: 1200,
-					type : 'iframe',
-					padding : 2,
-					margin: 20,
-					preload : false,
-					helpers : {
-						overlay: {
-							css: { 'background' : "url('/admin/assets/fancybox/fancybox_overlay.png')" }
-						}
-					}
-				});
+				$addBut.fancybox(fancyBoxOpts);
 				
 				$addBut.click(function(evt) {
 					evt.preventDefault();
@@ -64,6 +66,21 @@
 				return matches == terms.length;
 			}
 			
+			if (multiple && typeof(opts.target_table) != 'undefined') {
+				
+				opts.formatSelection = function(object, container) {
+					var $item = $('<div></div>').appendTo(container),
+					$editLink = $('<a class="edit-link" href="/admin/' + opts.target_table + '/' + object.id + '/edit?_mode=inline&_cid=' + cid + '">' + object.text + ' <i class="icon icon-pencil"></i></a>')
+					.appendTo($item)
+					.fancybox(fancyBoxOpts)
+					.click(function(evt) {
+						evt.preventDefault();
+					});
+					return undefined;
+				}
+				
+			}
+			
 			$select.select2(opts);
 			
 			function onSave(data) {
@@ -72,24 +89,49 @@
 				title = data['title'],
 				id = data['id'],
 				$options = $select.find('option'),
-				newOption = $('<option value="' + id + '" style="text-indent: 0px;" selected="selected">' + title + '</option>');
+				newOption = $select.find('option[value="' + id + '"]');
 				
-				if (pos > $options.length) {
-					pos = $options.length;
-				} else if (pos < 0) {
-					pos = 0;
-				}
-				
-				if (pos == $options.length) {
-					newOption.appendTo($select);
+				if (typeof(data['deleted']) != 'undefined' && data['deleted'] === true) {
+					
+					// This item has actually been deleted.
+					newOption.remove();
+					
 				} else {
-					newOption.insertBefore($options.eq(pos));
+					
+					// An item has been added or amended.
+					
+					if (multiple === false) {
+						$options.removeAttr('selected');
+					}
+					
+					if (newOption.length == 0) {
+						
+						// Add in the new option if it's not there already
+						newOption = $('<option value="' + id + '" style="text-indent: 0px;" selected="selected">' + title + '</option>');
+						if (pos > $options.length) {
+							pos = $options.length;
+						} else if (pos < 0) {
+							pos = 0;
+						}
+						
+						if (pos == $options.length) {
+							newOption.appendTo($select);
+						} else {
+							newOption.insertBefore($options.eq(pos));
+						}
+						
+					} else {
+						
+						newOption.attr('selected', 'selected').html(title);
+						
+					}
+					
 				}
 				
+				// Update the HTML select's content
 				var selectHtml = $select.html();
+				$select.html('');
 				$select.html(selectHtml).trigger('change');
-				//$select.scrollTop($select.find('option[value="' + id + '"]').offset().top);
-				//$select.select2("data", { 'id':id, 'text':title });
 				
 			}
 			

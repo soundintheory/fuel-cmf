@@ -170,10 +170,26 @@ class Controller_Item extends Controller_Base {
 	        $em->flush();
 	    }
 	    
-	    $default_redirect = \Uri::base(false)."admin/$table_name";
 	    
-	    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "The ".strtolower($singular)." was deleted" ));
-	    \Response::redirect(\Input::referrer($default_redirect), 'location');
+	    // Do something depending on what mode we're in...
+	    switch (\Input::param('_mode', 'default')) {
+	    	
+	    	// Renders a page with some JS that will close the fancybox popup
+	    	case 'inline':
+	    		$this->id = $id;
+	    		$this->template = 'admin/item/deleted-inline.twig';
+	    		return;
+	    		break;
+	    	
+	    	default:
+	    		$default_redirect = \Uri::base(false)."admin/$table_name";
+			    
+			    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "The ".strtolower($singular)." was deleted" ));
+			    \Response::redirect(\Input::referrer($default_redirect), 'location');
+	    		break;
+	    	
+	    }
+	    
 	}
 	
 }

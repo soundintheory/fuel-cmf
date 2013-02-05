@@ -40,9 +40,10 @@ class ManyToOne extends \CMF\Field\Base {
         $required = isset($settings['required']) ? $settings['required'] : false;
         $include_label = isset($settings['label']) ? $settings['label'] : true;
     	$target_class = $settings['mapping']['targetEntity'];
+        $target_table = \CMF\Admin::getTableForClass($target_class);
         $target_prop = ($settings['mapping']['isOwningSide'] === true) ? $settings['mapping']['inversedBy'] : $settings['mapping']['mappedBy'];
         if (empty($target_prop) || is_null($model->id)) $target_prop = false;
-        $add_link = '/admin/'.\CMF\Admin::getTableForClass($target_class).'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
+        $add_link = '/admin/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
     	$options = $target_class::options();
         $null_option = array( '' => '' );
         $options = $null_option + $options;
@@ -60,6 +61,7 @@ class ManyToOne extends \CMF\Field\Base {
             $input_attributes['class'] .= ' select2';
             $input = \Form::select($settings['mapping']['fieldName'], $id, $options, $input_attributes);
             $settings['select2']['placeholder'] = 'click to select a '.strtolower($target_class::singular()) . '...';
+            $settings['select2']['target_table'] = $target_table;
             
             if (!$required) {
                 $settings['select2']['allowClear'] = true;

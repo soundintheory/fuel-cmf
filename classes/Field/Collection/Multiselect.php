@@ -53,13 +53,14 @@ class Multiselect extends \CMF\Field\Base {
         // Set up the values for the template
         $settings = static::settings($settings);
         $target_class = $settings['mapping']['targetEntity'];
+        $target_table = \CMF\Admin::getTableForClass($target_class);
         $options = $target_class::options();
         $settings['required'] = isset($settings['required']) ? $settings['required'] : false;
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
         $settings['title'] = $settings['title'].($settings['required'] ? ' *' : '').($has_errors ? ' - '.$errors[0] : '');
         $settings['cid'] = 'field_'.md5($settings['mapping']['fieldName'].static::type());
-        $settings['add_link'] = '/admin/'.\CMF\Admin::getTableForClass($target_class).'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
+        $settings['add_link'] = '/admin/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
         $settings['singular'] = $target_class::singular();
         $settings['icon'] = $target_class::icon();
         $settings['is_select2'] = false;
@@ -96,6 +97,7 @@ class Multiselect extends \CMF\Field\Base {
             $settings['input_attributes']['class'] .= ' select2';
             $content = strval(\View::forge('admin/fields/collection/multiselect.twig', array( 'settings' => $settings, 'options' => $options, 'values' => $values ), false));
             $settings['select2']['placeholder'] = 'click to select a '.strtolower($settings['singular']) . '...';
+            $settings['select2']['target_table'] = $target_table;
             
             return array(
                 'content' => $content,

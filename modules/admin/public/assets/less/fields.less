@@ -138,6 +138,23 @@
 		top: 7px;
 	}
 	
+	.edit-link {
+		color: #000;
+		display: block;
+		position: relative;
+		
+		i {
+			color: #999;
+			text-decoration: none;
+			display: none;
+			position: absolute; top: 0px; right: 0;
+		}
+		
+		&:hover i {
+			display: inline-block;
+		}
+	}
+	
 }
 
 .table td .select2-container {
@@ -165,7 +182,7 @@
 			padding-left: 22px;
 		}
 		
-		.select2-search-choice a {
+		.select2-search-choice .select2-search-choice-close {
 			top: 4px; left: 6px;
 		}
 		
@@ -694,6 +711,10 @@ select option {
 	
 	.btn-add i {
 		color: #5BB75B;
+	}
+	
+	select {
+		position: relative;
 	}
 	
 }
