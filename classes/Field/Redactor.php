@@ -4,6 +4,13 @@ namespace CMF\Field;
 
 class Redactor extends Textarea {
     
+    protected static $defaults = array(
+        'input_attributes' => array(
+            'class' => 'input-xxlarge'
+        ),
+        'css' => '/assets/less/less.php?f=/assets/less/editor.less'
+    );
+    
     public function get_type()
     {
         return 'redactor';
@@ -54,6 +61,7 @@ class Redactor extends Textarea {
         }
         
         return array(
+            'assets' => array(),
             'content' => html_tag('div', array( 'class' => 'controls control-group '.($has_errors ? ' error' : '') ), $label.$input),
             'widget' => false,
             'js_data' => $settings

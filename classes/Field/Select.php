@@ -8,6 +8,9 @@ class Select extends Base {
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
         try {
+            if (is_array($settings['options']) && \Arr::is_assoc($settings['options'])) {
+                $value = $settings['options'][$value];
+            }
             return '<a href="'.$edit_link.'" class="item-link">'.strval($value).'</a>';
         } catch (\Exception $e) {
             return "Error: unkown type";

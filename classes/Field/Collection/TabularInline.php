@@ -51,8 +51,9 @@ class TabularInline extends Multiselect {
         
         return array(
             'assets' => $form_template->assets,
-            'content' => strval(\View::forge('admin/fields/collection/tabular-inline.twig', array( 'singular' => $target_class::singular(), 'rows' => $rows, 'cols' => $cols, 'template' => $form_template->getFieldContent(), 'form' => $form_template ), false)),
+            'content' => strval(\View::forge('admin/fields/collection/tabular-inline.twig', array( 'singular' => $target_class::singular(), 'plural' => $target_class::plural(), 'rows' => $rows, 'cols' => $cols, 'template' => $form_template->getFieldContent(), 'form' => $form_template ), false)),
             'widget' => true,
+            'widget_class' => 'poos',
             'widget_icon' => $target_class::icon(),
             'js_data' => $js_data,
             'merge_data' => true

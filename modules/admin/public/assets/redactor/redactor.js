@@ -1385,7 +1385,6 @@ var RLANG = {
 				this.$el.focus();
 				return false;
 			}
-
 			try
 			{
 
@@ -1526,7 +1525,7 @@ var RLANG = {
 					{
 						this.$editor.focus();
 					}
-
+					
 					this.execRun(cmd, param);
 				}
 
@@ -1560,7 +1559,8 @@ var RLANG = {
 			{
 				param = '<' + param + '>';
 			}
-
+			console.log(cmd);
+			console.log(param);
 			this.document.execCommand(cmd, false, param);
 		},
 

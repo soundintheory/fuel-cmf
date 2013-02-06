@@ -13,10 +13,10 @@ use Doctrine\ORM\Mapping as ORM,
 class PageNode extends Node
 {
     protected static $_fields = array(
+        'visible' => array( 'visible' => true ),
         'url' => array( 'after' => 'menu_title' ),
         'menu_title' => array( 'after' => 'title' ),
-        'visible' => array( 'visible' => true, 'before' => 'title' ),
-        'title' => array( 'group' => 'title' ),
+        'title' => array( 'group' => 'title', 'after' => 'visible' ),
         'html_title' => array( 'group' => 'meta' ),
         'meta_desc' => array( 'title' => 'Meta description', 'after' => 'html_title' ),
         'content' => array( 'widget' => true )

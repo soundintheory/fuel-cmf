@@ -33,7 +33,7 @@ class Controller_Redactor extends \Controller {
      */
     public function action_images()
     {
-        $folder = 'uploads/images';
+        $folder = 'uploads/images/content';
         $all_files = \File::read_dir(DOCROOT . DS . $folder, 0, array(
             '!^\.', // no hidden files/dirs
             '!' => 'dir', // no dirs
