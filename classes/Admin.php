@@ -301,7 +301,7 @@ class Admin
 		
 	}
 	
-    /**
+   /**
 	 * Gets installation settings for the installer at admin/install
 	 *  
 	 *  @return array installation details
@@ -310,4 +310,23 @@ class Admin
 	{
 		return \Config::get('cmf.admin.install', true);
 	} 
+
+	/**
+	 * Unfinished.
+	 *
+	 * @param   array   $content  config array
+	 * @return  string  formatted config file contents
+	 */
+	public static function save_config($path, $contents)
+	{
+		$contents = var_export($contents, true);
+		$contents = preg_replace('/[0-9]+[\s|\n|\r]+\=\>[\s|\n|\r]+[a-z]+[(]{1}[\s|\n|\r]+(.[^)]+)\)\,[\s|\n|\r]+/', '$1', $contents);
+		$output = <<<CONF
+<?php
+
+CONF;
+		$output .= 'return '.str_replace(array('  ', 'array (', '\''.APPPATH, '\''.DOCROOT, '\''.COREPATH, '\''.PKGPATH), array("\t", 'array(', 'APPPATH.\'', 'DOCROOT.\'', 'COREPATH.\'', 'PKGPATH.\''), $contents).";\n";
+		$config = new \Config_Php;
+		return $config->save($path, $output);
+	}
 }
