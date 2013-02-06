@@ -455,6 +455,24 @@ class Base extends \Doctrine\Fuel\Model
     }
     
     /**
+     * Resaves all of the items in the DB
+     * @return void
+     */
+    public static function saveAll()
+    {
+        $called_class = get_called_class();
+        $items = $called_class::select('item')->getQuery()->getResult();
+        
+        foreach ($items as $num => $item) {
+            $item->updated_at = new \Datetime();
+            \DoctrineFuel::manager()->persist($item);
+        }
+        
+        \DoctrineFuel::manager()->flush();
+        
+    }
+    
+    /**
      * Basically the same as the findBy method, this returns the results in such a way that they can be used to
      * populate Fuel's form select helper. If no ordering is specified they come out in alphabetical order.
      * 

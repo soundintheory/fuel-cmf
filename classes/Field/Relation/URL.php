@@ -34,10 +34,11 @@ class URL extends OneToOne {
         $prefix = $value->prefix;
         $prepend = html_tag('span', array( 'class' => 'add-on' ), empty($prefix) ? '/' : $prefix );
         $input = html_tag('div', array( 'class' => 'input-prepend' ), $prepend.$input);
+        $clear = '<div class="clear"><!-- --></div>';
         
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
     	
-    	return html_tag('div', $attributes, $label.$input);
+    	return html_tag('div', $attributes, $label.$input).$clear;
     }
 	
 }

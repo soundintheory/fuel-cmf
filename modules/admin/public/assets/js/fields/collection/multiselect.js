@@ -38,25 +38,36 @@
 				var pos = data['pos'],
 				title = data['title'],
 				id = data['id'],
-				$options = $select.find('option'),
-				newOption = $('<option value="' + id + '" style="text-indent: 0px;" selected="selected">' + title + '</option>');
+				$options = $select.find('option');
 				
-				if (pos > $options.length) {
-					pos = $options.length;
-				} else if (pos < 0) {
-					pos = 0;
-				}
-				
-				if (pos == $options.length) {
-					newOption.appendTo($select);
+				if (typeof(data['deleted']) != 'undefined' && data['deleted'] === true) {
+					
+					// This item has actually been deleted.
+					var deletedOption = $select.find('option[value="' + id + '"]').remove();
+					
 				} else {
-					newOption.insertBefore($options.eq(pos));
+					
+					var newOption = $('<option value="' + id + '" style="text-indent: 0px;" selected="selected">' + title + '</option>');
+					
+					if (pos > $options.length) {
+						pos = $options.length;
+					} else if (pos < 0) {
+						pos = 0;
+					}
+					
+					if (pos == $options.length) {
+						newOption.appendTo($select);
+					} else {
+						newOption.insertBefore($options.eq(pos));
+					}
+					
 				}
 				
 				var selectHtml = $select.html();
+				$select.html('');
 				$select.html(selectHtml);
 				
-				$select.scrollTop($select.find('option[value="' + id + '"]').offset().top);
+				$select.scrollTop($select.find('option[value="' + id + '"]').position().top);
 				
 			}
 			

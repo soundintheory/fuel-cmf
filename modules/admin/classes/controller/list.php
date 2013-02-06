@@ -129,8 +129,17 @@ class Controller_List extends Controller_Base {
 		$this->js['plural'] = $this->plural;
 		$this->js['singular'] = $this->singular;
 		
+	}
+	
+	public function action_saveall($table_name)
+	{
+		$class_name = \Admin::getClassForTable($table_name);
+		$plural = $class_name::plural();
+		$class_name::saveAll();
 		
-		
+		$default_redirect = \Uri::base(false)."admin/$table_name";
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "All ".strtolower($plural)." were saved" ));
+	    \Response::redirect(\Input::referrer($default_redirect), 'location');
 	}
 	
 	public function action_updatetree($table_name, $id = null)

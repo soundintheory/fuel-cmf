@@ -10,7 +10,8 @@
 			$template = $wrap.find('.item-template').eq(0),
 			$items = $wrap.find('.item'),
 			$table = $wrap.find('table').eq(0),
-			inc = $items.length;
+			inc = $items.length,
+			$noItemsRow = $wrap.find('.no-items-row');
 			
 			$wrap.find('.btn-add').click(function() {
 				addItem();
@@ -65,6 +66,8 @@
 				// So all the various plugins can run their magic on relevant inputs...
 				$(window).trigger('cmf.newform', { 'wrap':$item });
 				
+				update();
+				
 			}
 			
 			function removeButtonHandler() {
@@ -73,7 +76,20 @@
 				var $item = $(this).parents('.item').eq(0);
 				$item.remove();
 				$items = $wrap.find('.item');
+				
+				update();
+				
 				return false;
+				
+			}
+			
+			function update() {
+				
+				if ($items.length > 0) {
+					$table.addClass('populated');
+				} else {
+					$table.removeClass('populated');
+				}
 				
 			}
 			

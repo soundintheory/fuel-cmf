@@ -43,7 +43,7 @@
 				
 				jQuery.obj(dotNotation, 'null', true, self.data);
 				
-				if (field.length == 0) { return false; }
+				if (field.length === 0) { return false; }
 				field.change(onFieldChange).keyup(onFieldChange);
 				fields[fieldName] = field;
 				
@@ -85,7 +85,7 @@
 			autoUpdate = false,
 			value = $input.val(),
 			data = {},
-			valid = false,
+			valid = true,
 			template = twig({
 				data: settings['template']
 			});
