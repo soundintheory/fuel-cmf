@@ -107,7 +107,7 @@ class Install
         
         $diff = $this->getDiff();
         if (array_key_exists('error', $diff)) {
-            return false;
+            return $diff;
         }
         
         $this->generate($diff['up'], $diff['down']);
@@ -326,12 +326,26 @@ MIGRATION;
         \Arr::set($app_config, 'admin.install', false);
         
         if (\Config::save($app_config_path, $app_config)) {
-            return true;
+            return \CMF\Install::cleanup_config();
+           // return true;
         }
         
         return false;
     }
-    
+    /**
+     * Cleans up the cmf config
+     * 
+     */
+    public static function cleanup_config()
+    {
+      $app_config_path = APPPATH.'config/cmf.php';
+      $config = file_get_contents($app_config_path);
+      //remove the  index keys from the arrays
+      $config = preg_replace('/[0-9]+[\s|\n|\r]+\=\>[\s|\n|\r]+[a-z]+[(]{1}[\s|\n|\r]+(.[^)]+)\)\,[\s|\n|\r]+/', '$1', $config);
+      //remove the new line before an array
+      $config = preg_replace('/[\s]+(array\()/', ' $1', $config);
+      return file_put_contents($app_config_path, $config);
+    }
     /**
      * Sets site specific stuff for admin, 
      * @param  array  $settings single level array of settings to enter into config
@@ -341,7 +355,6 @@ MIGRATION;
     {
         $app_config_path = APPPATH.'config/cmf.php';
         $app_config = \Config::load($app_config_path, false, true);
-        
         foreach ($config_settings as $key => $value) {
             \Arr::set($app_config, 'admin.'.$key, $value);
         }
@@ -350,7 +363,6 @@ MIGRATION;
             \Config::load('cmf', true, true);
             return true;
         }
-        
         return false;
     }
     

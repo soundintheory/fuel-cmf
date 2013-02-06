@@ -69,16 +69,27 @@ class Controller_Install extends Controller_Base {
 
 	public function action_migration($task = null){
 		$status = array('status' => false);
+		if($task != null){
+			if($task == 'go'){
+				// \Migrate::latest('default', 'app');
+				$cmf_install = new \CMF\Install;
+				$migration = $cmf_install->install_migration(false);
+			}
+			if($task == 'cleango'){
+				$migration = $cmf_install->install_migration(false);
+			}
+			else{
+				//not something we recognise.
+				return \Response::forge(\View::forge('admin/install/migration.twig', $status));
+			}
 
-		if($task == 'go'){
-			// \Migrate::latest('default', 'app');
-			$cmf_install = new \CMF\Install;
-			if($cmf_install->install_migration()){
+			//check if migration succeeded
+			if($migration === true){
 				$status = array('status' => true);
 			}
-		}
-		else{
-
+			else{
+				$status['error'] = $migration['error'];
+			}
 		}
 
 		return \Response::forge(\View::forge('admin/install/migration.twig', $status));
