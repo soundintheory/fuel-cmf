@@ -8,6 +8,7 @@ class ManyToOne extends \CMF\Field\Base {
         'select2' => array(
             'allowClear' => false
         ),
+        'create' => true,
         'input_attributes' => array(
             'class' => ''
         )
@@ -54,6 +55,11 @@ class ManyToOne extends \CMF\Field\Base {
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         
         $add_link = html_tag('a', array( 'href' => $add_link, 'class' => 'btn btn-mini btn-add' ), '<i class="icon icon-plus"></i> &nbsp;create '.strtolower($target_class::singular()));
+
+        if($settings['create'] === false){
+            $add_link = " ";
+        }
+
         $controls_top = html_tag('div', array( 'class' => 'controls-top' ), $add_link);
         
         if (is_array($settings['select2'])) {
