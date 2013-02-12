@@ -1,14 +1,3 @@
 {% if settings.title %}<label class="item-label">{{ settings.title }}</label>{% endif %}
-<div class="fileupload{{ value ? ' fileupload-exists' : ' fileupload-new' }}" data-provides="fileupload">
-    <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: {{ settings.thumb_size.width }}px; max-height: {{ settings.thumb_size.height }}px;">
-        {% if value %}<img src="/image/3/{{ settings.thumb_size.width }}/{{ settings.thumb_size.height }}/{{ value }}" />{% endif %}
-    </div>
-    <div class="file-actions">
-        <span class="btn btn-file btn-small" title="Upload File">
-            <span class="fileupload-new"><i class="icon icon-folder-open"></i> Select file</span>
-            <span class="fileupload-exists"><i class="icon icon-upload-alt"></i> New</span>
-            <input type="file" name="{{ settings.mapping.fieldName }}" />
-        </span>
-        <span class="fileupload-exists btn btn-small btn-remove-file" title="Clear File" data-dismiss="fileupload" style="float: none"><i class="icon icon-remove"></i></span>
-    </div>
-</div>
+<input type="hidden" name="{{ settings.mapping.fieldName }}" value="{{ value }}" class="file-value" />
+<div class="async-upload{{ value ? ' populated' : '' }}"></div>

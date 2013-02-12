@@ -14,13 +14,14 @@ class ObjectForm
 	public $assets = array( 'css' => array(), 'js' => array() );
 	public $settings;
 	public $values;
+	public $js_field_settings = array();
 	
 	public function __construct($settings, $values)
 	{
 		$this->settings = $settings;
 		$this->values = (isset($values) && is_array($values)) ? $values : array();
 		
-		// The field data
+		// The field settings
 		$this->processFieldSettings();
 		
 	}
@@ -93,6 +94,16 @@ class ObjectForm
 				if (is_array($field_content)) {
 					$this->assets = \Arr::merge($this->assets, $field_content['assets']);
 					$this->settings['fields'][$field_name]['content'] = $field_content['content'];
+					
+					if (isset($field_content['js_data'])) {
+						$merge = isset($field_content['merge_data']) && $field_content['merge_data'] === true;
+						if ($merge === true) {
+							$this->js_field_settings = array_merge($this->js_field_settings, $field_content['js_data']);
+						} else {
+							$this->js_field_settings[$field['mapping']['fieldName']] = $field_content['js_data'];
+						}
+					}
+					
 				} else {
 					$this->settings['fields'][$field_name]['content'] = $field_content;
 				}
@@ -153,6 +164,16 @@ class ObjectForm
 			if (is_array($field_content)) {
 				$this->assets = \Arr::merge($this->assets, $field_content['assets']);
 				$output[] = $this->settings['fields'][$field_name]['content'] = $field_content['content'];
+				
+				if (isset($field_content['js_data'])) {
+					$merge = isset($field_content['merge_data']) && $field_content['merge_data'] === true;
+					if ($merge === true) {
+						$this->js_field_settings = array_merge($this->js_field_settings, $field_content['js_data']);
+					} else {
+						$this->js_field_settings[$field['mapping']['fieldName']] = $field_content['js_data'];
+					}
+				}
+				
 			} else {
 				$output[] = $field_content;
 			}

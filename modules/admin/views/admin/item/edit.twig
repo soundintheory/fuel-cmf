@@ -79,7 +79,7 @@
 <div id="controls-fixed-bot"><div class="inner">
 
     <div class="status pull-left">
-        Item was last updated {{ model.get('updated_at')|date("d/m/Y \\a\\t H:i:s", "Europe/London") }}
+        Item was last updated <span class="updated-at">{{ model.get('updated_at')|date("d/m/Y \\a\\t H:i:s", "Europe/London") }}</span>
         <!-- span>Page rendered in {exec_time}s using {mem_usage}mb of memory.</span -->
     </div>
 

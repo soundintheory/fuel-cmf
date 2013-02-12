@@ -69,6 +69,9 @@ class Controller_Item extends Controller_Base {
 		$this->static = $class_name::_static();
 		$this->table_name = $metadata->table['name'];
 		$this->model = $model;
+		$this->js['model'] = $class_name;
+		$this->js['item_id'] = $model->id;
+		$this->js['table_name'] = $table_name;
 		$this->superlock = $class_name::superlock();
 		$this->template = 'admin/item/edit.twig';
 	    
@@ -88,7 +91,7 @@ class Controller_Item extends Controller_Base {
 		$actioned = "saved";
 		
 		// Find the model, or create a new one if there's no ID
-		if (isset($id)) {
+		if ($exists = isset($id)) {
 			$model = $class_name::find($id);
 			if (is_null($model)) return $this->show404("Can't find that model!");
 		} else {
@@ -144,6 +147,13 @@ class Controller_Item extends Controller_Base {
 		$this->table_name = $metadata->table['name'];
 		$this->model = $model;
 		$this->template = 'admin/item/edit.twig';
+		
+		if ($exists) {
+			$this->js['model'] = $class_name;
+			$this->js['item_id'] = $model->id;
+			$this->js['table_name'] = $table_name;
+		}		
+		
 	    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => "There were errors when saving the ".strtolower($class_name::singular()) ));
 	    
 	}
@@ -190,6 +200,51 @@ class Controller_Item extends Controller_Base {
 	    	
 	    }
 	    
+	}
+	
+	/**
+	 * For asyncronous saving - populates a model with the posted data and responds in JSON
+	 */
+	public function action_populate($table_name, $id)
+	{
+		// Find class name and metadata etc
+		$class_name = \Admin::getClassForTable($table_name);
+		if ($class_name === false) return $this->show404("Can't find that type!");
+		$metadata = $class_name::metadata();
+		
+		// Find the model, return 404 if not found
+		$model = $class_name::find($id);
+		if (is_null($model)) return $this->show404("Can't find that model!");
+		
+		// Populate with the POST data
+		$model->populate(\Input::post(), false);
+		
+		// Construct the output
+		$result = array( 'success' => false );
+		
+		// Check validation
+		if ($model->validate()) {
+			$result['success'] = true;
+		}
+		
+		// Try and save it
+		try {
+			
+			$em = \DoctrineFuel::manager();
+	    	$em->persist($model);
+	        $em->flush();
+	        
+	        $result['updated_at'] = $model->updated_at->format("d/m/Y \\a\\t H:i:s");
+	        
+		} catch (\Exception $e) {
+			$result['success'] = false;
+			$result['error'] = $e->getMessage();
+		}
+		
+		// Return the JSON response
+		$this->headers = array("Content-Type: text/plain");
+        return \Response::forge(json_encode($result), $this->status, $this->headers);
+		
 	}
 	
 }

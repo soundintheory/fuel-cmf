@@ -70,6 +70,8 @@ class Object extends \CMF\Field\Base {
         return array(
             'content' => $content,
             'assets' => $form->assets,
+            'merge_data' => true,
+            'js_data' => $form->js_field_settings,
             'widget' => $settings['widget']
         );
     }

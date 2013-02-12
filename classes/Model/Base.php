@@ -256,7 +256,7 @@ class Base extends \Doctrine\Fuel\Model
      * @see \CMF\Field\Base::process()
      * @inheritdoc
      */
-    public function populate($data)
+    public function populate($data, $overwrite=true)
     {
         $class_name = get_class($this);
         $fields = \Admin::getFieldSettings($class_name);
@@ -271,7 +271,7 @@ class Base extends \Doctrine\Fuel\Model
             
         }
         
-        parent::populate($data);
+        parent::populate($data, $overwrite);
         
     }
     

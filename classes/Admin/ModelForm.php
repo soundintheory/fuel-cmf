@@ -145,7 +145,6 @@ class ModelForm
 			// If the result is an array, merge the assets into this form's and set the field to be a widget unless told otherwise
 			if (is_array($field_content)) {
 				
-				
 				if (isset($field_content['js_data'])) {
 					$merge = isset($field_content['merge_data']) && $field_content['merge_data'] === true;
 					if ($merge === true) {

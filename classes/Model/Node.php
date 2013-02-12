@@ -201,7 +201,7 @@ class Node extends Base
     protected $is_root = false;
     
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @Assert\NotBlank
      **/
     protected $title;

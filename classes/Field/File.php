@@ -4,14 +4,20 @@ namespace CMF\Field;
 
 class File extends Base {
     
-    protected static $defaults = array( 'path' => 'uploads/files/' );
+    protected static $defaults = array(
+        'path' => 'uploads/files/'
+    );
     
     /** inheritdoc */
     public static function getAssets()
     {
         return array(
             'js' => array(
+                '/admin/assets/fineuploader/jquery.fineuploader-3.2.js',
                 '/admin/assets/js/fields/file.js'
+            ),
+            'css' => array(
+                //'/admin/assets/fineuploader/fineuploader-3.2.css'
             )
         );
     }
@@ -29,9 +35,15 @@ class File extends Base {
         $attributes = array( 'class' => 'field-type-file controls control-group'.($settings['has_errors'] ? ' error' : '') );
         $content = strval(\View::forge('admin/fields/file.twig', array( 'settings' => $settings, 'value' => $value, 'preview_value' => $preview_value ), false));
         
-        if (isset($settings['wrap']) && $settings['wrap'] === false) return $content;
+        if (!(isset($settings['wrap']) && $settings['wrap'] === false)) $content = html_tag('div', $attributes, $content);
         
-        return html_tag('div', $attributes, $content);
+        return array(
+            'content' => $content,
+            'widget' => false,
+            'assets' => array(),
+            'js_data' => $settings
+        );
+        
     }
     
     /** @inheritdoc */

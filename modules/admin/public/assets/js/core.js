@@ -3,7 +3,8 @@ $(document).ready(function() {
 	if ($('.widget.collapsible').length > 0) { initCollapsibleWidgets(); }
 	if ($('.item-form').length > 0) { initItemForm(); }
 	if ($('.item-list').length > 0) { initItemList(); }
-	if ($('#item-tree').length > 0) { initTree(); }	
+	if ($('#item-tree').length > 0) { initTree(); }
+	
 });
 
 $(window).load(function() {
@@ -11,6 +12,68 @@ $(window).load(function() {
 	initFixedHeadTables();
 	
 });
+
+// Constructs the appropriate URL from the table name and ID, and sends off the specified data to be saved.
+function saveData(table, id, _data) {
+	
+	var $itemForm = $('form.item-form'),
+	formData = $itemForm.serializeArray();
+	
+	// Try and populate the stuff automatically if possible...
+	if (isNull(table) && isSet(data)) { table = data['table_name']; }
+	if (isNull(id) && isSet(data)) { id = data['item_id']; }
+	if (isNull(_data) && $('form.item-form').length > 0) {
+		
+		_data = {};
+		
+		for (var i = 0; i < formData.length; i++) {
+			var name = formData[i]['name'] + '';
+			if (name.indexOf('%TEMP%') > -1) { continue; }
+			_data[name] = formData[i]['value'];
+		}
+		
+	} else {
+		
+		// Associations need ID fields, otherwise the populate method will think they're new ones!
+		for (var p in _data) {
+			addAssociationIdField(p);
+		}
+		
+	}
+	
+	// Don't run if anything is not set...
+	if (isNull(table) || isNull(id) || isNull(_data)) { return false; }
+	
+	// Construct the URL and post the data
+	var url = '/admin/' + table + '/' + id + '/populate';
+	
+	$.post(url, _data, function(result) {
+		if (typeof(result['updated_at']) != 'undefined') {
+			$('.status .updated-at').text(result['updated_at']);
+		}
+	}, 'json');
+	
+	// Adds the id field for the association containing the given field
+	function addAssociationIdField(field) {
+		
+		var parts = field.replace(/\]/g, '').split('[');
+		if (parts.length < 2) { return; }
+		var baseField = parts.shift();
+		
+		while (parts.length > 0) {
+			parts[parts.length-1] = 'id';
+			var idField = baseField + '[' + parts.join('][') + ']';
+			var $field = $itemForm.find('input[name="' + idField + '"]').eq(0);
+			if ($field.length > 0) {
+				_data[idField] = $field.val();
+				break;
+			}
+			parts.pop();
+		}
+		
+	}
+	
+}
 
 function initCollapsibleWidgets() {
 	
@@ -186,7 +249,7 @@ function initTree() {
 		
 		el.data('simple_widget_tree')._saveState();
 		
-		$('a[rel="tooltip"]').tooltip({ 'placement':'top' });
+		//$('a[rel="tooltip"]').tooltip({ 'placement':'top' });
 		
 		//console.log($(evt.target).index());
 		evt.preventDefault();
@@ -205,7 +268,7 @@ function initTree() {
 		
 	}
 	
-	$('a[rel="tooltip"]').tooltip({ 'placement':'top' });
+	//$('a[rel="tooltip"]').tooltip({ 'placement':'top' });
 	
 	$('.btn-remove').each(function() {
 		
