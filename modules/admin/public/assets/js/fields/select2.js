@@ -38,7 +38,7 @@
 			
 			// So the iframe can call this field on save...
 			window[cid] = { 'onSave':onSave };
-			console.log(hasParent);
+			
 			if ($addBut.length > 0 && !hasParent) {
 				
 				$addBut.fancybox(fancyBoxOpts);

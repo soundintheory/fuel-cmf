@@ -95,7 +95,7 @@ class Multiselect extends \CMF\Field\Base {
         } else if (is_array($settings['select2'])) {
             
             $settings['is_select2'] = true;
-            $settings['input_attributes']['class'] .= ' select2';
+            $settings['input_attributes']['class'] .= 'input-xxlarge select2';
             $content = strval(\View::forge('admin/fields/collection/multiselect.twig', array( 'settings' => $settings, 'options' => $options, 'values' => $values ), false));
             $settings['select2']['placeholder'] = 'click to select a '.strtolower($settings['singular']) . '...';
             $settings['select2']['target_table'] = $target_table;

@@ -73,7 +73,7 @@ class Base {
             $label .= $auto_update;
             
             return array(
-                'content' => html_tag('div', $attributes, $label.$input).html_tag('div', array( 'class' => 'clear' ), ' '),
+                'content' => html_tag('div', $attributes, $label.$input).'<div class="clear"><!-- --></div>',
                 'widget' => false,
                 'assets' => array( 'js' => array('/admin/assets/js/twig.min.js', '/admin/assets/js/fields/template.js') ),
                 'js_data' => $settings

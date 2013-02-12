@@ -64,7 +64,7 @@ class ManyToOne extends \CMF\Field\Base {
         
         if (is_array($settings['select2'])) {
             
-            $input_attributes['class'] .= ' select2';
+            $input_attributes['class'] .= 'input-xxlarge select2';
             $input = \Form::select($settings['mapping']['fieldName'], $id, $options, $input_attributes);
             $settings['select2']['placeholder'] = 'click to select a '.strtolower($target_class::singular()) . '...';
             $settings['select2']['target_table'] = $target_table;
@@ -74,7 +74,7 @@ class ManyToOne extends \CMF\Field\Base {
             }
             
             return array(
-                'content' => html_tag('div', array( 'class' => 'controls control-group field-with-controls'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input.$controls_top),
+                'content' => html_tag('div', array( 'class' => 'controls control-group field-with-controls'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input.$controls_top).'<div class="clear"><!-- --></div>',
                 'widget' => false,
                 'assets' => array(
                     'css' => array('/admin/assets/select2/select2.css'),
@@ -89,7 +89,7 @@ class ManyToOne extends \CMF\Field\Base {
         
         $input = \Form::select($settings['mapping']['fieldName'], $id, $options, $input_attributes);
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
-        return html_tag('div', array( 'class' => 'controls control-group field-with-controls'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input);
+        return html_tag('div', array( 'class' => 'controls control-group field-with-controls'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input).'<div class="clear"><!-- --></div>';
     }
     
     /** inheritdoc */
