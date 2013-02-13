@@ -27,9 +27,9 @@ class Image extends File {
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
         if (isset($value)) {
-            return \Html::anchor($edit_link, \Html::img('/image/2/50/50/'.$value, array()));
+            return \Html::anchor($edit_link, \Html::img('/image/2/50/50/'.(!empty($value) ? $value : 'placeholder.png'), array()));
         }
-        return '-';
+        return \Html::anchor($edit_link, \Html::img('/image/2/50/50/placeholder.png'), array());
     }
     
     /** @inheritdoc */

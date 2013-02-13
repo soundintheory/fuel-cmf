@@ -11,7 +11,8 @@
 			$items = $wrap.find('.item'),
 			$table = $wrap.find('table').eq(0),
 			inc = $items.length,
-			$noItemsRow = $wrap.find('.no-items-row');
+			$noItemsRow = $wrap.find('.no-items-row'),
+			sortable = $table.hasClass('sortable');
 			
 			$wrap.find('.btn-add').click(function() {
 				addItem();
@@ -19,6 +20,8 @@
 			});
 			
 			$wrap.find('.btn-remove').click(removeButtonHandler);
+			
+			if (sortable) { initSorting(); }
 			
 			function addItem() {
 				
@@ -90,6 +93,76 @@
 				} else {
 					$table.removeClass('populated');
 				}
+				
+				updatePositions();
+				
+			}
+			
+			function updatePositions() {
+				
+				if (!sortable) { return; }
+				
+				$items = $wrap.find('.item');
+				
+				$items.each(function(i) {
+					
+					var $el = $(this),
+					$pos = $el.find('input[data-field-name="pos"]').val(i+'');
+					
+				});
+				
+			}
+			
+			function initSorting() {
+				
+				var $tableBody = $table.find("tbody"),
+				$rows = $tableBody.find('tr'),
+				$body = $('body'),
+				tableName = $table.attr('data-table-name');
+				
+				$tableBody.sortable({ helper:fixHelper, handle:'.handle' });
+				$tableBody.sortable('option', 'start', function (evt, ui) {
+					
+					$body.addClass('sorting');
+					
+				});
+				$tableBody.sortable('option', 'stop', function(evt, ui) {
+					
+					$body.removeClass('sorting');
+					
+					var id = ui.item.find('input.item-id').val(),
+					pos = 0;
+					
+					if (typeof(id) == 'undefined') { return; }
+					
+					$tableBody.find('tr.item').each(function(i) {
+						if ($(this).find('input.item-id').val() == id) {
+							pos = i;
+							return false;
+						}
+					});
+					
+					var cRequest = $.ajax({
+						'url': '/admin/' + tableName + '/' + id + '/populate',
+						'data': { 'pos':pos },
+						'dataType': 'json',
+						'async': true,
+						'type': 'POST',
+						'success': onListSaved,
+						'cache': false
+					});
+					
+					updatePositions();
+					
+				});
+				
+				updatePositions()
+				
+			}
+			
+			function onListSaved(result) {
+				
+				//console.log(result);
 				
 			}
 			

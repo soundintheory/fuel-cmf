@@ -1,37 +1,48 @@
-<table class="table table-striped table-hover table-bordered{{ rows|length == 0 ? '' : ' populated' }}" style="min-width:{{ cols|length * 160 }}px;">
-	<tr >
-		{% for col in cols %}
-		<th class="{{ loop.index == 1 ? 'first' : '' }}">{{ form.fields[col].title }}</th>
+<table class="table table-striped table-hover table-bordered{{ rows|length == 0 ? '' : ' populated' }}{{ sortable ? ' sortable' : '' }}" style="min-width:{{ cols|length * 160 }}px;" data-table-name="{{ form.table_name }}">
+	<thead>
+		<tr >
+			{% if sortable %}<th class="handle first"></th>{% endif %}
+			{% for col in cols %}
+			<th class="{{ not sortable and loop.index == 1 ? 'first' : '' }}">{{ form.fields[col].title }}</th>
+			{% endfor %}
+			<th class="actions"></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="item-template">
+			{% if sortable %}<td class="handle first"><i class="icon-move"></i></td>{% endif %}
+			{% for field_name, field in template %}
+			<td class="col-type-{{ form.fields[field_name].field_type }}{{ not sortable and loop.index == 1 ? ' first' : '' }}">{{ field }}</td>
+			{% endfor %}
+			<td class="actions">
+				{% if sortable %}{{ form.hidden_fields.pos }}{% endif %}
+				<a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a>
+			</td>
+		</tr>
+		{% for row in rows %}
+		<tr class="item">
+			{% if sortable %}<td class="handle first"><i class="icon-move"></i></td>{% endif %}
+			{% for field_name, field in row.fields %}
+			<td class="col-type-{{ form.fields[field_name].field_type }}{{ not sortable and loop.index == 1 ? ' first' : '' }}">{{ field }}</td>
+			{% endfor %}
+			<td class="actions">
+				{{ row.hidden_fields.id }}
+				{% if sortable %}{{ row.hidden_fields.pos }}{% endif %}
+				<a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a>
+			</td>
+		</tr>
 		{% endfor %}
-		<th class="actions"></th>
-	</tr>
-	<tr class="item-template">
-		{% for field_name, field in template %}
-		<td class="col-type-{{ form.fields[field_name].field_type }}{{ loop.index == 1 ? ' first' : '' }}">{{ field }}</td>
-		{% endfor %}
-		<td class="actions"><a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a></td>
-	</tr>
-	{% for row in rows %}
-	<tr class="item">
-		{% for field_name, field in row.fields %}
-		<td class="col-type-{{ form.fields[field_name].field_type }}{{ loop.index == 1 ? ' first' : '' }}">{{ field }}</td>
-		{% endfor %}
-		<td class="actions">
-			{{ row.hidden_fields.id }}
-			<a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a>
-		</td>
-	</tr>
-	{% endfor %}
-	<tr class="no-items-row">
-        <td class="no-items" colspan="{{ cols|length + 1 }}">
-            
-            <p>There are no {{ plural|lower }} added yet.</p>
-            {% if not superlock %}
-            <a href="#" class="btn-add btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
-            {% endif %}
-        
-        </td>
-    </tr>
+		<tr class="no-items-row">
+	        <td class="no-items" colspan="{{ cols|length + (sortable ? 2 : 1) }}">
+	            
+	            <p>There are no {{ plural|lower }} added yet.</p>
+	            {% if not superlock %}
+	            <a href="#" class="btn-add btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
+	            {% endif %}
+	        
+	        </td>
+	    </tr>
+	</tbody>
 </table>
 <div class="widget-actions-top">
 	<a href="#" class="widget-action icon btn-add" title="Add {{ singular|lower }}"><i class="icon icon-plus"></i></a>

@@ -205,12 +205,68 @@ class Controller_Item extends Controller_Base {
 	/**
 	 * For asyncronous saving - populates a model with the posted data and responds in JSON
 	 */
-	public function action_populate($table_name, $id)
+	public function action_populate($table_name, $id=null)
 	{
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) return $this->show404("Can't find that type!");
-		$metadata = $class_name::metadata();
+		
+		// Set the output content type
+		$this->headers = array("Content-Type: text/plain");
+		
+		// If $id is null, we're populating multiple items
+		if ($id === null) {
+			
+			// Construct the output
+			$result = array( 'success' => true, 'num_updated' => 0 );
+			$post_data = \Input::post();
+			$ids = array_keys($post_data);
+			$em = \DoctrineFuel::manager();
+			
+			if (count($ids) == 0) {
+				return \Response::forge(json_encode($result), $this->status, $this->headers);
+			}
+			
+			// Get the items we need to save
+			$items = $class_name->select('item')
+			->where('item.id IN(?1)')
+			->setParameter(1, $ids)
+			->getQuery()
+			->getResult();
+			
+			if (count($items) == 0) {
+				return \Response::forge(json_encode($result), $this->status, $this->headers);
+			}
+			
+			foreach ($items as $item) {
+				
+				$id = $item->id;
+				if (!isset($post_data[$id])) continue;
+				
+				$result['num_updated'] += 1;
+				$data = $post_data[$id];
+				$model->populate($data, false);
+				
+				if (!$model->validate()) {
+					$result['success'] = false;
+				}
+				
+				$em->persist($model);
+				
+			}
+			
+			// Try and save them all
+			try {
+		        $em->flush();
+			} catch (\Exception $e) {
+				$result['success'] = false;
+				$result['error'] = $e->getMessage();
+			}
+			
+			// Return the JSON response
+	        return \Response::forge(json_encode($result), $this->status, $this->headers);
+			
+		}
 		
 		// Find the model, return 404 if not found
 		$model = $class_name::find($id);
@@ -225,6 +281,8 @@ class Controller_Item extends Controller_Base {
 		// Check validation
 		if ($model->validate()) {
 			$result['success'] = true;
+		} else {
+			$result['validation_errors'] = $model->errors;
 		}
 		
 		// Try and save it
@@ -242,7 +300,6 @@ class Controller_Item extends Controller_Base {
 		}
 		
 		// Return the JSON response
-		$this->headers = array("Content-Type: text/plain");
         return \Response::forge(json_encode($result), $this->status, $this->headers);
 		
 	}

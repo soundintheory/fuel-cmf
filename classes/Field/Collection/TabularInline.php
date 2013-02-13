@@ -31,11 +31,14 @@ class TabularInline extends Multiselect {
     		$value = array();
     	}
         
+        $sortable = $target_class::sortable() && isset($settings['mapping']['orderBy']) && isset($settings['mapping']['orderBy']['pos']) && $settings['mapping']['orderBy']['pos'] == 'ASC';
         $target_field = ($settings['mapping']['isOwningSide'] === true) ? $settings['mapping']['inversedBy'] : $settings['mapping']['mappedBy'];
         $exclude = array($target_field);
+        $hidden_fields = array();
+        if ($sortable) $hidden_fields['pos'] = 0;
         
         // The form from which we'll render out each row, but also the blank form for the 'new item' template
-        $form_template = new ModelForm($target_metadata, new $target_class(), '%TEMP%'.$settings['mapping']['fieldName'].'[%num%]', array(), $exclude);
+        $form_template = new ModelForm($target_metadata, new $target_class(), '%TEMP%'.$settings['mapping']['fieldName'].'[%num%]', $hidden_fields, $exclude);
         $cols = $form_template->field_keys;
         $rows = array();
         $js_data = $form_template->js_field_settings;
@@ -44,14 +47,14 @@ class TabularInline extends Multiselect {
     	foreach ($value as $num => $model) {
             $prefix = $settings['mapping']['fieldName'].'['.$num.']';
             $row = $form_template->getFields($model, $prefix);
-            $row['hidden_fields']['id'] = \Form::hidden($prefix.'[id]', $model->id);
+            $row['hidden_fields']['id'] = \Form::hidden($prefix.'[id]', $model->id, array( 'class' => 'item-id' ));
     		$rows[] = $row;
             $js_data = array_merge($js_data, $row['js_field_settings']);
     	}
         
         return array(
             'assets' => $form_template->assets,
-            'content' => strval(\View::forge('admin/fields/collection/tabular-inline.twig', array( 'singular' => $target_class::singular(), 'plural' => $target_class::plural(), 'rows' => $rows, 'cols' => $cols, 'template' => $form_template->getFieldContent(), 'form' => $form_template ), false)),
+            'content' => strval(\View::forge('admin/fields/collection/tabular-inline.twig', array( 'singular' => $target_class::singular(), 'plural' => $target_class::plural(), 'rows' => $rows, 'cols' => $cols, 'template' => $form_template->getFieldContent(), 'form' => $form_template, 'sortable' => $sortable ), false)),
             'widget' => true,
             'widget_class' => 'poos',
             'widget_icon' => $target_class::icon(),

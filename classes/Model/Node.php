@@ -158,6 +158,18 @@ class Node extends Base
         return '/';
     }
     
+    /** inheritdoc */
+    public static function sortable()
+    {
+        return false;
+    }
+    
+    /** inheritdoc */
+    public static function sortGroup()
+    {
+        return null;
+    }
+    
     public function display()
     {
         return strval($this->title);

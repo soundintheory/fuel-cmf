@@ -27,9 +27,10 @@ return array(
 	'extensions' => array(
 		'Doctrine\\Fuel\\Extensions\\Tree',
 		'Doctrine\\Fuel\\Extensions\\Timestampable',
-		'Doctrine\\Fuel\\Extensions\\Sortable',
 		'Doctrine\\Fuel\\Extensions\\Spatial',
-		'CMF\\Doctrine\\Extensions\\URL'
+		'CMF\\Doctrine\\Extensions\\URL',
+		'CMF\\Doctrine\\Extensions\\Sortable'
+		//'Doctrine\\Fuel\\Extensions\\Sortable',
 		//'Doctrine\\Fuel\\Extensions\\Translatable',
 		//'Doctrine\\Fuel\\Extensions\\Loggable',
 		//'Doctrine\\Fuel\\Extensions\\SoftDeletable'

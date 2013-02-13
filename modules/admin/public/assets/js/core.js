@@ -328,6 +328,59 @@ function initItemList() {
 		
 	});
 	
+	var $table = $('.item-list .table');
+	
+	if ($table.hasClass('sortable')) {
+		
+		var $tableBody = $table.find("tbody"),
+		$rows = $tableBody.find('tr'),
+		$body = $('body');
+		
+		$tableBody.sortable({ helper:fixHelper, handle:'.handle' });
+		
+		$tableBody.sortable('option', 'start', function (evt, ui) {
+			
+			$body.addClass('sorting');
+			
+		});
+		
+		$tableBody.sortable('option', 'stop', function(evt, ui) {
+			
+			$body.removeClass('sorting');
+			
+			var group = ui.item.attr('data-sort-group'),
+			pos = parseInt(ui.item.index()),
+			id = ui.item.attr('data-id');
+			
+			if (group != undefined && group != '__ungrouped__' && group.length > 0) {
+				$tableBody.find('tr[data-sort-group="' + group + '"]').each(function(i) {
+					if ($(this).attr('data-id') == id) {
+						pos = i;
+						return false;
+					}
+				});
+			}
+			
+			var cRequest = $.ajax({
+				'url': '/admin/' + data['table_name'] + '/' + id + '/populate',
+				'data': { 'pos':pos },
+				'dataType': 'json',
+				'async': true,
+				'type': 'POST',
+				'success': onListSaved,
+				'cache': false
+			});
+			
+		});
+		
+	}
+	
+	function onListSaved(result) {
+		
+		//console.log(result);
+		
+	}
+	
 }
 
 function initItemForm() {
@@ -379,48 +432,7 @@ function initItemForm() {
 
     $('.help-icon').popover({ 'placement':'right', 'trigger':'click' });
 	
-	$('.field-type-file, .field-type-image').each(function() {
-		
-		var $wrap = $(this);
-		var $el = $wrap.find('input.file-enhanced');
-		var $clear = $wrap.find('.btn-warning').hide();
-		
-		if ($el.length == 0) { return; }
-		
-		$el.bind('change', function() {
-			$clear.show();
-		});
-		
-		$el.bind('reset', function() {
-			$clear.hide();
-		});
-		
-		var value = $el.attr('title');
-		if (value == '' || typeof(value) == 'undefined' || value == null) {
-			value = 'No file selected...';
-			$el.trigger('reset');
-		} else {
-			var segments = value.split('/');
-			value = segments[segments.length-1];
-			$clear.show();
-		}
-		$el.customFileInput({
-			value_text: value,
-	        button_position : 'right'
-	    });
-		$el.trigger('update');
-		
-		$clear.click(function() {
-			$wrap.find('.thumbnail').remove();
-			$wrap.find('.customfile-feedback').html('No file selected...');
-			$el.trigger('reset');
-			return false;
-		});
-		
-	});
-	
-	$("table.sortable tbody").sortable({ helper:fixHelper, handle:'.handle' });
-	
+	/*
 	$('table.selectable tr').each(function() {
 		
 		var el = $(this), cb = $('td input[type="checkbox"]', el).eq(0);
@@ -439,6 +451,7 @@ function initItemForm() {
 		});
 		
 	});
+	*/
 	
 }
 

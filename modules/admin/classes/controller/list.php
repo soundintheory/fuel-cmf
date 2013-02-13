@@ -34,10 +34,14 @@ class Controller_List extends Controller_Base {
 		
 		// Get the data for the list
 		$metadata = $class_name::metadata();
+		$sortable = $class_name::sortable();
+		$sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
+		
 		$fields = \Admin::getFieldSettings($class_name);
 		$list_fields = $class_name::listFields();
 		if (empty($list_fields)) $list_fields = array_keys($fields);
 		$columns = array();
+		$joins = array();
 		
 		// Create static items
 		\Admin::createStaticInstances($metadata);
@@ -71,8 +75,10 @@ class Controller_List extends Controller_Base {
 			
 			if ($metadata->isSingleValuedAssociation($field)) {
 				$qb->leftJoin('item.'.$field, $field)->addSelect($field);
+				$joins[] = $field;
 			} else if ($metadata->isCollectionValuedAssociation($field)) {
 				$qb->leftJoin('item.'.$field, $field)->addSelect($field);
+				$joins[] = $field;
 			}
 			
 			// Get the field class and type
@@ -80,35 +86,69 @@ class Controller_List extends Controller_Base {
 			$field_type = $field_class::type();
 			$column = array( 'name' => $field, 'type' => $field_type );
 			
-			if (isset($order[$field])) {
+			if (!$sortable) {
 				
-                $dir = strtolower($order[$field]);
-                $rev = ($dir == 'asc') ? 'desc' : 'asc';
-                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
-                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
-                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$field.' '.$verbose ), $fields[$field]['title'].' '.$arrows);
-                
-            } else {
-            	
-                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$field.' ascending' ), $fields[$field]['title']);
-                
-            }
+				if (isset($order[$field])) {
+	                $dir = strtolower($order[$field]);
+	                $rev = ($dir == 'asc') ? 'desc' : 'asc';
+	                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
+	                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
+	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$field.' '.$verbose ), $fields[$field]['title'].' '.$arrows);
+	            } else {
+	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$field.' ascending' ), $fields[$field]['title']);
+	            }
+	            
+	        } else {
+	        	
+	        	$column['heading'] = $fields[$field]['title'];
+	        	
+	        }
             
             $columns[] = $column;
 			
 		}
 		
-		// Add the ordering to the query builder
-		foreach ($order as $field => $direction)
-	    {
-	        if ($metadata->hasAssociation($field)) {
-	            $assoc_class = $metadata->getAssociationTargetClass($field);
-	            $assoc_field = property_exists($assoc_class, 'name') ? 'name' : (property_exists($assoc_class, 'title') ? 'title' : 'id');
-	            $qb->addOrderBy("$field.$assoc_field", $direction);
-	        } else {
-	            $qb->addOrderBy("item.$field", $direction);
-	        }
-	    }
+		if ($sortable) {
+			
+			array_unshift($columns, array( 'name' => '', 'type' => 'handle', 'heading' => '' ));
+			
+			// Add the ordering to allow drag and drop
+			$has_group = !is_null($sort_group) && property_exists($class_name, $sort_group);
+			
+			if ($has_group) {
+				
+				if (!in_array($sort_group, $joins)) {
+					$qb->leftJoin('item.'.$sort_group, $sort_group)->addSelect($sort_group);
+					$joins[] = $sort_group;
+				}
+				
+				if ($metadata->hasAssociation($sort_group)) {
+				    $assoc_class = $metadata->getAssociationTargetClass($sort_group);
+				    $assoc_field = property_exists($assoc_class, 'name') ? 'name' : (property_exists($assoc_class, 'title') ? 'title' : 'id');
+				    $qb->addOrderBy("$sort_group.$assoc_field", 'ASC');
+				} else {
+				    $qb->addOrderBy("item.$sort_group", 'ASC');
+				}
+				
+			}
+			
+			$qb->addOrderBy('item.pos', 'ASC');
+			
+		} else {
+			
+			// Add the ordering to the query builder
+			foreach ($order as $field => $direction)
+		    {
+		        if ($metadata->hasAssociation($field)) {
+		            $assoc_class = $metadata->getAssociationTargetClass($field);
+		            $assoc_field = property_exists($assoc_class, 'name') ? 'name' : (property_exists($assoc_class, 'title') ? 'title' : 'id');
+		            $qb->addOrderBy("$field.$assoc_field", $direction);
+		        } else {
+		            $qb->addOrderBy("item.$field", $direction);
+		        }
+		    }
+			
+		}
 		
 		// TODO: Add filters for paging, list filters, sorting etc.
 		
@@ -123,6 +163,8 @@ class Controller_List extends Controller_Base {
 		$this->table_name = $metadata->table['name'];
 		$this->template = 'admin/item/list.twig';
 		$this->superlock = $class_name::superlock();
+		$this->sortable = $sortable;
+		$this->sort_group = $sort_group;
 		
 		// Add the stuff for JS
 		$this->js['table_name'] = $metadata->table['name'];
