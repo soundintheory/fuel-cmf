@@ -228,7 +228,7 @@ class Controller_Item extends Controller_Base {
 			}
 			
 			// Get the items we need to save
-			$items = $class_name->select('item')
+			$items = $class_name::select('item')
 			->where('item.id IN(?1)')
 			->setParameter(1, $ids)
 			->getQuery()
@@ -245,13 +245,13 @@ class Controller_Item extends Controller_Base {
 				
 				$result['num_updated'] += 1;
 				$data = $post_data[$id];
-				$model->populate($data, false);
+				$item->populate($data, false);
 				
-				if (!$model->validate()) {
+				if (!$item->validate()) {
 					$result['success'] = false;
 				}
 				
-				$em->persist($model);
+				$em->persist($item);
 				
 			}
 			

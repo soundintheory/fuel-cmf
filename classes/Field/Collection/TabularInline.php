@@ -31,8 +31,13 @@ class TabularInline extends Multiselect {
     		$value = array();
     	}
         
-        $sortable = $target_class::sortable() && isset($settings['mapping']['orderBy']) && isset($settings['mapping']['orderBy']['pos']) && $settings['mapping']['orderBy']['pos'] == 'ASC';
         $target_field = ($settings['mapping']['isOwningSide'] === true) ? $settings['mapping']['inversedBy'] : $settings['mapping']['mappedBy'];
+        $sortable = $target_class::sortable() && isset($settings['mapping']['orderBy']) && isset($settings['mapping']['orderBy']['pos']) && $settings['mapping']['orderBy']['pos'] == 'ASC';
+        $sort_group = $target_class::sortGroup();
+        
+        // If the target isn't grouped by this relationship, we need to save all the positions at once...
+        $save_all = $sort_group != $target_field;
+        
         $exclude = array($target_field);
         $hidden_fields = array();
         if ($sortable) $hidden_fields['pos'] = 0;
@@ -52,9 +57,15 @@ class TabularInline extends Multiselect {
             $js_data = array_merge($js_data, $row['js_field_settings']);
     	}
         
+        $js_data[$settings['mapping']['fieldName']] = array(
+            'target_table' => $target_metadata->table['name'],
+            'save_all' => $save_all,
+            'sortable' => $sortable
+        );
+        
         return array(
             'assets' => $form_template->assets,
-            'content' => strval(\View::forge('admin/fields/collection/tabular-inline.twig', array( 'singular' => $target_class::singular(), 'plural' => $target_class::plural(), 'rows' => $rows, 'cols' => $cols, 'template' => $form_template->getFieldContent(), 'form' => $form_template, 'sortable' => $sortable ), false)),
+            'content' => strval(\View::forge('admin/fields/collection/tabular-inline.twig', array( 'settings' => $settings, 'singular' => $target_class::singular(), 'plural' => $target_class::plural(), 'rows' => $rows, 'cols' => $cols, 'template' => $form_template->getFieldContent(), 'form' => $form_template, 'sortable' => $sortable ), false)),
             'widget' => true,
             'widget_class' => 'poos',
             'widget_icon' => $target_class::icon(),

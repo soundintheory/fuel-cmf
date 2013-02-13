@@ -10,9 +10,12 @@
 			$template = $wrap.find('.item-template').eq(0),
 			$items = $wrap.find('.item'),
 			$table = $wrap.find('table').eq(0),
+			name = $table.attr('data-field-name'),
+			settings = (typeof(field_settings[name]) != 'undefined') ? field_settings[name] : {},
 			inc = $items.length,
 			$noItemsRow = $wrap.find('.no-items-row'),
-			sortable = $table.hasClass('sortable');
+			sortable = $table.hasClass('sortable'),
+			positions = {};
 			
 			$wrap.find('.btn-add').click(function() {
 				addItem();
@@ -107,7 +110,10 @@
 				$items.each(function(i) {
 					
 					var $el = $(this),
-					$pos = $el.find('input[data-field-name="pos"]').val(i+'');
+					$pos = $el.find('input[data-field-name="pos"]').val(i+''),
+					id = $el.find('input.item-id').val();
+					
+					positions[id] = { 'pos':i };
 					
 				});
 				
@@ -118,7 +124,8 @@
 				var $tableBody = $table.find("tbody"),
 				$rows = $tableBody.find('tr'),
 				$body = $('body'),
-				tableName = $table.attr('data-table-name');
+				tableName = settings['target_table'],
+				saveAll = settings['save_all'];
 				
 				$tableBody.sortable({ helper:fixHelper, handle:'.handle' });
 				$tableBody.sortable('option', 'start', function (evt, ui) {
@@ -135,24 +142,42 @@
 					
 					if (typeof(id) == 'undefined') { return; }
 					
-					$tableBody.find('tr.item').each(function(i) {
-						if ($(this).find('input.item-id').val() == id) {
-							pos = i;
-							return false;
-						}
-					});
-					
-					var cRequest = $.ajax({
-						'url': '/admin/' + tableName + '/' + id + '/populate',
-						'data': { 'pos':pos },
-						'dataType': 'json',
-						'async': true,
-						'type': 'POST',
-						'success': onListSaved,
-						'cache': false
-					});
-					
-					updatePositions();
+					if (saveAll) {
+						
+						updatePositions();
+						
+						var cRequest = $.ajax({
+							'url': '/admin/' + tableName + '/populate',
+							'data': positions,
+							'dataType': 'json',
+							'async': true,
+							'type': 'POST',
+							'success': onListSaved,
+							'cache': false
+						});
+						
+					} else {
+						
+						$tableBody.find('tr.item').each(function(i) {
+							if ($(this).find('input.item-id').val() == id) {
+								pos = i;
+								return false;
+							}
+						});
+						
+						updatePositions();
+						
+						var cRequest = $.ajax({
+							'url': '/admin/' + tableName + '/' + id + '/populate',
+							'data': { 'pos':pos },
+							'dataType': 'json',
+							'async': true,
+							'type': 'POST',
+							'success': onListSaved,
+							'cache': false
+						});
+						
+					}
 					
 				});
 				

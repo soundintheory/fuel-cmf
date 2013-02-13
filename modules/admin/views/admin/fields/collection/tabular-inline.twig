@@ -1,4 +1,4 @@
-<table class="table table-striped table-hover table-bordered{{ rows|length == 0 ? '' : ' populated' }}{{ sortable ? ' sortable' : '' }}" style="min-width:{{ cols|length * 160 }}px;" data-table-name="{{ form.table_name }}">
+<table class="table table-striped table-hover table-bordered{{ rows|length == 0 ? '' : ' populated' }}{{ sortable ? ' sortable' : '' }}" style="min-width:{{ cols|length * 160 }}px;" data-field-name="{{ settings.mapping.fieldName }}">
 	<thead>
 		<tr >
 			{% if sortable %}<th class="handle first"></th>{% endif %}
