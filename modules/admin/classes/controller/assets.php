@@ -48,8 +48,14 @@ class Controller_Assets extends \Controller {
 		} else {
 			$cache = $path;
 		}
-
-		$new_cache = \lessc::cexecute($cache);
+		
+		try {
+			$new_cache = \lessc::cexecute($cache);
+		} catch (\Exception $e) {
+			$cache = $path;
+			$new_cache = \lessc::cexecute($cache);
+		}
+		
 		if (!is_array($cache) || $new_cache['updated'] > $cache['updated']) {
 			file_put_contents($cache_fname, serialize($new_cache));
 			$cache = $new_cache;
