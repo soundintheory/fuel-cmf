@@ -20,6 +20,12 @@ class Controller_Item extends Controller_Base {
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) return $this->show404("Can't find that type!");
 		
+		$can_edit = \CMF\Auth::can('edit', $class_name);
+		
+		if (!$can_edit) {
+			return $this->show403("You're not allowed to create ".strtolower($class_name::plural())."!");
+		}
+		
 		$metadata = $class_name::metadata();
 		\Admin::$current_class = $this->current_class = $class_name;
 		
@@ -41,6 +47,11 @@ class Controller_Item extends Controller_Base {
 		$this->table_name = $metadata->table['name'];
 		$this->model = $model;
 		$this->template = 'admin/item/create.twig';
+		
+		// Permissions
+		$this->can_edit = $can_edit;
+		$this->can_create = \CMF\Auth::can('create', $class_name);
+		$this->can_delete = \CMF\Auth::can('delete', $class_name) && !$class_name::_static();
 	    
 	}
 	
@@ -63,6 +74,11 @@ class Controller_Item extends Controller_Base {
 	    $model = $class_name::find($id);
 	    if (is_null($model)) return $this->show404("That ".$this->singular." Doesn't Exist!");
 	    
+	    $can_edit = \CMF\Auth::can('edit', $model);
+		if (!$can_edit) {
+			return $this->show403("You're not allowed to edit this ".strtolower($class_name::singular())."!");
+		}
+	    
 	   	// Get stuff ready for the template
 	   	$this->form = new ModelForm($metadata, $model);
 		$this->icon = $class_name::icon();
@@ -74,6 +90,11 @@ class Controller_Item extends Controller_Base {
 		$this->js['table_name'] = $table_name;
 		$this->superlock = $class_name::superlock();
 		$this->template = 'admin/item/edit.twig';
+		
+		// Permissions
+		$this->can_edit = $can_edit;
+		$this->can_create = \CMF\Auth::can('create', $class_name);
+		$this->can_delete = \CMF\Auth::can('delete', $class_name) && !$class_name::_static();
 	    
 	}
 	
@@ -85,6 +106,12 @@ class Controller_Item extends Controller_Base {
 	    // Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) return $this->show404("Can't find that type!");
+		
+		$can_edit = \CMF\Auth::can('edit', $class_name);
+		
+		if (!$can_edit) {
+			return $this->show403("You're not allowed to edit ".strtolower($class_name::plural())."!");
+		}
 		
 		$metadata = $class_name::metadata();
 		\Admin::$current_class = $this->current_class = $class_name;
@@ -148,6 +175,11 @@ class Controller_Item extends Controller_Base {
 		$this->model = $model;
 		$this->template = 'admin/item/edit.twig';
 		
+		// Permissions
+		$this->can_edit = $can_edit;
+		$this->can_create = \CMF\Auth::can('create', $class_name);
+		$this->can_delete = \CMF\Auth::can('delete', $class_name);
+		
 		if ($exists) {
 			$this->js['model'] = $class_name;
 			$this->js['item_id'] = $model->id;
@@ -166,10 +198,11 @@ class Controller_Item extends Controller_Base {
 	    $em = \DoctrineFuel::manager();
 	    $class_name = \Admin::getClassForTable($table_name);
 	    
-	    // Superlock: don't let them delete it!!
-		if ($class_name::superlock()) {
-			$default_redirect = \Uri::base(false)."admin/$table_name";
-			\Response::redirect($default_redirect, 'location');
+	    $can_delete = $class_name::superlock() === false && \CMF\Auth::can('delete', $class_name) === true;
+	    
+	    // Don't let them delete it if they're not allowed!!
+		if (!$can_delete) {
+			return $this->show403("You're not allowed to delete ".strtolower($class_name::plural())."!");
 		}
 	    
 	    $singular = $class_name::singular();
@@ -210,6 +243,10 @@ class Controller_Item extends Controller_Base {
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) return $this->show404("Can't find that type!");
+		
+		if (!\CMF\Auth::can('edit', $class_name)) {
+			return $this->show403("You're not allowed to edit that!");
+		}
 		
 		// Set the output content type
 		$this->headers = array("Content-Type: text/plain");

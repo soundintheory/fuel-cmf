@@ -35,6 +35,9 @@ class Admin extends Twig_Extension
 			'get_route' => new Twig_Function_Function('Router::get'),
 			'get_setting' => new Twig_Function_Method($this, 'settings'),
 			'static_url' => new Twig_Function_Function('CMF::getStaticUrl'),
+			'pluralize' => new Twig_Function_Function('Inflector::pluralize'),
+			'singularize' => new Twig_Function_Function('Inflector::singularize'),
+			'str_repeat' => new Twig_Function_Function('str_repeat')
 		);
 	}
 	

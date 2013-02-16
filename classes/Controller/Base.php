@@ -121,7 +121,7 @@ class Base extends \Controller
             return call_user_func_array(array($this, $controller_method), $arguments);
         }
         
-        $controller_method = 'action_'.$method;
+        $controller_method = 'action_'.str_replace('-', '_', $method);
         if (method_exists($this, $controller_method))
         {
             return call_user_func_array(array($this, $controller_method), $arguments);

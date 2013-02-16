@@ -15,7 +15,15 @@ return array (
     'auth' => array(
         
         // Use these on top of the defaults: view, edit, create, delete
-        'permissions' => array()
+        'permissions' => array(''),
+        
+        // Additional resources to configure access to
+        'resources' => array(
+            
+            // Whether they are able to log into the admin site
+            'admin_site' => 'Admin Site'
+            
+        )
         
     ),
     

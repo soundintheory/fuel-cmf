@@ -8,6 +8,7 @@ class Multiselect extends \CMF\Field\Base {
         'select2' => array(),
         'transfer' => false,
         'widget' => false,
+        'edit' => true,
         'create' => true,
         'input_attributes' => array(
             'class' => '',
@@ -66,6 +67,12 @@ class Multiselect extends \CMF\Field\Base {
         $settings['icon'] = $target_class::icon();
         $settings['is_select2'] = false;
         
+        // Permissions
+        $settings['can_edit'] = \CMF\Auth::can('edit', $target_class);
+        $settings['can_create'] = \CMF\Auth::can('create', $target_class) && $settings['can_edit'];
+        $settings['create'] = $settings['create'] && $settings['can_create'];
+        $settings['edit'] = $settings['edit'] && $settings['can_edit'];
+        
         if ($settings['transfer'] === true) {
             
             $settings['input_attributes']['class'] .= ' input-xxlarge';
@@ -89,7 +96,7 @@ class Multiselect extends \CMF\Field\Base {
                         '/admin/assets/css/bootstrap-transfer.css'
                     )
                 ),
-                'js_data' => array( 'options' => $transfer_options, 'values' => $values )
+                'js_data' => array( 'options' => $transfer_options, 'values' => $values, 'edit' => $settings['edit'], 'create' => $settings['create'] )
             );
             
         } else if (is_array($settings['select2'])) {
@@ -100,6 +107,10 @@ class Multiselect extends \CMF\Field\Base {
             $content = strval(\View::forge('admin/fields/collection/multiselect.twig', array( 'settings' => $settings, 'options' => $options, 'values' => $values ), false));
             $settings['select2']['placeholder'] = 'click to select a '.strtolower($settings['singular']) . '...';
             $settings['select2']['target_table'] = $target_table;
+            
+            // Permissions
+            $settings['select2']['create'] = $settings['create'];
+            $settings['select2']['edit'] = $settings['edit'];
             
             return array(
                 'content' => $content,

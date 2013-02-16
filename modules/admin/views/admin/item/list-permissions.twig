@@ -1,0 +1,80 @@
+{% extends "admin/shared/interface.twig" %}
+
+{% block html_title %}{{ singular }} permissions : {{ admin_title }}{% endblock %}
+
+{% block main_pane %}
+    
+    {% include 'admin/shared/alert.twig' %}
+    
+    <div class="inner">
+        
+        {% set list_name = is_tree ? 'tree' : 'list' %}
+        <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ singular }} permissions for {{ pluralize(role_name) }}</h2>
+        <div class="actions-top-right">
+            <a href="/admin/{{ table_name }}" class="btn btn-medium btn-inverse btn-permissions" title="{{ singular }} {{ list_name }}"><i class="icon icon-{{ is_tree ? 'sitemap' : 'list' }}"></i> &nbsp;{{ list_name }}</a>
+        </div>
+        <div class="clear"></div>
+        
+        <ul class="nav nav-pills">
+            {% for role in roles %}
+            <li class="{{ role.id == role_id ? 'active' : '' }}"><a href="/admin/{{ table_name }}/permissions/{{ role.id }}">{{ role.name }}</a></li>
+            {% endfor %}
+        </ul>
+
+    	<div class="item-list permissions-list">
+
+            <div class="row-fluid">
+                
+                <table class="table table-striped table-bordered selectable fixed-head table-hover checkbox-matrix">
+                    
+                    <thead>
+                        <tr>
+                            <th class="item-label">{{ singular }}</th>
+                            {% for action in actions %}
+                            <th class="item-action"><label><span>{{ action }}</span> <input type="checkbox" data-action="{{ action }}" class="all-resources" value="1" /></label></th>
+                            {% endfor %}
+                            <th class="item-action"><label><span>all</span> <input type="checkbox" data-action="all" class="all-items" value="1" /></label></th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for row in rows %}
+                        <tr class="item-row" data-item-id="{{ row.id }}">
+                            <td class="item-label">{% if is_tree %}{{ str_repeat(' &#8594;&nbsp; ', row.lvl-1) }}{% endif %}{{ row.display()|default('(no label)')|truncate(60, true) }}</td>
+                            {% for action in actions %}
+                            <td class="item-action">
+                                <input type="hidden" name="{{ row.id }}[{{ action }}]" value="0" />
+                                <label><input type="checkbox" data-action="{{ action }}" name="{{ row.id }}[{{ action }}]" value="1" {% if action in values[row.id] %}checked {% endif %}/></label>
+                            </td>
+                            {% endfor %}
+                            <td class="item-action">
+                                <input type="hidden" name="{{ row.id }}[all]" value="0" />
+                                <label><input type="checkbox" class="all-actions" data-action="all" name="{{ row.id }}[all]" value="1" {% if values[row.id]|length == 0 or 'all' in values[row.id] %}checked {% endif %}/></label>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+        
+            </div> <!-- .row-fluid -->
+        
+        </div> <!-- .item-list -->
+        
+    </div> <!-- .inner -->
+    
+{% endblock %}
+
+{% block bottom %}
+    
+    
+    
+{% endblock %}
+
+{% block breadcrumb %}
+
+<li><a href="/admin">Dashboard</a> <span class="divider">/</span></li>
+<li><a href="/admin/{{ table_name }}">{{ plural }}</a> <span class="divider">/</span></li>
+<li class="active">Permissions</li>
+
+{% endblock %}

@@ -415,7 +415,7 @@
 		
 		$('.redactor').each(function() {
 			
-			$input = $(this),
+			var $input = $(this),
 			name = $(this).attr('name'),
 			settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {};
 			

@@ -95,9 +95,7 @@ class Base extends \Doctrine\Fuel\Model
      * TODO: Actions functionality
      * @var array
      */
-    protected static $_actions = array(
-        
-    );
+    protected static $_actions = array();
     
     /**
      * If a field does not specify a group or is not configured to go before or after another 
@@ -536,6 +534,16 @@ class Base extends \Doctrine\Fuel\Model
         
         \DoctrineFuel::manager()->flush();
         
+    }
+    
+    /**
+     * Gets this model's actions
+     * @return array
+     */
+    public static function actions()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_actions;
     }
     
     /**

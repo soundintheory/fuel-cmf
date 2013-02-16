@@ -65,8 +65,7 @@ class Driver
                 $this->set_user($user[0]);
             }
         }
-
-        //return $this->has_access($role ? $role : $this->config['default_role'], $this->user);
+        
         return $this->has_access($role ? $role : null, $this->user);
     }
 
@@ -84,6 +83,8 @@ class Driver
         $status = !!$user;
 
         if (!empty($role) && $status) {
+            
+            if ($user->super_user) return true;
             $role = (is_array($role) ? $role : array($role));
             $user_roles = $user->get('roles')->toArray();
             
@@ -115,22 +116,63 @@ class Driver
         $status = !!$user;
 
         if ($status) {
+            if ($user->super_user) return true;
+            
             $status   = false;
-            $action   = (is_array($action)    ? $action : array($action));
+            $action   = (is_array($action) ? $action : array($action));
+            $resource_id = ($resource instanceof \Doctrine\Fuel\Model) ? $resource->id : null;
             $resource = (is_object($resource) ? get_class($resource) : $resource);
-            $resource = (is_array($resource)  ? $resource : array($resource));
-
-            foreach ($user->roles as $role) {
-                foreach ($role->permissions as $permission) {
-                    if ((in_array('manage', $action) || in_array($permission->action, $action)) &&
-                        (in_array('all', $resource)  || in_array($permission->resource, $resource)))
-                    {
-                        $status = true;
-                        break;
+            $resource = (is_array($resource) ? $resource : array($resource));
+            $roles = $user->roles;
+            $passed = 0;
+            
+            if ($resource_id !== null) {
+                
+                // The resource is an entity, so check permissions against the id as well
+                foreach ($roles as $role) {
+                    
+                    $role_passed = 0;
+                    $resource_permissions = 0;
+                    foreach ($role->permissions as $permission) {
+                        if ($permission->action == 'all' && in_array($permission->resource, $resource) && $permission->item_id === $resource_id) {
+                            $role_passed = count($action);
+                            break;
+                        }
+                        if ($permission->item_id === $resource_id) {
+                            if (in_array($permission->action, $action) && in_array($permission->resource, $resource)) {
+                                $role_passed++;
+                            }
+                            $resource_permissions++;
+                        }
+                        
                     }
+                    if ($resource_permissions === 0) $role_passed = count($action);
+                    $passed += $role_passed;
+                    
                 }
+                
+            } else {
+                
+                // The resource is just a class name
+                foreach ($roles as $role) {
+                    
+                    $role_passed = 0;
+                    foreach ($role->permissions as $permission) {
+                        if ($permission->action == 'all' && in_array($permission->resource, $resource)) {
+                            $role_passed = count($action);
+                            break;
+                        }
+                        if (in_array($permission->action, $action) && in_array($permission->resource, $resource)) {
+                            $role_passed++;
+                        }
+                    }
+                    $passed += $role_passed;
+                    
+                }
+                
             }
-
+            
+            $status = $passed >= (count($action) * count($resource));
             $status && $this->_run_event('after_authorization');
         }
 

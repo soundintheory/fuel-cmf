@@ -20,6 +20,9 @@ return array(
 	// Routes for actions with models... these are quite dynamic so make sure they stay at the bottom!
 	'admin/(:segment)'                   => 'admin/list/index/$1',
 	'admin/(:segment)/saveall'           => 'admin/list/saveall/$1',
+	'admin/(:segment)/permissions'              => 'admin/list/permissions/$1',
+	'admin/(:segment)/permissions/(:num)'       => 'admin/list/permissions/$1/$2',
+	'admin/(:segment)/permissions/(:num)/save'  => 'admin/list/save_permissions/$1/$2',
 	'admin/(:segment)/populate'          => array(array('POST', new Route('admin/item/populate/$1'))),
 	'admin/(:segment)/list/order'        => 'admin/list/order/$1',
 	'admin/(:segment)/(:num)/populate'   => array(array('POST', new Route('admin/item/populate/$1/$2'))),

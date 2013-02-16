@@ -76,6 +76,10 @@ class Cmf
 	 */
 	public function sync($name = 'default', $type = 'app')
 	{
+		// Make sure there is no models cache
+		$ormcache = \DoctrineFuel::cache();
+		$ormcache->deleteAll();
+		
 		Migrate::_init();
 		
 		$files = glob(APPPATH."migrations/*_*.php");

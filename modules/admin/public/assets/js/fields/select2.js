@@ -69,7 +69,7 @@
 				return matches == terms.length;
 			}
 			
-			if (multiple && typeof(opts.target_table) != 'undefined' && !hasParent) {
+			if (multiple && typeof(opts.target_table) != 'undefined' && !hasParent && opts['edit'] !== false) {
 				
 				opts.formatSelection = function(object, container) {
 					var $item = $('<div></div>').appendTo(container),

@@ -85,7 +85,7 @@
 
     <div class="actions pull-right">
         <button data-loading-text="Saving {{ singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> Save</button>
-        {% if not static %}
+        {% if can_delete %}
         <a href="delete{{ mode == 'inline' ? '?_mode=inline&_cid='~cid : '' }}" class="btn btn-large btn-danger btn-remove padleft" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i> Delete</a>
         {% endif %}
     </div>
