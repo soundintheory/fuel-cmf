@@ -158,6 +158,18 @@ class Node extends Base
         return '/';
     }
     
+    /** inheritdoc */
+    public static function sortable()
+    {
+        return false;
+    }
+    
+    /** inheritdoc */
+    public static function sortGroup()
+    {
+        return null;
+    }
+    
     public function display()
     {
         return strval($this->title);
@@ -201,7 +213,7 @@ class Node extends Base
     protected $is_root = false;
     
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @Assert\NotBlank
      **/
     protected $title;

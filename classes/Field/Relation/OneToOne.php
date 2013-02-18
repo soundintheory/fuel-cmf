@@ -25,7 +25,9 @@ class OneToOne extends \CMF\Field\Base {
             'assets' => $form->assets,
             'content' => $form->getContentFlat(),
             'widget' => isset($settings['widget']) ? $settings['widget'] : true,
-            'widget_icon' => $target_class::icon()
+            'widget_icon' => $target_class::icon(),
+            'merge_data' => true,
+            'js_data' => $form->js_field_settings
         );
         
     }

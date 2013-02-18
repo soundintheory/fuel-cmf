@@ -22,24 +22,24 @@ class Permission extends Base
 	 * @ORM\ManyToMany(targetEntity="\CMF\Model\Role", mappedBy="permissions")
 	 **/
     protected $roles;
-
-	/**
-     * @ORM\Column(type="string", length=20)
+    
+    /**
+     * @ORM\Column(type="integer", nullable=true)
      **/
-    protected $name;
+    protected $item_id;
 
 	/**
-     * @ORM\Column(type="string", length=30)
+     * @ORM\Column(type="string")
      **/
     protected $resource;
 
 	/**
-     * @ORM\Column(type="string", length=30)
+     * @ORM\Column(type="string")
      **/
     protected $action;
 
 	/**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", nullable=true)
      **/
     protected $description;
     

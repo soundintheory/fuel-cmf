@@ -52,7 +52,7 @@ class Page extends Base
     protected $menu_title;
     
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @Assert\NotBlank
      **/
     protected $title;

@@ -8,6 +8,11 @@
     
     <div class="inner">
         <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }}</h2>
+        <div class="actions-top-right">
+            {% if can_manage %}
+            <a href="/admin/{{ table_name }}/permissions" class="btn btn-medium btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="icon icon-lock"></i></a>
+            {% endif %}
+        </div>
         <div class="clear"></div>
         
     	<div id="item-tree">
@@ -19,7 +24,7 @@
         <div class="no-items">
             
             <p>There are no {{ plural|lower }} added yet.</p>
-            {% if not superlock %}
+            {% if can_create %}
             <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
             {% endif %}
         
@@ -39,7 +44,7 @@
             <!-- span>Page rendered in {exec_time}s using {mem_usage}mb of memory.</span -->
         </div>
         
-        {% if not superlock %}
+        {% if can_create %}
         <!-- <div class="actions pull-right">
             <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="icon-plus icon-white"></i> Add New {{ singular }}...</a>
         </div> -->

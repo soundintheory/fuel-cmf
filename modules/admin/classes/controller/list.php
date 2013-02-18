@@ -26,18 +26,33 @@ class Controller_List extends Controller_Base {
 	    		\Response::redirect(\Uri::base(false)."admin/$table_name/create", 'location');
 	    	}
 	    }
+	    
+	    if (!\CMF\Auth::can('view', $class_name)) {
+	    	return $this->show403("You're not allowed to view ".strtolower($class_name::plural())."!");
+	    }
 		
 		// Here's where we catch special types, eg tree nodes. These can now be rendered using a special template
 		if (is_subclass_of($class_name, 'CMF\\Model\\Node')) {
 			return $this->treeView($class_name);
 		}
 		
+		// Get permissions
+		$can_create = \CMF\Auth::can('create', $class_name);
+		$can_edit = \CMF\Auth::can('edit', $class_name);
+		$can_delete = \CMF\Auth::can('delete', $class_name);
+		$can_manage = \CMF\Auth::can(array('view', 'edit'), 'CMF\\Model\\Permission');
+		
 		// Get the data for the list
 		$metadata = $class_name::metadata();
+		$sortable = $class_name::sortable();
+		$sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
+		
+		$excluded_ids = array();
 		$fields = \Admin::getFieldSettings($class_name);
 		$list_fields = $class_name::listFields();
 		if (empty($list_fields)) $list_fields = array_keys($fields);
 		$columns = array();
+		$joins = array();
 		
 		// Create static items
 		\Admin::createStaticInstances($metadata);
@@ -46,7 +61,7 @@ class Controller_List extends Controller_Base {
 		$order = \Session::get($metadata->table['name'].".list.order", $class_name::order());
 		
 		// Start the query builder...
-		$qb = $class_name::select('item');
+		$qb = $class_name::select('item', 'item', 'item.id');
 		
 		// Add any joins to the query builder (prevents the query buildup that comes from accessing lazily loaded associations)
 		foreach ($list_fields as $field) {
@@ -71,8 +86,10 @@ class Controller_List extends Controller_Base {
 			
 			if ($metadata->isSingleValuedAssociation($field)) {
 				$qb->leftJoin('item.'.$field, $field)->addSelect($field);
+				$joins[] = $field;
 			} else if ($metadata->isCollectionValuedAssociation($field)) {
 				$qb->leftJoin('item.'.$field, $field)->addSelect($field);
+				$joins[] = $field;
 			}
 			
 			// Get the field class and type
@@ -80,55 +97,298 @@ class Controller_List extends Controller_Base {
 			$field_type = $field_class::type();
 			$column = array( 'name' => $field, 'type' => $field_type );
 			
-			if (isset($order[$field])) {
+			if (!$sortable) {
 				
-                $dir = strtolower($order[$field]);
-                $rev = ($dir == 'asc') ? 'desc' : 'asc';
-                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
-                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
-                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$field.' '.$verbose ), $fields[$field]['title'].' '.$arrows);
-                
-            } else {
-            	
-                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$field.' ascending' ), $fields[$field]['title']);
-                
-            }
+				if (isset($order[$field])) {
+	                $dir = strtolower($order[$field]);
+	                $rev = ($dir == 'asc') ? 'desc' : 'asc';
+	                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
+	                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
+	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$field.' '.$verbose ), $fields[$field]['title'].' '.$arrows);
+	            } else {
+	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$field.' ascending' ), $fields[$field]['title']);
+	            }
+	            
+	        } else {
+	        	
+	        	$column['heading'] = $fields[$field]['title'];
+	        	
+	        }
             
             $columns[] = $column;
 			
 		}
 		
-		// Add the ordering to the query builder
-		foreach ($order as $field => $direction)
-	    {
-	        if ($metadata->hasAssociation($field)) {
-	            $assoc_class = $metadata->getAssociationTargetClass($field);
-	            $assoc_field = property_exists($assoc_class, 'name') ? 'name' : (property_exists($assoc_class, 'title') ? 'title' : 'id');
-	            $qb->addOrderBy("$field.$assoc_field", $direction);
-	        } else {
-	            $qb->addOrderBy("item.$field", $direction);
-	        }
-	    }
+		// Make the list drag and drop, if editing is possible
+		if ($sortable && $can_edit) {
+			array_unshift($columns, array( 'name' => '', 'type' => 'handle', 'heading' => '' ));
+		}
+		
+		// Add the sortable ordering
+		if ($sortable) {
+			
+			$has_group = !is_null($sort_group) && property_exists($class_name, $sort_group);
+			
+			if ($has_group) {
+				
+				if (!in_array($sort_group, $joins)) {
+					$qb->leftJoin('item.'.$sort_group, $sort_group)->addSelect($sort_group);
+					$joins[] = $sort_group;
+				}
+				
+				if ($metadata->hasAssociation($sort_group)) {
+				    $assoc_class = $metadata->getAssociationTargetClass($sort_group);
+				    $assoc_field = property_exists($assoc_class, 'name') ? 'name' : (property_exists($assoc_class, 'title') ? 'title' : 'id');
+				    $qb->addOrderBy("$sort_group.$assoc_field", 'ASC');
+				} else {
+				    $qb->addOrderBy("item.$sort_group", 'ASC');
+				}
+				
+			}
+			
+			$qb->addOrderBy('item.pos', 'ASC');
+			
+		} else {
+			
+			// Add the ordering to the query builder
+			foreach ($order as $field => $direction)
+		    {
+		        if ($metadata->hasAssociation($field)) {
+		            $assoc_class = $metadata->getAssociationTargetClass($field);
+		            $assoc_field = property_exists($assoc_class, 'name') ? 'name' : (property_exists($assoc_class, 'title') ? 'title' : 'id');
+		            $qb->addOrderBy("$field.$assoc_field", $direction);
+		        } else {
+		            $qb->addOrderBy("item.$field", $direction);
+		        }
+		    }
+			
+		}
 		
 		// TODO: Add filters for paging, list filters, sorting etc.
 		
 		// Get the results and prepare data for the template
+		$rows = $qb->getQuery()->getResult();
+		$ids = array_keys($rows);
+		
+		// Item-specific permissions
+		$user = \CMF\Auth::current_user();
+		$item_permissions = array();
+		
+		if (!$user->super_user) {
+			
+			$permissions = \CMF\Model\Permission::select('item.id, item.action, item.resource, item.item_id')
+		    ->leftJoin('item.roles', 'roles')
+		    ->where("item.resource = '$class_name'")
+		    ->andWhere("item.item_id IN(?1)")
+		    ->andWhere("roles IN (?2)")
+		    ->setParameter(1, $ids)
+		    ->setParameter(2, $user->roles->toArray())
+		    ->getQuery()->getArrayResult();
+		    
+		    foreach ($permissions as $permission) {
+		    	$item_actions = isset($item_permissions[$permission['item_id']]) ? $item_permissions[$permission['item_id']] : array();
+		    	$item_actions[] = $permission['action'];
+		    	$item_permissions[$permission['item_id']] = $item_actions;
+		    }
+		    
+		    foreach ($item_permissions as $item_id => $item_actions) {
+		    	if (in_array('none', $item_actions) || (count($item_actions) > 0 && !in_array('view', $item_actions))) {
+		    		$excluded_ids[] = $item_id;
+		    	}
+		    }
+			
+		}
+		
 		\Admin::$current_class = $this->current_class = $class_name;
 		$this->plural = $class_name::plural();
+		$this->excluded_ids = $excluded_ids;
+		$this->item_permissions = $item_permissions;
 		$this->singular = $class_name::singular();
 		$this->icon = $class_name::icon();
-		$this->rows = $qb->getQuery()->getResult();
+		$this->rows = $rows;
 		$this->columns = $columns;
 		$this->fields = $fields;
 		$this->table_name = $metadata->table['name'];
 		$this->template = 'admin/item/list.twig';
 		$this->superlock = $class_name::superlock();
+		$this->sortable = $sortable && $can_edit;
+		$this->sort_group = $sort_group;
+		
+		// Permissions
+		$this->can_create = $can_create && $can_edit;
+		$this->can_edit = $can_edit;
+		$this->can_delete = $can_delete;
+		$this->can_manage = $can_manage;
 		
 		// Add the stuff for JS
 		$this->js['table_name'] = $metadata->table['name'];
 		$this->js['plural'] = $this->plural;
 		$this->js['singular'] = $this->singular;
 		
+	}
+	
+	public function action_permissions($table_name, $role_id=null)
+	{
+		$class_name = \Admin::getClassForTable($table_name);
+		if ($class_name === false) return $this->show404("Can't find that type!");
+		
+		if ($role_id == null) {
+			$first_role = \CMF\Model\Role::select('item.id')->setMaxResults(1)->getQuery()->getArrayResult();
+			if (count($first_role) > 0) {
+				$role_id = intval($first_role[0]['id']);
+			} else {
+				return $this->show404("There are no roles to manage!");
+			}
+		}
+		
+		$role_check = intval(\CMF\Model\Role::select("COUNT(item.id)")->where("item.id = $role_id")->getQuery()->getSingleScalarResult());
+		if ($role_check === 0) return $this->show404("Can't find that role!");
+		
+		// Redirect straight to the edit page if the item is static
+		if ($class_name::_static() === true) {
+	    	$static_item = $class_name::select('item')->setMaxResults(1)->getQuery()->getResult();
+	    	if (count($static_item) > 0) {
+	    		$static_item = $static_item[0];
+	    		\Response::redirect(\Uri::base(false)."admin/$table_name/".$static_item->id."/edit", 'location');
+	    	} else {
+	    		\Response::redirect(\Uri::base(false)."admin/$table_name/create", 'location');
+	    	}
+	    }
+	    
+	    // Permissions
+	    if (!\CMF\Auth::can(array('view', 'edit'), 'CMF\\Model\\Permission')) {
+	    	return $this->show403("You're not allowed to manage permissions!");
+	    } elseif (!\CMF\Auth::can('view', $class_name)) {
+	    	return $this->show403("You're not allowed to manage permissions for ".strtolower($class_name::plural())."!");
+	    }
+	    
+	    // Get the values for the list
+	    $qb = $class_name::select('item', 'item', 'item.id');
+	    if (is_subclass_of($class_name, 'CMF\\Model\\Node')) {
+	    	$rows = $qb->where('item.is_root != true')->orderBy('item.root, item.lft', 'ASC')->getQuery()->getResult();
+			$this->is_tree = true;
+		} else {
+		    $rows = $qb->getQuery()->getResult();
+		    uasort($rows, function($a, $b) {
+				return strcmp(strtolower($a->display()), strtolower($b->display()));
+			});
+		}
+	    
+	    // Get the permissions associated with this role and these items
+	    $ids = array_keys($rows);
+	    $permissions = \CMF\Model\Permission::select('item')
+	    ->leftJoin('item.roles', 'roles')
+	    ->where("item.resource = '$class_name'")
+	    ->andWhere("item.item_id IN(?1)")
+	    ->andWhere("roles.id = $role_id")
+	    ->setParameter(1, $ids)
+	    ->getQuery()->getArrayResult();
+	    
+	    // Transform the permissions into a form the template can understand
+	    $values = array();
+	    foreach ($permissions as $val) {
+	        $item_id = $val['item_id'];
+	        $action = $val['action'];
+	        $actions = isset($values[$item_id]) ? $values[$item_id] : array();
+	        if (!in_array($action, $actions)) $actions[] = $action;
+	        $values[$item_id] = $actions;
+	    }
+	    
+	    // Get the roles for the menu
+	    $roles = \CMF\Model\Role::select('item', 'item', 'item.id')->getQuery()->getArrayResult();
+	    
+	    // Other data for the list
+	    $all_actions = \CMF\Auth::all_actions();
+	    $this->actions = array_filter(array_merge($all_actions, $class_name::actions()), function($var) {
+	    	return $var != 'create';
+	    });
+	    
+		$this->icon = $class_name::icon();
+		$this->rows = $rows;
+		$this->values = $values;
+		$this->plural = $class_name::plural();
+		$this->singular = $class_name::singular();
+		$this->template = 'admin/item/list-permissions.twig';
+		$this->roles = $roles;
+		$this->role_id = $role_id;
+		$this->role_name = isset($roles[$role_id]) ? $roles[$role_id]['name'] : '';
+		$this->table_name = $table_name;
+		
+		// Add the stuff for JS
+		$this->js['table_name'] = $table_name;
+		$this->js['role_id'] = $role_id;
+	    
+	}
+	
+	public function action_save_permissions($table_name, $role_id)
+	{
+		$class_name = \Admin::getClassForTable($table_name);
+		if ($class_name === false) return $this->show404("Can't find that type!");
+		
+		$post = \Input::post();
+		$ids = array_keys($post);
+		
+		$role = \CMF\Model\Role::select('item')->where('item.id = '.$role_id)->getQuery()->getResult();
+		if (count($role) === 0) {
+			return $this->show404("Can't find that role!");
+		} else {
+			$role = $role[0];
+		}
+		
+		$permissions = \CMF\Model\Permission::select('item')
+	    ->leftJoin('item.roles', 'roles')
+	    ->where("item.resource = '$class_name'")
+	    ->andWhere("item.item_id IN(?1)")
+	    ->andWhere("roles.id = $role_id")
+	    ->setParameter(1, $ids)
+	    ->getQuery()->getResult();
+	    
+	    $em = \DoctrineFuel::manager();
+	    
+	    foreach ($permissions as $permission) {
+	    	$actions = isset($post[$permission->item_id]) ? $post[$permission->item_id] : array();
+	    	if ((array_key_exists('all', $actions) && intval($actions['all']) === 1)) {
+	    		if ($permission->action != 'none') $em->remove($permission);
+	    		$actions = array( 'all' => 1 );
+	    	} elseif ((!array_key_exists($permission->action, $actions) || intval($actions[$permission->action]) === 0)) {
+	    		if ($permission->action != 'none') $em->remove($permission);
+	    	}
+	    	$post[$permission->item_id] = $actions;
+	    }
+	    
+	    foreach ($post as $item_id => $actions) {
+	    	
+	    	$passed = 0;
+	    	foreach ($actions as $action => $action_value) {
+	    		if ($action != 'all' && intval($action_value) === 1) {
+	    			$permission = \CMF\Auth::get_permission($action, $class_name, $item_id);
+	    			$role->add('permissions', $permission);
+	    			$passed++;
+	    		} elseif ($action == 'all' && intval($action_value) === 1) {
+	    			$passed++;
+	    		}
+	    	}
+	    	
+	    	$none_permission = \CMF\Auth::get_permission('none', $class_name, $item_id);
+	    	if ($passed === 0) {
+	    		$role->add('permissions', $none_permission);
+	    	} else {
+	    		$em->remove($none_permission);
+	    	}
+	    	
+	    }
+	    
+	    $result = array( 'success' => true );
+	    
+	    try {
+	    	$em->persist($role);
+	    	$em->flush();
+	    } catch (\Exception $e) {
+	    	$result['success'] = false;
+	    }
+	    
+	    return \Response::forge(json_encode($result), $this->status, $this->headers);
+	    
 	}
 	
 	public function action_saveall($table_name)
@@ -238,12 +498,21 @@ class Controller_List extends Controller_Base {
 		$this->singular = $class_name::singular();
 		$this->icon = $class_name::icon();
 		
+		// Get permissions
+		$can_create = \CMF\Auth::can('create', $class_name);
+		$can_edit = \CMF\Auth::can('edit', $class_name);
+		$can_delete = \CMF\Auth::can('delete', $class_name);
+		$can_manage = \CMF\Auth::can(array('view', 'edit'), 'CMF\\Model\\Permission');
+		
 		$classes = array(
 			$class_name => array(
 				'plural' => $this->plural,
 				'singular' => $this->singular,
 				'icon' => $this->icon,
-				'table_name' => $metadata->table['name']
+				'table_name' => $metadata->table['name'],
+				'can_create' => $can_create && $can_edit,
+				'can_edit' => $can_edit,
+				'can_delete' => $can_delete
 			)
 		);
 		
@@ -257,13 +526,49 @@ class Controller_List extends Controller_Base {
 				'plural' => $sub_class::plural(),
 				'singular' => $sub_class::singular(),
 				'icon' => $sub_class::icon(),
-				'table_name' => $subclass_metadata->table['name']
+				'table_name' => $subclass_metadata->table['name'],
+				'can_create' => \CMF\Auth::can('create', $sub_class),
+				'can_edit' => \CMF\Auth::can('edit', $sub_class),
+				'can_delete' => \CMF\Auth::can('delete', $sub_class),
 			);
 			
 		}
 		
+		// Item-specific permissions
+		$user = \CMF\Auth::current_user();
+		$item_permissions = array();
+		$ids = array();
+		$excluded_ids = array();
+		
 		$root_node = $class_name::getRootNode(true);
-		$tree = $this->processTreeNodes(\DoctrineFuel::manager()->getRepository($class_name)->childrenHierarchy($root_node), $metadata);
+		$tree = $this->processTreeNodes(\DoctrineFuel::manager()->getRepository($class_name)->childrenHierarchy($root_node), $metadata, $ids);
+		
+		if (!$user->super_user) {
+			
+			$permissions = \CMF\Model\Permission::select('item.id, item.action, item.resource, item.item_id')
+		    ->leftJoin('item.roles', 'roles')
+		    ->where("item.resource = '$class_name'")
+		    ->andWhere("item.item_id IN(?1)")
+		    ->andWhere("roles IN (?2)")
+		    ->setParameter(1, $ids)
+		    ->setParameter(2, $user->roles->toArray())
+		    ->getQuery()->getArrayResult();
+		    
+		    foreach ($permissions as $permission) {
+		    	$item_actions = isset($item_permissions[$permission['item_id']]) ? $item_permissions[$permission['item_id']] : array();
+		    	$item_actions[] = $permission['action'];
+		    	$item_permissions[$permission['item_id']] = $item_actions;
+		    }
+		    
+		    foreach ($item_permissions as $item_id => $item_actions) {
+		    	if (in_array('none', $item_actions) || (count($item_actions) > 0 && !in_array('view', $item_actions))) {
+		    		$excluded_ids[] = $item_id;
+		    	}
+		    }
+		    
+			$tree = $this->filterTreeNodes($tree, $excluded_ids);
+			
+		}
 		
 		// Add more context for the template
 		$this->table_name = $metadata->table['name'];
@@ -271,18 +576,49 @@ class Controller_List extends Controller_Base {
 		$this->superlock = $class_name::superlock();
 		$this->num_nodes = count($tree);
 		
+		// Permissions
+		$this->can_create = $can_create && $can_edit;
+		$this->can_edit = $can_edit;
+		$this->can_delete = $can_delete;
+		$this->can_manage = $can_manage;
+		
 		// Add the stuff for JS
 		$this->js['tree'] = $tree;
+		$this->js['item_permissions'] = $item_permissions;
+		$this->js['excluded_ids'] = $excluded_ids;
 		$this->js['classes'] = $classes;
 		$this->js['table_name'] = $metadata->table['name'];
 		$this->js['plural'] = $this->plural;
 		$this->js['singular'] = $this->singular;
+		
+		// Permissions for JS
+		$this->js['can_create'] = $can_create && $can_edit;
+		$this->js['can_edit'] = $can_edit;
+		$this->js['can_delete'] = $can_delete;
+		$this->js['can_manage'] = $can_manage;
+		
+	}
+	
+	protected function filterTreeNodes($nodes, $excluded_ids)
+	{
+		$nodes = array_filter($nodes, function($var) use($excluded_ids) {
+			return !in_array($var['id'], $excluded_ids);
+		});
+		$nodes = array_values($nodes);
+		
+		foreach ($nodes as &$node) {
+			if (isset($node['children']) && count($node['children']) > 0) {
+				$node['children'] = $this->filterTreeNodes($node['children'], $excluded_ids);
+			}
+		}
+		
+		return $nodes;
 	}
 	
 	/**
 	 * Recursive madness
 	 */
-	protected function processTreeNodes($nodes, &$metadata)
+	protected function processTreeNodes($nodes, &$metadata, &$ids)
 	{
 		$num = count($nodes);
 		for ($i=0; $i < $num; $i++) { 
@@ -292,9 +628,10 @@ class Controller_List extends Controller_Base {
 			$disc_val = isset($node[$disc_name]) ? $node[$disc_name] : '';
 			$node['label'] = $node['title'];
 			$node['class'] = isset($metadata->discriminatorMap[$disc_val]) ? $metadata->discriminatorMap[$disc_val] : $metadata->name;
+			$ids[] = $node['id'];
 			
 			if (isset($node['__children'])) {
-				$children = $this->processTreeNodes($node['__children'], $metadata);
+				$children = $this->processTreeNodes($node['__children'], $metadata, &$ids);
 				unset($node['__children']);
 				$node['children'] = $children;
 			}

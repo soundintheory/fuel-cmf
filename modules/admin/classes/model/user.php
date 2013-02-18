@@ -19,7 +19,8 @@ class Model_User extends \CMF\Model\User
 	
     protected static $_list_fields = array(
         'username',
-        'email'
+        'email',
+        'roles'
     );
     
     protected static $_icon = 'user';

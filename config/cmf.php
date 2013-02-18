@@ -15,7 +15,15 @@ return array (
     'auth' => array(
         
         // Use these on top of the defaults: view, edit, create, delete
-        'permissions' => array()
+        'permissions' => array(''),
+        
+        // Additional resources to configure access to
+        'resources' => array(
+            
+            // Whether they are able to log into the admin site
+            'admin_site' => 'Admin Site'
+            
+        )
         
     ),
     
@@ -23,9 +31,9 @@ return array (
     'fields_types' => array(
         
         'string' => 'CMF\\Field\\Base',
-        'integer' => 'CMF\\Field\\Base',
-        'smallint' => 'CMF\\Field\\Base',
-        'bigint' => 'CMF\\Field\\Base',
+        'integer' => 'CMF\\Field\\Integer',
+        'smallint' => 'CMF\\Field\\Integer',
+        'bigint' => 'CMF\\Field\\Integer',
         'boolean' => 'CMF\\Field\\Checkbox',
         'decimal' => 'CMF\\Field\\Base',
         'datetime' => 'CMF\\Field\\DateTime',
@@ -35,7 +43,7 @@ return array (
         'richtext' => 'CMF\\Field\\Redactor',
         'object' => 'CMF\\Field\\Object\\Object',
         'array' => 'CMF\\Field\\Object\\ArrayField',
-        'float' => 'CMF\\Field\\Text',
+        'float' => 'CMF\\Field\\Base',
         'binary' => 'CMF\\Field\\ReadOnly',
         'password' => 'CMF\\Field\\Password',
         'none' => 'CMF\\Field\\None',

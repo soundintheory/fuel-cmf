@@ -39,5 +39,5 @@ class Role extends Base
 	/**
      * @ORM\ManyToMany(targetEntity="\CMF\Model\Permission", inversedBy="roles")
      **/
-    protected $permissions;
+    protected $permissions;    
 }

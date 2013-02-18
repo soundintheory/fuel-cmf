@@ -11,6 +11,7 @@ class ModelForm
 	public $js_field_settings = array();
 	public $fields;
 	public $field_keys;
+	public $table_name;
 	
 	// For internal workings
 	protected $tabs;
@@ -25,6 +26,7 @@ class ModelForm
 	public function __construct($metadata, $model, $prefix = '', $prepopulate = array(), $exclude = array())
 	{
 		$class_name = $metadata->name;
+		$this->table_name = $metadata->table['name'];
 		$this->prepopulate = \Arr::merge(\Input::get(), $prepopulate);
 		$this->exclude = $exclude;
 		
@@ -127,7 +129,7 @@ class ModelForm
 			if ($hidden) {
 				$field['visible'] = $this->fields[$field_name]['visible'] = false;
 				if ($prepopulated) {
-					$this->hidden_fields[$field_name] = \Form::hidden($field['mapping']['fieldName'], $this->prepopulate[$field_name]);
+					$this->hidden_fields[$field_name] = \Form::hidden($field['mapping']['fieldName'], $this->prepopulate[$field_name], array( 'data-field-name' => $field_name ));
 				}
 			}
 			
@@ -144,7 +146,6 @@ class ModelForm
 			
 			// If the result is an array, merge the assets into this form's and set the field to be a widget unless told otherwise
 			if (is_array($field_content)) {
-				
 				
 				if (isset($field_content['js_data'])) {
 					$merge = isset($field_content['merge_data']) && $field_content['merge_data'] === true;
@@ -348,7 +349,8 @@ class ModelForm
 		
 		foreach ($this->hidden_fields as $field_name => $hidden_field) {
 			
-			$hidden_fields[$field_name] = \Form::hidden($fields[$field_name]['mapping']['fieldName'], $this->prepopulate[$field_name]);
+			$hidden_field_name = ($has_prefix) ? $prefix.'['.$field_name.']' : $field_name;
+			$hidden_fields[$field_name] = \Form::hidden($hidden_field_name, $this->prepopulate[$field_name], array( 'data-field-name' => $field_name ));
 			
 		}
 		

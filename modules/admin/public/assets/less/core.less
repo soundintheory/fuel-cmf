@@ -54,6 +54,10 @@ body.chromeless {
 	padding: 20px 20px 0 20px;
 }
 
+body.sorting {
+	overflow-x: hidden;
+}
+
 #main {
 	position: relative; z-index: 1;
 	float: left;
@@ -190,6 +194,12 @@ body.chromeless {
 		position: absolute; top: 12px; left: 9px;
 	}
 	
+}
+
+.actions-top-right {
+	position: absolute; top: 3px; right: 0px;
+	text-align: right;
+	width: 50%;
 }
 
 #controls-fixed-bot {
@@ -515,6 +525,10 @@ hr {
 #login-container {
 	width: 425px;
 	margin: 120px auto 0;
+	
+	.alert {
+		margin-bottom: 1em;
+	}
 }
 
 #login-content {
@@ -638,6 +652,75 @@ div.no-items {
 	
 }
 */
+
+/******************************** PERMISSIONS LIST ********************************/
+
+.table.checkbox-matrix {
+	
+	.item-label {
+		vertical-align: middle;
+		padding-left: 14px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	
+	.item-icon {
+		margin-right: 10px;
+	}
+	
+	.item-action {
+		width: 42px;
+		text-align: center;
+	}
+	
+	td.item-action {
+		padding: 0;
+		
+		label {
+			padding: 4px 5px;
+			display: block;
+			cursor: pointer;
+		}
+	}
+	
+	th.item-action {
+		padding: 0;
+		vertical-align: middle;
+		
+		label {
+			padding-top: 4px;
+			padding-bottom: 4px;
+			display: block;
+			cursor: pointer;
+		}
+		
+		span {
+			display: block;
+			font-size: 12px;
+			font-weight: bold;
+		}
+		
+		input {
+			margin: 0;
+		}
+	}
+	
+	th {
+		border-top: none;
+	}
+	
+	.control-group {
+		margin: 0;
+	}
+	
+	.row-divider, th.item-label {
+		font-weight: bold;
+		font-size: 13px;
+		padding: 2px 0 2px 14px;
+	}
+	
+}
 
 /******************************** TREE LIST ********************************/
 
@@ -923,6 +1006,11 @@ span.jqtree-dragging {
 		padding-left: 0px;
 		padding-right: 0px;
 		font-size: 16px;
+		color: #999;
+	}
+	
+	td.handle:hover, th.handle:hover {
+		color: #000;
 	}
 	
 }

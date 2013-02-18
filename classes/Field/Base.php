@@ -48,8 +48,10 @@ class Base {
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
+        if (!isset($input_attributes['id'])) $input_attributes['id'] = 'form_'.$settings['mapping']['fieldName'];
         $attributes = array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') );
-        $input = \Form::input($settings['mapping']['fieldName'], strval($value), $input_attributes);
+        $input = '<input type="text" name="'.$settings['mapping']['fieldName'].'" '.array_to_attr($input_attributes).' value="'.strval($value).'" />';
+        //$input = \Form::input($settings['mapping']['fieldName'], strval($value), $input_attributes);
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         
         // Prepend or append things...
@@ -73,7 +75,7 @@ class Base {
             $label .= $auto_update;
             
             return array(
-                'content' => html_tag('div', $attributes, $label.$input).html_tag('div', array( 'class' => 'clear' ), ' '),
+                'content' => html_tag('div', $attributes, $label.$input).'<div class="clear"><!-- --></div>',
                 'widget' => false,
                 'assets' => array( 'js' => array('/admin/assets/js/twig.min.js', '/admin/assets/js/fields/template.js') ),
                 'js_data' => $settings

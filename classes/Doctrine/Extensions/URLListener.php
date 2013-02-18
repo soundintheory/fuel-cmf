@@ -161,8 +161,8 @@ class URLListener implements EventSubscriber
                     }
                 }
             }
-            
     	}
+        
     }
     
     protected function processNew(&$entity, &$em, &$uow)

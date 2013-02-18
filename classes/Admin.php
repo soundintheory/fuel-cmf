@@ -241,6 +241,8 @@ class Admin
 			} else if (isset($item['model'])) {
 				
 				$class_name = $item['model'];
+				if (!\CMF\Auth::can('view', $class_name)) continue;
+				
 				$metadata = $class_name::metadata();
 				$output[$current_group]['items'][] = array(
 					'icon' => $class_name::icon(),

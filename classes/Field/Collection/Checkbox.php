@@ -4,6 +4,26 @@ namespace CMF\Field\Collection;
 
 class Checkbox extends Multiselect {
     
+    /** inheritdoc */
+    public static function displayList($value, $edit_link, &$settings, &$model)
+    {
+        $target_class = $settings['mapping']['targetEntity'];
+        $target_table = \Admin::getTableForClass($target_class);
+        
+        if ($value instanceof \Doctrine\Common\Collections\Collection && count($value) > 0) {
+            
+            $values = $value->toArray();
+            $output = '';
+            foreach ($values as $val) {
+                $output .= \Html::anchor("/admin/$target_table/".$val->id."/edit", $val->display()).', ';
+            }
+            return rtrim($output, ', ');
+            
+        } else {
+            return '-';
+        }
+    }
+    
     /** @inheritdoc */
     public static function displayForm($value, &$settings, $model)
     {

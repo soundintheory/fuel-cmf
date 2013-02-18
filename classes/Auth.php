@@ -15,7 +15,9 @@ use PasswordHash,
  */
 class Auth
 {
-    public static $default_actions = array('view', 'edit', 'create', 'delete');
+    protected static $_default_actions = array('view', 'edit', 'create', 'delete');
+    protected static $_all_actions = null;
+    protected static $_extra_resources = null;
     
     /**
      * The driver used. Override the default driver and set it via the 'cmf.auth.driver'
@@ -540,6 +542,143 @@ class Auth
 	        array('p', 'q', 'r', 's', 'x', 'y', 'z'), 
 	        base64_encode($token)
 		);
+    }
+    
+    /**
+     * Gets just the core actions that are hard-coded into the system (view,edit,create,delete)
+     * @return array
+     */
+    public static function default_actions()
+    {
+        return static::$_default_actions;
+    }
+    
+    /**
+     * Gets all the possible actions, including ones defined in custom resources
+     * @return array
+     */
+    public static function all_actions()
+    {
+        static::extra_resources();
+        return static::$_all_actions;
+    }
+    
+    /**
+     * Get the extra resources defined in the config
+     * @return array
+     */
+    public static function extra_resources()
+    {
+        if (!is_null(static::$_extra_resources)) return static::$_extra_resources;
+        
+        $all_actions = static::$_default_actions;
+        $extra_resources = \Config::get('cmf.auth.resources', array());
+        $output = array();
+        
+        foreach ($extra_resources as $resource_id => $extra_resource) {
+            
+            if (is_string($extra_resource)) {
+                $new_resource = array(
+                    'title' => $extra_resource,
+                    'icon' => 'lock',
+                    'actions' => array('view')
+                );
+            } else {
+                $new_resource = $extra_resource;
+                if (!isset($new_resource['actions'])) $new_resource['actions'] = array('view');
+                if (!isset($new_resource['icon'])) $new_resource['icon'] = 'lock';
+                if (!isset($new_resource['title'])) $new_resource['title'] = 'untitled';
+            }
+            
+            // Add any extra actions to all_actions
+            foreach ($new_resource['actions'] as $resource_action) {
+                if (!in_array($resource_action, $all_actions)) $all_actions[] = $resource_action;
+            }
+            
+            // Append the resource to the output
+            $output[$resource_id] = $new_resource;
+            
+        }
+        
+        static::$_all_actions = $all_actions;
+        return static::$_extra_resources = $output;
+        
+    }
+    
+    /**
+     * Attempts to retrieve a permission and creates it if not found
+     * @param string $action
+     * @param string $resource
+     * @return \CMF\Model\Permission
+     */
+    public static function get_permission($action, $resource, $item_id=null)
+    {
+        $qb = Permission::select("item")
+        ->where("item.action = '$action'")
+        ->andWhere("item.resource = '$resource'");
+        
+        if ($item_id !== null) {
+            $qb->andWhere("item.item_id = ".$item_id);
+        }
+        
+        $permission = $qb->setMaxResults(1)->getQuery()->getResult();
+        
+        if (count($permission) === 0) {
+            $em = \DoctrineFuel::manager();
+            $permission = new Permission();
+            $permission->set('action', $action);
+            $permission->set('resource', $resource);
+            if ($item_id !== null) { $permission->set('item_id', $item_id); }
+            $em->persist($permission);
+            return $permission;
+        }
+        
+        return $permission[0];
+    }
+    
+    /**
+     * Ensures that there is at least an 'all' permission set for every resource
+     * @return void
+     */
+    public static function create_permissions()
+    {
+        $actions = static::all_actions();
+        $actions[] = 'all';
+        $activeClasses = \CMF\Admin::activeClasses();
+        $activeClasses['user_defined'] = array_keys(\Config::get('cmf.auth.resources', array()));
+        
+        $roles = Role::select('item')->getQuery()->getResult();
+        $em = \DoctrineFuel::manager();
+        
+        foreach ($activeClasses as $parent_class => $classes) {
+            
+            foreach ($classes as $class_name) {
+                
+                $count = intval(Permission::select("count(item)")
+                ->where("item.resource = '$class_name'")
+                ->andWhere("item.action = 'all'")
+                ->getQuery()->getSingleScalarResult());
+                
+                if ($count == 0) {
+                    
+                    $permission = new Permission();
+                    $permission->set('action', 'all');
+                    $permission->set('resource', $class_name);
+                    $em->persist($permission);
+                    
+                    foreach ($roles as $role) {
+                        $role->add('permissions', $permission);
+                        $em->persist($role);
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+        $em->flush();
+        
     }
 
     /**

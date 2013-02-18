@@ -8,38 +8,51 @@
     
     <div class="inner">
         
-        <h2 class="main-heading"><i class="icon-{{ icon }}"></i> Listing {{ rows|length }} {{ rows|length != 1 ? plural : singular }}</h2>
+        <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }} ({{ rows|length }})</h2>
+        <div class="actions-top-right">
+            {% if can_manage %}
+            <a href="/admin/{{ table_name }}/permissions" class="btn btn-medium btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="icon icon-lock"></i></a>
+            {% endif %}
+        </div>
         <div class="clear"></div>
 
     	<div class="item-list">
 
             <div class="row-fluid">
         
-                <table class="table table-striped table-bordered selectable sortable fixed-head table-hover">
+                <table class="table table-striped table-bordered selectable fixed-head table-hover{{ sortable ? ' sortable' : '' }}">
                     
                     <thead>
                         <tr>
                             {% for column in columns %}
+                            {% if column.type == 'handle' %}
+                            <th class="handle"></th>
+                            {% else %}
                             <th class="col-type-{{ column.type }}">{{ column.heading|default('-') }}</th>
+                            {% endif %}
                             {% endfor %}
                             <th class="actions"></th>
                         </tr>
                     </thead>
                     
                     <tbody>
-                        {% for row in rows %}
-                        <tr>
+                        {% for row in rows if row.id not in excluded_ids %}
+                        <tr data-id="{{ row.id }}"{% if sortable %} data-sort-group="{{ row.sortGroupId() }}"{% endif %}>
+                            {% set editable = can_edit and (item_permissions[row.id]|length == 0 or 'edit' in item_permissions[row.id]) %}
+                            {% set deletable = can_delete and (item_permissions[row.id]|length == 0 or 'delete' in item_permissions[row.id]) %}
                             {% set edit_link = "/admin/"~table_name~"/"~row.get('id')~"/edit" %}
                             {% for column in columns %}
-                                {% if column.type == 'method' %}
-                                <td class="col-type-{{ column.type }}"><a href="{{ edit_link }}">{{ row.get(column.name) }}</a></td>
+                                {% if column.type == 'handle' %}
+                                <td class="handle"><i class="icon-move"></i></td>
+                                {% elseif column.type == 'method' %}
+                                <td class="col-type-{{ column.type }}"><a href="{{ editable ? edit_link : '' }}">{{ row.get(column.name) }}</a></td>
                                 {% else %}
-                                <td class="col-type-{{ column.type }}">{{ field_list_value(row.get(column.name), edit_link, fields[column.name], row)|default('(empty)') }}</td>
+                                <td class="col-type-{{ column.type }}">{{ field_list_value(row.get(column.name), editable ? edit_link : false, fields[column.name], row)|default('(empty)') }}</td>
                                 {% endif %}
                             {% endfor %}
                             <td class="actions"><span>
-                                <a class="btn btn-small" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
-                                {% if not superlock %}<a class="btn btn-small btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i></a>{% endif %}
+                                {% if editable %}<a class="btn btn-small" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a>{% endif %} 
+                                {% if deletable %}<a class="btn btn-small btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i></a>{% endif %}
                             </span></td>
                             
                         </tr>
@@ -48,7 +61,7 @@
                             <td class="no-items" colspan="{{ columns|length + 1 }}">
                                 
                                 <p>There are no {{ plural|lower }} added yet.</p>
-                                {% if not superlock %}
+                                {% if can_create %}
                                 <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
                                 {% endif %}
                             
@@ -94,7 +107,7 @@
             <a href="/admin/{{ table_name }}/saveall" class="btn btn-large btn-info">Save All</a>
         {% endif %}
         
-        {% if not superlock %}
+        {% if can_create %}
         <div class="actions pull-right">
             <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="icon-plus icon-white"></i> Add New {{ singular }}...</a>
         </div>

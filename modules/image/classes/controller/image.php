@@ -170,6 +170,7 @@ class Controller_Image extends \Controller {
                       'Last-Modified' => gmdate('D, d M Y H:i:s', $file_last_modified).' GMT',
                       'Content-Disposition' => 'inline; filename='.$this->filename,
                       'Content-Type' => $mime_type);
+		$body = '';
 		
 		// Return 304 not modified if the file hasn't changed
 		if ($header_modified_since >= $file_last_modified) {

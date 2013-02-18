@@ -38,7 +38,7 @@
 			
 			// So the iframe can call this field on save...
 			window[cid] = { 'onSave':onSave };
-			console.log(hasParent);
+			
 			if ($addBut.length > 0 && !hasParent) {
 				
 				$addBut.fancybox(fancyBoxOpts);
@@ -69,7 +69,7 @@
 				return matches == terms.length;
 			}
 			
-			if (multiple && typeof(opts.target_table) != 'undefined' && !hasParent) {
+			if (multiple && typeof(opts.target_table) != 'undefined' && !hasParent && opts['edit'] !== false) {
 				
 				opts.formatSelection = function(object, container) {
 					var $item = $('<div></div>').appendTo(container),

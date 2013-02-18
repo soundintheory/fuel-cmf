@@ -13,7 +13,7 @@ class Controller_Base extends \Controller {
 	
 	public function before() {
 		
-		if (!\CMF\Auth::check('admin')) {
+		if (!\CMF\Auth::check(null, 'view', 'admin_site')) {
             \Response::redirect(\Uri::base(false)."admin/login?next=".\Uri::string(), 'location');
         }
         
@@ -79,6 +79,14 @@ class Controller_Base extends \Controller {
     {
         $this->template = 'admin/errors/404.twig';
         $this->status = 404;
+        $this->data = array( 'msg' => $msg );
+        return;
+    }
+    
+    protected function show403($msg)
+    {
+        $this->template = 'admin/errors/403.twig';
+        $this->status = 403;
         $this->data = array( 'msg' => $msg );
         return;
     }

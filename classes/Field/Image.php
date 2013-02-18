@@ -5,7 +5,8 @@ namespace CMF\Field;
 class Image extends File {
     
     protected static $defaults = array(
-        'thumb_size' => array( 'width' => 80, 'height' => 50 ),
+        'crop' => true,
+        'thumb_size' => array( 'width' => 120, 'height' => 80 ),
         'path' => 'uploads/images/'
     );
 	
@@ -14,7 +15,11 @@ class Image extends File {
     {
         return array(
             'js' => array(
+                '/admin/assets/fineuploader/jquery.fineuploader-3.2.js',
                 '/admin/assets/js/fields/image.js'
+            ),
+            'css' => array(
+                //'/admin/assets/fineuploader/fineuploader-3.2.css'
             )
         );
     }
@@ -22,9 +27,9 @@ class Image extends File {
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
         if (isset($value)) {
-            return \Html::anchor($edit_link, \Html::img('/image/2/50/50/'.$value, array()));
+            return \Html::anchor($edit_link, \Html::img('/image/2/50/50/'.(!empty($value) ? $value : 'placeholder.png'), array()));
         }
-        return '-';
+        return \Html::anchor($edit_link, \Html::img('/image/2/50/50/placeholder.png'), array());
     }
     
     /** @inheritdoc */
@@ -37,12 +42,18 @@ class Image extends File {
         $settings['has_errors'] = count($settings['errors']) > 0;
         $preview_value = (isset($value) && !empty($value)) ? str_replace($settings['path'], '', $value) : '';
         
-        $attributes = array( 'class' => 'field-type-image controls control-group'.($settings['has_errors'] ? ' error' : '') );
+        $attributes = array( 'class' => 'field-type-file controls control-group'.($settings['has_errors'] ? ' error' : '') );
         $content = strval(\View::forge('admin/fields/image.twig', array( 'settings' => $settings, 'value' => $value, 'preview_value' => $preview_value ), false));
         
-        if (isset($settings['wrap']) && $settings['wrap'] === false) return $content;
+        if (!(isset($settings['wrap']) && $settings['wrap'] === false)) $content = html_tag('div', $attributes, $content);
         
-        return html_tag('div', $attributes, $content);
+        return array(
+            'content' => $content,
+            'widget' => false,
+            'assets' => array(),
+            'js_data' => $settings
+        );
+        
     }
 	
 }

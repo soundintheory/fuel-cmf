@@ -45,6 +45,12 @@ class Base extends \Doctrine\Fuel\Model
     protected $visible = true;
     
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @var int
+     **/
+    protected $pos = 0;
+    
+    /**
      * Associative array containing settings for all the model's fields - tells the
      * admin module how to display the edit form.
      * 
@@ -57,7 +63,8 @@ class Base extends \Doctrine\Fuel\Model
     	'created_at' => array( 'readonly' => true, 'visible' => false ),
     	'updated_at' => array( 'readonly' => true, 'visible' => false ),
         'visible' => array( 'visible' => false ),
-        'settings' => array( 'visible' => false )
+        'settings' => array( 'visible' => false ),
+        'pos' => array( 'visible' => false )
     );
     
     /**
@@ -88,9 +95,7 @@ class Base extends \Doctrine\Fuel\Model
      * TODO: Actions functionality
      * @var array
      */
-    protected static $_actions = array(
-        
-    );
+    protected static $_actions = array();
     
     /**
      * If a field does not specify a group or is not configured to go before or after another 
@@ -129,6 +134,20 @@ class Base extends \Doctrine\Fuel\Model
      * @var string
      */
     protected static $_singular = null;
+    
+    /**
+     * Whether the model is sortable in the admin interface. Uses the $pos property.
+     * @see \CMF\Model\Base::sortable()
+     * @var string
+     */
+    protected static $_sortable = false;
+    
+    /**
+     * A field to group by when sorting
+     * @see \CMF\Model\Base::sortGroup()
+     * @var string
+     */
+    protected static $_sort_group = null;
     
     /**
      * Whether the model if static. Static means there will only ever be one record,
@@ -256,7 +275,7 @@ class Base extends \Doctrine\Fuel\Model
      * @see \CMF\Field\Base::process()
      * @inheritdoc
      */
-    public function populate($data)
+    public function populate($data, $overwrite=true)
     {
         $class_name = get_class($this);
         $fields = \Admin::getFieldSettings($class_name);
@@ -271,7 +290,7 @@ class Base extends \Doctrine\Fuel\Model
             
         }
         
-        parent::populate($data);
+        parent::populate($data, $overwrite);
         
     }
     
@@ -360,6 +379,51 @@ class Base extends \Doctrine\Fuel\Model
     {
         $called_class = get_called_class();
         return $called_class::$_slug_fields;
+    }
+    
+    /**
+     * @see \CMF\Model\Base::$_sortable
+     * @return array
+     */
+    public static function sortable()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_sortable;
+    }
+    
+    /**
+     * @see \CMF\Model\Base::$_sort_group
+     * @return array
+     */
+    public static function sortGroup()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_sort_group;
+    }
+    
+    public function sortGroupId($value=null)
+    {
+        if (is_null($value)) {
+            $sort_group = static::sortGroup();
+            if (is_null($sort_group) || !property_exists($this, $sort_group)) return '__ungrouped__';
+            $value = $this->get($sort_group);
+        }
+        
+        $identifier = $value;
+        
+        // If the group is an object or array, get a string identifier
+        if($value instanceof \DateTime) {
+            $identifier = $value->format('c');
+        } elseif ($value instanceof \Doctrine\Fuel\Model) {
+            $identifier = !is_null($value->id) ? $value->id : 'newitem';
+        } elseif (is_array($value)) {
+            $identifier = serialize($value);
+        } elseif (is_object($value)) {
+            $identifier = get_class($value).spl_object_hash($value);
+        }
+        
+        // Force it to be a string
+        return strval($identifier);
     }
     
     /**
@@ -470,6 +534,16 @@ class Base extends \Doctrine\Fuel\Model
         
         \DoctrineFuel::manager()->flush();
         
+    }
+    
+    /**
+     * Gets this model's actions
+     * @return array
+     */
+    public static function actions()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_actions;
     }
     
     /**
