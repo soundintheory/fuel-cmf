@@ -8,8 +8,11 @@ class Multiselect extends \CMF\Field\Base {
         'select2' => array(),
         'transfer' => false,
         'widget' => false,
+<<<<<<< HEAD
         'edit' => true,
         'create' => true,
+=======
+>>>>>>> parent of 1744f77... fixes #25
         'input_attributes' => array(
             'class' => '',
             'multiple' => 'multiple',

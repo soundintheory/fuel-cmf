@@ -8,8 +8,11 @@ class ManyToOne extends \CMF\Field\Base {
         'select2' => array(
             'allowClear' => false
         ),
+<<<<<<< HEAD
         'create' => true,
         'edit' => true,
+=======
+>>>>>>> parent of 1744f77... fixes #25
         'input_attributes' => array(
             'class' => ''
         )
@@ -56,6 +59,7 @@ class ManyToOne extends \CMF\Field\Base {
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         
         $add_link = html_tag('a', array( 'href' => $add_link, 'class' => 'btn btn-mini btn-add' ), '<i class="icon icon-plus"></i> &nbsp;create '.strtolower($target_class::singular()));
+<<<<<<< HEAD
         
         // Permissions
         $settings['can_edit'] = \CMF\Auth::can('edit', $target_class);
@@ -67,6 +71,8 @@ class ManyToOne extends \CMF\Field\Base {
             $add_link = " ";
         }
         
+=======
+>>>>>>> parent of 1744f77... fixes #25
         $controls_top = html_tag('div', array( 'class' => 'controls-top' ), $add_link);
         
         if (is_array($settings['select2'])) {
