@@ -290,7 +290,7 @@ class Driver
         }
 
         // Double check
-        return !$this->logged_in(null);
+        return !$this->logged_in(null, $type);
     }
 
     /**

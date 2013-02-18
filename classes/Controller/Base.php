@@ -34,7 +34,6 @@ class Base extends \Controller
 	{
 	    // Will try to find the model based on the URL
 	    $model = \CMF::currentModel();
-	    
 	    // Return the normal 404 error if not found
 	    if (is_null($model)) {
 	        return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);

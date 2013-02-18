@@ -601,6 +601,9 @@ class Base extends \Doctrine\Fuel\Model
      */
     public function display()
     {
+        if(isset($this->name))
+            return strval($this->name);
+
         return strval($this->id);
     }
     
