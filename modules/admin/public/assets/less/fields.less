@@ -416,15 +416,6 @@
 .field-type-file,
 .table td .field-type-file {
 	
-	.file-preview {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		margin-bottom: 6px;
-		line-height: 22px;
-		font-size: 13px;
-	}
-	
 	.progress {
 		min-width: 110px;
 		position: relative;
@@ -515,6 +506,40 @@
 		}
 	}
 	
+	.file-preview {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		margin-bottom: 6px;
+		line-height: 22px;
+		font-size: 13px;
+		
+		div {
+			line-height: 0px;
+		}
+		
+		a.thumbnail {
+			display: inline-block;
+			margin: 0;
+			position: relative;
+		}
+		
+		.hover-icon {
+			position: absolute; top: 4px; right: 4px;
+			background: rgba(0,0,0,0.5);
+			width: 24px; height: 24px;
+			line-height: 24px;
+			font-size: 13px;
+			text-align: center;
+			color: #FFF;
+			display: none;
+		}
+		
+		a.thumbnail:hover .hover-icon {
+			display: block;
+		}
+	}
+	
 }
 
 td.col-type-image,
@@ -524,14 +549,106 @@ td.col-type-image-object {
 	width: 0px;
 }
 
-.field-type-image {
+.image-modal {
+	margin: -270px 0 0 -450px;
+	width: 900px;
 	
-	.thumbnail {
-		background: #FFF;
+	&.fade {
+		top: 40%;
+	}
+	
+	.right-col {
+		width: 575px;
+		float: right; display: inline;
+	}
+	
+	.left-col .alert {
+		margin: 0 0 4px 0;
+	}
+	
+	.modal-header {
+		border: none;
+		padding: 15px 15px;
 		
-		img {
-			display: block;
+		.nav-pills {
+			margin: 0;
 		}
+		
+		.nav-pills li {
+			margin: 0 6px 0 0;
+		}
+		
+		button.close {
+			position: absolute; top: 14px; right: 18px;
+		}
+		
+	}
+	
+	.modal-body {
+		height: 400px;
+		padding: 0px 15px 15px;
+		
+		.right-col {
+			text-align: center;
+		}
+		
+		.img {
+			margin: 0 auto;
+		}
+	}
+	
+	.left-col {
+		width: 280px;
+		float: left; display: inline;
+		position: relative;
+		
+		.popover {
+			display: block;
+			position: relative;
+			width: auto;
+			margin: 0 0 16px 0;
+			
+			.popover-content {
+				padding: 9px 14px 11px 14px;
+			}
+			
+			.popover-content p {
+				font-size: 13px;
+				line-height: 18px;
+			}
+			
+			&.bottom .arrow {
+				left: 80%;
+			}
+		}
+		
+		.input-xxlarge {
+			width: 100%;
+			display: block;
+			width: 100%;
+			min-height: 30px;
+			-webkit-box-sizing: border-box;
+	   		-moz-box-sizing: border-box;
+	        box-sizing: border-box;
+		}
+		
+		.label, .item-label {
+			font-size: 13px;
+			margin-bottom: 2px;
+		}
+		
+		.image-data {
+			
+		}
+		
+		.controls.last, .control-group.last, .last .input-xxlarge {
+			margin-bottom: 0;
+		}
+		
+	}
+	
+	.tab-content {
+		padding: 0;
 	}
 	
 }

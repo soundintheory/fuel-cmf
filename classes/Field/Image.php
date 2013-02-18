@@ -42,17 +42,41 @@ class Image extends File {
         $settings['has_errors'] = count($settings['errors']) > 0;
         $preview_value = (isset($value) && !empty($value)) ? str_replace($settings['path'], '', $value) : '';
         
-        $attributes = array( 'class' => 'field-type-file controls control-group'.($settings['has_errors'] ? ' error' : '') );
+        $attributes = array(
+            'class' => 'field-type-file controls control-group'.($settings['has_errors'] ? ' error' : ''), 
+            'id' => 'field-'.\CMF::slug($settings['mapping']['fieldName'])
+        );
+        
         $content = strval(\View::forge('admin/fields/image.twig', array( 'settings' => $settings, 'value' => $value, 'preview_value' => $preview_value ), false));
         
         if (!(isset($settings['wrap']) && $settings['wrap'] === false)) $content = html_tag('div', $attributes, $content);
         
-        return array(
+        $output = array(
             'content' => $content,
             'widget' => false,
-            'assets' => array(),
-            'js_data' => $settings
+            'assets' => array()
         );
+        
+        if ($settings['crop'] === true) $settings['crop'] = array( 'main' => array( 'title' => 'Main Crop' ) );
+        if (is_array($settings['crop'])) {
+            
+            $crop_options = array();
+            foreach ($settings['crop'] as $crop_id => $crop_settings) {
+                if (is_string($crop_settings)) {
+                    $crop_settings = array( 'title' => $crop_settings );
+                }
+                $crop_settings['id'] = $crop_id;
+                $crop_options[] = $crop_settings;
+            }
+            $settings['crop'] = $crop_options;
+            
+            $output['assets']['css'] = array('/admin/assets/jcrop/jquery.Jcrop.min.css');
+            $output['assets']['js'] = array('/admin/assets/jcrop/jquery.Jcrop.min.js');
+            
+        }
+        
+        $output['js_data'] = $settings;
+        return $output;
         
     }
 	

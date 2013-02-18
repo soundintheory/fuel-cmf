@@ -32,7 +32,11 @@ class File extends Base {
         $settings['has_errors'] = count($settings['errors']) > 0;
         $preview_value = (isset($value) && !empty($value)) ? str_replace($settings['path'], '', $value) : '';
         
-        $attributes = array( 'class' => 'field-type-file controls control-group'.($settings['has_errors'] ? ' error' : '') );
+        $attributes = array(
+            'class' => 'field-type-file controls control-group'.($settings['has_errors'] ? ' error' : ''),
+            'id' => 'field_'.\CMF::slug($settings['mapping']['fieldName'])
+        );
+        
         $content = strval(\View::forge('admin/fields/file.twig', array( 'settings' => $settings, 'value' => $value, 'preview_value' => $preview_value ), false));
         
         if (!(isset($settings['wrap']) && $settings['wrap'] === false)) $content = html_tag('div', $attributes, $content);

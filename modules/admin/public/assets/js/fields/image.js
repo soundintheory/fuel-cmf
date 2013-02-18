@@ -7,10 +7,16 @@
     function initItem() {
         
         var $wrap = $(this),
+        fieldId = $wrap.attr('id'),
+        $label = $wrap.find('.item-label'),
+        title = $label.html(),
         $el = $wrap.find('.async-upload'),
         $originalInput = $wrap.find('input.file-value'),
         originalValue = $originalInput.val(),
-        fieldName = $originalInput.attr('name');
+        fieldName = $originalInput.attr('name'),
+        $previewLink = null,
+        $modal = null,
+        cValue = null;
         
         if (fieldName.indexOf('%TEMP%') > -1) { return; }
         
@@ -29,7 +35,7 @@
             },
             template:
                 '<div class="qq-uploader input-xxlarge">' +
-                '<div class="file-preview"></div>' +
+                '<div class="file-preview image"></div>' +
                 '<div class="top-row"><span class="qq-upload-button btn btn-small">{uploadButtonText}</span></div>' +
                 '<pre class="qq-upload-drop-area"><span>{dragZoneText}</span></pre>' +
                 '<span class="qq-drop-processing" style="display:none;"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>' +
@@ -128,12 +134,18 @@
         // Sets a path value
         function setValue(val, save) {
             
+            cValue = val;
+            
             $input.appendTo($el).val(val);
             if (val == null || val == undefined || val == '') {
+                
                 $filePreview.html('<img style="width:' + settings['thumb_size']['width'] + 'px;height:' + settings['thumb_size']['height'] + 'px;" src="/image/2/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/placeholder.png" class="thumbnail" />');
                 setStatus('No file selected...');
                 $el.removeClass('populated');
+                $label.html(title);
+                
             } else {
+                
                 var pathParts = val.split('/'),
                 displayName = fileNameFormat(pathParts[pathParts.length-1]),
                 cropMode = (settings['crop'] === true) ? 2 : 1;
@@ -142,8 +154,19 @@
                     settings['thumb_size']['width'] = 0;
                 }
                 
-                $filePreview.html('<a href="/' + val + '" target="_blank"><img src="/image/' + cropMode + '/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/' + val + '" class="thumbnail" /></a>');
+                var img = '<img src="/image/' + cropMode + '/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/' + val + '" />';
+                var icon = '<span class="hover-icon"><i class="icon icon-cog"></i></span>';
+                
+                $previewLink = $('<a href="#' + fieldId +'_modal" target="_blank" class="thumbnail" role="button">' + img + icon + '</a>').click(launchModal);
+                $filePreview.html('<div></div>');
                 $el.addClass('populated');
+                $filePreview.find('div').append($previewLink);
+                
+                $label.html(title + ' <span class="help">(click to edit)</span>');
+                
+                // Set up the modal dialog
+                initModal();
+                
             }
             
             if (save === true && isFunction(saveData)) {
@@ -155,11 +178,110 @@
             
         }
         
-        function setStatus(status) {
+        function launchModal() {
+            $modal.modal({});
+            return false;
+        }
+        
+        function initModal() {
             
-            //$filePreview.html('<em class="muted">' + status + '</em>');
+            if ($modal != null) { return; }
+            
+            var cropSettings = settings['crop'],
+            canCrop = typeof(cropSettings) != 'undefined' && cropSettings !== false;
+            
+            // Top part of the modal
+            var modalContent = '<div id="#' + fieldId +'_modal" class="image-modal modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
+            '<div class="modal-header">' +
+            '<div class="left-col">' +
+                '<h3>Edit image</h3>' +
+            '</div>' + // .left-col (header)
+            '<div class="right-col">';
+            
+            // Add the crop options here, if any
+            if (canCrop && cropSettings.length > 1) {
+                modalContent += '<ul class="crop-nav nav nav-pills">';
+                for (var i = 0; i < cropSettings.length; i++) {
+                    var cropOption = cropSettings[i];
+                    modalContent += '<li><a href="#' + fieldId + '-crop-' + cropOption['id'] + '">' + cropOption['title'] + '</a></li>';
+                }
+                modalContent += '</ul>';
+            }
+            
+            modalContent += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>' +
+            '</div>' + // .right-col (header)
+            '<div class="clear"></div>' +
+            '</div>' + // .modal-header
+            '<div class="modal-body">' +
+            '<div class="left-col">';
+            
+            /*
+            // Add little explanation if there are any crop versions
+            modalContent += '<div class="popover bottom">' +
+            '<div class="arrow"></div>' +
+            '<div class="popover-content">' +
+            '<p>Select which occurence of this image you\'d like to edit...</p>' +
+            '</div>' +
+            '</div>';
+            */
+            
+            /*
+            // Add the crop options here, if any
+            modalContent += '<ul class="nav nav-pills nav-stacked">';
+            modalContent += '<li><a href="#">Crop version #1</a></li>';
+            modalContent += '<li><a href="#">Crop version #2</a></li>';
+            modalContent += '<li><a href="#">Crop version #3</a></li>';
+            modalContent += '</ul>';
+            */
+            
+            // Add any data fields here - alt, title, caption etc
+            modalContent += '<div class="image-data">';
+            modalContent += '<div class="controls control-group"><label class="item-label">Title</label><input type="text" class="input-xxlarge" value="The title of the image" /></div>';
+            modalContent += '<div class="controls control-group"><label class="item-label">Caption</label><input type="text" class="input-xxlarge" value="Image caption" /></div>';
+            modalContent += '<div class="controls control-group last"><label class="item-label">Credit</label><input type="text" class="input-xxlarge" value="Image credit" /></div>';
+            modalContent += '</div>'; // .image-data
+            
+            modalContent += '</div>' + // .left-col
+            '<div class="right-col ' + (cropSettings.length > 1 ? 'tab-content' : '') + '">';
+            
+            // Add the image(s) here
+            if (canCrop) {
+                
+                for (var i = 0; i < cropSettings.length; i++) {
+                    var cropOption = cropSettings[i];
+                    modalContent += '<div id="' + fieldId + '-crop-' + cropOption['id'] + '" class="img tab-pane">';
+                    modalContent += '<img src="/image/3/575/400/' + cValue + '" />';
+                    modalContent += '</div>'; // .img
+                }
+                
+            }
+            
+            modalContent += '<div class="clear"></div></div>' + // .right-col
+            '</div>' + // .modal-body
+            '<div class="modal-footer">' +
+            '<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>' +
+            '<button class="btn btn-primary">Save changes</button>' +
+            '</div>' +
+            '</div>';
+            
+            $modal = $(modalContent);
+            $('body').append($modal);
+            
+            if (canCrop && cropSettings.length > 1) {
+                
+                $modal.find('.crop-nav a')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).tab('show');
+                })
+                .eq(0)
+                .click();
+                
+            }
             
         }
+        
+        function setStatus(status) {}
         
         // Puts the input back to the state it started in
         function reset() {
@@ -191,178 +313,3 @@
     });
     
 })(jQuery);
-
-/*
-
-ADVANCED:
-
-
-element: null,
-listElement: null,
-dragAndDrop: {
-    extraDropzones: [],
-    hideDropzones: true,
-    disableDefaultDropzone: false
-},
-text: {
-    uploadButton: 'Upload a file',
-    cancelButton: 'Cancel',
-    retryButton: 'Retry',
-    failUpload: 'Upload failed',
-    dragZone: 'Drop files here to upload',
-    dropProcessing: 'Processing dropped files...',
-    formatProgress: "{percent}% of {total_size}",
-    waitingForResponse: "Processing..."
-},
-template: '<div class="qq-uploader">' +
-    ((!this._options.dragAndDrop || !this._options.dragAndDrop.disableDefaultDropzone) ? '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' : '') +
-    (!this._options.button ? '<div class="qq-upload-button"><div>{uploadButtonText}</div></div>' : '') +
-    '<span class="qq-drop-processing"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>' +
-    (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
-    '</div>',
-
-// template for one item in file list
-fileTemplate: '<li>' +
-    '<div class="qq-progress-bar"></div>' +
-    '<span class="qq-upload-spinner"></span>' +
-    '<span class="qq-upload-finished"></span>' +
-    '<span class="qq-upload-file"></span>' +
-    '<span class="qq-upload-size"></span>' +
-    '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
-    '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
-    '<span class="qq-upload-status-text">{statusText}</span>' +
-    '</li>',
-classes: {
-    button: 'qq-upload-button',
-    drop: 'qq-upload-drop-area',
-    dropActive: 'qq-upload-drop-area-active',
-    dropDisabled: 'qq-upload-drop-area-disabled',
-    list: 'qq-upload-list',
-    progressBar: 'qq-progress-bar',
-    file: 'qq-upload-file',
-    spinner: 'qq-upload-spinner',
-    finished: 'qq-upload-finished',
-    retrying: 'qq-upload-retrying',
-    retryable: 'qq-upload-retryable',
-    size: 'qq-upload-size',
-    cancel: 'qq-upload-cancel',
-    retry: 'qq-upload-retry',
-    statusText: 'qq-upload-status-text',
-
-    success: 'qq-upload-success',
-    fail: 'qq-upload-fail',
-
-    successIcon: null,
-    failIcon: null,
-
-    dropProcessing: 'qq-drop-processing',
-    dropProcessingSpinner: 'qq-drop-processing-spinner'
-},
-failedUploadTextDisplay: {
-    mode: 'default', //default, custom, or none
-    maxChars: 50,
-    responseProperty: 'error',
-    enableTooltip: true
-},
-messages: {
-    tooManyFilesError: "You may only drop one file"
-},
-retry: {
-    showAutoRetryNote: true,
-    autoRetryNote: "Retrying {retryNum}/{maxAuto}...",
-    showButton: false
-},
-showMessage: function(message){
-    setTimeout(function() {
-        alert(message);
-    }, 0);
-}
-
-
-BASIC:
-
-debug: false,
-button: null,
-multiple: true,
-maxConnections: 3,
-disableCancelForFormUploads: false,
-autoUpload: true,
-request: {
-    endpoint: '/server/upload',
-    params: {},
-    paramsInBody: false,
-    customHeaders: {},
-    forceMultipart: true,
-    inputName: 'qqfile',
-    uuidName: 'qquuid',
-    totalFileSizeName: 'qqtotalfilesize'
-},
-validation: {
-    allowedExtensions: [],
-    sizeLimit: 0,
-    minSizeLimit: 0,
-    stopOnFirstInvalidFile: true
-},
-callbacks: {
-    onSubmit: function(id, fileName){},
-    onComplete: function(id, fileName, responseJSON){},
-    onCancel: function(id, fileName){},
-    onUpload: function(id, fileName){},
-    onUploadChunk: function(id, fileName, chunkData){},
-    onResume: function(id, fileName, chunkData){},
-    onProgress: function(id, fileName, loaded, total){},
-    onError: function(id, fileName, reason) {},
-    onAutoRetry: function(id, fileName, attemptNumber) {},
-    onManualRetry: function(id, fileName) {},
-    onValidateBatch: function(fileData) {},
-    onValidate: function(fileData) {}
-},
-messages: {
-    typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
-    sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
-    minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
-    emptyError: "{file} is empty, please select files again without it.",
-    noFilesError: "No files to upload.",
-    onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
-},
-retry: {
-    enableAuto: false,
-    maxAutoAttempts: 3,
-    autoAttemptDelay: 5,
-    preventRetryResponseProperty: 'preventRetry'
-},
-classes: {
-    buttonHover: 'qq-upload-button-hover',
-    buttonFocus: 'qq-upload-button-focus'
-},
-chunking: {
-    enabled: false,
-    partSize: 2000000,
-    paramNames: {
-        partIndex: 'qqpartindex',
-        partByteOffset: 'qqpartbyteoffset',
-        chunkSize: 'qqchunksize',
-        totalFileSize: 'qqtotalfilesize',
-        totalParts: 'qqtotalparts',
-        filename: 'qqfilename'
-    }
-},
-resume: {
-    enabled: false,
-    id: null,
-    cookiesExpireIn: 7, //days
-    paramNames: {
-        resuming: "qqresume"
-    }
-},
-formatFileName: function(fileName) {
-    if (fileName.length > 33) {
-        fileName = fileName.slice(0, 19) + '...' + fileName.slice(-14);
-    }
-    return fileName;
-},
-text: {
-    sizeSymbols: ['kB', 'MB', 'GB', 'TB', 'PB', 'EB']
-}
-
- */
