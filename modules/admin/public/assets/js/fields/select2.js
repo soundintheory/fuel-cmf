@@ -10,6 +10,7 @@
 		function initItem() {
 			
 			var $select = $(this),
+			hasParent = self!=top,
 			$wrap = $select.parent(),
 			multiple = $select.attr('multiple') == 'multiple',
 			cid = $wrap.attr('id'),
@@ -38,11 +39,7 @@
 			// So the iframe can call this field on save...
 			window[cid] = { 'onSave':onSave };
 			
-<<<<<<< HEAD
 			if ($addBut.length > 0 && !hasParent) {
-=======
-			if ($addBut.length > 0) {
->>>>>>> parent of 1744f77... fixes #25
 				
 				$addBut.fancybox(fancyBoxOpts);
 				
@@ -50,6 +47,8 @@
 					evt.preventDefault();
 				});
 				
+			} else {
+				$addBut.hide();
 			}
 			
 			opts.matcher = function(term, text, option) {
@@ -70,11 +69,7 @@
 				return matches == terms.length;
 			}
 			
-<<<<<<< HEAD
 			if (multiple && typeof(opts.target_table) != 'undefined' && !hasParent && opts['edit'] !== false) {
-=======
-			if (multiple && typeof(opts.target_table) != 'undefined') {
->>>>>>> parent of 1744f77... fixes #25
 				
 				opts.formatSelection = function(object, container) {
 					var $item = $('<div></div>').appendTo(container),
