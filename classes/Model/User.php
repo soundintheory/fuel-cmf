@@ -723,7 +723,6 @@ class User extends Base
     public function _event_after_save()
     {
         $this->_is_tracking = false;
-        unset($this->password);
     }
 
     /**
