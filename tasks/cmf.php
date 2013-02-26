@@ -76,10 +76,13 @@ class Cmf
 	 */
 	public function sync($name = 'default', $type = 'app')
 	{
-		
-		// Make sure there is no models cache
-		$ormcache = \DoctrineFuel::cache();
-		$ormcache->deleteAll();
+		try {
+			// Make sure there is no models cache
+			$ormcache = \DoctrineFuel::cache();
+			$ormcache->deleteAll();
+		} catch(\Exception $e) {
+			// Sometimes the cache driver is set to an 'unclearable' one, but don't stress about it!
+		}
 		
 		Migrate::_init();
 		
@@ -221,8 +224,47 @@ MIGRATION;
 		
 		// Ignore tables...
 		$ignored_tables = \Config::get('doctrine.ignore_tables', array());
-		foreach ($ignored_tables as $ignored_table)
-		{
+		
+		// Construct an array of wildcard-checking lambda functions
+		$wildcard_checks = array();
+		foreach ($ignored_tables as $num => $ignored_table) {
+			if (($pos = strpos($ignored_table, '*')) !== false) {
+				
+				$search_str = str_replace('*', '', $ignored_table);
+				
+				if ($pos === 0) {
+					// Check at the end of the string
+					$wildcard_checks[] = function($str) use($search_str) {
+						return strpos($str, $search_str) === (strlen($str) - strlen($search_str));
+					};
+				} else {
+					// Check at the beginning of the string
+					$wildcard_checks[] = function($str) use($search_str) {
+						return strpos($str, $search_str) === 0;
+					};
+				}
+				
+				unset($ignored_tables[$num]);
+			}
+		}
+		
+		// Go through all the table names and check for wildcard matches
+		$table_names = $fromSchema->getTableNames();
+		foreach ($table_names as $table_name) {
+			
+			// Remove the schema name from the table name
+			$table_name = str_replace($fromSchema->getName().".", '', $table_name); 
+			
+			foreach ($wildcard_checks as $check) {
+				if ($check($table_name) === true) {
+					$ignored_tables[] = $table_name;
+					break;
+				}
+			}
+			
+		}
+		
+		foreach ($ignored_tables as $ignored_table) {
 			// Only ignore the table if it isn't defined by entities
 			if ($fromSchema->hasTable($ignored_table) && !$toSchema->hasTable($ignored_table)) 
 			{
