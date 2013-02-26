@@ -782,48 +782,57 @@
 	
 	////////////////// INITIALISE REDACTOR ///////////////////
 	
-	$(document).ready(init);
-	
-	function init() {
+	$(document).ready(function() {
 		
-		$('.redactor').each(function() {
-			
-			var $input = $(this),
-			name = $(this).attr('name'),
-			settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {};
-			
-			var opts = {
-				buttons: ['html', '|', 'formatting', '|', 'bold', 'italic', 'deleted', '|', 'unorderedlist', 'orderedlist', 'outdent', 'indent', '|', 'image', 'video', 'file', 'table', 'link', '|', 'fontcolor', 'backcolor', '|', 'alignment', '|', 'horizontalrule'],
-				imageUpload: '/admin/redactor/imageupload',
-				fileUpload: '/admin/redactor/fileupload',
-				imageGetJson: '/admin/redactor/getimages',
-				minHeight: 300,
-				convertDivs: false,
-				autoresize: true,
-				formattingTags: ['p', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4'],
-				plugins: ['cmflink', 'cmfimages']
-			};
-			
-			// Any additional plugins in the field settings
-			if (typeof(settings['plugins']) != 'undefined' && settings['plugins'].length > 0) {
-				opts['plugins'] = opts['plugins'].concat(settings['plugins']);
-			}
-			
-			// Any placeholders in the field settings
-			if (typeof(settings['placeholders']) != 'undefined') {
-				opts.plugins.push('placeholder');
-				opts['placeholders'] = settings['placeholders'];
-			}
-			
-			// Any links in the field settings
-			if (typeof(settings['links']) != 'undefined') {
-				opts['links'] = settings['links'];
-			}
-			
-			$input.redactor(opts);
-			
+		// Run through each input
+		$('.redactor').each(initItem);
+		
+		// When a new form is added, run it again!
+		$(window).bind('cmf.newform', function(e, data) {
+			data.wrap.find('.redactor').each(initItem);
 		});
 		
-	}	
+	});
+	
+	function initItem() {
+		
+		var $input = $(this),
+		name = $(this).attr('name'),
+		settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {};
+		
+		// Don't run on temporary fields...
+		if (name.indexOf('%TEMP%') >= 0) { return; }
+		
+		var opts = {
+			buttons: ['html', '|', 'formatting', '|', 'bold', 'italic', 'deleted', '|', 'unorderedlist', 'orderedlist', 'outdent', 'indent', '|', 'image', 'video', 'file', 'table', 'link', '|', 'fontcolor', 'backcolor', '|', 'alignment', '|', 'horizontalrule'],
+			imageUpload: '/admin/redactor/imageupload',
+			fileUpload: '/admin/redactor/fileupload',
+			imageGetJson: '/admin/redactor/getimages',
+			minHeight: 300,
+			convertDivs: false,
+			autoresize: true,
+			formattingTags: ['p', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4'],
+			plugins: ['cmflink', 'cmfimages']
+		};
+		
+		// Any additional plugins in the field settings
+		if (typeof(settings['plugins']) != 'undefined' && settings['plugins'].length > 0) {
+			opts['plugins'] = opts['plugins'].concat(settings['plugins']);
+		}
+		
+		// Any placeholders in the field settings
+		if (typeof(settings['placeholders']) != 'undefined') {
+			opts.plugins.push('placeholder');
+			opts['placeholders'] = settings['placeholders'];
+		}
+		
+		// Any links in the field settings
+		if (typeof(settings['links']) != 'undefined') {
+			opts['links'] = settings['links'];
+		}
+		
+		$input.redactor(opts);
+		
+	}
 	
 })(jQuery);

@@ -89,7 +89,11 @@
 				}
 				
 				// Needs a class on the wrapper if there is a thumbnail
-				if (container.find('img').length > 0) { container.parent().addClass('thumbnail-item'); }
+				if (container.find('img').length > 0) {
+					container.parent().addClass('thumbnail-item');
+					$select.select2('container').addClass('has-thumbnails');
+					$select.data('select2').dropdown.addClass('has-thumbnails');
+				}
 				
 				return undefined;
 				
