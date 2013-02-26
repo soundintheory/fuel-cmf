@@ -2,9 +2,10 @@
 
 namespace CMF\Twig;
 
-use Twig_Extension;
-use Twig_Function_Function;
-use Twig_Function_Method;
+use Twig_Extension,
+	Twig_Function_Function,
+	Twig_Function_Method,
+	Twig_Filter_Method;
 
 /**
  * Provides Twig support for commonly used FuelPHP classes and methods.
@@ -40,6 +41,55 @@ class Admin extends Twig_Extension
 			'str_repeat' => new Twig_Function_Function('str_repeat'),
 			'slug' => new Twig_Function_Function('CMF::slug')
 		);
+	}
+	
+	public function getFilters()
+    {
+        return array(
+        	'item_links' => new Twig_Filter_Method($this, 'itemLinks'),
+        	'placeholder' => new Twig_Filter_Method($this, 'placeholder')
+        );
+    }
+    
+    /**
+	 * For the placeholder tags that Redactor produces
+	 */
+	public function placeholder($text, $name, $template = '', $data = array())
+	{
+	    $pattern = '/\\{\\{ '.$name.' \\}\\}/sUi';
+	    preg_match_all($pattern, $text, $hits);
+	    $tags = $hits[0];
+	    if (count($tags) === 0) return $text;
+	    
+	    if (empty($template))
+	    {
+	        return str_replace("{{ $name }}", '', $text);
+	    }
+	    else
+	    {
+	        $parts = preg_split($pattern, $text);
+	        $offset = 1;
+	        
+	        for ($i = 0; $i < count($tags); $i++) {
+	            
+	            array_splice($parts, $offset, 0, strval(\View::forge($template, \Arr::merge($data, array( 'placeholder_num' => $i )), false)));
+	            $offset += 2;
+	            
+	        }
+	        
+	        return implode('', $parts);
+	    }
+	}
+	
+	/**
+	 * For the item links that Redactor produces
+	 */
+	public function itemLinks($value, $field, $prefix='', $suffix='')
+	{
+		// Process the item links
+		return \CMF::processItemLinks($value, function($item) use($field, $prefix, $suffix) {
+		    return $prefix.$item->get($field).$suffix;
+		});
 	}
 	
 	public function settings($name, $default=null)

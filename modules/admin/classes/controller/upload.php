@@ -17,6 +17,7 @@ class Controller_Upload extends Controller_Base {
 
     protected $uploadName;
     protected $originalName;
+    protected $target;
 
     function action_index(){
         
@@ -49,6 +50,9 @@ class Controller_Upload extends Controller_Base {
         $result['originalName'] = $this->getOriginalName();
         $result['path'] = $path.$result['uploadName'];
         $result['fieldName'] = $field_name;
+        
+        $info = getimagesize($this->target);
+        if ($info !== false) $result['info'] = $info;
         
         $this->headers = array("Content-Type: text/plain");
         return \Response::forge(json_encode($result), $this->status, $this->headers);
@@ -202,7 +206,7 @@ class Controller_Upload extends Controller_Base {
 
         } else {
 
-            $target = $this->getUniqueTargetPath($uploadDirectory, $name);
+            $target = $this->target = $this->getUniqueTargetPath($uploadDirectory, $name);
 
             if ($target){
                 $this->uploadName = basename($target);

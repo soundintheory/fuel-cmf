@@ -5,33 +5,6 @@ namespace CMF\View;
 class Base extends \ViewModel
 {
     
-    public function placeholder($text, $name, $template = '', $data = array())
-    {
-        $pattern = '/\\{\\{ '.$name.' \\}\\}/sUi';
-        preg_match_all($pattern, $text, $hits);
-        $tags = $hits[0];
-        if (count($tags) === 0) return $text;
-        
-        if (empty($template))
-        {
-            return str_replace("[[$name]]", '', $text);
-        }
-        else
-        {
-            $parts = preg_split($pattern, $text);
-            $offset = 1;
-            
-            for ($i = 0; $i < count($tags); $i++) {
-                
-                array_splice($parts, $offset, 0, strval(\View::forge($template, \Arr::merge($data, array( 'placeholder_num' => $i )), false)));
-                $offset += 2;
-                
-            }
-            
-            return implode('', $parts);
-        }
-    }
-    
     protected function pageTree($model = 'Model_Page_Page')
     {
         $nodes = $model::select('page.title, page.menu_title, page.lvl, page.lft, page.rgt, url.url, url.slug', 'page')

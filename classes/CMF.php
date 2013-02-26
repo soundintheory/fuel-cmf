@@ -220,5 +220,32 @@ class CMF
         
         return $output;
     }
+    
+    /**
+     * Given a string containing item links generated from Redactor, will loop through each and provide
+     * the details to a callback. The value returned from the callback will be used as the href in each link
+     * @return void
+     */
+    public static function processItemLinks($content, $callback)
+    {
+        $doc = new \DOMDocument();
+        $doc->loadHTML($content);
+        
+        $xpath = new \DOMXPath($doc);
+        $item_links = $xpath->query('//a[@data-item-id]');
+        
+        foreach ($item_links as $num => $item_link) {
+            
+            $item_type = $item_link->getAttribute('data-item-type');
+            $item_id = intval($item_link->getAttribute('data-item-id'));
+            $item = $item_type::find($item_id);
+            $item_href = $callback($item);
+            $item_link->setAttribute('href', strval($item_href));
+            
+        }
+        
+        return $doc->saveHTML();
+        
+    }
 	
 }

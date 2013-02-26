@@ -131,6 +131,11 @@
 		
 		span {
 			padding-right: 40px;
+			
+			span {
+				padding-right: 0;
+				margin-right: 0;
+			}
 		}
 	}
 	
@@ -155,14 +160,57 @@
 		}
 	}
 	
+	&.has-thumbnails {
+		
+		// Single
+		.select2-choice {
+			height: 40px;
+			line-height: 40px;
+			padding: 4px 4px 4px 52px;
+			display: block;
+			
+			span {
+				display: block;
+			}
+		}
+		
+		// Multi
+		.select2-search-choice {
+			height: 48px;
+			padding: 0;
+			
+			.edit-link {
+				padding: 0 0 0 52px;
+				height: 48px;
+			}
+			
+			.edit-link span {
+				padding: 0; margin: 0;
+				display: table-cell;
+				vertical-align: middle;
+				height: 48px;
+			}
+			
+			.edit-link i {
+				right: 6px; top: 16px;
+			}
+		}
+		
+		img {
+			position: absolute; top: 4px; left: 4px;
+		}
+		
+		div b {
+			background-position: 0 10px;
+		}
+	}
+	
 }
 
 .table td .select2-container {
 	display: block;
 	margin: 0;
 }
-
-
 
 .select2-container-multi {
 	
@@ -184,6 +232,10 @@
 		
 		.select2-search-choice .select2-search-choice-close {
 			top: 4px; left: 6px;
+		}
+		
+		.thumbnail-item .select2-search-choice-close {
+			top: 16px;
 		}
 		
 		.select2-search-choice div {
@@ -213,6 +265,7 @@
 }
 
 .select2-drop {
+	z-index: 999999;
 	
 	.select2-results {
 		
@@ -223,7 +276,24 @@
 		
 	}
 	
-	.select2-result-label {
+	&.has-thumbnails {
+		
+		.select2-result {
+			position: relative;
+		}
+		
+		.select2-result-label {
+			position: relative;
+			height: 40px;
+			line-height: 14px;
+			padding: 4px 4px 4px 52px;
+			display: table-cell;
+			vertical-align: middle;
+		}
+		
+		.select2-result-label img {
+			position: absolute; top: 4px; left: 4px;
+		}
 		
 	}
 	
@@ -410,6 +480,25 @@
 	
 }
 
+#redactor_modal #redactor_modal_content {
+	
+	select,
+	.input-xxlarge,
+	.select2-container {
+		width: 100%;
+	}
+	
+	.select2-container .input-xxlarge {
+		display: block;
+		width: auto;
+	}
+	
+	.select2-offscreen {
+		position: absolute;
+	}
+	
+}
+
 /************************* FILE FIELD **********************/
 
 
@@ -585,11 +674,11 @@ td.col-type-image-object {
 	}
 	
 	.modal-body {
-		height: 400px;
 		padding: 0px 15px 15px;
 		
 		.right-col {
 			text-align: center;
+			height: 400px;
 		}
 		
 		.img {

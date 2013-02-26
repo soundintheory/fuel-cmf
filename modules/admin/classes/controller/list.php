@@ -642,4 +642,34 @@ class Controller_List extends Controller_Base {
 		return $nodes;
 	}
 	
+	/**
+	 * Gets the options in JSON format for when populating a select2 box
+	 */
+	public function action_options($table_name)
+	{
+		$class_name = \Admin::getClassForTable($table_name);
+		if ($class_name === false) return $this->show404("Can't find that type!");
+		
+		// Check and see if we need to filter the results...
+		$filters = array();
+		$params = array();
+		$find = \Input::param('find', false);
+		if ($find !== false) {
+			$ids = explode(',', $find);
+			$filters[] = 'id IN(?1)';
+			$params[] = $ids;
+		}
+		
+		$options = $class_name::options($filters, array(), null, null, $params);
+		
+		// Get the options and put them in a format select2 would understand
+		$output = array();
+		foreach ($options as $id => $option) {
+			$output[] = array( 'id' => $id, 'text' => $option );
+		}
+		
+		$this->headers = array("Content-Type: application/json");
+		return \Response::forge(json_encode($output), $this->status, $this->headers);
+	}
+	
 }

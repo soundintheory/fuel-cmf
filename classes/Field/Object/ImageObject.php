@@ -13,7 +13,9 @@ class ImageObject extends FileObject {
         'sub_group' => true,
         'widget_icon' => 'picture',
         'fields' => array(
-            'src' => array( 'type' => 'image' ),
+            'src' => array( 'type' => 'image', 'title' => 'Image' ),
+            'width' => array( 'visible' => false ),
+            'height' => array( 'visible' => false ),
             'alt' => array( 'type' => 'string' )
         )
     );
@@ -28,12 +30,22 @@ class ImageObject extends FileObject {
     public static function displayForm($value, &$settings, $model)
     {
         $settings = static::settings($settings);
-        if ($settings['widget'] !== true) {
-            $settings['fields']['src']['title'] = '';
-        } else if (!isset($settings['fields']['src']['title'])) {
+        
+        // Need to tell the image field that it's part of this object,
+        // and tell it about the fields defined in it
+        $settings['fields']['src']['__object__'] = true;
+        $settings['fields']['src']['fields'] = $settings['fields'];
+        $settings['fields']['src']['path'] = $settings['path'];
+        
+        if ($settings['widget'] === true) {
             $settings['fields']['src']['title'] = $settings['title'];
         }
-        return parent::displayForm($value, $settings, $model);
+        
+        $content = parent::displayForm($value, $settings, $model);
+        $content['content'] .= '<input type="hidden" name="'.$settings['mapping']['fieldName'].'[width]" value="'.(isset($value['width']) ? $value['width'] : 0).'" />';
+        $content['content'] .= '<input type="hidden" name="'.$settings['mapping']['fieldName'].'[height]" value="'.(isset($value['height']) ? $value['height'] : 0).'" />';
+        return $content;
+        
     }
     
 	/** inheritdoc */

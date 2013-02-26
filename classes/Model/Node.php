@@ -101,7 +101,7 @@ class Node extends Base
 	}
     
     /** inheritdoc */
-    public static function options(array $filters = array(), array $orderBy = array(), $limit = null, $offset = null)
+    public static function options($filters = array(), $orderBy = array(), $limit = null, $offset = null, $params = null, $allow_html = true)
     {
         $called_class = get_called_class();
         $cache_id = md5($called_class.serialize($filters).serialize($orderBy).$limit.$offset);
@@ -122,7 +122,9 @@ class Node extends Base
         
         foreach ($tree as $model) {
             
-            $options[strval($model->id)] = str_repeat(' &#8594;&nbsp; ', $model->lvl-1).' '.$model->display();
+            $thumbnail = $model->thumbnail();
+            $display = $model->display();
+            $options[strval($model->id)] = str_repeat(' &#8594;&nbsp; ', $model->lvl-1).' '.($thumbnail !== false ? $thumbnail.' ' : '').(!empty($display) ? $display : '-');
             
             if (isset($model->children) && $model->children instanceof \Doctrine\Common\Collections\Collection) {
                 

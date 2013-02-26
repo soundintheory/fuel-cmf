@@ -25,6 +25,7 @@
 			$wrap.find('.btn-remove').click(removeButtonHandler);
 			
 			if (sortable) { initSorting(); }
+			update();
 			
 			function addItem() {
 				
@@ -96,6 +97,13 @@
 				} else {
 					$table.removeClass('populated');
 				}
+				
+				var value = [];
+				$items.each(function(i) {
+					var id = $(this).find('input.item-id').val();
+					if (typeof(id) != 'undefined') { value.push(id+''); }
+				});
+				setFieldValue(name, value);
 				
 				updatePositions();
 				

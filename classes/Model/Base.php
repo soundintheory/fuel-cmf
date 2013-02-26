@@ -554,17 +554,21 @@ class Base extends \Doctrine\Fuel\Model
      * @see \Fuel\Core\Form::select()
      * @return array
      */
-    public static function options(array $filters = array(), array $orderBy = array(), $limit = null, $offset = null)
+    public static function options($filters = array(), $orderBy = array(), $limit = null, $offset = null, $params = null, $allow_html = true)
     {
         $called_class = get_called_class();
         $cache_id = md5($called_class.serialize($filters).serialize($orderBy).$limit.$offset);
         if (isset($called_class::$_options[$cache_id])) return $called_class::$_options[$cache_id];
         
-        $results = $called_class::findBy($filters, $orderBy, $limit, $offset);
+        $results = $called_class::findBy($filters, $orderBy, $limit, $offset, $params);
         $options = array();
         
         foreach ($results as $result) {
-            $options[strval($result->get('id'))] = $result->display();
+            $thumbnail = $result->thumbnail();
+            $display = $result->display();
+            $val = !empty($display) ? $display : '-';
+            if ($thumbnail !== false && $allow_html) $val = '<img src="/image/2/40/40/'.$thumbnail.'" style="width:40px;height:40px;" /> '.$val;
+            $options[strval($result->get('id'))] = $val;
         }
         
         if ((is_null($orderBy) || empty($orderBy)) && (is_null($called_class::$_order) || empty($called_class::$_order))) {
@@ -676,6 +680,18 @@ class Base extends \Doctrine\Fuel\Model
     public function display()
     {
         return strval($this->id);
+    }
+    
+    /**
+     * Returns a relative path from the document root to an image to use as a thumbnail.
+     * This should be the original source image, with no transformations applied
+     * If this returns false (default), then no thumbnails will be shown for the item
+     * Eg. "uploads/images/thumbnail.jpg"
+     * @return mixed
+     */
+    public function thumbnail()
+    {
+        return false;
     }
     
     public function __toString()

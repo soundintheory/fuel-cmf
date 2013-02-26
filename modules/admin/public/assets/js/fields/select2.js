@@ -6,7 +6,6 @@
 		
 		$('select.select2').each(initItem);
 		
-		
 		function initItem() {
 			
 			var $select = $(this),
@@ -34,6 +33,7 @@
 			if (name.indexOf('%TEMP%') >= 0) { return; }
 			
 			var opts = (typeof(field_settings[name]) != 'undefined') ? field_settings[name] : {},
+			can_edit = multiple && typeof(opts.target_table) != 'undefined' && !hasParent && opts['edit'] !== false,
 			$addBut = $('#' + cid + ' .btn-add');
 			
 			// So the iframe can call this field on save...
@@ -69,22 +69,54 @@
 				return matches == terms.length;
 			}
 			
-			if (multiple && typeof(opts.target_table) != 'undefined' && !hasParent && opts['edit'] !== false) {
+			opts.formatSelection = function(object, container) {
 				
-				opts.formatSelection = function(object, container) {
-					var $item = $('<div></div>').appendTo(container),
-					$editLink = $('<a class="edit-link" href="/admin/' + opts.target_table + '/' + object.id + '/edit?_mode=inline&_cid=' + cid + '">' + object.text + ' <i class="icon icon-pencil"></i></a>')
-					.appendTo($item)
+				var $item = null;
+				
+				if (can_edit) {
+					
+					var $editLink = $('<a class="edit-link" href="/admin/' + opts.target_table + '/' + object.id + '/edit?_mode=inline&_cid=' + cid + '"><span>' + object.text + '</span> <i class="icon icon-pencil"></i></a>')
+					.appendTo(container)
 					.fancybox(fancyBoxOpts)
 					.click(function(evt) {
 						evt.preventDefault();
 					});
-					return undefined;
+					
+				} else {
+					
+					container.html(object.text);
+					
 				}
+				
+				// Needs a class on the wrapper if there is a thumbnail
+				if (container.find('img').length > 0) { container.parent().addClass('thumbnail-item'); }
+				
+				return undefined;
 				
 			}
 			
-			$select.select2(opts);
+			opts.formatResult = function(result, container, query, escapeMarkup) {
+				var markup=[];
+				Select2.util.markMatch(result.text, query.term, markup, function(text) {
+					return text;
+				});
+				return markup.join("");
+			}
+			
+			if (typeof(opts.alwaysShowPlaceholder) == 'undefined') { opts.alwaysShowPlaceholder = true; }
+			
+			$select.select2(opts).change(onChange).select2('container').find('.select2-choices, .select2-choice').addClass('input-xxlarge');
+			onChange();
+			
+			// Tell it we have thumbnails
+			if ($select.select2('container').find('img').length > 0) {
+				$select.select2('container').addClass('has-thumbnails');
+				$select.data('select2').dropdown.addClass('has-thumbnails');
+			}
+			
+			function onChange() {
+				setFieldValue(name, $select.select2('val'));
+			}
 			
 			function onSave(data) {
 				

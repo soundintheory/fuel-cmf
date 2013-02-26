@@ -2,6 +2,22 @@
 	
 	////////////////// PLACEHOLDER PLUGIN ///////////////////
 	
+	function selectElementText(el, win) {
+	    win = win || window;
+	    var doc = win.document, sel, range;
+	    if (win.getSelection && doc.createRange) {
+	        sel = win.getSelection();
+	        range = doc.createRange();
+	        range.selectNodeContents(el);
+	        sel.removeAllRanges();
+	        sel.addRange(range);
+	    } else if (doc.body.createTextRange) {
+	        range = doc.body.createTextRange();
+	        range.moveToElementText(el);
+	        range.select();
+	    }
+	}
+	
 	if (typeof RedactorPlugins === 'undefined') RedactorPlugins = {};
 
 	RedactorPlugins.placeholder = {
@@ -10,9 +26,14 @@
 		{
 			var editor = this,
 			placeholders = editor.opts.placeholders,
+			numPlaceholders = 0,
 			dropdown = {};
 			
-			if (typeof(placeholders) == 'undefined' || placeholders.length == 0) { return; }
+			if (typeof(placeholders) == 'undefined') { return; }
+			for (var p in placeholders) {
+				numPlaceholders++;
+			}
+			if (numPlaceholders === 0) { return; }
 			
 			// The callback for when an item in the dropdown is clicked
 			function itemCallback(editor, evt, id) {
@@ -36,15 +57,16 @@
 			}
 			
 			// Populate the dropdown
-			for (var i = 0; i < placeholders.length; i++) {
+			for (var id in placeholders) {
 				
-				var obj = placeholders[i];
+				var obj = placeholders[id];
 				
-				if (!obj.title) { obj.title = ucfirst(obj.id); }
+				obj.id = id;
+				if (!obj.title) { obj.title = ucfirst(id); }
 				if (obj.description) { obj.title += ' <span>' + obj.description + '</span>'; }
 				
-				placeholders[i].callback = itemCallback;
-				dropdown[obj.id] = obj;
+				obj.callback = itemCallback;
+				dropdown[id] = placeholders[id] = obj;
 				
 			}
 			
@@ -180,24 +202,375 @@
 				return output;
 			}
 			
-			function selectElementText(el, win) {
-			    win = win || window;
-			    var doc = win.document, sel, range;
-			    if (win.getSelection && doc.createRange) {
-			        sel = win.getSelection();
-			        range = doc.createRange();
-			        range.selectNodeContents(el);
-			        sel.removeAllRanges();
-			        sel.addRange(range);
-			    } else if (doc.body.createTextRange) {
-			        range = doc.body.createTextRange();
-			        range.moveToElementText(el);
-			        range.select();
-			    }
-			}
-			
 		}
 
+	}
+	
+	/**
+	 * Adds extra functionality to the link box in order to select internal pages etc.
+	 */
+	RedactorPlugins.cmflink = {
+		
+		init: function() {
+			
+			var editor = this,
+			$dropdown = null,
+			links = typeof(editor.opts['links']) != 'undefined' ? editor.opts['links'] : [];
+			
+			// Jiggle some things around a bit...
+			editor.opts.modal_link = modalContent;
+			editor.showLinkOrig = editor.showLink;
+			editor.showLink = editor.showCMFLink;
+			
+			// Don't continue if there are no links
+			if (links.length === 0) { return false; }
+			
+			var modalContent = '<div id="redactor_modal_content">' +
+			'<form id="redactorInsertLinkForm" method="post" action="">' +
+				'<div id="redactor_tabs">' +
+					'<a href="javascript:void(null);" class="redactor_tabs_act">URL</a>' +
+					'<a href="javascript:void(null);">Email</a>' +
+					'<a href="javascript:void(null);">' + RLANG.anchor + '</a>' +
+				'</div>' +
+				'<input type="hidden" id="redactor_tab_selected" value="1" />' +
+				'<div class="redactor_tab" id="redactor_tab1">' +
+					'<div class="redactor-cmf-link"><label>URL</label><input type="text" id="redactor_link_url" class="redactor_input"  /></div>' +
+					'<label>' + RLANG.text + '</label><input type="text" class="redactor_input redactor_link_text" id="redactor_link_url_text" />' +
+					'<label><input type="checkbox" id="redactor_link_blank"> ' + RLANG.link_new_tab + '</label>' +
+				'</div>' +
+				'<div class="redactor_tab" id="redactor_tab2" style="display: none;">' +
+					'<label>Email</label><input type="text" id="redactor_link_mailto" class="redactor_input" />' +
+					'<label>' + RLANG.text + '</label><input type="text" class="redactor_input redactor_link_text" id="redactor_link_mailto_text" />' +
+				'</div>' +
+				'<div class="redactor_tab" id="redactor_tab3" style="display: none;">' +
+					'<label>' + RLANG.anchor + '</label><input type="text" class="redactor_input" id="redactor_link_anchor"  />' +
+					'<label>' + RLANG.text + '</label><input type="text" class="redactor_input redactor_link_text" id="redactor_link_anchor_text" />' +
+				'</div>' +
+			'</form>' +
+			'</div>' +
+			'<div id="redactor_modal_footer">' +
+				'<a href="javascript:void(null);" class="redactor_modal_btn redactor_btn_modal_close">' + RLANG.cancel + '</a>' +
+				'<input type="button" class="redactor_modal_btn" id="redactor_insert_link_btn" value="' + RLANG.insert + '" />' +
+			'</div>';
+			
+			// Find the dropdown
+			for (var i = 0; i < editor.dropdowns.length; i++) {
+				if (editor.dropdowns[i].find('a:contains("Unlink")').length > 0) {
+					$dropdown = editor.dropdowns[i];
+				}
+			}
+			
+			// Don't continue if the dropdown hasn't been found
+			if ($dropdown === null) { return false; }
+			
+			$dropdown.prepend('<a class="redactor_separator_drop"></a>');
+			
+			// Now add some stuff to the dropdown...
+			for (var type in links) {
+				var linkData = links[type];
+				linkData['type'] = type;
+				var $link = $('<a href="javascript:void(null);"><i class="icon icon-' + linkData.icon + '"></i>&nbsp; ' + linkData.singular + ' link...</a>')
+				.prependTo($dropdown)
+				.bind('click', linkData, function(evt) {
+					editor.showItemLink(evt.data);
+					return false;
+				});
+			}
+			
+			var date = new Date();
+			this.$editor.find('a[data-item-id]').each(function(i, node) {
+				$(node).attr('data-item-uid', (date.getTime() - i) + '');
+			});
+			
+			this.$editor.parents('form.item-form').eq(0).submit(function() {
+				editor.$editor.find('a[data-item-uid]').each(function(i, node) {
+					$(node).removeAttr('data-item-uid');
+				});
+				editor.syncCode();
+				
+				return true;
+			});
+			
+			this.$editor.on('mouseover', 'a[data-item-uid]', function(evt) {
+				// Hovering over an inserted item link, show thumbnail?
+			});
+			
+			this.$editor.on('mouseout', 'a[data-item-uid]', function(evt) {
+				// Hide the thumbnail on mouse out...?
+			});
+			
+			// Hijack the modal close so we can fire an event...
+			this.modalCloseOrig = this.modalClose;
+			this.modalClose = this.modalCloseNew;
+			
+		},
+		
+		modalCloseNew: function() {
+			this.modalCloseOrig();
+			this.$editor.trigger('redactor.modal_close');
+			return false;
+		},
+		
+		showItemLink: function(data) {
+			
+			this.saveSelection();
+			
+			var modalItemContent = '<div id="redactor_modal_content">' +
+			'<form id="redactorInsertLinkForm" method="post" action="">' +
+				'<div class="redactor-cmf-link"><label>Select ' + data.singular.toLowerCase() + '</label>' +
+				'<select id="redactor-cmf-select2-link" disabled="disabled"><option selected="selected">Loading...</option></select>' +
+				//<input type="text" id="redactor_link_url" class="redactor_input"  />' +
+				'</div>' +
+				'<label>' + RLANG.text + '</label><input type="text" class="redactor_input redactor_link_text" id="redactor_link_url_text" />' +
+				'<label><input type="checkbox" id="redactor_link_blank"> ' + RLANG.link_new_tab + '</label>' +
+			'</form>' +
+			'</div>' +
+			'<div id="redactor_modal_footer">' +
+				'<a href="javascript:void(null);" class="redactor_modal_btn redactor_btn_modal_close">' + RLANG.cancel + '</a>' +
+				'<input type="button" class="redactor_modal_btn" id="redactor_insert_link_btn" value="' + RLANG.insert + '" />' +
+			'</div>';
+			
+			var callback = $.proxy(function() {
+				
+				this.insert_link_node = false;
+				var sel = this.getSelection();
+				var selHtml = $.trim(this.getSelectedHtml() + '');
+				var url = '', text = '', target = '', itemId = null;
+
+				if (selHtml.match(/<[^<]+>/)) {
+					
+					var $selHtml = $(selHtml);
+					if ($selHtml.find('a[data-item-uid]').length > 0) { $selHtml = $selHtml.find('a[data-item-uid]').eq(0); }
+					
+					if ($selHtml.length > 0 && $selHtml[0].tagName.toLowerCase() == 'a') {
+						var uid = $(selHtml).attr('data-item-uid');
+						var $selectedLink = this.$editor.find('a[data-item-uid="' + uid + '"]').eq(0);
+						this.insert_link_node = $selectedLink;
+					}
+					
+				}
+				
+				if (this.insert_link_node !== false) {
+					
+					text = this.insert_link_node.text();
+					url = this.insert_link_node.attr('href');
+					itemId = parseInt(this.insert_link_node.attr('data-item-id'));
+					target = this.insert_link_node.attr('target');
+					
+				} else if ($.browser.msie) {
+					var parent = this.getParentNode();
+					if (parent.nodeName === 'A')
+					{
+						this.insert_link_node = $(parent);
+						text = this.insert_link_node.text();
+						url = this.insert_link_node.attr('href');
+						itemId = parseInt(this.insert_link_node.attr('data-item-id'));
+						target = this.insert_link_node.attr('target');
+					}
+					else
+					{
+						if (this.oldIE())
+						{
+							text = sel.text;
+						}
+						else
+						{
+							text = sel.toString();
+						}
+					}
+				} else {
+					if (sel && sel.anchorNode && sel.anchorNode.parentNode.tagName === 'A')
+					{
+						url = sel.anchorNode.parentNode.href;
+						itemId = parseInt(sel.anchorNode.parentNode.getAttribute('data-item-id'));
+						text = sel.anchorNode.parentNode.text;
+						target = sel.anchorNode.parentNode.target;
+						this.insert_link_node = sel.anchorNode.parentNode;
+					}
+					else
+					{
+						text = sel.toString();
+					}
+				}
+				
+				$('.redactor_link_text').val(text);
+				
+				var thref = self.location.href.replace(/\/$/i, '');
+				var turl = url.replace(thref, '');
+				
+				// Can't set the value of the select yet - wait until it's loaded!
+				data['itemId'] = itemId;
+				// $('#redactor_link_url').val(turl);
+				
+				if (target === '_blank') {
+					$('#redactor_link_blank').attr('checked', true);
+				}
+				
+				$('#redactor_insert_link_btn').click($.proxy(function() {
+					this.insertItemLink(data);
+				}, this));
+				
+				this.loadItemData(data);
+				
+				setTimeout(function() {
+					$('#redactor_link_url').focus();
+				}, 200);
+				
+			}, this);
+			
+			this.modalInit(data.singular + ' link', modalItemContent, 460, callback);
+			
+		},
+		
+		loadItemData: function(data) {
+			
+			// Either get this data from the server, or get it from a collection in the form somewhere...
+			var $select = $('#redactor-cmf-select2-link').select2({
+				containerCssClass:'input-xxlarge',
+				escapeMarkup: function(text) {
+					return text;
+				},
+				formatResult: function(result, container, query, escapeMarkup) {
+					var markup=[];
+					Select2.util.markMatch($(result.element).html(), query.term, markup, escapeMarkup);
+					return markup.join("");
+				},
+				formatSelection: function(object, container) {
+					container.html($(object.element).html());
+				},
+				matcher: function(term, text, option) {
+					
+					if (term === '') { return true; }
+					
+					text = text.toUpperCase();
+					term = term.toUpperCase();
+					var terms = term.split(' '),
+					matches = 0;
+					
+					for (var i = terms.length - 1; i >= 0; i--) {
+						if (text.indexOf(terms[i])>=0) {
+							matches++;
+						}
+					};
+					
+					return matches == terms.length;
+				}
+			}),
+			url = '/admin/' + data['table_name'] + '/options';
+			
+			// If there is a source, try and find the value in the form
+			if (typeof(data.source) != 'undefined' && getFieldValue(data.source, null) !== null) {
+				var sourceValue = getFieldValue(data.source);
+				url += '?find=' + sourceValue.join(',');
+			}
+			
+			var cRequest = $.ajax({
+				'url': url,
+				'dataType': 'json',
+				'async': true,
+				'type': 'GET',
+				'success': onComplete,
+				'cache': false
+			});
+			
+			// Listen for the modal close event so we can manually close the select2 dropdown
+			this.$editor.bind('redactor.modal_close', function() {
+				$select.select2('close');
+			});
+			
+			function onComplete(results) {
+				
+				$select.removeAttr('disabled').html('');
+				var selectContent = '';
+				
+				// Create the new HTML for the select
+				for (var i = 0; i < results.length; i++) {
+					var option = results[i],
+					selected = option.id === data['itemId'],
+					$content = $('<span>' + option.text + '</span>');
+					//thumbnail = ($content.find('img').length > 0) ? $content.find('img').eq(0).attr('src') : '';
+					$option = $('<option value="' + option.id + '"' + (selected ? ' selected' : '') + '></option>').append($content).appendTo($select);
+				}
+				
+				$select.trigger('change').select2('enable');
+				
+				if ($select.select2('container').find('img').length > 0) {
+					$select.select2('container').addClass('has-thumbnails');
+					$select.data('select2').dropdown.addClass('has-thumbnails');
+				}
+				
+			}
+			
+		},
+		
+		insertItemLink: function(data)
+		{
+			var link = '', text = '', target = '', itemId = '';
+			
+			itemId = $('#redactor-cmf-select2-link').select2('val');
+			type = data['type'];
+			text = $('#redactor_link_url_text').val();
+
+			if ($('#redactor_link_blank').attr('checked')) {
+				target = ' target="_blank"';
+			}
+
+			// test url
+			var pattern = '((xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}';
+			var re = new RegExp('^(http|ftp|https)://' + pattern,'i');
+			var re2 = new RegExp('^' + pattern,'i');
+			if (link.search(re) == -1 && link.search(re2) == 0 && this.opts.protocol !== false) {
+				link = this.opts.protocol + link;
+			}
+			
+			this._insertItemLink('<a href="#" data-item-uid="' + (new Date()).getTime() + '" data-item-id="' + itemId + '" data-item-type="' + type + '"' + target + '>' +  text + '</a>', $.trim(text), itemId, type, target);
+			
+		},
+		
+		_insertItemLink: function(a, text, itemId, type, target)
+		{
+			this.$editor.focus();
+			this.restoreSelection();
+			this.setBuffer();
+
+			if (text !== '')
+			{
+				if (this.insert_link_node)
+				{
+					this.insert_link_node = $(this.insert_link_node)
+					.text(text)
+					.attr('href', '#')
+					.attr('data-item-uid', (new Date()).getTime() + '')
+					.attr('data-item-id', itemId)
+					.attr('data-item-type', type);
+					
+					if (target !== '')
+					{
+						this.insert_link_node.attr('target', target);
+					}
+					else
+					{
+						this.insert_link_node.removeAttr('target');
+					}
+					this.syncCode();
+					//selectElementText(this.insert_link_node[0]);
+				}
+				else
+				{
+					this.execCommand('inserthtml', a);
+				}
+			}
+
+			this.modalClose();
+		},
+		
+		showCMFLink: function() {
+			
+			this.showLinkOrig();
+			//var $modal = $('#redactor_modal_content');
+			
+		}
+		
 	}
 	
 	RedactorPlugins.cmfimages = {
@@ -207,7 +580,7 @@
 			var editor = this,
 			placeholders = editor.opts.placeholders;
 			
-			editor.addBtnAfter('image', 'cmfimage', 'Insert Image (CMF)', $.proxy(function() { editor.showCMFImage(); }, editor));
+			//editor.addBtnAfter('image', 'cmfimage', 'Insert Image (CMF)', $.proxy(function() { editor.showCMFImage(); }, editor));
 			//editor.removeBtn('image');
 			
 			function editImage() {
@@ -420,6 +793,7 @@
 			settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {};
 			
 			var opts = {
+				buttons: ['html', '|', 'formatting', '|', 'bold', 'italic', 'deleted', '|', 'unorderedlist', 'orderedlist', 'outdent', 'indent', '|', 'image', 'video', 'file', 'table', 'link', '|', 'fontcolor', 'backcolor', '|', 'alignment', '|', 'horizontalrule'],
 				imageUpload: '/admin/redactor/imageupload',
 				fileUpload: '/admin/redactor/fileupload',
 				imageGetJson: '/admin/redactor/getimages',
@@ -427,15 +801,23 @@
 				convertDivs: false,
 				autoresize: true,
 				formattingTags: ['p', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4'],
-				plugins: ['cmfimages']
+				plugins: ['cmflink', 'cmfimages']
 			};
 			
+			// Any additional plugins in the field settings
 			if (typeof(settings['plugins']) != 'undefined' && settings['plugins'].length > 0) {
 				opts['plugins'] = opts['plugins'].concat(settings['plugins']);
 			}
 			
-			if (typeof(settings['placeholders']) != 'undefined' && settings['placeholders'].length > 0) {
+			// Any placeholders in the field settings
+			if (typeof(settings['placeholders']) != 'undefined') {
+				opts.plugins.push('placeholder');
 				opts['placeholders'] = settings['placeholders'];
+			}
+			
+			// Any links in the field settings
+			if (typeof(settings['links']) != 'undefined') {
+				opts['links'] = settings['links'];
 			}
 			
 			$input.redactor(opts);

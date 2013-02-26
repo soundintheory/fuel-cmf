@@ -83,9 +83,9 @@ class Admin
 	{
 		if (static::$classes_to_tables !== null) return isset(static::$classes_to_tables[$class_name]) ? static::$classes_to_tables[$class_name] : false;
 		
-	    static::initClassTableMap();
-	    
-	    return isset(static::$classes_to_tables[$class_name]) ? static::$classes_to_tables[$class_name] : false;
+		static::initClassTableMap();
+		
+		return isset(static::$classes_to_tables[$class_name]) ? static::$classes_to_tables[$class_name] : false;
 	}
 	
 	/**

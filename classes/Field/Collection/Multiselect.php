@@ -5,7 +5,7 @@ namespace CMF\Field\Collection;
 class Multiselect extends \CMF\Field\Base {
     
     protected static $defaults = array(
-        'select2' => array(),
+        'select2' => array(  ),
         'transfer' => false,
         'widget' => false,
         'edit' => true,

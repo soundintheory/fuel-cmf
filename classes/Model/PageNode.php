@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM,
 class PageNode extends Node
 {
     protected static $_fields = array(
-        'visible' => array( 'visible' => true ),
+        'visible' => array( 'visible' => true, 'group' => 'title' ),
         'url' => array( 'after' => 'menu_title' ),
         'menu_title' => array( 'after' => 'title' ),
         'title' => array( 'group' => 'title', 'after' => 'visible' ),

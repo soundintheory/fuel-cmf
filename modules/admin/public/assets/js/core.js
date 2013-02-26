@@ -14,6 +14,18 @@ $(window).load(function() {
 	
 });
 
+function getFieldValue(fieldName, fallback) {
+	if (typeof(field_values) == 'undefined') { return fallback; }
+	if (typeof(field_values[fieldName]) != 'undefined') { return field_values[fieldName]; }
+	return fallback;
+}
+
+function setFieldValue(fieldName, value) {
+	if (typeof(field_values) == 'undefined') { field_values = {}; }
+	field_values[fieldName] = value;
+
+}
+
 // Constructs the appropriate URL from the table name and ID, and sends off the specified data to be saved.
 var cItemSaveRequest = null;
 function saveData(table, id, _data) {
@@ -22,6 +34,7 @@ function saveData(table, id, _data) {
 	formData = $itemForm.serializeArray();
 	
 	// Try and populate the stuff automatically if possible...
+	if (typeof(data) == 'undefined') { data = null; }
 	if (isNull(table) && isSet(data)) { table = data['table_name']; }
 	if (isNull(id) && isSet(data)) { id = data['item_id']; }
 	if (isNull(_data) && $('form.item-form').length > 0) {
