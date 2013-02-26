@@ -26,10 +26,10 @@ class CMF
      * @param string $input The string to transform
      * @return string The URL friendly slug
      */
-    public static function slug($input)
+    public static function slug($input, $lowercase = true)
     {
         $input = str_replace(array(".", ",", "'", '"'), "", $input);
-        return \Inflector::friendly_title($input, '-', true);
+        return \Inflector::friendly_title($input, '-', $lowercase);
     }
     
     /**
@@ -196,6 +196,58 @@ class CMF
         ->getQuery()->getSingleScalarResult();
         
         return \CMF::$static_urls[$model] = $url;
+    }
+    
+    /**
+     * Returns a path to use with this upload. Check that the name does not exist,
+     * and appends a suffix otherwise.
+     * @param string $directory Target directory
+     * @param string $filename The name of the file to use.
+     */
+    public static function getUniqueFilePath($directory, $filename)
+    {
+        // Allow only one process at the time to get a unique file name, otherwise
+        // if multiple people would upload a file with the same name at the same time
+        // only the latest would be saved.
+
+        if (function_exists('sem_acquire')){
+            $lock = sem_get(ftok(__FILE__, 'u'));
+            sem_acquire($lock);
+        }
+        
+        $pathinfo = pathinfo($filename);
+        $base = \CMF::slug($pathinfo['filename'], false);
+        $ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
+        $ext = $ext == '' ? $ext : '.' . $ext;
+        $directory = rtrim($directory, DIRECTORY_SEPARATOR);
+
+        $unique = $base;
+        $suffix = 0;
+        
+        if (file_exists($directory . DIRECTORY_SEPARATOR . $unique . $ext)) {
+            
+            // Get unique file name for the file, by appending an integer suffix.
+            $counter = 0;
+            do {
+                $suffix = '_'.++$counter;
+                $unique = $base.$suffix;
+            } while (file_exists($directory . DIRECTORY_SEPARATOR . $unique . $ext));
+            
+        }
+        
+        $result =  $directory . DIRECTORY_SEPARATOR . $unique . $ext;
+
+        // Create an empty target file
+        if (!touch($result)){
+            // Failed
+            $result = false;
+        }
+
+        if (function_exists('sem_acquire')){
+            sem_release($lock);
+        }
+
+        return $result;
     }
     
     /**
