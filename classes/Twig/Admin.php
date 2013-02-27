@@ -84,11 +84,34 @@ class Admin extends Twig_Extension
 	/**
 	 * For the item links that Redactor produces
 	 */
-	public function itemLinks($value, $field, $prefix='', $suffix='')
+	public function itemLinks($value, $opts, $prefix = '', $suffix = '')
 	{
+		$default = array(
+			'field' => 'url',
+			'prefix' => $prefix,
+			'suffix' => $suffix
+		);
+		
+		if (!is_array($opts)) {
+			$default['field'] = $opts;
+			$opts = array();
+		} elseif (isset($opts['field'])) {
+			$default = $opts;
+			$default['prefix'] = isset($default['prefix']) ? $default['prefix'] : '';
+			$default['suffix'] = isset($default['suffix']) ? $default['suffix'] : '';
+		}
+		
+		foreach ($opts as $opts_type => &$type_opts) {
+			if (!is_array($type_opts)) continue;
+			$type_opts['field'] = isset($type_opts['field']) ? $type_opts['field'] : $default['field'];
+			$type_opts['prefix'] = isset($type_opts['prefix']) ? $type_opts['prefix'] : $default['prefix'];
+			$type_opts['suffix'] = isset($type_opts['suffix']) ? $type_opts['suffix'] : $default['suffix'];
+		}
+		
 		// Process the item links
-		return \CMF::processItemLinks($value, function($item) use($field, $prefix, $suffix) {
-		    return $prefix.$item->get($field).$suffix;
+		return \CMF::processItemLinks($value, function($item, $type) use($opts, $default) {
+			$item_opts = \Arr::get($opts, $type, $default);
+		    return $item_opts['prefix'].$item->get($item_opts['field']).$item_opts['suffix'];
 		});
 	}
 	

@@ -100,11 +100,7 @@
 			}
 			
 			opts.formatResult = function(result, container, query, escapeMarkup) {
-				var markup=[];
-				Select2.util.markMatch(result.text, query.term, markup, function(text) {
-					return text;
-				});
-				return markup.join("");
+				return result.text;
 			}
 			
 			if (typeof(opts.alwaysShowPlaceholder) == 'undefined') { opts.alwaysShowPlaceholder = true; }

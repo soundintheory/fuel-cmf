@@ -199,7 +199,7 @@ class CMF
     }
     
     /**
-     * Returns a path to use with this upload. Check that the name does not exist,
+     * Returns a unique path for a file. Check that the name does not exist,
      * and appends a suffix otherwise.
      * @param string $directory Target directory
      * @param string $filename The name of the file to use.
@@ -291,7 +291,7 @@ class CMF
             $item_type = $item_link->getAttribute('data-item-type');
             $item_id = intval($item_link->getAttribute('data-item-id'));
             $item = $item_type::find($item_id);
-            $item_href = $callback($item);
+            $item_href = $callback($item, $item_type);
             $item_link->setAttribute('href', strval($item_href));
             
         }
