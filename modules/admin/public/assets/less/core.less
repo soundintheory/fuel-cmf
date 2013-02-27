@@ -197,7 +197,7 @@ body.sorting {
 }
 
 .actions-top-right {
-	position: absolute; top: 3px; right: 0px;
+	position: absolute; top: 0px; right: 0px;
 	text-align: right;
 	width: 50%;
 }
@@ -293,6 +293,8 @@ body.sorting {
 }
 
 .main-heading {
+	font-size: 26px;
+	line-height: 30px;
 	text-shadow: 1px 1px 0px #FFF;
 	margin-top: -4px;
 	
@@ -592,7 +594,6 @@ body.chromeless .item-form {
 
 /******************************** ITEM LIST ********************************/
 
-
 .item-list .table {
 	
 	.item-link {
@@ -631,6 +632,54 @@ body.chromeless .item-form {
 div.no-items {
 	.border-radius(4px, 4px, 4px, 4px);
 	border: 1px solid #DDD;
+}
+
+.widget.item-filters {
+	
+	form {
+		margin: 0; padding: 0;
+	}
+	
+	hr {
+		margin: 0 0 10px 0;
+	}
+	
+	.widget-content {
+		padding-bottom: 0;
+	}
+	
+	.row-fluid {
+		margin-bottom: 12px;
+	}
+	
+	.control-group {
+		margin-bottom: 0;
+		
+		.row-fluid {
+			height: auto;
+			margin: 0; padding: 0;
+		}
+		
+		hr {
+			margin: 0 0 8px 0;
+		}
+	}
+	
+	label {
+		color: #666;
+		height: 20px;
+		overflow: hidden;
+		font-size: 12px;
+		font-weight: bold;
+	}
+	
+	.checkbox {
+		font-weight: normal;
+		height: auto;
+		margin: 0;
+		color: #999;
+	}
+	
 }
 
 /*
