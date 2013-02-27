@@ -27,5 +27,29 @@ class Password extends \CMF\Field\Base {
         
         return html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') ), $label.$input);
     }
-	
+
+	/**
+     * Validates the this field in the model's validate() method
+     * @see \CMF\Model\Base::validate()
+     * @param mixed $value The value to be validated
+     * @param array $settings The settings for this field
+     * @param object $model The model
+     * @return void
+     */
+    public static function validate($value, $settings, $model)
+    {
+        var_dump($value);exit;
+        if(strpos($settings['mapping']['fieldName'], 'confirm_') === 0 || empty($value))
+            return;
+
+        $confirm_password = 'confirm_'.$settings['mapping']['fieldName'];
+        var_dump($confirm_password);exit;
+        $cpv = $model->get($confirm_password);
+
+        if($value != $cpv){
+            $model->addErrorForField($settings['mapping']['fieldName'], 'Your passwords do not match!');
+            $model->addErrorForField($confirm_password, 'Your passwords do not match!');
+        }
+    }
+    
 }

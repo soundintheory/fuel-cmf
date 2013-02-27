@@ -36,7 +36,16 @@ class User extends Base
      *
      * @var string
      */
-	public $password;
+    public $password;
+
+    /**
+     * User's confirmation password, used for validation purposes
+     *
+     * @var string
+     */
+    public $confirm_password;
+
+
     
     /**
      * Authenticates and allows a user to enter either their email address or
@@ -964,6 +973,11 @@ class User extends Base
             'field' => 'CMF\\Field\\Auth\\Password',
             'title' => 'Password',
             'mapping' => array( 'fieldName' => 'password' )
+        ),
+        'confirm_password' => array(
+            'field' => 'CMF\\Field\\Auth\\Password',
+            'title' => 'Confirm Password',
+            'mapping' => array( 'fieldName' => 'confirm_password' )
         ),
         'roles' => array(
             'field' => 'CMF\\Field\\Collection\\Checkbox'
