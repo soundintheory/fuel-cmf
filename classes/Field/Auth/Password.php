@@ -4,15 +4,7 @@ namespace CMF\Field\Auth;
 
 class Password extends \CMF\Field\Base {
     
-    /**
-     * Renders the field's form element for editing in the admin site
-     * @see \Admin::getFieldSettings()
-     * @param mixed $value The current value of the property, if there is one
-     * @param array $settings Field settings, created through \Admin::getFieldSettings()
-     * @param array $errors Any error messages relating to this field
-     * @param object $model The model, if it is being edited. Will be null if it's new
-     * @return string The form control
-     */
+    /** inheritdoc */
     public static function displayForm($value, &$settings, $model)
     {
         $include_label = isset($settings['label']) ? $settings['label'] : true;
@@ -20,7 +12,7 @@ class Password extends \CMF\Field\Base {
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
-        $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName']);
+        $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors && !empty($errors[0]) ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName']);
         $input = \Form::password($settings['mapping']['fieldName'], strval($value), $input_attributes);
         
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
@@ -28,26 +20,16 @@ class Password extends \CMF\Field\Base {
         return html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') ), $label.$input);
     }
 
-	/**
-     * Validates the this field in the model's validate() method
-     * @see \CMF\Model\Base::validate()
-     * @param mixed $value The value to be validated
-     * @param array $settings The settings for this field
-     * @param object $model The model
-     * @return void
-     */
+	/** inheritdoc */
     public static function validate($value, $settings, $model)
     {
-        var_dump($value);exit;
-        if(strpos($settings['mapping']['fieldName'], 'confirm_') === 0 || empty($value))
-            return;
+        if(strpos($settings['mapping']['fieldName'], 'confirm_') === 0 || empty($value)) return;
 
         $confirm_password = 'confirm_'.$settings['mapping']['fieldName'];
-        var_dump($confirm_password);exit;
         $cpv = $model->get($confirm_password);
 
         if($value != $cpv){
-            $model->addErrorForField($settings['mapping']['fieldName'], 'Your passwords do not match!');
+            $model->addErrorForField($settings['mapping']['fieldName'], '');
             $model->addErrorForField($confirm_password, 'Your passwords do not match!');
         }
     }

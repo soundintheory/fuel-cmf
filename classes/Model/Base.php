@@ -301,7 +301,25 @@ class Base extends \Doctrine\Fuel\Model
     public function validate($groups = null, $fields = null, $exclude_fields = null, $exclude_types = null)
     {
         if (parent::validate($groups, $fields, $exclude_fields)) {
-            return true;
+            
+            $class_name = get_class($this);
+            $field_settings = \Admin::getFieldSettings($class_name);
+            $user_field_settings = $this->settings();
+            $field_settings = \Arr::merge($field_settings, $user_field_settings);
+            
+            foreach ($field_settings as $field_name => $field) {
+                
+                if (($fields !== null && !in_array($field_name, $fields)) || ($exclude_fields !== null && in_array($field_name, $exclude_fields)))
+                    continue;
+                
+                $value = $this->get($field_name);
+                $field_class = $field['field'];
+                $field_class::validate($value, $field, $this);
+                
+            }
+            
+            return count($this->errors) === 0;
+            
         }
         return false;
     }

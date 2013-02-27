@@ -87,6 +87,16 @@ class Base {
     }
     
     /**
+     * Renders a form element to filter by at the top of list pages
+     * @param  $value
+     * @return mixed
+     */
+    public static function displayFilter($value)
+    {
+        return false;
+    }
+    
+    /**
      * Processes the value of this field before getting set to the model in the populate() method
      * @see \CMF\Model\Base::populate()
      * @param mixed $value The value about to be set
