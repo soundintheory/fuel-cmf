@@ -26,7 +26,7 @@ class Mailer
      *
      * @return bool
      */
-    private static function _send_instructions($name, User $user)
+    private static function _send_instructions($name, $user)
     {
         $config_key = null;
 
@@ -47,13 +47,13 @@ class Mailer
         $mail = \Email::forge();
         $mail->from(\Config::get('email.defaults.from.email'), \Config::get('email.defaults.from.name'));
         $mail->to($user->email);
-        $mail->subject(__("auth.mailer.subject.$name"));
+        $mail->subject(__("cmf.auth.mailer.subject.$name"));
 
         $token_name = "{$name}_token";
-        $mail->html_body(\View::forge("auth/mailer/{$name}_instructions", array(
+        $mail->html_body(\View::forge("auth/emails/{$name}_instructions", array(
             'username' => $user->username,
             'uri'      => \Uri::create(':url/:token', array(
-                'url'   => rtrim(\Config::get("auth.{$config_key}.url"), '/'),
+                'url'   => rtrim(\Config::get("cmf.auth.{$config_key}.url"), '/'),
                 'token' => $user->{$token_name}
             ))
         )));
