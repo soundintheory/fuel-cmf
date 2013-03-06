@@ -47,7 +47,7 @@ class Mailer
         $mail = \Email::forge();
         $mail->from(\Config::get('email.defaults.from.email'), \Config::get('email.defaults.from.name'));
         $mail->to($user->email);
-        $mail->subject(__("cmf.auth.mailer.subject.$name"));
+        $mail->subject(\Config::get("cmf.auth.mailer.subject.$name"));
 
         $token_name = "{$name}_token";
         $mail->html_body(\View::forge("auth/emails/{$name}_instructions", array(

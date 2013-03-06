@@ -357,7 +357,7 @@ class User extends Base
         if (\Config::get('cmf.auth.recoverable.in_use') === true &&
             $this->generate_reset_password_token())
         {
-            var_dump(Mailer::send_reset_password_instructions($this));exit;
+            return (Mailer::send_reset_password_instructions($this));
         }
 
         return false;
