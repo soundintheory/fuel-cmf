@@ -5,6 +5,7 @@ $(document).ready(function() {
 	if ($('.item-list').length > 0) { initItemList(); }
 	if ($('.permissions-list').length > 0) { initPermissionsList(); }
 	if ($('#item-tree').length > 0) { initTree(); }
+	if ($('input.datepicker').length > 0 || $('input.datetimepicker').length > 0) { initDatePickers(); }
 	
 });
 
@@ -144,6 +145,19 @@ function initCollapsibleWidgets() {
 		
 	});
 	
+}
+
+function initDatePickers() {
+	
+	$('input.datepicker').datepicker({
+        dateFormat: "dd/mm/yy"
+    });
+    
+    $('input.datetimepicker').datetimepicker({
+		dateFormat: "dd MM yy",
+        timeFormat: "hh:mm tt"
+    });
+    
 }
 
 function initTree() {

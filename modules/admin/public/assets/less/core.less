@@ -197,7 +197,7 @@ body.sorting {
 }
 
 .actions-top-right {
-	position: absolute; top: 0px; right: 0px;
+	position: absolute; top: -4px; right: 0px;
 	text-align: right;
 	width: 50%;
 }
@@ -296,7 +296,7 @@ body.sorting {
 	font-size: 26px;
 	line-height: 30px;
 	text-shadow: 1px 1px 0px #FFF;
-	margin-top: -4px;
+	margin-top: -6px; margin-bottom: 14px;
 	
 	i {
 		margin-right: 6px;
@@ -332,6 +332,29 @@ hr {
 	/* border-color: #CCC #CCC transparent; */
 }
 
+.btn-icon {
+	width: 28px;
+	padding-left: 0px; padding-right: 0px;
+	text-align: center;
+}
+
+.prepend-icon {
+	position: relative;
+	padding-left: 28px;
+	display: block;
+	
+	.add-on {
+		padding-left: 0; padding-right: 0;
+		width: 28px;
+		text-align: center;
+		display: block;
+		position: absolute; top: 0px; left: 0px;
+	}
+}
+
+.btn-icon.btn-large { width: 39px; }
+.btn-icon.btn-small { width: 24px; }
+.btn-icon.btn-mini { width: 22px; }
 
 /******************************** WIDGETS ********************************/
 
@@ -406,11 +429,23 @@ hr {
 	
 	.widget-content {
 		background: #FFF;
-		padding: 14px 20px 12px 20px;
+		padding: 20px;
 		border-left: @widget-border;
 		border-right: @widget-border;
 		border-bottom: @widget-border;
 		.border-radius(0px, 0px, 4px, 4px);
+		
+		form {
+			margin: 0;
+		}
+		
+		.bottom {
+			width: 100%;
+			margin: 0; padding: 0;
+			text-align: right;
+			clear: both;
+		}
+		
 	}
 	
 	.widget-title {
@@ -585,6 +620,10 @@ hr {
 		padding-top: 0px;
 	}
 	
+	.widget-content {
+		padding: 14px 20px 12px;
+	}
+	
 }
 
 body.chromeless .item-form {
@@ -645,6 +684,7 @@ div.no-items {
 	}
 	
 	.widget-content {
+		padding-right: 120px;
 		padding-bottom: 0;
 	}
 	
@@ -678,6 +718,72 @@ div.no-items {
 		height: auto;
 		margin: 0;
 		color: #999;
+	}
+	
+	input, select {
+		max-width: 400px;
+	}
+	
+	.btn-submit {
+		position: absolute; bottom: 24px; right: 26px;
+	}
+	
+	.btn-clear {
+		color: #DA4F49;
+	}
+	
+}
+
+.filter-list {
+	
+	.filter-item {
+		float: left; display: inline;
+		margin: 0 1% 1% 0; padding: 0;
+		width: 49.5%;
+		position: relative;
+		
+		label {
+			position: absolute; top: 0px; left: 0;
+			margin: 0 10px 0 2px;
+			font-size: 10px;
+			line-height: 18px;
+			text-transform: uppercase;
+			font-weight: bold;
+			display: block;
+			color: #666;
+		}
+		
+		.inner {
+			margin: 0; padding: 8px 44px 8px 90px;
+			background: #E0E0E0;
+		}
+		
+		.input {
+			float: left; display: inline;
+			margin: 0;
+		}
+		
+		.btn-remove {
+			position: absolute; top: 9px; right: 8px;
+			color: #DA4F49;
+		}
+		
+		&.odd {
+			margin: 0;
+		}
+		
+		&.locked {
+			
+			.inner {
+				padding-right: 5px;
+			}
+			
+			.btn-remove {
+				display: none;
+			}
+			
+		}
+		
 	}
 	
 }
@@ -1068,6 +1174,10 @@ span.jqtree-dragging {
 		padding-right: 0px;
 		font-size: 16px;
 		color: #999;
+		
+		div {
+			width: 50px;
+		}
 	}
 	
 	td.handle:hover, th.handle:hover {

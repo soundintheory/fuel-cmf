@@ -65,7 +65,7 @@ class URL extends Base
     protected $item_id;
     
     /**
-     * @ORM\Column(type="string"))
+     * @ORM\Column(type="string")
      **/
     protected $url;
     

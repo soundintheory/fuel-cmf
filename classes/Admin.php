@@ -248,7 +248,24 @@ class Admin
 					'icon' => $class_name::icon(),
 					'title' => $class_name::plural(),
 					'href' => '/admin/'.$metadata->table['name'],
-					'class' => $class_name
+					'class' => $class_name,
+					'active' => $class_name === static::$current_class
+				);
+				
+			} else if (isset($item['link'])) {
+				
+				if (!isset($item['title'])) {
+					$parts = explode('/', $item['link']);
+					$item['title'] = \Inflector::humanize(str_replace('-', ' ', array_pop($parts)));
+				}
+				
+				$uri = \Input::uri();
+				
+				$output[$current_group]['items'][] = array(
+					'icon' => isset($item['icon']) ? $item['icon'] : 'dashboard',
+					'title' => $item['title'],
+					'href' => $item['link'],
+					'active' => strpos($uri, $item['link']) === 0
 				);
 				
 			}

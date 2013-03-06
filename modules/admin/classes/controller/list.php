@@ -14,7 +14,9 @@ class Controller_List extends Controller_Base {
 	public function action_index($table_name)
 	{
 		$class_name = \Admin::getClassForTable($table_name);
-		if ($class_name === false) return $this->show404("Can't find that type!");
+		if ($class_name === false) {
+			return $this->customPageOr404(array($table_name), "Can't find that type!");
+		}
 		
 		// Redirect straight to the edit page if the item is static
 		if ($class_name::_static() === true) {
@@ -53,6 +55,7 @@ class Controller_List extends Controller_Base {
 		if (empty($list_fields)) $list_fields = array_keys($fields);
 		$columns = array();
 		$joins = array();
+		$methods = array();
 		
 		// Create static items
 		\Admin::createStaticInstances($metadata);
@@ -68,28 +71,62 @@ class Controller_List extends Controller_Base {
 			
 			if ($field == 'id') continue;
 			
+			// If there is a dot notation try and locate the field
+			if (strpos($field, ".") !== false) {
+				$parts = explode(".", $field);
+				$field_name = array_shift($parts);
+				
+				// If this dot notation refers to an association, we need to find the field data for the target type!
+				if ($metadata->isSingleValuedAssociation($field_name)) {
+					$target_class = $metadata->getAssociationTargetClass($field_name);
+					$target_fields = \Admin::getFieldSettings($target_class);
+					
+					foreach ($target_fields as $target_field => $target_field_settings) {
+						$fields[$field_name.'.'.$target_field] = $target_field_settings;
+					}
+				}
+				
+			} else {
+				$field_name = $field;
+			}
+			
 			// This could be a method on the model
 			if (!isset($fields[$field])) {
 				
-				if (method_exists($class_name, $field)) {
+				if (method_exists($class_name, $field_name)) {
 					
-					$columns[] = array(
+					$column = array(
 						'type' => 'method',
-						'name' => $field,
-						'heading' => \Inflector::humanize(\Inflector::underscore($field))
+						'name' => $field_name,
+						'heading' => \Inflector::humanize(\Inflector::underscore($field_name))
 					);
 					
+					/*
+					if (isset($order[$field_name])) {
+		                $dir = strtolower($order[$field_name]);
+		                $rev = ($dir == 'asc') ? 'desc' : 'asc';
+		                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
+		                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
+		                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_name=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$column['heading'].' '.$verbose ), $column['heading'].' '.$arrows);
+		            } else {
+		                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_name=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$column['heading'].' ascending' ), $column['heading']);
+		            }
+		            */
+		            
+		            $methods[] = $field_name;
+		            $columns[] = $column; 
+		            				
 				}
 				
 				continue;
 			}
 			
-			if ($metadata->isSingleValuedAssociation($field)) {
-				$qb->leftJoin('item.'.$field, $field)->addSelect($field);
-				$joins[] = $field;
-			} else if ($metadata->isCollectionValuedAssociation($field)) {
-				$qb->leftJoin('item.'.$field, $field)->addSelect($field);
-				$joins[] = $field;
+			if ($metadata->isSingleValuedAssociation($field_name) && !in_array($field_name, $joins)) {
+				$qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
+				$joins[] = $field_name;
+			} else if ($metadata->isCollectionValuedAssociation($field_name) && !in_array($field_name, $joins)) {
+				$qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
+				$joins[] = $field_name;
 			}
 			
 			// Get the field class and type
@@ -99,14 +136,16 @@ class Controller_List extends Controller_Base {
 			
 			if (!$sortable) {
 				
-				if (isset($order[$field])) {
-	                $dir = strtolower($order[$field]);
+				$field_colons = str_replace('.', ':', $field);
+				
+				if (isset($order[$field_colons])) {
+	                $dir = strtolower($order[$field_colons]);
 	                $rev = ($dir == 'asc') ? 'desc' : 'asc';
 	                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
 	                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
-	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$field.' '.$verbose ), $fields[$field]['title'].' '.$arrows);
+	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_colons=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$fields[$field]['title'].' '.$verbose ), $fields[$field]['title'].' '.$arrows);
 	            } else {
-	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$field.' ascending' ), $fields[$field]['title']);
+	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_colons=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$fields[$field]['title'].' ascending' ), $fields[$field]['title']);
 	            }
 	            
 	        } else {
@@ -153,22 +192,55 @@ class Controller_List extends Controller_Base {
 			// Add the ordering to the query builder
 			foreach ($order as $field => $direction)
 		    {
-		        if ($metadata->hasAssociation($field)) {
-		            $assoc_class = $metadata->getAssociationTargetClass($field);
-		            $assoc_field = property_exists($assoc_class, 'name') ? 'name' : (property_exists($assoc_class, 'title') ? 'title' : 'id');
-		            $qb->addOrderBy("$field.$assoc_field", $direction);
+		    	if (in_array($field, $methods)) continue;
+		    	
+		    	$field_name = $field;
+		    	$assoc_field = 'title';
+		    	
+		    	// If there is a dot notation (or colon) try and locate the field
+		    	if (strpos($field, ".") !== false) {
+		    		$parts = explode(".", $field);
+		    		$field_name = array_shift($parts);
+		    		$assoc_field = array_shift($parts);
+		    	} else if (strpos($field, ":") !== false) {
+		    		$parts = explode(":", $field);
+		    		$field_name = array_shift($parts);
+		    		$assoc_field = array_shift($parts);
+		    	}
+		    	
+		        if ($metadata->hasAssociation($field_name)) {
+		            $assoc_class = $metadata->getAssociationTargetClass($field_name);
+		            if (!property_exists($assoc_class, $assoc_field)) $assoc_field = property_exists($assoc_class, 'title') ? 'title' : 'id';
+		            $qb->addOrderBy("$field_name.$assoc_field", $direction);
 		        } else {
-		            $qb->addOrderBy("item.$field", $direction);
+		            $qb->addOrderBy("item.$field_name", $direction);
 		        }
 		    }
 			
 		}
 		
-		// TODO: Add filters for paging, list filters, sorting etc.
-		
 		// Get the results and prepare data for the template
 		$rows = $qb->getQuery()->getResult();
 		$ids = array_keys($rows);
+		
+	    // Another pass at the ordering for methods
+	    /*
+		foreach ($order as $field => $direction) {
+			
+	    	if (!in_array($field, $methods)) continue;
+	    	
+	    	if ($direction == 'asc') {
+	    		uasort($rows, function($a, $b) use($field) {
+	    		    return strcmp(strtolower($a->$field()), strtolower($b->$field()));
+	    		});
+	    	} else {
+	    		uasort($rows, function($a, $b) use($field) {
+	    		    return strcmp(strtolower($b->$field()), strtolower($a->$field()));
+	    		});
+	    	}
+	    	
+	    }
+	    */
 		
 		// Item-specific permissions
 		$user = \CMF\Auth::current_user();
