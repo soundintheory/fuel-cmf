@@ -215,6 +215,33 @@ class User extends Base
         //return $return;
         
     }
+    /**
+     * Generate password provides a generated password
+     *
+     *
+     * @return password (plaintext)
+     */
+    public function generate_password()
+    {
+        include(CMFPATH."vendor/passgen/pwgen.class.php");
+        $pwgen = new \PWGen();
+        $password = $pwgen->generate();
+        return $password;
+    }
+    /**
+     * Forgotten Password resets the password using generator and emails it to the user.
+     *
+     *
+     * @return bool
+     */
+    public function forgotten_password()
+    {
+        $password = $this->generate_password();
+        if($this->reset_password($password)) {
+        //we have reset the password and have it ready to email the user..
+        //
+       } 
+    }
 
     /**
      * Update password saving the record and clearing token.
@@ -227,7 +254,7 @@ class User extends Base
     {
 		$this->password = $new_password;
         $this->clear_reset_password_token();
-		
+		//var_dump($this->reset_password_sent_at);exit;
 		$em = \DoctrineFuel::manager();
 		$em->persist($this);
 		$em->flush();
@@ -250,11 +277,14 @@ class User extends Base
     public static function reset_password_by_token($reset_password_token, $new_password)
     {
 		$em = \DoctrineFuel::manager();
-		$query = $em->createQuery("SELECT u FROM CMF\Model\User u WHERE u.reset_password_token = '$reset_password_token'");
+        //get the current class. Maybe we need to check for the proxy class? sometimes happens.
+        $current_class = get_called_class();
+
+		$query = $em->createQuery("SELECT u FROM $current_class u WHERE u.reset_password_token = '$reset_password_token'");
 		$recoverable = $query->getSingleResult();
 
         if ($recoverable) {
-            if ($recoverable->is_reset_password_period_valid()) {
+            if ($recoverable->is_reset_password_period_valid($recoverable)) {
                 $recoverable->reset_password($new_password);
             } else {
                 throw new Failure('expired_token', array('name' => 'Reset password'));
@@ -275,19 +305,23 @@ class User extends Base
      *
      * @return bool Returns true if the user is not responding to reset_password_sent_at at all.
      */
-    public function is_reset_password_period_valid()
+    public function is_reset_password_period_valid( $user = null )
     {
+        if($user == null){
+            $user = $this;
+        }
         if (\Config::get('cmf.auth.recoverable.in_use') === false) {
             return true;
         }
 
-        if ($this->reset_password_sent_at == "0000-00-00 00:00:00") {
+        if ($user->reset_password_sent_at == "0000-00-00 00:00:00") {
             return false;
         }
-
+        //var_dump($user->reset_password_sent_at->format('Y-m-d H:i:s'));exit;
         $lifetime = \Config::get('cmf.auth.recoverable.reset_password_within');
-        $expires  = strtotime($lifetime, strtotime($this->reset_password_sent_at));
 
+        $expires  = strtotime($lifetime, strtotime($user->reset_password_sent_at->format('Y-m-d H:i:s')));
+       // var_dump('hi');exit;
         return (bool)($expires >= time());
     }
 
@@ -303,11 +337,13 @@ class User extends Base
         }
 
         $this->reset_password_token   = Auth::forge()->generate_token();
-        $this->reset_password_sent_at = \Date::time('UTC')->format('mysql');
-
+        $this->reset_password_sent_at = new \Datetime();
+        //\Date::time('UTC')->format('mysql');
+        //var_dump($this->reset_password_sent_at);exit;
         $em = \DoctrineFuel::manager();
 		$em->persist($this);
 		$em->flush();
+
 		return true;
     }
 
@@ -321,7 +357,7 @@ class User extends Base
         if (\Config::get('cmf.auth.recoverable.in_use') === true &&
             $this->generate_reset_password_token())
         {
-            return Mailer::send_reset_password_instructions($this);
+            var_dump(Mailer::send_reset_password_instructions($this));exit;
         }
 
         return false;
@@ -740,7 +776,7 @@ class User extends Base
     protected function clear_reset_password_token()
     {
         $this->reset_password_token   = null;
-        $this->reset_password_sent_at = "0000-00-00 00:00:00";
+        $this->reset_password_sent_at = null;
     }
 
     /**
@@ -1019,11 +1055,22 @@ class User extends Base
      * @ORM\Column(type="binary", length=60)
      **/
     protected $encrypted_password;
-	
-	/**
+    
+    /**
      * @ORM\Column(type="binary", length=60, nullable=true)
      **/
-    protected $authentication_token = null;
+    protected $authentication_token = null; 
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @var datetime
+     **/
+    protected $reset_password_sent_at = null;
+
+    /**
+     * @ORM\Column(type="binary", length=60, nullable=true)
+     **/
+    protected $reset_password_token = null;
 	
 	/**
      * @ORM\Column(type="binary", length=60, nullable=true)

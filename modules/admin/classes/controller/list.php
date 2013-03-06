@@ -703,7 +703,7 @@ class Controller_List extends Controller_Base {
 			$ids[] = $node['id'];
 			
 			if (isset($node['__children'])) {
-				$children = $this->processTreeNodes($node['__children'], $metadata, &$ids);
+				$children = $this->processTreeNodes($node['__children'], $metadata, $ids);
 				unset($node['__children']);
 				$node['children'] = $children;
 			}
