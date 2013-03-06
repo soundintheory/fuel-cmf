@@ -11,14 +11,10 @@
         <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }} ({{ rows|length }})</h2>
         <div class="actions-top-right">
             {% if can_manage %}
-            <a href="/admin/{{ table_name }}/permissions" class="btn btn-medium btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="icon icon-lock"></i></a>
+            <a href="/admin/{{ table_name }}/permissions" class="btn btn-icon btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="icon icon-lock"></i></a>
             {% endif %}
         </div>
         <div class="clear"></div>
-        
-        <div class="list-filters">
-            
-        </div>
 
     	<div class="item-list">
 
@@ -47,7 +43,7 @@
                             {% set edit_link = "/admin/"~table_name~"/"~row.get('id')~"/edit" %}
                             {% for column in columns %}
                                 {% if column.type == 'handle' %}
-                                <td class="handle"><i class="icon-move"></i></td>
+                                <td class="handle"><div><i class="icon-move"></i></div></td>
                                 {% elseif column.type == 'method' %}
                                 <td class="col-type-{{ column.type }}"><a href="{{ editable ? edit_link : '' }}">{{ row.get(column.name) }}</a></td>
                                 {% else %}
@@ -55,8 +51,8 @@
                                 {% endif %}
                             {% endfor %}
                             <td class="actions"><span>
-                                {% if editable %}<a class="btn btn-small" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a>{% endif %} 
-                                {% if deletable %}<a class="btn btn-small btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i></a>{% endif %}
+                                {% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a>{% endif %} 
+                                {% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i></a>{% endif %}
                             </span></td>
                             
                         </tr>

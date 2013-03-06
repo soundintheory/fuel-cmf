@@ -12,12 +12,12 @@ namespace CMF\Controller;
  */
 class Base extends \Controller
 {
-    protected $data = array();
-    protected $template = null;
-    protected $status = 200;
-    protected $headers = array();
+    public $data = array();
+    public $template = null;
+    public $status = 200;
+    public $headers = array();
     
-    protected $model;
+    public $model;
     
     public function action_index()
     {

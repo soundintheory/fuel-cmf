@@ -39,7 +39,8 @@ class Admin extends Twig_Extension
 			'pluralize' => new Twig_Function_Function('Inflector::pluralize'),
 			'singularize' => new Twig_Function_Function('Inflector::singularize'),
 			'str_repeat' => new Twig_Function_Function('str_repeat'),
-			'slug' => new Twig_Function_Function('CMF::slug')
+			'slug' => new Twig_Function_Function('CMF::slug'),
+			'phpinfo' => new Twig_Function_Function('phpinfo')
 		);
 	}
 	

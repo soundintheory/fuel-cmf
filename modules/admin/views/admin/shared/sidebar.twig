@@ -7,7 +7,7 @@
 	    <ul class="nav nav-tabs nav-stacked">
 	    	
 			{% for item in area.items %}
-			    <li class="{{ item.class == current_class ? 'active' : '' }}">
+			    <li class="{{ item.active ? 'active' : '' }}">
 			    	<a href="{{ item.href }}"><i class="icon-{{ item.icon }} item-icon"></i> {{ item.title }}<i class="icon icon-chevron-right arrow"></i></a>
 			    </li>
 			{% endfor %}

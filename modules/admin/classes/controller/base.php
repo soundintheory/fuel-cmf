@@ -4,12 +4,12 @@ namespace Admin;
 
 class Controller_Base extends \Controller {
 	
-	protected $data = array();
-    protected $template = 'admin/dashboard.twig';
-    protected $status = 200;
-    protected $headers = array();
-    protected $assets = array();
-    protected $js = array();
+	public $data = array();
+    public $template = 'admin/dashboard.twig';
+    public $status = 200;
+    public $headers = array();
+    public $assets = array();
+    public $js = array();
 	
 	public function before() {
 		
@@ -57,6 +57,12 @@ class Controller_Base extends \Controller {
         return \Response::forge(\View::forge($this->template, $this->data, false), $this->status, $this->headers);
     }
     
+    public function action_phpinfo()
+    {
+        phpinfo();
+        exit();
+    }
+    
     public function addAssets($new_assets)
 	{
 	    foreach ($new_assets as $type => $assets)
@@ -74,6 +80,42 @@ class Controller_Base extends \Controller {
 	    if (!in_array($src, $current)) $current[] = $src;
 	    $this->assets[$type] = $current;
 	}
+    
+    protected function customPageOr404($segments, $msg)
+    {
+        $main = array_shift($segments);
+        $method = strtolower(\Input::method());
+        $action = ((count($segments) > 0) ? array_shift($segments) : 'index');
+        $controller = 'Controller_Admin_'.ucfirst($main);
+        
+        // Return normal 404 if we can't find the controller class
+        if (!class_exists($controller)) return $this->show404($msg);
+        
+        // Load the controller using reflection
+        $class = new \ReflectionClass($controller);
+        $request = \Request::active();
+        $controller_instance = new $controller($request);
+        $controller_instance->template = 'admin/'.$main.'.twig';
+        
+        // Return normal 404 if we can't find the action method
+        if (!$class->hasMethod($method."_".$action)) {
+            $method = 'action';
+            if (!$class->hasMethod("action_".$action)) return $this->show404($msg);
+        }
+        
+        // fire any controller started events
+        \Event::instance()->has_events('controller_started') and \Event::instance()->trigger('controller_started', '', 'none');
+        
+        $action_method = $class->getMethod($method."_".$action);
+        $class->hasMethod('before') and $class->getMethod('before')->invoke($controller_instance);
+        $response = $action_method->invokeArgs($controller_instance, $request->method_params);
+        $class->hasMethod('after') and $response = $class->getMethod('after')->invoke($controller_instance, $response);
+        
+        // fire any controller finished events
+        \Event::instance()->has_events('controller_finished') and \Event::instance()->trigger('controller_finished', '', 'none');
+        return $response;
+        
+    }
     
     protected function show404($msg)
     {
