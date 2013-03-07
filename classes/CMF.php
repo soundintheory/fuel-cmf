@@ -120,7 +120,7 @@ class CMF
         $filters = array("slug = '$slug'");
         if (!is_null($type)) $filters[] = "type = '$type'";
         
-	    $url = \CMF\Model\URL::findBy($filters);
+	    $url = \CMF\Model\URL::findBy($filters)->getQuery()->getResult();
 	    if (count($url) == 0) return null;
 	    
 	    $url = $url[0];
@@ -317,7 +317,6 @@ class CMF
      */
     public static function processItemLinks($content, $callback)
     {
-        return mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8');
         $doc = new \DOMDocument();
         $doc->loadHTML($content);
         $doc->encoding = 'UTF-8';

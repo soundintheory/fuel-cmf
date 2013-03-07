@@ -62,6 +62,11 @@ class Base extends \Controller
         }
 	    
 	}
+    
+    public function show404($msg = null)
+    {
+        return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => ($msg !== null ? $msg : "That page couldn't be found!") )), 404);
+    }
 	
 	/**
 	 * Automatically locates the ViewModel for the configured template, unless a response has already been generated

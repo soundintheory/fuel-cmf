@@ -140,7 +140,7 @@ class Install
         $user->set('password', $password);
         $user->set('super_user', true);
         
-        $role = \CMF\Model\Role::findBy(array("name = 'admin'"));
+        $role = \CMF\Model\Role::findBy(array("name = 'admin'"))->getQuery()->getResult();
         if (count($role) == 0){
             $role = new \CMF\Model\Role();
             $role->set('name', 'admin');

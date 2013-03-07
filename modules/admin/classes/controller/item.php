@@ -101,11 +101,13 @@ class Controller_Item extends Controller_Base {
 	/**
 	 * Either creates or updates a model depending on whether an ID is passed in.
 	 */
-	public function action_save($table_name, $id = null)
+	public function action_save($table_name, $id = null, $method = null)
 	{
 	    // Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
-		if ($class_name === false) return $this->show404("Can't find that type!");
+		if ($class_name === false) {
+			return $this->customPageOr404(array($table_name, $method), "Can't find that type!");
+		}
 		
 		$can_edit = \CMF\Auth::can('edit', $class_name);
 		

@@ -578,7 +578,7 @@ class Base extends \Doctrine\Fuel\Model
         $cache_id = md5($called_class.serialize($filters).serialize($orderBy).$limit.$offset);
         if (isset($called_class::$_options[$cache_id])) return $called_class::$_options[$cache_id];
         
-        $results = $called_class::findBy($filters, $orderBy, $limit, $offset, $params);
+        $results = $called_class::findBy($filters, $orderBy, $limit, $offset, $params)->getQuery()->getResult();
         $options = array();
         
         foreach ($results as $result) {
