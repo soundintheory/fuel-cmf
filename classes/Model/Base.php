@@ -309,7 +309,7 @@ class Base extends \Doctrine\Fuel\Model
             
             foreach ($field_settings as $field_name => $field) {
                 
-                if (($fields !== null && !in_array($field_name, $fields)) || ($exclude_fields !== null && in_array($field_name, $exclude_fields)))
+                if ($field_name == 'id' || ($fields !== null && !in_array($field_name, $fields)) || ($exclude_fields !== null && in_array($field_name, $exclude_fields)))
                     continue;
                 
                 $value = $this->get($field_name);
@@ -433,7 +433,8 @@ class Base extends \Doctrine\Fuel\Model
         if($value instanceof \DateTime) {
             $identifier = $value->format('c');
         } elseif ($value instanceof \Doctrine\Fuel\Model) {
-            $identifier = !is_null($value->id) ? $value->id : 'newitem';
+            $id = $value->get('id');
+            $identifier = (!is_null($id)) ? $id : 'newitem';
         } elseif (is_array($value)) {
             $identifier = serialize($value);
         } elseif (is_object($value)) {

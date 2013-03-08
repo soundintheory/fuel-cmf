@@ -116,7 +116,7 @@ class SortableListener implements EventSubscriber
                 $group_relocations = $class_relocations['groups'];
                 $ids = array();
                 foreach ($group_relocations as $group) {
-                    $ids = array_merge($ids, $group['items']);
+                    $ids = array_merge($ids, array_values($group['items']));
                 }
                 
                 foreach ($items as $item) {
@@ -156,7 +156,6 @@ class SortableListener implements EventSubscriber
                     $group_relocations[$identifier]['num_updated'] = $num_updated;
                     
                 }
-                
                 
             } else {
                 
