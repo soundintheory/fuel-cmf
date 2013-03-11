@@ -16,12 +16,25 @@ class Base extends \Controller
     public $template = null;
     public $status = 200;
     public $headers = array();
-    
-    public $model;
+    public $model = null;
     
     public function action_index()
     {
         // Nothing
+    }
+    
+    public function before()
+    {
+        
+    }
+    
+    /**
+     * Whether or not to attempt caching for this controller
+     * @return boolean
+     */
+    public function cache()
+    {
+        return true;
     }
 
 	/**
@@ -33,7 +46,7 @@ class Base extends \Controller
 	public function action_404()
 	{
 	    // Will try to find the model based on the URL
-	    $model = \CMF::currentModel();
+	    $model = $this->model = \CMF::currentModel();
 	    
 	    // Return the normal 404 error if not found
 	    if (is_null($model)) {
@@ -58,7 +71,7 @@ class Base extends \Controller
         }
         else if (\CMF::$root)
         {
-            return \Request::forge('root/'.$action, false)->execute()->response();
+            return \Request::forge('base/'.$action, false)->execute()->response();
         }
 	    
 	}
@@ -69,7 +82,7 @@ class Base extends \Controller
     }
 	
 	/**
-	 * Automatically locates the ViewModel for the configured template, unless a response has already been generated
+	 * Automatically locates the ViewModel for the configured template, unless a response has already been generated.
 	 * 
 	 * @access  public
 	 * @return  Response
@@ -85,7 +98,7 @@ class Base extends \Controller
         if ($this->status == 404) return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
         
         // Get the model - this will have previously been found
-        $this->model = !is_null($this->model) ? $this->model : \CMF::currentModel();
+        if (is_null($this->model)) $this->model = \CMF::currentModel();
         
         if (!isset($this->template)) {
             // Try and find the template from the CMF...

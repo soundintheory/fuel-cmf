@@ -56,10 +56,10 @@ class Driver
         $auth_token = \Session::get($type.'_logged');
 
         if (!empty($auth_token) &&
-            (!$this->user || ($this->user->get('email') != $auth_token && $this->user->get('username') != $auth_token)))
+            (!$this->user || $this->user->get('id') != $auth_token))
         {
             $this->user = null;
-            $user = $type::select('item')->where("item.username = '$auth_token'")->orWhere("item.email = '$auth_token'")->getQuery()->getResult();
+            $user = $type::select('item')->where("item.id = $auth_token")->getQuery()->getResult();
             
             if (count($user) > 0 && !$user[0]->is_access_locked()) {
                 $this->set_user($user[0]);
@@ -157,15 +157,20 @@ class Driver
                 foreach ($roles as $role) {
                     
                     $role_passed = 0;
+                    $resource_permissions = 0;
                     foreach ($role->permissions as $permission) {
                         if ($permission->action == 'all' && in_array($permission->resource, $resource)) {
                             $role_passed = count($action);
                             break;
                         }
-                        if (in_array($permission->action, $action) && in_array($permission->resource, $resource)) {
-                            $role_passed++;
+                        if (in_array($permission->resource, $resource)) {
+                            if (in_array($permission->action, $action)) {
+                                $role_passed++;
+                            }
+                            $resource_permissions++;
                         }
                     }
+                    if ($resource_permissions === 0) $role_passed = count($action);
                     $passed += $role_passed;
                     
                 }
@@ -345,34 +350,9 @@ class Driver
     protected function complete_login(User $user, $type = 'Admin\\Model_User')
     {
         // Create and set new authentication token
-        $token = $user->get('email');
-        if (!isset($token)) $token = $user->get('username');
-        /*
-        if (!isset($token)) {
-            $token = Auth::forge()->generate_token();
-            $user->set('authentication_token', $token);
-            \DoctrineFuel::manager()->persist($user);
-            \DoctrineFuel::manager()->flush();
-        }
-        */
+        $token = $user->get('id');
 
         try {
-            /*
-            if ($this->config['trackable'] === true) {
-                $user->update_tracked_fields();
-            } else {
-                if ($this->config['lockable']['in_use'] === true) {
-                    $strategy = $this->config['lockable']['lock_strategy'];
-
-                    if (!empty($strategy) && $strategy != 'none') {
-                        $user->{$strategy} = 0;
-                    }
-                }
-                
-                \DoctrineFuel::manager()->persist($user);
-                \DoctrineFuel::manager()->flush();
-            }
-            */
             
             \Session::set($type.'_logged', $token);
             \Session::instance()->rotate();

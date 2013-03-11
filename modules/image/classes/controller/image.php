@@ -166,10 +166,13 @@ class Controller_Image extends \Controller {
 		$status = 200;
 
 		// Set the response headers for cache etc
-		$headers = array('Cache-Control' => 'public',
-                      'Last-Modified' => gmdate('D, d M Y H:i:s', $file_last_modified).' GMT',
-                      'Content-Disposition' => 'inline; filename='.$this->filename,
-                      'Content-Type' => $mime_type);
+		$headers = array(
+			'Cache-Control' => 'public',
+			'Last-Modified' => gmdate('D, d M Y H:i:s', $file_last_modified).' GMT',
+			'Content-Disposition' => 'inline; filename='.$this->filename,
+			'Content-Type' => $mime_type
+		);
+		
 		$body = '';
 		
 		// Return 304 not modified if the file hasn't changed

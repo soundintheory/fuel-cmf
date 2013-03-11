@@ -10,6 +10,15 @@ class Controller_Base extends \Controller {
     public $headers = array();
     public $assets = array();
     public $js = array();
+    
+    /**
+     * Whether or not to attempt caching for this controller
+     * @return boolean
+     */
+    public function cache()
+    {
+        return false;
+    }
 	
 	public function before() {
 		
@@ -103,16 +112,12 @@ class Controller_Base extends \Controller {
             if (!$class->hasMethod("action_".$action)) return $this->show404($msg);
         }
         
-        // fire any controller started events
-        \Event::instance()->has_events('controller_started') and \Event::instance()->trigger('controller_started', '', 'none');
-        
+        // Run through the before > action > after process
         $action_method = $class->getMethod($method."_".$action);
         $class->hasMethod('before') and $class->getMethod('before')->invoke($controller_instance);
         $response = $action_method->invokeArgs($controller_instance, $request->method_params);
         $class->hasMethod('after') and $response = $class->getMethod('after')->invoke($controller_instance, $response);
         
-        // fire any controller finished events
-        \Event::instance()->has_events('controller_finished') and \Event::instance()->trigger('controller_finished', '', 'none');
         return $response;
         
     }

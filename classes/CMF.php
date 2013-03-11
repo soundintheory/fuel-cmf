@@ -251,43 +251,6 @@ class CMF
     }
     
     /**
-     * Creates a log entry with the given data
-     * @param \CMF\Model\User $user User to log against
-     * @param \CMF\Model\Base $item Item to log against
-     * @param string $action The name of the action that has happened
-     * @param string $message An additional verbose message if required
-     * @return void
-     */
-    public static function log($user = null, $item = null, $action = 'view', $message = '')
-    {
-        $log = new \CMF\Model\Log();
-        
-        // Set the user info
-        if ($user === null) { $user = \CMF\Auth::current_user(); }
-        if ($user !== null) {
-            $log->set('user_id', $user->id);
-            $log->set('user_type', get_class($user));
-        }
-        
-        // Set the item data
-        if ($item === null) { $item = static::currentModel(); }
-        if ($item !== null) {
-            $log->set('item_id', $item->id);
-            $log->set('item_type', get_class($item));
-            $log->set('item_label', strip_tags($item->display()));
-        }
-        
-        // Action and message
-        $log->set('action', $action);
-        $log->set('message', $message);
-        
-        $em = \DoctrineFuel::manager();
-        $em->persist($log);
-        $em->flush();
-        
-    }
-    
-    /**
      * Given the value of a link object field (external or internal), will return the correct url
      * @param object $data
      * @return string
@@ -318,7 +281,7 @@ class CMF
     public static function processItemLinks($content, $callback)
     {
         $doc = new \DOMDocument();
-        $doc->loadHTML($content);
+        @$doc->loadHTML($content);
         $doc->encoding = 'UTF-8';
         
         $xpath = new \DOMXPath($doc);

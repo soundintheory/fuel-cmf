@@ -14,16 +14,45 @@ return array (
     
     'auth' => array(
         
+        // Set the remember-me cookie lifetime, in seconds. The default
+        // lifetime is two weeks.
+        'lifetime' => 1209600,
+        
+        'default_role' => null,
+        
         // Use these on top of the defaults: view, edit, create, delete
         'permissions' => array(''),
         
         // Additional resources to configure access to
         'resources' => array(
-            
             // Whether they are able to log into the admin site
             'admin_site' => 'Admin Site'
-            
-        )
+        ),
+        
+        'http_authenticatable' => array(
+            'in_use'   => false,
+            'method' => 'digest',
+            'realm'  => 'Protected by Sound in Theory',
+            'users' => array(
+                //'user' => 'password'
+            )
+        ),
+        
+    ),
+    
+    'cache' => array(
+        
+        'enabled' => true,
+        'driver' => 'auto',
+        
+        // Prevent these urls from being cached
+        'excluded_urls' => array(
+            '/admin/*',
+            '/image/*'
+        ),
+        
+        // Session vars to index the cache by
+        'session_index' => array()
         
     ),
     

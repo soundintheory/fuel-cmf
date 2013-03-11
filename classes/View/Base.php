@@ -4,6 +4,10 @@ namespace CMF\View;
 
 class Base extends \ViewModel
 {
+    public function getView()
+    {
+        return $this->_view;
+    }
     
     protected function pageTree($model = 'Model_Page_Page')
     {

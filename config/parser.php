@@ -68,7 +68,7 @@ return array(
 			'debug'                => false,
 			'charset'              => 'utf-8',
 			'base_template_class'  => 'Twig_Template',
-			'cache'                => APPPATH.'cache'.DS.'twig'.DS,
+			'cache'                => APPPATH.'cache'.DS.'twig',
 			'auto_reload'          => true,
 			'strict_variables'     => false,
 			'autoescape'           => false,
@@ -77,7 +77,8 @@ return array(
 		'extensions' => array(
 			'Twig_Fuel_Extension',
 			'Twig_Extensions_Extension_Text',
-			'CMF\\Twig\\Admin'
+			'CMF\\Twig\\Admin',
+			'CMF\\Twig\\Cache'
 		),
 	),
 

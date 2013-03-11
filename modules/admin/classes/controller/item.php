@@ -120,7 +120,7 @@ class Controller_Item extends Controller_Base {
 		$actioned = "saved";
 		
 		// Find the model, or create a new one if there's no ID
-		if ($exists = isset($id)) {
+		if ($exists = isset($id) && !empty($id)) {
 			$model = $class_name::find($id);
 			if (is_null($model)) return $this->show404("Can't find that model!");
 		} else {
@@ -328,10 +328,10 @@ class Controller_Item extends Controller_Base {
 		try {
 			
 			$em = \DoctrineFuel::manager();
-	    	$em->persist($model);
-	        $em->flush();
-	        
-	        $result['updated_at'] = $model->updated_at->format("d/m/Y \\a\\t H:i:s");
+			$em->persist($model);
+			$em->flush();
+			
+			$result['updated_at'] = $model->updated_at->format("d/m/Y \\a\\t H:i:s");
 	        
 		} catch (\Exception $e) {
 			$result['success'] = false;
