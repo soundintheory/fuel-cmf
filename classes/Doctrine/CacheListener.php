@@ -3,6 +3,7 @@
 namespace CMF\Doctrine;
 
 use Doctrine\Common\EventArgs,
+    Doctrine\ORM\Event\LifecycleEventArgs,
     Doctrine\Common\EventSubscriber;
 
 class CacheListener implements EventSubscriber
@@ -17,13 +18,14 @@ class CacheListener implements EventSubscriber
     public function getSubscribedEvents()
     {
         return array(
-            'loadClassMetadata'
+            'postLoad'
         );
     }
     
-    public function loadClassMetadata(EventArgs $eventArgs)
+    public function postLoad(LifecycleEventArgs $eventArgs)
     {
-        $this->classes[] = $eventArgs->getClassMetadata()->name;
+        $class = get_class($eventArgs->getEntity());
+        if (!in_array($class, $this->classes)) $this->classes[] = $class;
     }
     
 }

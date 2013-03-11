@@ -141,8 +141,10 @@ class Auto extends Simple {
 			
 			if (count($aliases) > 1) {
 				$append = ', (COUNT('.implode('.id)+COUNT(',$aliases).'.id)) as count'.$append;
-			} else {
+			} else if (count($aliases) === 1) {
 				$append = ', COUNT('.$aliases[0].'.id) as count'.$append;
+			} else {
+				continue;
 			}
 			
 			$subqueries[] = 'q'.$num;
