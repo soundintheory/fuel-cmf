@@ -280,8 +280,9 @@ class CMF
      */
     public static function processItemLinks($content, $callback)
     {
+        libxml_use_internal_errors(true);
         $doc = new \DOMDocument();
-        @$doc->loadHTML($content);
+        @$doc->loadHTML("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />".$content);
         $doc->encoding = 'UTF-8';
         
         $xpath = new \DOMXPath($doc);
@@ -298,7 +299,7 @@ class CMF
         }
         
         // Apparently there's no better way of outputting the html without the <body>, doctype and other crap around it
-        return preg_replace(array("/^\<\!DOCTYPE.*?<html><body>/si", "!</body></html>$!si"), "", $doc->saveHTML());
+        return preg_replace(array("/^\<\!DOCTYPE.*?<html>.*<body>/si", "!</body></html>$!si"), "", $doc->saveHTML());
         
     }
 	
