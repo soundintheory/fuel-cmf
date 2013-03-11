@@ -23,7 +23,8 @@ class Auto extends Simple {
 			// Check the files first
 			$cache_modified = filemtime($this->path);
 			foreach ($contents['files'] as $file) {
-				if (filemtime($file) > $cache_modified) {
+				$file = APPPATH.$file;
+				if (!file_exists($file) || filemtime($file) > $cache_modified) {
 					$this->startListeners();
 					return false;
 				}
@@ -117,6 +118,11 @@ class Auto extends Simple {
 		$this->files = array_merge($this->files, array_filter(get_included_files(), function($path) {
 			return strpos($path, APPPATH.'config/') === 0;
 		}));
+		
+		// Replace the app path each file path
+		$this->files = array_map(function($path) {
+			return str_replace(APPPATH, '', $path);
+		}, $this->files);
 		
 		// Construct ourselves a number of sub queries to check all the relevant records in the database
 		foreach ($queries as $num => $query) {
