@@ -7,7 +7,7 @@
 
 return array(
 	
-    'cache_driver' => 'array',
+    'cache_driver' => 'file',
 	'auto_generate_proxy_classes' => true,
 	'proxy_dir' => APPPATH . 'classes' . DS . 'model' . DS . 'proxy',
 	'proxy_namespace' => 'Proxy',
