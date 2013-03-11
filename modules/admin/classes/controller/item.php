@@ -135,7 +135,7 @@ class Controller_Item extends Controller_Base {
 		$model->populate(\Input::post());
 		
 		// Validate the model
-	    if ($model->validate()) {
+	    if ($model->validate(null, null, array('id', 'pos'))) {
 	    	
 	    	// Save any uploads
 	    	\Upload::save();
@@ -169,6 +169,9 @@ class Controller_Item extends Controller_Base {
 	        }
 	        
 	    }
+	    
+	    print_r($model->errors);
+	    exit();
 	    
 	    // If it's come this far, we have a problem. Render out the form with the errors...
 	    $this->form = new ModelForm($metadata, $model);
