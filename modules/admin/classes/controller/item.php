@@ -170,9 +170,6 @@ class Controller_Item extends Controller_Base {
 	        
 	    }
 	    
-	    print_r($model->errors);
-	    exit();
-	    
 	    // If it's come this far, we have a problem. Render out the form with the errors...
 	    $this->form = new ModelForm($metadata, $model);
 		$this->icon = $class_name::icon();
