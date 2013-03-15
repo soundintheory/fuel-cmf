@@ -100,23 +100,31 @@ class Controller_Install extends Controller_Base {
 		$error = null;
 
 		if(\Input::post()){
-			$username = \Input::post('username');
-			$password = \Input::post('password');
-			$email_address = \Input::post('email_address');
-			if(\CMF\Install::createSuperUser($username, $password, $email_address)){
+			$post_data = \Input::post();
+			$create_user = \CMF\Install::createSuperUser($post_data);
+
+			if($create_user === true){
 				\Response::redirect('/admin/install/finishing');
 			}
 			else{
-				$error = "Could not create super user.";
+				//var_dump($create_user);exit;
+				$error = "Could not create super user. ";
+				if(is_array($create_user)){
+					foreach ($create_user as $key => $field) {
+						foreach ($field as $key => $value) {
+							$error .= $value." ";
+						}
+					}
+				}
 			}
 		}
 		include(CMFPATH."vendor/passgen/pwgen.class.php");
-		$pwgen = new \PWGen();
-	   $password = $pwgen->generate();
+		
+		$password = \CMF\Install::generatePassword();
 
 	   $email_address = "your@emailaddress.com";
 
-	   $username = "administrator";
+	   $username = "admin";
 
 	   $data = array(
 	                 "username" => $username,

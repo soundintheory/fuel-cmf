@@ -123,23 +123,22 @@ class Install
      * @param  string $email 
      * @return bool success
      */
-    public static function createSuperUser($username = 'administrator', $password = null, $email = "system.admin@soundintheory.co.uk")
+    public static function createSuperUser($post_data)
     {
-        if(!$password){
-            // include(CMFPATH."vendor/passgen/pwgen.class.php");
-            // $pwgen = new \PWGen();
-            // $password = $pwgen->generate();
-            // $password = "Pa$$sw0rd";
-        }
+        $username = isset($post_data['username']) ? $post_data['username'] : "";
+        $password = isset($post_data['password']) ? $post_data['password'] : "";
+        $confirm_password = isset($post_data['confirm_password']) ? $post_data['confirm_password'] : "";
+        $email_address = isset($post_data['email_address']) ? $post_data['email_address'] : "";
         
         $em = \DoctrineFuel::manager();
         $user = new \Admin\Model_User();
         
-        $user->set('email', $email);
+        $user->set('email', $email_address);
         $user->set('username', $username);
         $user->set('password', $password);
+        $user->set('confirm_password', $confirm_password);
         $user->set('super_user', true);
-        
+       
         $role = \CMF\Model\Role::findBy(array("name = 'admin'"))->getQuery()->getResult();
         if (count($role) == 0){
             $role = new \CMF\Model\Role();
@@ -150,16 +149,16 @@ class Install
           $role = $role[0];
         }
         $user->add('roles',$role);
-        
+       
         if (!$user->validate()) {
-            return false;
+            return $user->errors;
         }
         
         $em->persist($user);
         $em->flush();
         
         // lets assume it all went ok..
-        return \CMF\Install::email_user($username, $password, $email);
+        return \CMF\Install::email_user($username, $password, $email_address);
     }
     
     /**
@@ -167,10 +166,10 @@ class Install
      * 
      * @param  string $username   
      * @param  string $password
-     * @param  string $email 
+     * @param  string $email_address 
      * @return bool success
      */
-    public static function email_user($username, $password, $email)
+    public static function email_user($username, $password, $email_address)
     {
         $title = \Config::get('cmf.admin.title');
         $message = "A new super user has been created on ".$title."\n
@@ -184,7 +183,7 @@ class Install
         $new_email->from('cmf@soundintheory.co.uk');
         
         // Set the to address
-        $new_email->to($email);
+        $new_email->to($email_address);
         
         // Set a subject
         $new_email->subject("Account creation on ".$title);
@@ -341,7 +340,9 @@ MIGRATION;
       $app_config_path = APPPATH.'config/cmf.php';
       $config = file_get_contents($app_config_path);
       //remove the  index keys from the arrays
-      $config = preg_replace('/[0-9]+[\s|\n|\r]+\=\>[\s|\n|\r]+[a-z]+[(]{1}[\s|\n|\r]+(.[^)]+)\)\,[\s|\n|\r]+/', '$1', $config);
+      //any idea why this doesnt work?
+      $config = preg_replace('/[0-9]+[\s|\n|\r]+\=\>[\s|\n|\r]+([a-z]+[(]{1}.[^)]+\)\,)[\s|\n|\r]+/', '$1', $config);
+
       //remove the new line before an array
       $config = preg_replace('/[\s]+(array\()/', ' $1', $config);
       return file_put_contents($app_config_path, $config);
@@ -365,5 +366,28 @@ MIGRATION;
         }
         return false;
     }
-    
+     /**
+     * Sets site specific stuff for admin, 
+     * @param  array  $settings single level array of settings to enter into config
+     * @return bool success or fail 
+     */
+    public static function generatePassword($random = true)
+    {
+        
+        if($random){
+            $pwgen = new \PWGen();
+            return $pwgen->generate();
+        }
+        else{
+            //get site title
+            $title = \Config::get('cmf.admin.title');
+
+            //do some stuff with the title
+            $title = substr(strtolower(preg_replace('/\s+/', '', $title)), 0, 4);
+
+            $password = $title . "pa$$".rand(0,9);
+
+            return $password;
+        }
+    }
 }
