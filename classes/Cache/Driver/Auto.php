@@ -24,9 +24,10 @@ class Auto extends Simple {
 			$cache_modified = filemtime($this->path);
 			foreach ($contents['files'] as $file) {
 				$file = APPPATH.$file;
+				$this->startListeners();
 				return false;
 				if (!file_exists($file) || filemtime($file) > $cache_modified) {
-					$this->startListeners();
+					
 					return false;
 				}
 			}
