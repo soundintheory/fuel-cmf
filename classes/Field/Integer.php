@@ -18,7 +18,7 @@ class Integer extends Base {
     /* inheritdoc */
     public static function validate($value, $settings, $model)
     {
-        if (!is_int($value)) {
+        if (!is_null($value) && !is_int($value)) {
             $model->addErrorForField($settings['mapping']['fieldName'], 'This is not a valid number');
         }
     }
