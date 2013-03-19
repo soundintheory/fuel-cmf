@@ -1,7 +1,7 @@
 (function($) {
     
     $(document).ready(function() {
-        $('.field-type-file').each(initItem);
+        $('.field-type-file.file').each(initItem);
     });
     
     function initItem() {
@@ -180,7 +180,7 @@
     
     // When a new form is added, run it again!
     $(window).bind('cmf.newform', function(e, data) {
-        data.wrap.find('.field-type-file').each(initItem);
+        data.wrap.find('.field-type-file.file').each(initItem);
     });
     
 })(jQuery);

@@ -33,7 +33,7 @@ class File extends Base {
         $preview_value = (isset($value) && !empty($value)) ? str_replace($settings['path'], '', $value) : '';
         
         $attributes = array(
-            'class' => 'field-type-file controls control-group'.($settings['has_errors'] ? ' error' : ''),
+            'class' => 'field-type-file file controls control-group'.($settings['has_errors'] ? ' error' : ''),
             'id' => 'field_'.\CMF::slug($settings['mapping']['fieldName'])
         );
         
