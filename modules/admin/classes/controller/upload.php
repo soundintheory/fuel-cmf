@@ -177,7 +177,7 @@ class Controller_Upload extends Controller_Base {
             // Last chunk saved successfully
             if ($success AND ($totalParts-1 == $partIndex)){
 
-                $target = $this->getUniqueTargetPath($uploadDirectory, $name);
+                $target = \CMF::getUniqueFilePath($uploadDirectory, $name);
                 $this->uploadName = basename($target);
 
                 $target = fopen($target, 'w');
@@ -206,7 +206,7 @@ class Controller_Upload extends Controller_Base {
 
         } else {
 
-            $target = $this->target = $this->getUniqueTargetPath($uploadDirectory, $name);
+            $target = $this->target = \CMF::getUniqueFilePath($uploadDirectory, $name);
 
             if ($target){
                 $this->uploadName = basename($target);
