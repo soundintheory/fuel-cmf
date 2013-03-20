@@ -24,21 +24,22 @@ class Auto extends Simple {
 			$cache_modified = filemtime($this->path);
 			foreach ($contents['files'] as $file) {
 				$file = APPPATH.$file;
-				$this->startListeners();
-				return false;
 				if (!file_exists($file) || filemtime($file) > $cache_modified) {
-					
+					$this->startListeners();
 					return false;
 				}
 			}
 			
 			// Now check the last modified / record counts from the DB
-			$result = \DB::query($contents['sql'])->execute()->as_array();
-			$result = $result[0];
-			
-			if ($result['count'] !== $contents['count'] || strtotime($result['updated_at']) > $contents['updated_at']) {
-				$this->startListeners();
-				return false;
+			if (!empty($contents['sql'])) {
+				
+				$result = \DB::query($contents['sql'])->execute()->as_array();
+				$result = $result[0];
+				
+				if ($result['count'] !== $contents['count'] || strtotime($result['updated_at']) > $contents['updated_at']) {
+					$this->startListeners();
+					return false;
+				}
 			}
 			
 			// We are home and dry - the cache is completely valid.
@@ -160,17 +161,21 @@ class Auto extends Simple {
 			
 		}
 		
-		// Complete the mega query that will check if items are updated or not...
-		if (count($subqueries) > 1) {
-			$sql = 'SELECT GREATEST('.implode('.updated_at, ', $subqueries).'.updated_at) AS updated_at, ('.implode('.count+', $subqueries).'.count) AS count FROM'.$sql;
-		} else {
-			$sql = 'SELECT q0.updated_at, q0.count FROM'.$sql;
+		if (!empty($sql)) {
+			
+			// Complete the mega query that will check if items are updated or not...
+			if (count($subqueries) > 1) {
+				$sql = 'SELECT GREATEST('.implode('.updated_at, ', $subqueries).'.updated_at) AS updated_at, ('.implode('.count+', $subqueries).'.count) AS count FROM'.$sql;
+			} else {
+				$sql = 'SELECT q0.updated_at, q0.count FROM'.$sql;
+			}
+			
+			// Run the query - this must be done now because we can't reliably get the correct results from what we have
+			$result = \DB::query($sql)->execute()->as_array();
+			$result = $result[0];
+			$result['updated_at'] = strtotime($result['updated_at']);
+			
 		}
-		
-		// Run the query - this must be done now because we can't reliably get the correct results from what we have
-		$result = \DB::query($sql)->execute()->as_array();
-		$result = $result[0];
-		$result['updated_at'] = strtotime($result['updated_at']);
 		
 		// Add the rest of the stuff to the result
 		$result['sql'] = $sql;
