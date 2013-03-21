@@ -8,6 +8,8 @@ use Twig_Autoloader,
 
 class Base {
     
+    public static $always_process = false;
+    
     protected static $defaults = array(
         'input_attributes' => array(
             'class' => 'input-xxlarge'
@@ -106,16 +108,19 @@ class Base {
      */
     public static function process($value, $settings, $model)
     {
-        if ((isset($settings['auto_update']) && $settings['auto_update'] == '1') && 
+        if (!(isset($settings['auto_update']) && $settings['auto_update'] == '0') && 
             (isset($settings['template']) && !empty($settings['template']))) {
             
             $post_data = \Input::post();
             $context = \Arr::merge($model->toArray(), $post_data);
             
-            require_once(\Config::get('parser.View_Twig.include'));
-            Twig_Autoloader::register();
-            $loader = new Twig_Loader_String();
-            $twig = new Twig_Environment($loader, array( 'strict_variables' => false ));
+            $twig = \View_Twig::parser();
+            $loader = \View_Twig::loader();
+            if (!isset($loader) || is_null($loader)) {
+                $loader = new Twig_Loader_String();
+                $twig->setLoader($loader);
+                \View_Twig::setLoader($loader);
+            }
             return $twig->render($settings['template'], $context);
             
         }

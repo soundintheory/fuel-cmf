@@ -5,6 +5,7 @@ namespace CMF\Twig;
 use Twig_Extension,
 	Twig_Function_Function,
 	Twig_Function_Method,
+	Twig_Filter_Function,
 	Twig_Filter_Method;
 
 /**
@@ -39,7 +40,6 @@ class Admin extends Twig_Extension
 			'pluralize' => new Twig_Function_Function('Inflector::pluralize'),
 			'singularize' => new Twig_Function_Function('Inflector::singularize'),
 			'str_repeat' => new Twig_Function_Function('str_repeat'),
-			'slug' => new Twig_Function_Function('CMF::slug'),
 			'phpinfo' => new Twig_Function_Function('phpinfo')
 		);
 	}
@@ -48,7 +48,8 @@ class Admin extends Twig_Extension
     {
         return array(
         	'item_links' => new Twig_Filter_Method($this, 'itemLinks'),
-        	'placeholder' => new Twig_Filter_Method($this, 'placeholder')
+        	'placeholder' => new Twig_Filter_Method($this, 'placeholder'),
+        	'slug' => new Twig_Filter_Function('CMF::slug')
         );
     }
     

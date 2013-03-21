@@ -14,4 +14,13 @@ class View_Twig extends \Parser\View_Twig
 		return static::$_parser_loader;
 	}
 	
+	/**
+	 * Allows the setting of the loader to a different kind
+	 * @param Twig_LoaderInterface
+	 */
+	public static function setLoader($loader)
+	{
+		static::$_parser_loader = $loader;
+	}
+	
 }

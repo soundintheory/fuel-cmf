@@ -6,7 +6,7 @@ class Date extends Base {
     
     public static function process($value, $settings, $model)
     {
-        $date = \DateTime::createFromFormat('d/m/Y', $value);
+        if (!($date instanceof \DateTime)) $date = \DateTime::createFromFormat('d/m/Y', $value);
         if ($date === false) $date = new \DateTime();
         return $date;
     }

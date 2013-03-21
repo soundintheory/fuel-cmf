@@ -282,15 +282,15 @@ class Base extends \Doctrine\Fuel\Model
         $field_settings = $this->settings();
         $fields = \Arr::merge($fields, $field_settings);
         
+        parent::populate($data, $overwrite);
+        
         foreach ($fields as $field_name => $field) {
             
-            if (!isset($data[$field_name])) continue;
             $field_class = $field['field'];
-            $data[$field_name] = $field_class::process($data[$field_name], $field, $this);
+            if (!isset($data[$field_name]) && $field_class::$always_process !== true) continue;
+            $this->$field_name = $field_class::process($this->$field_name, $field, $this);
             
         }
-        
-        parent::populate($data, $overwrite);
         
     }
     
@@ -548,6 +548,7 @@ class Base extends \Doctrine\Fuel\Model
         
         foreach ($items as $num => $item) {
             $item->updated_at = new \Datetime();
+            $item->populate(array());
             \DoctrineFuel::manager()->persist($item);
         }
         
