@@ -59,7 +59,7 @@ return array (
     // Maps field types to field classes
     'fields_types' => array(
         
-        'string' => 'CMF\\Field\\Base',
+        'string' => 'CMF\\Field\\Text',
         'integer' => 'CMF\\Field\\Integer',
         'smallint' => 'CMF\\Field\\Integer',
         'bigint' => 'CMF\\Field\\Integer',
@@ -85,6 +85,12 @@ return array (
         'link' => 'CMF\\Field\\Object\\Link',
         'file' => 'CMF\\Field\\File',
         'image' => 'CMF\\Field\\Image',
+        'video' => 'CMF\\Field\\Video',
+        'enum' => 'CMF\\Field\\Select',
+        'enum_integer' => 'CMF\\Field\\Select',
+        'enum_float' => 'CMF\\Field\\Select',
+        'enum_decimal' => 'CMF\\Field\\Select',
+        'measurement' => 'CMF\\Field\\Measurement',
         
         // Associations with specific tables can be mapped...
         'onetoone_urls' => 'CMF\\Field\\Relation\\URL',
@@ -92,7 +98,9 @@ return array (
         
         // Associations with orphanRemoval=true can be mapped...
         'manytomany_inline' => 'CMF\\Field\\Collection\\TabularInline',
-        'onetomany_inline' => 'CMF\\Field\\Collection\\TabularInline'
+        'onetomany_inline' => 'CMF\\Field\\Collection\\TabularInline',
+        'manytomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline',
+        'onetomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline'
     ),
     
 );

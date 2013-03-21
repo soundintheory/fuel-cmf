@@ -18,6 +18,7 @@ class CMF
     public static $template = '';
     public static $action = '';
     public static $root = false;
+    public static $routed = false;
     
     /**
      * Uses Fuel's Inflector::friendly_title(), but also replaces a few extra characters

@@ -47,9 +47,12 @@ class Base extends \Controller
 	{
 	    // Will try to find the model based on the URL
 	    $model = $this->model = \CMF::currentModel();
+        \CMF::$routed = true;
 	    
 	    // Return the normal 404 error if not found
 	    if (is_null($model)) {
+            $action = trim(\Input::uri(), '/');
+            if (!empty($action)) return \Request::forge('base/'.$action, false)->execute()->response();
 	        return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
         }
         
@@ -145,8 +148,14 @@ class Base extends \Controller
             return call_user_func_array(array($this, $controller_method), $arguments);
         }
         
+        // Still route through the CMF if it hasn't been touched
+        if (!\CMF::$routed) {
+            return call_user_func_array(array($this, 'action_404'), $arguments);
+        }
+        
         // if not, we got ourselfs a genuine 404!
-		throw new \HttpNotFoundException();
+        throw new \HttpNotFoundException();
+        
 		
     }
     
