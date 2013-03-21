@@ -44,6 +44,8 @@ class Cmf
 		$user->set('username', $username);
 		$password = \Cli::prompt('Enter a password');
 		$user->set('password', $password);
+		$confirm_password = \Cli::prompt('Confirm password');
+		$user->set('confirm_password', $confirm_password);
 		$user->set('super_user', true);
 		
 		$role = \CMF\Model\Role::findBy(array("name = 'admin'"))->getQuery()->getResult();
@@ -76,6 +78,8 @@ class Cmf
 	 */
 	public function sync($name = 'default', $type = 'app')
 	{
+		$em = \DoctrineFuel::manager();
+		
 		try {
 			// Make sure there is no models cache
 			$ormcache = \DoctrineFuel::cache();
