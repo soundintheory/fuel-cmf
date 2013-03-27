@@ -6,6 +6,7 @@ class Simple implements Driver {
 	
 	protected $request;
 	protected $path;
+	protected $content_type = 'text/html';
 	
 	public function get($url)
 	{
@@ -35,7 +36,7 @@ class Simple implements Driver {
 		$headers = array(
 			'Cache-Control' => 'public',
 			'Last-Modified' => gmdate('D, d M Y H:i:s', $cache_last_modified).' GMT',
-			'Content-Type' => 'text/html'
+			'Content-Type' => $this->content_type
 		);
 		
 		// Still call the before method on the controller... is this a good idea? Perhaps not.

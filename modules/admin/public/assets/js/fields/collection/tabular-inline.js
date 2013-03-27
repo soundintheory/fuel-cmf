@@ -4,25 +4,29 @@
 	
 	function init() {
 		
-		$('.widget-type-tabular-inline').each(function() {
+		$('.widget-type-tabular-inline > .widget-content').each(function() {
 			
 			var $wrap = $(this),
-			$template = $wrap.find('.item-template').eq(0),
-			$items = $wrap.find('.item'),
-			$table = $wrap.find('table').eq(0),
+			$actionsTop = $wrap.find('> .widget-actions-top'),
+			$footer = $wrap.find('> .widget-footer'),
+			$table = $wrap.find('> table').eq(0),
+			$items = $table.find('> tbody > tr.item'),
+			$template = $table.find('> tbody > tr.item-template').eq(0),
+			$noItemsRow = $table.find('> tbody > tr.no-items-row'),
 			name = $table.attr('data-field-name'),
 			settings = (typeof(field_settings[name]) != 'undefined') ? field_settings[name] : {},
 			inc = $items.length,
-			$noItemsRow = $wrap.find('.no-items-row'),
 			sortable = $table.hasClass('sortable'),
 			positions = {};
 			
-			$wrap.find('.btn-add').click(function() {
-				addItem();
-				return false;
-			});
+			// Don't run on temporary fields...
+			if (name.indexOf('%TEMP%') >= 0) { return; }
 			
-			$wrap.find('.btn-remove').click(removeButtonHandler);
+			$footer.find('.btn-add').click(addItem);
+			$actionsTop.find('.btn-add').click(addItem);
+			$noItemsRow.find('.btn-add').click(addItem);
+			
+			$items.find('.btn-remove').click(removeButtonHandler);
 			
 			if (sortable) { initSorting(); }
 			update();
@@ -31,12 +35,17 @@
 				
 				var $item = $template.clone();
 				
-				$item.addClass('item').removeClass('item-template').find('*[name]').each(function() {
+				$item.addClass('item').removeClass('item-template').find('*[name], *[data-field-name]').each(function() {
 					
 					var $el = $(this),
 					origName = $el.attr('name'),
-					origId = $el.attr('id'),
-					lastName = origName.replace('%TEMP%', '').replace('%num%', inc-1),
+					origId = $el.attr('id');
+					
+					var isData = origName === undefined || origName === false || origName == '';
+					if (isData) { origName = $el.attr('data-field-name'); }
+					if (origName.indexOf('%TEMP%') === -1) { return; }
+					
+					var lastName = origName.replace('%TEMP%', '').replace('%num%', inc-1),
 					name = origName.replace('%TEMP%', '').replace('%num%', inc);
 					
 					if (origId != undefined && origId != '') {
@@ -57,7 +66,12 @@
 						field_settings[name] = field_settings[origName];
 					}
 					
-					$el.attr('name', name);
+					if (isData) {
+						$el.attr('data-field-name', name);
+					} else {
+						$el.attr('name', name);
+					}
+					
 				});
 				
 				if ($items.length == 0) {
@@ -67,13 +81,14 @@
 				}
 				
 				$item.find('.btn-remove').click(removeButtonHandler);
-				$items = $wrap.find('.item');
+				$items = $table.find('> tbody > tr.item');
 				inc++;
 				
 				// So all the various plugins can run their magic on relevant inputs...
 				$(window).trigger('cmf.newform', { 'wrap':$item });
 				
 				update();
+				return false;
 				
 			}
 			
@@ -82,7 +97,7 @@
 				if (!confirm("Do you really want to remove this item? You can't undo!")) { return false; }
 				var $item = $(this).parents('.item').eq(0);
 				$item.remove();
-				$items = $wrap.find('.item');
+				$items = $table.find('> tbody > tr.item');
 				
 				update();
 				
@@ -113,7 +128,7 @@
 				
 				if (!sortable) { return; }
 				
-				$items = $wrap.find('.item');
+				$items = $table.find('> tbody > tr.item');
 				
 				$items.each(function(i) {
 					
@@ -129,8 +144,8 @@
 			
 			function initSorting() {
 				
-				var $tableBody = $table.find("tbody"),
-				$rows = $tableBody.find('tr'),
+				var $tableBody = $table.find("> tbody"),
+				$rows = $tableBody.find('> tr.item'),
 				$body = $('body'),
 				tableName = settings['target_table'],
 				saveAll = settings['save_all'];
@@ -166,7 +181,7 @@
 						
 					} else {
 						
-						$tableBody.find('tr.item').each(function(i) {
+						$tableBody.find('> tr.item').each(function(i) {
 							if ($(this).find('input.item-id').val() == id) {
 								pos = i;
 								return false;

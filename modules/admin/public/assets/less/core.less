@@ -352,9 +352,14 @@ hr {
 	}
 }
 
+.btn-remove i { color: #DA4F49; }
+.btn-danger.btn-remove i { color: #FFF; }
+
 .btn-icon.btn-large { width: 39px; }
 .btn-icon.btn-small { width: 24px; }
 .btn-icon.btn-mini { width: 22px; }
+
+.icon-danger { color: #DA4F49; }
 
 /******************************** WIDGETS ********************************/
 
@@ -407,10 +412,9 @@ hr {
 	
 	.widget-actions-top {
 		height: 40px;
-		position: absolute; top: 1px; right: 46px;
+		position: absolute; top: 1px; right: 0px;
 		text-align: right;
 		border-left: 1px solid #D3D3D3;
-		border-right: 1px solid #FCFCFC;
 	}
 	
 	.widget-actions-bottom {
@@ -492,6 +496,11 @@ hr {
 		
 		.widget-title:hover {
 			.bg-gradient(#f2f2f2, #d9d9d9);
+		}
+		
+		.widget-actions-top {
+			right: 42px;
+			border-right: 1px solid #FCFCFC;
 		}
 		
 	}
@@ -1065,8 +1074,6 @@ ul.jqtree-tree {
     
     .actions .btn {
     	margin-left: 6px;
-    	padding-left: 6px;
-    	padding-right: 6px;
     }
     
     .dropdown-menu .icon-remove {

@@ -10,6 +10,7 @@ return array(
 	'admin/redactor/(:any)'   => 'admin/redactor/$1',
 	'admin/assets/(:any)'     => 'admin/assets/index',
 	'admin/upload'            => 'admin/upload/index',
+	'admin/upload/video'      => 'admin/upload/video',
 	'admin/phpinfo'           => 'admin/base/phpinfo',
 	
 	// Auth actions

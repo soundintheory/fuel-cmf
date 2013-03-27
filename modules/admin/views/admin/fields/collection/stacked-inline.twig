@@ -1,0 +1,95 @@
+<!-- We need to output different templates for any different types that can be added -->
+{% for template_type, template_content in templates %}
+<div class="item-template" data-type="{{ template_type }}">
+	<div class="item-title">
+		<h3><i class="icon icon-{{ template_content.icon }}"></i> New {{ template_content.singular|lower }}</h3>
+	</div>
+	<div class="item-content">
+		{% if sortable %}{{ form.hidden_fields.pos }}{% endif %}
+		<input type="hidden" name="{{ template_content.prefix }}[__type__]" value="{{ template_type }}" />
+		{% for field_name, field in template_content.fields %}
+		{{ field }}
+		{% endfor %}
+	</div>
+	<div class="item-actions-top">
+		<a href="#" class="item-action icon btn-remove" title="Remove {{ template_content.singular|lower }}"><i class="icon icon-remove"></i></a>
+	</div>
+</div>
+{% endfor %}
+
+<!-- Output the item forms -->
+<div class="items" data-field-name="{{ settings.mapping.fieldName }}">
+{% for row in rows %}
+<div class="item collapsible">
+	<div class="item-title">
+		<h3><i class="icon icon-{{ row._icon_ }}"></i> {{ row._title_ }}</h3>
+	</div>
+	<div class="item-content">
+		{{ row.hidden_fields.id }}
+		{{ row.hidden_fields.__type__ }}
+		{% if sortable %}{{ row.hidden_fields.pos }}{% endif %}
+		{% for field_name, field in row.fields %}
+		{{ field }}
+		{% endfor %}
+	</div>
+	<div class="item-actions-top">
+		<a href="#" class="item-action icon btn-remove" title="Remove item"><i class="icon icon-remove"></i></a>
+	</div>
+</div>
+{% endfor %}
+
+<!-- Show this when there are no items -->
+<div class="no-items">
+    
+    <p>There are no {{ plural|lower }} added yet.</p>
+    {% if not superlock %}
+    
+    {% for type in add_types %}
+    <a href="#" class="btn-add btn btn-medium" data-type="{{ type.type }}"><i class="icon-{{ type.icon }} icon-white"></i> Add {{ type.singular }}...</a>
+    &nbsp;&nbsp;
+    {% endfor %}
+    
+    {% endif %}
+
+</div>
+</div>
+
+<div class="widget-actions-top">
+	
+	{% if add_types|length > 1 %}
+	<span class="dropdown pull-right">
+		<a href="#" class="widget-action icon dropdown-toggle" title="Add {{ singular|lower }}"><i class="icon icon-plus"></i></a>
+		<ul class="dropdown-menu" role="menu">
+			<li class="nav-header">Choose a type...</li>
+			{% for type in add_types %}
+			<li><a tabindex="-1" class="btn-add" href="#" data-type="{{ type.type }}"><i class="icon icon-{{ type.icon }}"></i> {{ type.singular }}</a></li>
+			{% endfor %}
+		</ul>
+	</span>	
+	{% else %}
+		<a href="#" class="widget-action icon add-btn" data-type="{{ add_types[0].type }}" title="Add {{ singular|lower }}"><i class="icon icon-plus"></i></a>
+	{% endif %}
+	
+</div>
+
+<div class="widget-footer">
+	
+	<div class="widget-actions-bottom">
+	
+		{% if add_types|length > 1 %}
+		<span class="dropup pull-right">
+			<a href="#" class="widget-action dropdown-toggle last"><i class="icon icon-plus"></i> Add {{ singular|lower }}</a>
+			<ul class="dropdown-menu" role="menu">
+				<li class="nav-header">Choose a type...</li>
+				{% for type in add_types %}
+				<li><a tabindex="-1" class="btn-add" href="#" data-type="{{ type.type }}"><i class="icon icon-{{ type.icon }}"></i> {{ type.singular }}</a></li>
+				{% endfor %}
+			</ul>
+		</span>	
+		{% else %}
+			<a href="#" class="widget-action btn-add last" data-type="{{ add_types[0].type }}"><i class="icon icon-plus"></i> Add {{ singular|lower }}</a>
+		{% endif %}
+		
+	</div>
+	
+</div>

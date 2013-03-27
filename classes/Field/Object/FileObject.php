@@ -20,7 +20,7 @@ class FileObject extends Object {
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
         if (isset($value) && isset($value['src'])) {
-            return \Html::anchor($edit_link, '/'.$value);
+            return \Html::anchor($edit_link, '/'.$value['src']);
         }
         return '-';
     }

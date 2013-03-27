@@ -8,7 +8,7 @@
 	{{ form_select(settings.mapping.fieldName, [], [], { 'style':'display:none;' }) }}
 	<div class="transfer-wrap"></div>
 	<div class="controls-top">
-		<a href="{{ settings.add_link }}" class="btn btn-mini btn-add"><i class="icon icon-plus"></i> &nbsp;create {{ settings.singular|lower }}</a>
+		<a href="{{ settings.add_link }}" class="btn btn-mini btn-create"><i class="icon icon-plus"></i> &nbsp;create {{ settings.singular|lower }}</a>
 	</div>
 </div>
 <div class="clear"></div>
@@ -20,7 +20,7 @@
 	{{ form_label(settings.title, settings.mapping.fieldName, { 'class':'item-label' }) }}
 	{{ form_select(settings.mapping.fieldName, values, options, settings.input_attributes) }}
 	<div class="controls-top">
-		<a href="{{ settings.add_link }}" class="btn btn-mini btn-add"><i class="icon icon-plus"></i> &nbsp;create {{ settings.singular|lower }}</a>
+		<a href="{{ settings.add_link }}" class="btn btn-mini btn-create"><i class="icon icon-plus"></i> &nbsp;create {{ settings.singular|lower }}</a>
 	</div>
 </div>
 <div class="clear"></div>
@@ -32,7 +32,7 @@
 	{{ form_label(settings.title, settings.mapping.fieldName, { 'class':'item-label' }) }}
 	{{ form_select(settings.mapping.fieldName, values, options, settings.input_attributes) }}
 	<div class="controls-top">
-		<a href="{{ settings.add_link }}" class="btn btn-mini btn-add"><i class="icon icon-plus"></i> &nbsp;create {{ settings.singular|lower }}</a>
+		<a href="{{ settings.add_link }}" class="btn btn-mini btn-create"><i class="icon icon-plus"></i> &nbsp;create {{ settings.singular|lower }}</a>
 	</div>
 </div>
 <div class="clear"></div>

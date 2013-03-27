@@ -4,12 +4,23 @@ namespace CMF\View;
 
 class Base extends \ViewModel
 {
+    protected $_template = null;
+    
+    public function __construct($method, $auto_filter = null, $view = null)
+    {
+        // Maybe set the template...
+        $template = $this->template();
+        if ($template !== null) $view = $template;
+        
+        parent::__construct($method, $auto_filter, $view);
+    }
+    
     public function getView()
     {
         return $this->_view;
     }
     
-    protected function pageTree($model = 'Model_Page_Page')
+    protected function pageTree($model = 'Model_Page_Base')
     {
         $nodes = $model::select('page.title, page.menu_title, page.lvl, page.lft, page.rgt, url.url, url.slug', 'page')
         ->leftJoin('page.url', 'url')
@@ -85,4 +96,10 @@ class Base extends \ViewModel
         $this->view = $this;
         $this->settings = $this->getSettings();
     }
+    
+    public function template()
+    {
+        return $this->_template;
+    }
+    
 }

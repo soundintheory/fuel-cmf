@@ -40,6 +40,20 @@ return array (
         
     ),
     
+    'ffmpeg' => array(
+        
+        // These binaries are in varying positions depending on whether we use homebrew etc
+        'ffmpeg_binary' => '/usr/local/Cellar/ffmpeg/1.2/bin/ffmpeg',
+        'ffprobe_binary' => '/usr/local/Cellar/ffmpeg/1.2/bin/ffprobe',
+        
+        'default_framerate' => 25,
+        'default_size' => array(
+            'width' => 1280,
+            'height' => 720
+        )
+        
+    ),
+    
     'cache' => array(
         
         'enabled' => true,
@@ -85,7 +99,7 @@ return array (
         'link' => 'CMF\\Field\\Object\\Link',
         'file' => 'CMF\\Field\\File',
         'image' => 'CMF\\Field\\Image',
-        'video' => 'CMF\\Field\\Video',
+        'video' => 'CMF\\Field\\Object\\Video',
         'enum' => 'CMF\\Field\\Select',
         'enum_integer' => 'CMF\\Field\\Select',
         'enum_float' => 'CMF\\Field\\Select',
@@ -100,7 +114,9 @@ return array (
         'manytomany_inline' => 'CMF\\Field\\Collection\\TabularInline',
         'onetomany_inline' => 'CMF\\Field\\Collection\\TabularInline',
         'manytomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline',
-        'onetomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline'
+        'onetomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline',
+        'manytomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline',
+        'onetomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline'
     ),
     
 );

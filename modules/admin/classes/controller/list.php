@@ -576,8 +576,10 @@ class Controller_List extends Controller_Base {
 		$can_delete = \CMF\Auth::can('delete', $class_name);
 		$can_manage = \CMF\Auth::can(array('view', 'edit'), 'CMF\\Model\\Permission');
 		
-		$classes = array(
-			$class_name => array(
+		$classes = array();
+		
+		if ($class_name::superclass() === false) {
+			$classes[$class_name] = array(
 				'plural' => $this->plural,
 				'singular' => $this->singular,
 				'icon' => $this->icon,
@@ -585,8 +587,8 @@ class Controller_List extends Controller_Base {
 				'can_create' => $can_create && $can_edit,
 				'can_edit' => $can_edit,
 				'can_delete' => $can_delete
-			)
-		);
+			);
+		}
 		
 		foreach ($metadata->subClasses as $sub_class) {
 			

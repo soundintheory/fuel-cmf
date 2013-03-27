@@ -233,7 +233,7 @@ function initTree() {
 				
 				if (childItems.length > 1) {
 					
-					actionsContent += '<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#" title="Add Child..."><i class="icon icon-plus"></i></a>' + 
+					actionsContent += '<a class="btn btn-small btn-icon dropdown-toggle" data-toggle="dropdown" href="#" title="Add Child..."><i class="icon icon-plus"></i></a>' + 
 					'<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' + 
 					'<li class="nav-header">Add a child...</li>' + 
 					childItems.join('') + 
@@ -241,7 +241,7 @@ function initTree() {
 					
 				} else if (childItems.length == 1) {
 					
-					actionsContent += '<a class="btn btn-small" href="' + childInfo[0]['edit'] + '" rel="tooltip" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="icon icon-plus"></i></a>';
+					actionsContent += '<a class="btn btn-small btn-icon" href="' + childInfo[0]['edit'] + '" rel="tooltip" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="icon icon-plus"></i></a>';
 					
 				}
 				
@@ -251,7 +251,7 @@ function initTree() {
 			var can_delete = node['can_delete'] = classData['can_delete'] && can_delete_item;
 			
 			if (!(typeof(classData.static) != 'undefined' && classData.static == true) && can_delete) {
-				actionsContent += '<a class="btn btn-small btn-danger btn-remove" rel="tooltip" title="Delete" href="' + node.delete + '" data-singular="' + classData['singular'] + '"><i class="icon icon-remove"></i></a>';
+				actionsContent += '<a class="btn btn-small btn-icon btn-danger btn-remove" rel="tooltip" title="Delete" href="' + node.delete + '" data-singular="' + classData['singular'] + '"><i class="icon icon-remove"></i></a>';
 			}
 			
 			actionsContent += '</div>';

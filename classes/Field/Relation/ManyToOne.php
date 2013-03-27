@@ -10,6 +10,7 @@ class ManyToOne extends \CMF\Field\Base {
         ),
         'create' => true,
         'edit' => true,
+        'allow_empty' => true,
         'input_attributes' => array(
             'class' => ''
         )
@@ -47,16 +48,17 @@ class ManyToOne extends \CMF\Field\Base {
         if (empty($target_prop) || is_null($model->id)) $target_prop = false;
         $add_link = '/admin/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
     	$options = $target_class::options();
-        $null_option = array( '' => '' );
-        $options = $null_option + $options;
+        
+        if ($settings['allow_empty']) {
+            $options = array_merge(array( null => '' ), $options);
+        }
     	
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
         $input_attributes = $settings['input_attributes'];
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         
-        $add_link = html_tag('a', array( 'href' => $add_link, 'class' => 'btn btn-mini btn-add' ), '<i class="icon icon-plus"></i> &nbsp;create '.strtolower($target_class::singular()));
-
+        $add_link = html_tag('a', array( 'href' => $add_link, 'class' => 'btn btn-mini btn-create' ), '<i class="icon icon-plus"></i> &nbsp;create '.strtolower($target_class::singular()));
         
         // Permissions
         $settings['can_edit'] = \CMF\Auth::can('edit', $target_class);

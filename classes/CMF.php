@@ -183,6 +183,15 @@ class CMF
     }
     
     /**
+     * A bit like PHP's get_class, but makes sure we don't end up with a weird Proxy model class
+     */
+    public static function getClass($item)
+    {
+        $class = get_class($item);
+        return (strpos($class, 'Proxy') === 0) ? get_parent_class($item) : $class;
+    }
+    
+    /**
      * Retrieves the url to a static model
      * @param string $model The fully qualified class name of the static model
      * @return string Url of the model
