@@ -1,3 +1,12 @@
 {% if settings.title %}<label class="item-label">{{ settings.title }}</label>{% endif %}
 <input type="hidden" name="{{ settings.mapping.fieldName }}" value="{{ value }}" class="file-value" />
+
+<!-- foreach settings crops -->
+{% for cropid,crop in settings.crop %}
+<input id="cropx-{{cropid}}" type="text" name="cropx" value="" class="file-value" />
+<input id="cropy-{{cropid}}" type="text" name="cropy" value="" class="file-value" />
+<input id="cropw-{{cropid}}" type="text" name="cropw" value="" class="file-value" />
+<input id="croph-{{cropid}}" type="text" name="croph" value="" class="file-value" />    
+{% endfor %}
+
 <div class="async-upload{{ value ? ' populated' : '' }}"></div>

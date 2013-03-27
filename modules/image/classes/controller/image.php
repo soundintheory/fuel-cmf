@@ -10,7 +10,8 @@ class Controller_Image extends \Controller {
         '1' => 'r',  // Normal resize
         '2' => 'cr', // Crop resize
         '3' => 'fr', // Fit resize
-        '4' => 'pr'  // Pad resize
+        '4' => 'pr',  // Pad resize
+        '5' => 'cc',  // Co-ordinate Crop
     );
     
     protected $mime_types = array(
@@ -26,15 +27,17 @@ class Controller_Image extends \Controller {
 	protected $path;
 	protected $resized;
 	protected $mime_type;
-	protected $mode;
+	protected $mode = null;
 	protected $filename;
 	
 	protected function _init_image($start_segment, $append, $output_ext = null)
 	{
 	    // Get the path of the source file
 		$ext = Input::extension();
+
 		if (is_null($output_ext)) $output_ext = $ext;
-		$this->mode = \Arr::get($this->modes, $this->param('mode', 'default'), '');
+		$this->mode = empty($this->mode) ? \Arr::get($this->modes, $this->param('mode', '1'), '') : $this->mode;
+
 		$path_segments = array_slice(\Uri::segments(), $start_segment);
 		$path_relative = implode('/', $path_segments);
 		$this->path = DOCROOT.$path_relative.'.'.$ext;
@@ -100,7 +103,47 @@ class Controller_Image extends \Controller {
 		// Serve the file
 		return $this->serve_image($this->resized, $this->mime_type);
 	}
-	
+	public function action_coordinate_crop(){
+		//'image/:cropx/:cropy/:cropw/:croph/:w/:h/(:any)' => 'image/coordinate_crop',
+		$cropx = intval($this->param('cropx'));
+		$cropy = intval($this->param('cropy')); 
+		$cropw = intval($this->param('cropw')); 
+		$croph = intval($this->param('croph')); 
+		$w = intval($this->param('w'));
+		$h = intval($this->param('h'));
+		$this->mode = 'cc';
+		$output = $this->_init_image(7, $cropx."_".$cropy."_".$cropx."_".$cropw."_".$cropy."_".$croph."_".$w."x".$h);
+		//var_dump(array_slice(\Uri::segments(), 7));exit;
+		if (!is_null($output)) return $output;
+
+		//crop($x1, $y1, $x2, $y2)
+		//resize($width, $height = null, $keepar = true, $pad = false)
+		/*
+		$width	Required	The new width of the image.
+		$height	
+		null
+		The new height of the image
+		$keepar	
+		true
+		If set to true, will keep the Aspect Ratio of the image identical to the original.
+		$pad	
+		false
+		If set to true and $keepar is true, it will pad the image with the configured bgcolor.
+		 */
+		//redundant
+		$bgcolor = '#'.$this->param('bgcolor', 'fff');
+
+		\Image::load($this->path)
+		->config('bgcolor', $bgcolor)
+  		->crop($cropx, $cropy, $cropx + $cropw, $cropy + $croph)
+      ->resize($w, $h)
+  		->save($this->resized);
+
+		return $this->serve_image($this->resized, $this->mime_type);
+
+
+		exit;
+	}
 	public function action_w_h() {
 	    
 		// Store our request params in more appropriate formats

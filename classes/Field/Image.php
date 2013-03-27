@@ -16,10 +16,12 @@ class Image extends File {
         return array(
             'js' => array(
                 '/admin/assets/fineuploader/jquery.fineuploader-3.2.js',
+                '/admin/assets/jcrop/jquery.Jcrop.min.js',
                 '/admin/assets/js/fields/image.js'
             ),
             'css' => array(
                 //'/admin/assets/fineuploader/fineuploader-3.2.css'
+                '/admin/assets/jcrop/jquery.Jcrop.min.css'
             )
         );
     }
@@ -56,7 +58,7 @@ class Image extends File {
             'widget' => false,
             'assets' => array()
         );
-        
+       
         if ($settings['crop'] === true) $settings['crop'] = array( 'main' => array( 'title' => 'Main Crop' ) );
         if (is_array($settings['crop'])) {
             
@@ -70,8 +72,6 @@ class Image extends File {
             }
             $settings['crop'] = $crop_options;
             
-            $output['assets']['css'] = array('/admin/assets/jcrop/jquery.Jcrop.min.css');
-            $output['assets']['js'] = array('/admin/assets/jcrop/jquery.Jcrop.min.js');
             
         }
         
