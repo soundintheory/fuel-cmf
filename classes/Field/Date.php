@@ -6,9 +6,9 @@ class Date extends Base {
     
     public static function process($value, $settings, $model)
     {
-        if (!($date instanceof \DateTime)) $date = \DateTime::createFromFormat('d/m/Y', $value);
-        if ($date === false) $date = new \DateTime();
-        return $date;
+        if (!($value instanceof \DateTime)) $value = \DateTime::createFromFormat('d/m/Y', $value);
+        if ($value === false) $value = new \DateTime();
+        return $value;
     }
     
     /** @inheritdoc */

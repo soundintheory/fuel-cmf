@@ -4,11 +4,11 @@ namespace CMF\Field;
 
 class DateTime extends Date {
     
-    public static function process($value, $post_data, $entity)
+    public static function process($value, $settings, $model)
     {
-        if (!($date instanceof \DateTime)) $date = \DateTime::createFromFormat('d/m/Y H:i:s', $value);
-        if ($date === false) $date = new \DateTime();
-        return $date;
+        if (!($value instanceof \DateTime)) $value = \DateTime::createFromFormat('d/m/Y H:i:s', $value);
+        if ($value === false) $value = new \DateTime();
+        return $value;
     }
     
     /** @inheritdoc */

@@ -18,6 +18,7 @@
 {% endfor %}
 
 <!-- Output the item forms -->
+<input type="hidden" name="{{ settings.mapping.fieldName }}" value="" />
 <div class="items" data-field-name="{{ settings.mapping.fieldName }}">
 {% for row in rows %}
 <div class="item collapsible">
