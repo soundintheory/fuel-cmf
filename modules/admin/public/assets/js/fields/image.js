@@ -62,7 +62,7 @@
             },
             formatFileName: fileNameFormat
         };
-        
+       
         
         $el.fineUploader(opts)
         .on('submit', submitHandler)
@@ -250,7 +250,7 @@
                 '<h3>Edit image</h3>' +
             '</div>' + // .left-col (header)
             '<div class="right-col">';
-            
+            //console.log(cropSettings);
             // Add the crop options here, if any
             if (canCrop && cropSettings.length > 1) {
                 modalContent += '<ul class="crop-nav nav nav-pills">';
@@ -315,13 +315,13 @@
         }
         
         function updateModal() {
-            
             var maxW = 575,
             maxH = 400,
             imageW = info[0] || maxW,
             imageH = info[1] || maxH,
             newImageW = imageW,
-            newImageH = imageH;
+            newImageH = imageH,
+            cropOptions = {};
             
             // NOTE: this is a little bit hacky because it relies on hardcoded
             // values in the css, but it looks a bloody lot better!
@@ -342,12 +342,15 @@
                 
                 for (var i = 0; i < cropSettings.length; i++) {
                     var cropOption = cropSettings[i];
-                    rightCol += '<div id="' + fieldId + '-crop-' + cropOption['id'] + '" class="img tab-pane">';
+                    cropOptions[cropOption['id']] = cropOption;
+                    rightCol += '<div id="' + fieldId + '-crop-' + cropOption['id'] + '" data-cropid="'+cropOption['id']+'" class="img tab-pane">';
                     rightCol += '<img src="/image/3/575/400/' + cValue + '" />';
                     rightCol += '</div>'; // .img
                 }
                 
                 rightCol += '<div class="clear"></div>';
+                //activate crop?
+              
                 
             } else {
                 
@@ -356,12 +359,51 @@
             }
             
             $modal.find('.modal-body .right-col').html(rightCol);
+
+            //jcrops
+            
+            $modal.find('img').each(function(){
+                var cropId = $(this).parent().attr('data-cropid'),
+                cropOption = cropOptions[cropId],
+                width = cropOption.width,
+                height = cropOption.height,
+                jcropSettings = {
+                    onChange: showCoords,
+                    onSelect: showCoords,
+                    bgColor:     'white',
+                    bgOpacity:   .4
+                    }
+                ;
+
+                //if we have some preset values
+                //setSelect:   [ STARTX, STARTY, ENDX, ENDY ],
+                    
+                if(width != null && height != null)
+                {
+                    jcropSettings.aspectRatio = width/height;
+                }
+                
+
+                $(this).Jcrop(jcropSettings);
+                function showCoords(c)
+                {
+                    $('#cropx-'+cropId).val(c.x);
+                    $('#cropy-'+cropId).val(c.y);
+                    //$('#x2').val(c.x2);
+                    //$('#y2').val(c.y2);
+                    $('#cropw-'+cropId).val(c.w);
+                    $('#croph-'+cropId).val(c.h);
+
+                };
+            });
+            
             //.css({ 'height':newImageH });
             //$modal.find('.right-col').css({ 'width':newImageW });
             //$modal.css({ 'width':newImageW+325, 'margin-top':-(newImageH+140)/2, 'margin-left':-(newImageW+325)/2 });
             
         }
         
+
         function setStatus(status) {}
         
         // Puts the input back to the state it started in

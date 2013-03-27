@@ -53,6 +53,7 @@ class ImageObject extends FileObject {
     {
         return array(
             'js' => array(
+                '/admin/assets/jcrop/jquery.Jcrop.min.js',
                 '/admin/assets/js/fields/image.js'
             )
         );
