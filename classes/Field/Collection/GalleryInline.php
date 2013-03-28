@@ -80,7 +80,7 @@ class GalleryInline extends Multiselect {
         foreach ($types as $type) {
             $metadata = $type::metadata();
             $prefix = '%TEMP%'.$settings['mapping']['fieldName'].'[%num%]';
-            $form_templates[$type] = new ModelForm($metadata, new $type(), $prefix, $hidden_fields, $exclude);
+            $form_templates[$type] = new ModelForm($metadata, new $type(), $prefix, $hidden_fields, $exclude, true);
             $target_tables[$type] = $metadata->table['name'];
             $templates_content[$type] = array( 'fields' => $form_templates[$type]->getFieldContent(), 'icon' => $type::icon(), 'singular' => $type::singular(), 'prefix' => $prefix );
             $add_types[] = array( 'type' => $type, 'singular' => $type::singular(), 'plural' => $type::plural(), 'icon' => $type::icon() );

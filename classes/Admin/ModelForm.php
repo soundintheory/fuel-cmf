@@ -12,6 +12,8 @@ class ModelForm
 	public $fields;
 	public $field_keys;
 	public $table_name;
+	public $disable_groups = false;
+	public $disable_widgets = false;
 	
 	// For internal workings
 	protected $tabs;
@@ -23,12 +25,14 @@ class ModelForm
 	protected $prepopulate;
 	protected $exclude;
 	
-	public function __construct($metadata, $model, $prefix = '', $prepopulate = array(), $exclude = array())
+	public function __construct($metadata, $model, $prefix = '', $prepopulate = array(), $exclude = array(), $disable_groups = false, $disable_widgets = false)
 	{
 		$class_name = $metadata->name;
 		$this->table_name = $metadata->table['name'];
 		$this->prepopulate = \Arr::merge(\Input::get(), $prepopulate);
 		$this->exclude = $exclude;
+		$this->disable_groups = $disable_groups;
+		$this->disable_widgets = $disable_widgets;
 		
 		// Tabs, Groups, Fields
 		$this->tabs = $class_name::tabs();
@@ -131,6 +135,10 @@ class ModelForm
 				if ($prepopulated) {
 					$this->hidden_fields[$field_name] = \Form::hidden($field['mapping']['fieldName'], $this->prepopulate[$field_name], array( 'data-field-name' => $field_name ));
 				}
+			}
+			
+			if ($this->disable_groups === true) {
+				$field['sub_group'] = $this->fields[$field_name]['sub_group'] = false;
 			}
 			
 			$field['required'] = $this->isRequired($field_name);
