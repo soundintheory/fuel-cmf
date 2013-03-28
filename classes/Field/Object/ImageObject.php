@@ -42,8 +42,8 @@ class ImageObject extends FileObject {
         }
         
         $content = parent::displayForm($value, $settings, $model);
-        $content['content'] .= '<input type="hidden" name="'.$settings['mapping']['fieldName'].'[width]" value="'.(isset($value['width']) ? $value['width'] : 0).'" />';
-        $content['content'] .= '<input type="hidden" name="'.$settings['mapping']['fieldName'].'[height]" value="'.(isset($value['height']) ? $value['height'] : 0).'" />';
+        $content['content'] .= '<input class="image-width" type="hidden" name="'.$settings['mapping']['fieldName'].'[width]" value="'.(isset($value['width']) ? $value['width'] : 0).'" />';
+        $content['content'] .= '<input class="image-height" type="hidden" name="'.$settings['mapping']['fieldName'].'[height]" value="'.(isset($value['height']) ? $value['height'] : 0).'" />';
         return $content;
         
     }

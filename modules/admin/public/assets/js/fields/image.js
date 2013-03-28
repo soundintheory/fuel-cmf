@@ -78,10 +78,12 @@
         $filePreview = $el.find('.file-preview'),
         $input = $('<input type="hidden" name="' + fieldName + '" value="" />'),
         cropSettings = settings['crop'],
+        cropOptions = [],
         canCrop = typeof(cropSettings) != 'undefined' && cropSettings !== false,
         objectFieldName = null,
         $widthInput = [],
-        $heightInput = [];
+        $heightInput = [],
+        jcropSettings = {};
         
         // Construct the field name of the object containing this field if necessary
         if (isObject) {
@@ -101,7 +103,80 @@
         
         // This will show / hide any stuff appropriately if there is a value
         setValue(originalValue);
+
         
+        if(canCrop){
+            console.log(cropSettings);
+            constructJcropObject();    
+        }
+        function constructJcropObject(){
+            //construct jcrop settings objects ready for jcrop, call it on page load and after we have an updated image.
+            for (var i = 0; i < cropSettings.length; i++) {
+                var cropOption = cropSettings[i],
+                cropId = cropOption['id'],
+                cropOption = cropOptions[cropId],
+                //we need a proper selector for the image width/height (if there are more on the page). These values should be set already.
+                imageWidth = $('.image-width'),
+                imageHeight = $('.image-height'),
+                //set the desired crop width and height
+                cropWidth = cropOption.width,
+                cropHeight = cropOption.height,
+                aspectRatio = width != null && height != null ? width/height : null,
+                //get the cropinputs. perharps we need better selectors for multiple images on this page.
+                cropx = $('input[id^="cropx"]'),
+                cropy = $('input[id^="cropy"]'),
+                cropw = $('input[id^="cropw"]'),
+                croph = $('input[id^="croph"]'),
+                ;
+
+                //set it in cropOptions we can access this later
+                cropOptions[cropId] = cropOption;
+                
+                jcropSettings.cropId = {
+                    //dont we need to set these functions later? Or will it know where they are?
+                    onChange: showCoords,
+                    onSelect: showCoords,
+                    bgColor:     'white',
+                    bgOpacity:   .4,
+                    };
+
+                //use the image width and height (full size) we retrieved earlier and set the 'true size'
+                if(imageWidth.length > 0 && imageHeight.length > 0 ){
+                    var fullWidth = imageWidth.val(),
+                    fullHeight = imageHeight.val();
+
+                    jcropSettings.cropId.trueSize = [fullWidth,fullHeight];
+                }
+                    
+                if(aspectRatio != null)
+                {
+                    jcropSettings.cropId.aspectRatio = aspectRatio;
+                }
+                //test cropx, or all of them if you want?
+                if(cropx != 'undefined' || cropx != ""){
+                    //if the input values are empty, we need to set some default values.
+                    
+                    //work out the center of the current crop
+                    //we have width and height of desired crop, and the aspect ratio
+                    //we also have the image size and with 
+                    
+                }
+                else{
+                    //we should have the starting values now.
+                    var startx = cropx,
+                    starty = cropy,
+                    endx = startx + cropw,
+                    endy = starty + croph;
+
+                    jcropSettings.cropId.setSelect = [startx, starty, endx, endy];
+                }
+            }
+        }
+        function resetInputs(){
+            //this resets the image inputs we have for the different crops
+            $('input[id^="cropx"],input[id^="cropy"],input[id^="cropw"],input[id^="croph"]').val('');
+        }
+
         function submitHandler(evt, id, fileName) {
             
             var $file = $($el.fineUploader('getItemByFileId', id));
@@ -117,6 +192,7 @@
             if (typeof(responseJSON['success']) != 'undefined' && responseJSON['success'] === true) {
                 info = responseJSON['info'] || {};
                 setValue(responseJSON['path'], true);
+                resetInputs();
             } else {
                 setValue(originalValue);
             }
@@ -363,18 +439,29 @@
             //jcrops
             
             $modal.find('img').each(function(){
-                var cropId = $(this).parent().attr('data-cropid'),
+                var jcrop_api,
+                cropId = $(this).parent().attr('data-cropid'),
                 cropOption = cropOptions[cropId],
+                imageWidth = $('.image-width'),
+                imageHeight = $('.image-height'),
                 width = cropOption.width,
                 height = cropOption.height,
                 jcropSettings = {
                     onChange: showCoords,
                     onSelect: showCoords,
                     bgColor:     'white',
-                    bgOpacity:   .4
+                    bgOpacity:   .4,
                     }
                 ;
 
+                if(imageWidth.length > 0 && imageHeight.length > 0 ){
+                    var fullWidth = imageWidth.val(),
+                    fullHeight = imageHeight.val();
+
+                    jcropSettings.trueSize = [fullWidth,fullHeight];
+                }
+               // console.log(imageWidth);
+               // console.log(settings);
                 //if we have some preset values
                 //setSelect:   [ STARTX, STARTY, ENDX, ENDY ],
                     
@@ -384,15 +471,17 @@
                 }
                 
 
-                $(this).Jcrop(jcropSettings);
+                $(this).Jcrop(jcropSettings,function(){
+                  jcrop_api = this;
+                });
                 function showCoords(c)
                 {
-                    $('#cropx-'+cropId).val(c.x);
-                    $('#cropy-'+cropId).val(c.y);
+                    $('#cropx-'+cropId).val(Math.round(c.x));
+                    $('#cropy-'+cropId).val(Math.round(c.y));
                     //$('#x2').val(c.x2);
                     //$('#y2').val(c.y2);
-                    $('#cropw-'+cropId).val(c.w);
-                    $('#croph-'+cropId).val(c.h);
+                    $('#cropw-'+cropId).val(Math.round(c.w));
+                    $('#croph-'+cropId).val(Math.round(c.h));
 
                 };
             });
