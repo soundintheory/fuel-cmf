@@ -103,14 +103,14 @@ class Controller_Image extends \Controller {
 		// Serve the file
 		return $this->serve_image($this->resized, $this->mime_type);
 	}
-	public function action_coordinate_crop(){
+	public function action_coordinate_crop($cropx = null, $cropy = null, $cropw = null, $croph = null, $w = null, $h = null, $path = null){
 		//'image/:cropx/:cropy/:cropw/:croph/:w/:h/(:any)' => 'image/coordinate_crop',
-		$cropx = intval($this->param('cropx'));
-		$cropy = intval($this->param('cropy')); 
-		$cropw = intval($this->param('cropw')); 
-		$croph = intval($this->param('croph')); 
-		$w = intval($this->param('w'));
-		$h = intval($this->param('h'));
+		$cropx = intval($cropx);
+		$cropy = intval($cropy); 
+		$cropw = intval($cropw); 
+		$croph = intval($croph); 
+		$w = intval($w);
+		$h = intval($h);
 		$this->mode = 'cc';
 		$output = $this->_init_image(7, $cropx."_".$cropy."_".$cropx."_".$cropw."_".$cropy."_".$croph."_".$w."x".$h);
 		//var_dump(array_slice(\Uri::segments(), 7));exit;
@@ -144,11 +144,13 @@ class Controller_Image extends \Controller {
 
 		exit;
 	}
-	public function action_w_h() {
+	public function action_w_h($mode = null, $w = null, $h = null, $path = null) {
 	    
 		// Store our request params in more appropriate formats
-		$w = intval($this->param('w'));
-		$h = intval($this->param('h'));
+		$this->mode = $mode;
+		$w = intval($w);
+		$h = intval($h);
+		//this isnt yet set to be passed in
 		$bgcolor = '#'.$this->param('bgcolor', 'fff');
 		
 		// Init the image info with the filename format, and output if a cache has been produced
