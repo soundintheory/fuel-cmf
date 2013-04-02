@@ -44,7 +44,7 @@ function saveData(table, id, _data) {
 		
 		for (var i = 0; i < formData.length; i++) {
 			var name = formData[i]['name'] + '';
-			if (name.indexOf('%TEMP%') > -1) { continue; }
+			if (name.indexOf('__TEMP__') > -1) { continue; }
 			_data[name] = formData[i]['value'];
 		}
 		
@@ -449,7 +449,8 @@ function initItemList() {
 
 function initItemForm() {
 	
-	var submitted = false;
+	var $itemForm = $('form.item-form').eq(0),
+	submitted = false;
 	
 	$('#controls-fixed-bot .btn-remove').each(function() {
 		
@@ -492,30 +493,45 @@ function initItemForm() {
 		dateFormat: "dd MM yy",
         timeFormat: "hh:mm tt"
     });
-	//.datetimepicker( "setDate" , new Date());
 
     $('.help-icon').popover({ 'placement':'right', 'trigger':'click' });
-	
-	/*
-	$('table.selectable tr').each(function() {
-		
-		var el = $(this), cb = $('td input[type="checkbox"]', el).eq(0);
-		if (cb.length == 0) { return; }
-		
-		el.click(function(evt) {
-			
-			if (evt.target == cb[0]) { return true; }
-			var tag = (''+evt.target.tagName).toLowerCase();
-			var parentTag = (''+$(evt.target).parent()[0].tagName).toLowerCase();
-			if (tag == 'input' || tag == 'a' || tag == 'select' || tag == 'option' || parentTag == 'a') { return; }
-			
-			cb.prop('checked', !cb.prop('checked'));
-			return false;
-			
-		});
-		
-	});
-	*/
+    
+    // Save the initial state of the form to compare against later
+    var initialFormData = '';
+    setTimeout(function() {
+    	initialFormData = $itemForm.serialize();
+    }, 100);
+    
+    // Ask whether people want to leave the page if unsaved changes have been made
+    $(window).bind('beforeunload', onBeforeUnload);
+    
+    // There are some situations when we don't want to prompt before leaving the page
+    $itemForm.submit(function() {
+    	$(window).unbind('beforeunload', onBeforeUnload);
+    });
+    
+    $('#controls-fixed-bot .btn-remove').click(function() {
+    	$(window).unbind('beforeunload', onBeforeUnload);
+    });
+    
+    function onBeforeUnload() {
+    	
+    	var e = e || window.event;
+    	
+    	var latestFormData = $itemForm.serialize();
+    	if (latestFormData != initialFormData) {
+    		var msg = "There are potentially unsaved changes to this item. You have two options:\n\n1) Stay and click the 'save' button.\n\n2) Continue and they may be lost.";
+    		e.returnValue = msg;
+    		return msg;
+    	} else {
+    		return;
+    	}
+    	
+    }
+    
+}
+
+function hasStayed() {
 	
 }
 

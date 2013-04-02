@@ -22,7 +22,7 @@ class StackedInline extends Multiselect {
     
     /** inheritdoc */
     public static function displayForm($value, &$settings, $model)
-    {	
+    {
     	$target_class = $settings['mapping']['targetEntity'];
     	$target_metadata = $target_class::metadata();
         
@@ -61,7 +61,7 @@ class StackedInline extends Multiselect {
         
         foreach ($types as $type) {
             $metadata = $type::metadata();
-            $prefix = '%TEMP%'.$settings['mapping']['fieldName'].'[%num%]';
+            $prefix = '__TEMP__'.$settings['mapping']['fieldName'].'[__NUM__]';
             $form_templates[$type] = new ModelForm($metadata, new $type(), $prefix, $hidden_fields, $exclude);
             $target_tables[$type] = $metadata->table['name'];
             $templates_content[$type] = array( 'fields' => $form_templates[$type]->getFieldContent(), 'icon' => $type::icon(), 'singular' => $type::singular(), 'prefix' => $prefix );

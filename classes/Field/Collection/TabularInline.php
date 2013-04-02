@@ -43,7 +43,7 @@ class TabularInline extends Multiselect {
         if ($sortable) $hidden_fields['pos'] = 0;
         
         // The form from which we'll render out each row, but also the blank form for the 'new item' template
-        $form_template = new ModelForm($target_metadata, new $target_class(), '%TEMP%'.$settings['mapping']['fieldName'].'[%num%]', $hidden_fields, $exclude);
+        $form_template = new ModelForm($target_metadata, new $target_class(), '__TEMP__'.$settings['mapping']['fieldName'].'[__NUM__]', $hidden_fields, $exclude);
         $cols = $form_template->field_keys;
         $rows = array();
         $js_data = $form_template->js_field_settings;

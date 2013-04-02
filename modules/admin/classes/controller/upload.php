@@ -50,14 +50,18 @@ class Controller_Upload extends Controller_Base {
         $item_id = \Input::get('item_id', urldecode(\Input::post('item_id', null)));
         $field_name = \Input::get('fieldName', urldecode(\Input::post('fieldName', null)));
         
-        // Set the data for the response
-        $result['uploadName'] = $this->getUploadName();
-        $result['originalName'] = $this->getOriginalName();
-        $result['path'] = $path.$result['uploadName'];
-        $result['fieldName'] = $field_name;
-        
-        $info = getimagesize($this->target);
-        if ($info !== false) $result['info'] = $info;
+        if (!empty($this->target)) {
+            
+            // Set the data for the response
+            $result['uploadName'] = $this->getUploadName();
+            $result['originalName'] = $this->getOriginalName();
+            $result['path'] = $path.$result['uploadName'];
+            $result['fieldName'] = $field_name;
+            
+            $info = @getimagesize($this->target);
+            if ($info !== false) $result['info'] = $info;
+            
+        }
         
         $this->headers = array("Content-Type: text/plain");
         return \Response::forge(json_encode($result), $this->status, $this->headers);

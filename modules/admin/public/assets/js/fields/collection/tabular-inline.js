@@ -20,7 +20,7 @@
 			positions = {};
 			
 			// Don't run on temporary fields...
-			if (name.indexOf('%TEMP%') >= 0) { return; }
+			if (name.indexOf('__TEMP__') >= 0) { return; }
 			
 			$footer.find('.btn-add').click(addItem);
 			$actionsTop.find('.btn-add').click(addItem);
@@ -43,14 +43,14 @@
 					
 					var isData = origName === undefined || origName === false || origName == '';
 					if (isData) { origName = $el.attr('data-field-name'); }
-					if (origName.indexOf('%TEMP%') === -1) { return; }
+					if (origName.indexOf('__TEMP__') === -1) { return; }
 					
-					var lastName = origName.replace('%TEMP%', '').replace('%num%', inc-1),
-					name = origName.replace('%TEMP%', '').replace('%num%', inc);
+					var lastName = origName.replace('__TEMP__', '').replace('__NUM__', inc-1),
+					name = origName.replace('__TEMP__', '').replace('__NUM__', inc);
 					
 					if (origId != undefined && origId != '') {
 						
-						var newId = origId.replace('%TEMP%', '').replace('%num%', inc);
+						var newId = origId.replace('__TEMP__', '').replace('__NUM__', inc);
 						$label = $item.find('label[for="' + origId + '"]');
 						$el.attr('id', newId);
 						

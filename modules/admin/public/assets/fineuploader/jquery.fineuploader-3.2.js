@@ -1923,7 +1923,7 @@ qq.extend(qq.FineUploader.prototype, {
             cancelLink = this._find(item, 'cancel');
             qq(cancelLink).hide();
 
-            qq(progressBar).hide();
+            //qq(progressBar).hide();
             qq(this._find(item, 'statusText')).setText(this._options.text.waitingForResponse);
 
             // If last byte was sent, just display final size

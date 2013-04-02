@@ -1159,7 +1159,7 @@
 		settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {};
 		
 		// Don't run on temporary fields...
-		if (name.indexOf('%TEMP%') >= 0) { return; }
+		if (name.indexOf('__TEMP__') >= 0) { return; }
 		
 		var opts = {
 			buttons: ['html', '|', 'formatting', '|', 'bold', 'italic', 'deleted', '|', 'unorderedlist', 'orderedlist', 'outdent', 'indent', '|', 'image', 'video', 'file', 'table', 'link', '|', 'fontcolor', 'backcolor', '|', 'alignment', '|', 'horizontalrule'],

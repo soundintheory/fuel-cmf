@@ -72,7 +72,9 @@ class Controller_Item extends Controller_Base {
 		
 		// Load up the model with the Id
 	    $model = $class_name::find($id);
-	    if (is_null($model)) return $this->show404("That ".$this->singular." Doesn't Exist!");
+	    if (is_null($model)) {
+	    	\Response::redirect(\Uri::base(false)."admin/$table_name", 'location');
+	    }
 	    
 	    $can_edit = \CMF\Auth::can('edit', $model);
 		if (!$can_edit) {

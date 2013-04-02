@@ -2,20 +2,14 @@
 <div class="gallery-inner">
 <label class="item-label"><i class="icon icon-{{ icon }}"></i> &nbsp;{{ settings.title }}</label>
 
-
 <!-- We need to output different templates for any different types that can be added -->
 {% for template_type, template_content in templates %}
 <div class="item-template" data-type="{{ template_type }}">
-	<div class="item-title">
-		<h3><i class="icon icon-{{ template_content.icon }}"></i> New {{ template_content.singular }}</h3>
-	</div>
-	<div class="item-content">
-		{% if sortable %}{{ form.hidden_fields.pos }}{% endif %}
-		<input type="hidden" name="{{ template_content.prefix }}[__type__]" value="{{ template_type }}" />
-		{% for field_name, field in template_content.fields %}
-		{{ field }}
-		{% endfor %}
-	</div>
+	{% if sortable %}{{ form.hidden_fields.pos }}{% endif %}
+	<input type="hidden" name="{{ template_content.prefix }}[__type__]" value="{{ template_type }}" />
+	{% for field_name, field in template_content.fields %}
+	{{ field }}
+	{% endfor %}
 </div>
 {% endfor %}
 
@@ -25,9 +19,8 @@
 	{% for row in rows %}
 	<div class="gallery-item selectable">
 		{{ row.hidden_fields.id }}
-		<img src="/image/1/0/90/{{ row._model_.get(settings.filefield).src }}" />
-		<label><span><input type="checkbox" /></span></label>
-		<a href="#" class="edit-link"><span><i class="icon icon-cog"></i> Edit</span></a>
+		<img src="/image/1/0/90/{{ row._model_.get(settings.image_field).src }}" class="gallery-thumb" />
+		<label class="gallery-label"><span><input type="checkbox" /></span></label>
 		<div class="item-form">
 			{% for field_name, field in row.fields %}
 			{{ field }}
@@ -35,16 +28,20 @@
 		</div>
 	</div>
 	{% endfor %}
-	<div class="gallery-item">
-		<a href="#" class="img action"><i class="icon icon-plus"></i> &nbsp;Add...</a>
+	<div class="gallery-uploader">
+		<!-- This is the wrapper for the JS uploader, which will contain the extra uploaded items -->
 	</div>
 	<div class="clear"></div>
 </div> <!-- .items -->
 
 <div class="gallery-controls">
-	<div class="selected-actions">
-		<span class="btn btn-small btn-remove-selected"><i class="icon icon-remove icon-danger"></i> &nbsp;Remove selected...</span>
-	</div>
+	<span class="selected-actions">
+		<span class="btn btn-small btn-remove-selected"><i class="icon icon-remove icon-danger"></i> &nbsp;Remove...</span>&nbsp;
+	</span>
+	<span class="actions">
+		<label class="checkbox btn btn-small btn-checkbox"><input type="checkbox" class="gallery-show-hidden" checked="checked" /> Show hidden</label>&nbsp;
+		<span type="button" class="btn btn-small btn-toggle-select">Select all</span>
+	</span>
 </div>
 
 </div>

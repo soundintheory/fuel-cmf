@@ -20,7 +20,7 @@
 		$name = $select.attr('name');
 		
 		// Don't run on temporary fields...
-		if (name.indexOf('%TEMP%') >= 0) { return; }
+		if (name.indexOf('__TEMP__') >= 0) { return; }
 		
 		// So the iframe can call this field on save...
 		window[cid] = { 'onSave':onSave };

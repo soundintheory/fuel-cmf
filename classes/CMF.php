@@ -33,6 +33,11 @@ class CMF
         return \Inflector::friendly_title($input, '-', $lowercase);
     }
     
+    public static function fieldId($input)
+    {
+        return trim('field-'.str_replace(array('][', '[', ']'), '-', $input), '-');
+    }
+    
     /**
      * Finds the model associated with the current URL and returns it.
      * 

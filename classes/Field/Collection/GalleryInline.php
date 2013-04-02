@@ -7,7 +7,7 @@ use CMF\Admin\ModelForm;
 class GalleryInline extends Multiselect {
     
     protected static $defaults = array(
-        'filefield' => null
+        'image_field' => null
     );
     
     /** inheritdoc */
@@ -48,19 +48,19 @@ class GalleryInline extends Multiselect {
         $target_field = ($settings['mapping']['isOwningSide'] === true) ? $settings['mapping']['inversedBy'] : $settings['mapping']['mappedBy'];
         $sortable = $target_class::sortable() && isset($settings['mapping']['orderBy']) && isset($settings['mapping']['orderBy']['pos']) && $settings['mapping']['orderBy']['pos'] == 'ASC';
         $sort_group = $target_class::sortGroup();
-        $filefield = $settings['filefield'];
+        $image_field = $settings['image_field'];
         
-        // Detect a filefield if one hasn't been specified
-        if ($filefield === null) {
+        // Detect an image field if one hasn't been specified
+        if ($image_field === null) {
             foreach ($target_metadata->fieldMappings as $field_name => $field_mapping) {
-                if (in_array($field_mapping['type'], array('image', 'imageobject', 'file', 'video'))) {
-                    $filefield = $field_name;
+                if ($field_mapping['type'] == 'image') {
+                    $image_field = $field_name;
                     break;
                 }
             }
         }
         
-        $settings['filefield'] = $filefield;
+        $settings['image_field'] = $image_field;
         
         // If the target isn't grouped by this relationship, we need to save all the positions at once...
         $save_all = $sort_group != $target_field;
@@ -79,7 +79,7 @@ class GalleryInline extends Multiselect {
         
         foreach ($types as $type) {
             $metadata = $type::metadata();
-            $prefix = '%TEMP%'.$settings['mapping']['fieldName'].'[%num%]';
+            $prefix = '__TEMP__'.$settings['mapping']['fieldName'].'[__NUM__]';
             $form_templates[$type] = new ModelForm($metadata, new $type(), $prefix, $hidden_fields, $exclude, true);
             $target_tables[$type] = $metadata->table['name'];
             $templates_content[$type] = array( 'fields' => $form_templates[$type]->getFieldContent(), 'icon' => $type::icon(), 'singular' => $type::singular(), 'prefix' => $prefix );
@@ -115,9 +115,11 @@ class GalleryInline extends Multiselect {
         
         $js_data[$settings['mapping']['fieldName']] = array(
             'target_tables' => $target_tables,
+            'target_class' => $settings['mapping']['targetEntity'],
             'add_types' => $add_types,
             'save_all' => $save_all,
-            'sortable' => $sortable
+            'sortable' => $sortable,
+            'image_field' => $image_field
         );
         
         return array(

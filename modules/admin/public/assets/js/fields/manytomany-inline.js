@@ -71,13 +71,13 @@
 					$input = $newRow.find('*[data-name="' + getTemplateFieldName(inline_fields[i]) + '"]');
 					if ($input.length == 0) { continue; }
 
-					$input.attr('name', $input.attr('data-name').replace('%num%', numItems));
-					$input.attr('id', $input.attr('data-id').replace('%num%', numItems));
+					$input.attr('name', $input.attr('data-name').replace('__NUM__', numItems));
+					$input.attr('id', $input.attr('data-id').replace('__NUM__', numItems));
 
 				}
 				
 				$selfId = $newRow.find('input[type="hidden"]').eq(0);
-				$selfId.attr('name', $selfId.attr('data-name').replace('%num%', numItems));
+				$selfId.attr('name', $selfId.attr('data-name').replace('__NUM__', numItems));
 				
 				$tableBody.append($newRow);
 				initFileInputs($newRow);
@@ -133,7 +133,7 @@
 			}
 			
 			function getTemplateFieldName(fieldName) {
-				return config['fieldName'] + '[%num%][' + fieldName + ']';
+				return config['fieldName'] + '[__NUM__][' + fieldName + ']';
 			}
 			
 		});

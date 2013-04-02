@@ -165,7 +165,12 @@ class ModelForm
 				}
 				
 				$this->fields[$field_name] = $field = \Arr::merge($field_content, $this->fields[$field_name]);
-				$field_assets = \Arr::merge(($field_assets !== null && is_array($field_assets)) ? $field_assets : array(), $field_content['assets']);
+				if (isset($field_content['assets'])) {
+					$field_assets = \Arr::merge(($field_assets !== null && is_array($field_assets)) ? $field_assets : array(), $field_content['assets']);
+				} else {
+					$field_assets = ($field_assets !== null && is_array($field_assets)) ? $field_assets : array();
+				}
+				
 				$this->fields[$field_name]['content'] = $field_content = $field_content['content'];
 				
 				// If this is a widget, generate it

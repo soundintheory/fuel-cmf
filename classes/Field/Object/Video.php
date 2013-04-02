@@ -2,7 +2,7 @@
 
 namespace CMF\Field\Object;
 
-class Video extends FileObject {
+class Video extends File {
     
     protected static $defaults = array(
         'path' => 'uploads/videos/',
@@ -30,7 +30,7 @@ class Video extends FileObject {
     
     public static function getValue($value, $settings, $model)
     {
-        // Check if the src is set, but not the converted values - this means we need to check for
+        // Check if the src is set and the converted values are not - this means we need to check for
         // the progress file and possibly update the database
         
         if (is_array($value) && isset($value['src']) && strlen($value['src']) > 0 && (!isset($value['converted']) || empty($value['converted']))) {
@@ -73,6 +73,7 @@ class Video extends FileObject {
         
         $attributes = array(
             'class' => 'field-type-file video controls control-group'.($settings['has_errors'] ? ' error' : ''),
+            'data-field-name' => $settings['mapping']['fieldName'],
             'id' => 'field_'.\CMF::slug($settings['mapping']['fieldName'])
         );
         

@@ -7,24 +7,23 @@
     function initItem() {
         
         var $wrap = $(this),
-        $el = $wrap.find('.async-upload'),
-        $originalInput = $wrap.find('input.file-value'),
-        $widthInput = $wrap.find('input.video-width'),
-        $heightInput = $wrap.find('input.video-height'),
-        $durationInput = $wrap.find('input.video-duration'),
-        fieldName = $originalInput.attr('name'),
-        baseFieldName = $originalInput.attr('data-field-name');
+        fieldName = $wrap.attr('data-field-name');
         
-        if (fieldName.indexOf('%TEMP%') > -1) { return; }
+        if (fieldName.indexOf('__TEMP__') > -1) { return; }
         
-        var settings = typeof(field_settings[baseFieldName]) != 'undefined' ? field_settings[baseFieldName] : {},
+        var $el = $wrap.find('.async-upload'),
+        $srcInput = $wrap.find('input[name="' + fieldName + '[src]"]'),
+        $widthInput = $wrap.find('input[name="' + fieldName + '[width]"]'),
+        $heightInput = $wrap.find('input[name="' + fieldName + '[height]"]'),
+        $durationInput = $wrap.find('input[name="' + fieldName + '[duration]"]'),
+        settings = typeof(field_settings[fieldName]) != 'undefined' ? field_settings[fieldName] : {},
         originalValue = settings['value'],
         opts = {
             multiple: false,
             debug: false,
             request: {
                 endpoint: '/admin/upload/video',
-                params: { 'path':settings['path'], 'fieldName':baseFieldName },
+                params: { 'path':settings['path'], 'fieldName':fieldName },
                 paramsInBody: false
             },
             text: {
@@ -179,10 +178,10 @@
             if (save === true && isFunction(saveData)) {
                 originalValue = val;
                 var _data = {};
-                _data[baseFieldName+'[src]'] = val['src'];
-                _data[baseFieldName+'[width]'] = val['width'];
-                _data[baseFieldName+'[height]'] = val['height'];
-                _data[baseFieldName+'[duration]'] = val['duration'];
+                _data[fieldName+'[src]'] = val['src'];
+                _data[fieldName+'[width]'] = val['width'];
+                _data[fieldName+'[height]'] = val['height'];
+                _data[fieldName+'[duration]'] = val['duration'];
                 saveData(null, null, _data);
             }
             

@@ -1,12 +1,15 @@
 {% if settings.title %}<label class="item-label">{{ settings.title }}</label>{% endif %}
-<input type="hidden" name="{{ settings.mapping.fieldName }}" value="{{ value }}" class="file-value" />
 
-<!-- foreach settings crops -->
-{% for cropid,crop in settings.crop %}
-<input id="cropx-{{cropid}}" type="text" name="cropx" value="" class="file-value" />
-<input id="cropy-{{cropid}}" type="text" name="cropy" value="" class="file-value" />
-<input id="cropw-{{cropid}}" type="text" name="cropw" value="" class="file-value" />
-<input id="croph-{{cropid}}" type="text" name="croph" value="" class="file-value" />    
+<input type="hidden" name="{{ settings.mapping.fieldName }}[src]" value="{{ value.src }}" />
+<input type="hidden" name="{{ settings.mapping.fieldName }}[width]" value="{{ value.width }}" />
+<input type="hidden" name="{{ settings.mapping.fieldName }}[height]" value="{{ value.height }}" />
+
+<!-- crop info -->
+{% for crop in settings.crop %}
+<input type="hidden" name="{{ settings.mapping.fieldName }}[crop][{{ crop.id }}][x]" value="{{ value.crop[crop.id].x }}" />
+<input type="hidden" name="{{ settings.mapping.fieldName }}[crop][{{ crop.id }}][y]" value="{{ value.crop[crop.id].y }}" />
+<input type="hidden" name="{{ settings.mapping.fieldName }}[crop][{{ crop.id }}][width]" value="{{ value.crop[crop.id].width }}" />
+<input type="hidden" name="{{ settings.mapping.fieldName }}[crop][{{ crop.id }}][height]" value="{{ value.crop[crop.id].height }}" />
 {% endfor %}
 
-<div class="async-upload{{ value ? ' populated' : '' }}"></div>
+<div class="async-upload{{ value.src ? ' populated' : '' }}"></div>
