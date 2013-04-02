@@ -39,6 +39,7 @@ class Controller_Item extends Controller_Base {
 	    $model = new $class_name();
 	    
 	    // Get stuff ready for the template
+	    $this->js['model'] = $class_name;
 	    $this->form = new ModelForm($metadata, $model);
 	    $this->plural = $class_name::plural();
 		$this->singular = $class_name::singular();

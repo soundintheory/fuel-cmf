@@ -450,7 +450,19 @@ function initItemList() {
 function initItemForm() {
 	
 	var $itemForm = $('form.item-form').eq(0),
-	submitted = false;
+	submitted = false,
+	hasTabs = $itemForm.find('.nav > li').length > 0,
+	cookieId = data['model'],
+	isNew = true;
+	
+	var tabCookie = $.cookie(cookieId+'_tab');
+	
+	if (isSet(data['item_id']) && data['item_id'] != '') {
+		cookieId += '_' + data['item_id'];
+		var otherTabCookie = $.cookie(cookieId+'_tab');
+		if (isSet(otherTabCookie)) { tabCookie = otherTabCookie; }
+		isNew = false;
+	}
 	
 	$('#controls-fixed-bot .btn-remove').each(function() {
 		
@@ -466,18 +478,20 @@ function initItemForm() {
 		$(this).button('loading');
 	});
 	
-	$('#item-nav a').each(function() {
+	$itemForm.find('.nav > li > a').each(function() {
 		var el = $(this);
 		var selector = el.attr('href');
+		var tabId = selector.replace('#', '');
 		
 		var tab = $(selector);
-		if (tab.length > 0 && tab.find('.error').length > 0) {
+		if (tab.length > 0 && (tab.find('.error').length > 0 || tabId === tabCookie)) {
 			$(this).tab('show');
 		}
 		
 		el.click(function (e) {
 		    e.preventDefault();
 		    el.tab('show');
+		    return false;
 	    });
 	});
 	
@@ -505,9 +519,23 @@ function initItemForm() {
     // Ask whether people want to leave the page if unsaved changes have been made
     $(window).bind('beforeunload', onBeforeUnload);
     
-    // There are some situations when we don't want to prompt before leaving the page
     $itemForm.submit(function() {
+    	
+    	// Save the tab position if there is one
+    	if (hasTabs) {
+    		
+    		var date = new Date();
+    		date.setTime(date.getTime() + 10000);
+    		var tabId = $itemForm.find('.nav > li.active > a').attr('href').replace('#', '');
+    		var cookieOptions = { expires: date };
+    		if (isNew) { cookieOptions['path'] = '/'; }
+    		$.cookie(cookieId + '_tab', tabId, cookieOptions);
+    		
+    	}
+    	
+    	// There are some situations when we don't want to prompt before leaving the page
     	$(window).unbind('beforeunload', onBeforeUnload);
+    	
     });
     
     $('#controls-fixed-bot .btn-remove').click(function() {

@@ -32,6 +32,7 @@
 				'<button class="btn btn-primary btn-close" data-dismiss="modal"><i class="icon icon-ok"></i> Done</button>' +
 			'</div>' +
 		'</div>',
+		$body = $('body'),
 		$modal = $(modalHtml).appendTo('body').on('hide', onModalClose),
 		$modalBody = $modal.find('.modal-body').eq(0),
 		$modalClose = $modal.find('.modal-footer .btn-close').click(onModalClose),
@@ -84,7 +85,8 @@
         },
         $itemsWrap = $wrap.find('.gallery-items').eq(0),
         inc = $itemsWrap.find('.gallery-item').length,
-        cookieId = data['model'] + '_' + data['item_id'] + '_' + name;
+        cookieId = data['model'] + '_' + data['item_id'] + '_' + name,
+        positions = {};
 		
 		// Initialise the items we have to start with
 		$itemsWrap.find('.gallery-item').each(SelectableItem);
@@ -100,6 +102,7 @@
 		// Update a couple of bits
 		readCookies();
 		updateSelected();
+		initSorting();
 		toggleShowHidden();
 		
 		function submitHandler(evt, id, fileName) {
@@ -155,7 +158,6 @@
 			
 			var html = '<img class="gallery-thumb" src="/image/1/0/90/' + _data['path'] + '" style="width:' + imgWidth + 'px;height:90px;" />' +
 			'<label class="gallery-label"><span><input type="checkbox" /></span></label>' +
-			'<a href="#" class="edit-link"><span><i class="icon icon-cog"></i> Edit</span></a>' +
 			'<div class="item-form">';
 			
 			// Create the item form from the template
@@ -256,8 +258,10 @@
 			$img = $self.find('.gallery-thumb'),
 			$overlay = $('<span class="gallery-overlay"></span>').insertAfter($img),
 			$editLink = $('<span class="edit-link"><i class="icon icon-cog"></i> Edit</span>').insertAfter($img).click(onEditClick),
+			$handle = $('<span class="handle"></span>').insertAfter($img)
 			$showHide = $('<span class="showhide-link"><i class="icon icon-eye-open"></i><i class="icon icon-eye-close"></i></span>').insertAfter($editLink).click(showHide),
 			$checkbox = $self.find('> .gallery-label input[type="checkbox"]').change(updateSelected),
+			$posField = $self.find('> input[data-field-name="pos"]'),
 			$visibleInput = $self.find('.item-form > div > label > input[type="checkbox"][name$="[visible]"]').eq(0).change(updateVisible);
 			
 			// Check if it's visible to start with
@@ -380,6 +384,43 @@
 			} else {
 				$actions.hide();
 			}
+			
+		}
+		
+		function updatePositions() {
+			
+			if (settings['sortable'] !== true) { return false; }
+			
+			$itemsWrap.find('> .gallery-item').each(function(i) {
+				
+				var $el = $(this),
+				$pos = $el.find('> input[data-field-name="pos"]').val(i+''),
+				id = $el.find('> input.item-id').val();
+				
+				positions[id] = { 'pos':i };
+				
+			});
+			
+		}
+		
+		function initSorting() {
+			
+			if (settings['sortable'] !== true) { return false; }
+			
+			$itemsWrap.sortable({ handle:'.handle', placeholder: 'gallery-item gallery-sort-placeholder', 'forcePlaceholderSize':true });
+			$itemsWrap.sortable('option', 'start', function (evt, ui) {
+				
+				$body.addClass('sorting');
+				
+			});
+			$itemsWrap.sortable('option', 'stop', function(evt, ui) {
+				
+				$body.removeClass('sorting');
+				updatePositions();
+				
+			});
+			
+			updatePositions()
 			
 		}
 		

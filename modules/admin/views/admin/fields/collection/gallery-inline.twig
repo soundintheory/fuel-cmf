@@ -15,10 +15,11 @@
 
 <input type="hidden" name="{{ settings.mapping.fieldName }}" value="" />
 <!-- Output the items -->
-<div class="gallery-items" data-field-name="{{ settings.mapping.fieldName }}">
+<div class="gallery-items{{ sortable ? ' sortable' : '' }}" data-field-name="{{ settings.mapping.fieldName }}">
 	{% for row in rows %}
 	<div class="gallery-item selectable">
 		{{ row.hidden_fields.id }}
+		{% if sortable %}{{ row.hidden_fields.pos }}{% endif %}
 		<img src="/image/1/0/90/{{ row._model_.get(settings.image_field).src }}" class="gallery-thumb" />
 		<label class="gallery-label"><span><input type="checkbox" /></span></label>
 		<div class="item-form">
