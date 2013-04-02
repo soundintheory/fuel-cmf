@@ -68,8 +68,7 @@
         
         var $topRow = $el.find('.top-row'),
         $clearBut = $('<span class="btn btn-small btn-clear"><i class="icon-remove"></i></span>').appendTo($topRow).click(clear),
-        $filePreview = $el.find('.file-preview'),
-        $input = $('<input type="hidden" name="' + fieldName + '" value="" />');
+        $filePreview = $el.find('.file-preview');
         
         // This will show / hide any stuff appropriately if there is a value
         setValue(originalValue);
@@ -148,7 +147,7 @@
             var poster = val['poster'];
             var converted = val['converted'];
             
-            $input.appendTo($el).val(val['src']);
+            $srcInput.appendTo($el).val(val['src']);
             $widthInput.appendTo($el).val(val['width']);
             $heightInput.appendTo($el).val(val['height']);
             $durationInput.appendTo($el).val(val['duration']);

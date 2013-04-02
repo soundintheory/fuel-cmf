@@ -103,8 +103,9 @@ class Controller_Image extends \Controller {
 		// Serve the file
 		return $this->serve_image($this->resized, $this->mime_type);
 	}
-	public function action_coordinate_crop($cropx = null, $cropy = null, $cropw = null, $croph = null, $w = null, $h = null, $path = null){
-		//'image/:cropx/:cropy/:cropw/:croph/:w/:h/(:any)' => 'image/coordinate_crop',
+	
+	public function action_coordinate_crop($cropx = null, $cropy = null, $cropw = null, $croph = null, $w = null, $h = null, $path = null)
+	{
 		$cropx = intval($cropx);
 		$cropy = intval($cropy); 
 		$cropw = intval($cropw); 
@@ -112,38 +113,21 @@ class Controller_Image extends \Controller {
 		$w = intval($w);
 		$h = intval($h);
 		$this->mode = 'cc';
+		
 		$output = $this->_init_image(7, $cropx."_".$cropy."_".$cropx."_".$cropw."_".$cropy."_".$croph."_".$w."x".$h);
-		//var_dump(array_slice(\Uri::segments(), 7));exit;
 		if (!is_null($output)) return $output;
-
-		//crop($x1, $y1, $x2, $y2)
-		//resize($width, $height = null, $keepar = true, $pad = false)
-		/*
-		$width	Required	The new width of the image.
-		$height	
-		null
-		The new height of the image
-		$keepar	
-		true
-		If set to true, will keep the Aspect Ratio of the image identical to the original.
-		$pad	
-		false
-		If set to true and $keepar is true, it will pad the image with the configured bgcolor.
-		 */
-		//redundant
+		
 		$bgcolor = '#'.$this->param('bgcolor', 'fff');
 
 		\Image::load($this->path)
 		->config('bgcolor', $bgcolor)
   		->crop($cropx, $cropy, $cropx + $cropw, $cropy + $croph)
-      ->resize($w, $h)
+  		->resize($w, $h)
   		->save($this->resized);
-
+  		
 		return $this->serve_image($this->resized, $this->mime_type);
-
-
-		exit;
 	}
+	
 	public function action_w_h($mode = null, $w = null, $h = null, $path = null) {
 	    
 		// Store our request params in more appropriate formats
