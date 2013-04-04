@@ -270,12 +270,15 @@
                 return false;
             }
             
+            // Will eventually check whether this image has extra fields to manage in this modal
+            var hasData = false;
+            
             // Top part of the modal
-            var modalContent = '<div id="#' + fieldId +'-modal" class="image-modal modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
+            var modalContent = '<div id="#' + fieldId +'-modal" class="image-modal modal hide fade' + (hasData ? '' : ' no-data') + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
             '<div class="modal-header">' +
-            '<div class="left-col">' +
-                '<h3>Edit image</h3>' +
-            '</div>' + // .left-col (header)
+            //'<div class="left-col">' +
+            //    '<h3>Edit image</h3>' +
+            //'</div>' + // .left-col (header)
             '<div class="right-col">';
             
             // Add the crop options here as tabs, if there's more than one
@@ -285,7 +288,8 @@
                     var cropOption = cropSettings[i];
                     modalContent += '<li><a href="#' + fieldId + '-crop-' + cropOption['id'] + '">' + cropOption['title'] + '</a></li>';
                 }
-                modalContent += '</ul>';
+                modalContent += '</ul>' +
+                '<div class="alert alert-info">Select an option above to edit the different crops for this image</div>';
             }
             
             // The top right close button
@@ -293,7 +297,8 @@
             '</div>' + // .right-col (header)
             '<div class="clear"></div>' +
             '</div>' + // .modal-header
-            '<div class="modal-body">' +
+            '<div class="modal-body">';
+            /*
             '<div class="left-col">';
             
             // Add any data fields here - alt, title, caption etc
@@ -304,12 +309,14 @@
             modalContent += '</div>'; // .image-data
             
             modalContent += '</div>' + // .left-col
-            '<div class="right-col ' + (cropSettings.length > 1 ? 'tab-content' : '') + '">' +
+            */
+           
+            modalContent += '<div class="right-col ' + (cropSettings.length > 1 ? 'tab-content' : '') + '">' +
             '</div>' + // .right-col
             '<div class="clear"></div>' +
             '</div>' + // .modal-body
             '<div class="modal-footer">' +
-            '<button class="btn btn-primary save-image" data-dismiss="modal"><i class="icon icon-ok"></i> &nbsp;Save</button>' +
+            '<button class="btn btn-primary save-image" data-dismiss="modal"><i class="icon icon-ok"></i> &nbsp;Done</button>' +
             '</div>' +
             '</div>';
             

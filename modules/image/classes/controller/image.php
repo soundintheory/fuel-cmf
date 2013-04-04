@@ -36,7 +36,7 @@ class Controller_Image extends \Controller {
 		$ext = Input::extension();
 
 		if (is_null($output_ext)) $output_ext = $ext;
-		$this->mode = empty($this->mode) ? \Arr::get($this->modes, $this->param('mode', '1'), '') : $this->mode;
+		if (!empty($this->mode)) $this->mode = \Arr::get($this->modes, $this->mode, $this->mode);
 
 		$path_segments = array_slice(\Uri::segments(), $start_segment);
 		$path_relative = implode('/', $path_segments);

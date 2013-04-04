@@ -641,12 +641,8 @@ td.col-type-file {
 }
 
 .image-modal {
-	margin: 0px 0 0 -450px;
+	margin: 0 0 0 -450px;
 	width: 900px;
-	
-	&.fade {
-		top: 40%;
-	}
 	
 	.right-col {
 		width: 575px;
@@ -657,12 +653,25 @@ td.col-type-file {
 		margin: 0 0 4px 0;
 	}
 	
+	&.fade {
+		top: 40%;
+	}
+	
+	&.no-data {
+		width: 620px;
+		margin: 0 0 0 -310px;
+		
+		.right-col {
+			float: none;
+		}
+	}
+	
 	.modal-header {
 		border: none;
-		padding: 15px 15px;
+		padding: 15px 15px 0px 15px;
 		
 		.nav-pills {
-			margin: 0;
+			margin: 0 0 15px 0;
 		}
 		
 		.nav-pills li {
@@ -671,6 +680,12 @@ td.col-type-file {
 		
 		button.close {
 			position: absolute; top: 14px; right: 18px;
+		}
+		
+		.alert {
+			margin: 0 0 15px 0;
+			font-size: 13px;
+			line-height: 17px;
 		}
 		
 	}

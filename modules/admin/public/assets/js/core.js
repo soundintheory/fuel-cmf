@@ -511,10 +511,10 @@ function initItemForm() {
     $('.help-icon').popover({ 'placement':'right', 'trigger':'click' });
     
     // Save the initial state of the form to compare against later
-    var initialFormData = '';
-    setTimeout(function() {
-    	initialFormData = $itemForm.serialize();
-    }, 100);
+    var initialFormData = null;
+    $(window).load(function() {
+    	initialFormData = getFormString($itemForm);
+    });
     
     // Ask whether people want to leave the page if unsaved changes have been made
     $(window).bind('beforeunload', onBeforeUnload);
@@ -546,8 +546,11 @@ function initItemForm() {
     	
     	var e = e || window.event;
     	
-    	var latestFormData = $itemForm.serialize();
-    	if (latestFormData != initialFormData) {
+    	var latestFormData = getFormString($itemForm);
+    	
+    	if (initialFormData != null && latestFormData != initialFormData) {
+    		console.log(latestFormData.substr(0, 120));
+    		console.log(initialFormData.substr(0, 120));
     		var msg = "There are potentially unsaved changes to this item. You have two options:\n\n1) Stay and click the 'save' button.\n\n2) Continue and they may be lost.";
     		e.returnValue = msg;
     		return msg;
@@ -559,7 +562,20 @@ function initItemForm() {
     
 }
 
-function hasStayed() {
+function getFormString($form) {
+	
+	var formData = $form.serializeArray();
+	formData.sort(function(a, b) {
+		var textA = a.name.toUpperCase();
+		var textB = b.name.toUpperCase();
+		return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+	});
+	
+	var output = '';
+	for (var i = 0; i < formData.length; i++) {
+		output += formData[i].name + '=' + formData[i].value + '&';
+	}
+	return output;
 	
 }
 

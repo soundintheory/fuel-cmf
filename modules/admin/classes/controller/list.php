@@ -248,14 +248,22 @@ class Controller_List extends Controller_Base {
 		
 		if (!$user->super_user) {
 			
+			$user_roles = $user->roles->toArray();
 			$permissions = \CMF\Model\Permission::select('item.id, item.action, item.resource, item.item_id')
 		    ->leftJoin('item.roles', 'roles')
-		    ->where("item.resource = '$class_name'")
-		    ->andWhere("item.item_id IN(?1)")
-		    ->andWhere("roles IN (?2)")
-		    ->setParameter(1, $ids)
-		    ->setParameter(2, $user->roles->toArray())
-		    ->getQuery()->getArrayResult();
+		    ->where("item.resource = '$class_name'");
+		    
+		    if (count($ids) > 0) {
+		    	$permissions->andWhere("item.item_id IN(?1)")
+		    	->setParameter(1, $ids);
+		    }
+		    
+		    if (count($user_roles) > 0) {
+		    	$permissions->andWhere("roles IN (?2)")
+		    	->setParameter(2, $user->roles->toArray());
+		    }
+		    
+		    $permissions = $permissions->getQuery()->getArrayResult();
 		    
 		    foreach ($permissions as $permission) {
 		    	$item_actions = isset($item_permissions[$permission['item_id']]) ? $item_permissions[$permission['item_id']] : array();
@@ -351,10 +359,12 @@ class Controller_List extends Controller_Base {
 	    $permissions = \CMF\Model\Permission::select('item')
 	    ->leftJoin('item.roles', 'roles')
 	    ->where("item.resource = '$class_name'")
-	    ->andWhere("item.item_id IN(?1)")
-	    ->andWhere("roles.id = $role_id")
-	    ->setParameter(1, $ids)
-	    ->getQuery()->getArrayResult();
+	    ->andWhere("roles.id = $role_id");
+	    if (count($ids) > 0) {
+	    	$permissions->andWhere("item.item_id IN(?1)")
+	    	->setParameter(1, $ids);
+	    }
+	    $permissions = $permissions->getQuery()->getArrayResult();
 	    
 	    // Transform the permissions into a form the template can understand
 	    $values = array();

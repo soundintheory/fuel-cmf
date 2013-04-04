@@ -258,7 +258,7 @@
 			$img = $self.find('.gallery-thumb'),
 			$overlay = $('<span class="gallery-overlay"></span>').insertAfter($img),
 			$editLink = $('<span class="edit-link"><i class="icon icon-cog"></i> Edit</span>').insertAfter($img).click(onEditClick),
-			$handle = $('<span class="handle"></span>').insertAfter($img)
+			$handle = $('<span class="handle"></span>').insertAfter($img),
 			$showHide = $('<span class="showhide-link"><i class="icon icon-eye-open"></i><i class="icon icon-eye-close"></i></span>').insertAfter($editLink).click(showHide),
 			$checkbox = $self.find('> .gallery-label input[type="checkbox"]').change(updateSelected),
 			$posField = $self.find('> input[data-field-name="pos"]'),
