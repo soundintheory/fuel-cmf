@@ -65,9 +65,9 @@ class Ffmpeg
 		if (isset($video_info->r_frame_rate)) {
 		    $video_framerate = strval($video_info->r_frame_rate);
 		    $parts = explode('/', $video_framerate);
-		    $video_framerate = intval($parts[0]);
+		    $video_framerate = round(intval($parts[0]) / intval($parts[1]));
 		} else {
-		    $video_framerate = $config['default_framerate'];
+		    $video_framerate = intval($config['default_framerate']);
 		}
 		
 		// Get the size

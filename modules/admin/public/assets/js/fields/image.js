@@ -88,7 +88,8 @@
         preventSave = false;
         
         // Use the provided initial data, if any
-        if (preventSave = (initialData != null)) {
+        //if (preventSave = (initialData != null)) {
+        if (initialData != null) {
             originalValue = initialData;
         } else {
             originalValue = {
@@ -148,6 +149,9 @@
         function uploadHandler(evt, id, fileName) {
             
             var $file = $($el.fineUploader('getItemByFileId', id));
+            
+            console.log(qq.isXhrUploadSupported());
+            
             $file.find('.progress').addClass('active');
             $el.find('.top-row').hide();
             setStatus('Uploading...');

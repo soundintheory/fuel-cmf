@@ -407,7 +407,7 @@
 			
 			if (settings['sortable'] !== true) { return false; }
 			
-			$itemsWrap.sortable({ handle:'.handle', placeholder: 'gallery-item gallery-sort-placeholder', 'forcePlaceholderSize':true });
+			$itemsWrap.sortable({ handle:'.handle', items: '.gallery-item', placeholder: 'gallery-item gallery-sort-placeholder', 'forcePlaceholderSize':true });
 			$itemsWrap.sortable('option', 'start', function (evt, ui) {
 				
 				$body.addClass('sorting');

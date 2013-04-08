@@ -48,7 +48,7 @@ class Base extends \Doctrine\Fuel\Model
      * @ORM\Column(type="integer", nullable=true)
      * @var int
      **/
-    protected $pos = 0;
+    protected $pos = -1;
     
     /**
      * Associative array containing settings for all the model's fields - tells the

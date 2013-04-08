@@ -63,11 +63,6 @@ function saveData(table, id, _data) {
 	// Construct the URL and post the data
 	var url = '/admin/' + table + '/' + id + '/populate';
 	
-	// Abort the current request if it's not complete already
-	//if (cItemSaveRequest != null && cItemSaveRequest.readyState != 4) {
-	//	cItemSaveRequest.abort();
-	//}
-	
 	cItemSaveRequest = $.ajax({
 		'url': url,
 		'data': _data,
@@ -498,7 +493,10 @@ function initItemForm() {
 	$('.field-type-date').each(function() {
 		
 		$(this).find('input').datepicker({
-	        dateFormat: "dd/mm/yy"
+	        dateFormat: "dd/mm/yy",
+	        changeMonth: true,
+	        changeYear: true,
+	        yearRange: "c-20:c+20"
 	    });
 		
 	});
@@ -507,8 +505,6 @@ function initItemForm() {
 		dateFormat: "dd MM yy",
         timeFormat: "hh:mm tt"
     });
-
-    $('.help-icon').popover({ 'placement':'right', 'trigger':'click' });
     
     // Save the initial state of the form to compare against later
     var initialFormData = null;

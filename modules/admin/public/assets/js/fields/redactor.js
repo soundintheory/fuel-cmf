@@ -563,9 +563,9 @@
 			links = typeof(editor.opts['links']) != 'undefined' ? editor.opts['links'] : [];
 			
 			// Jiggle some things around a bit...
-			editor.opts.modal_link = modalContent;
-			editor.showLinkOrig = editor.showLink;
-			editor.showLink = editor.showCMFLink;
+			//editor.opts.modal_link = modalContent;
+			//editor.showLinkOrig = editor.showLink;
+			//editor.showLink = editor.showCMFLink;
 			
 			// Don't continue if there are no links
 			if (links.length === 0) { return false; }
