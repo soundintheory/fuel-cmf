@@ -156,7 +156,7 @@
 			var info = _data['info'] || [0,0],
 			imgWidth = Math.round(90 * (info[0] / info[1]));
 			
-			var html = '<img class="gallery-thumb" src="/image/1/0/90/' + _data['path'] + '" style="width:' + imgWidth + 'px;height:90px;" />' +
+			var html = '<span class="img"><img class="gallery-thumb" src="/image/1/0/90/' + _data['path'] + '" style="width:' + imgWidth + 'px;height:90px;" /></span>' +
 			'<label class="gallery-label"><span><input type="checkbox" /></span></label>' +
 			'<div class="item-form">';
 			
@@ -207,8 +207,9 @@
 				
 			}
 			
-			html += '</div>';
-			$itemWrap.html(html).removeClass('uploading').addClass('selectable').each(SelectableItem);
+			html += '</div>' +
+			'<span class="gallery-filename">' + _data['originalName'] + '</span>';
+			$itemWrap.html(html).removeClass('uploading').addClass('selectable new-item').each(SelectableItem);
 			
 			// Populate our image field with the one that was uploaded
 			var imageFieldName = name+'['+inc+']['+settings['image_field']+']',
@@ -222,6 +223,7 @@
 			
 			inc++;
 			updateCount();
+			updatePositions();
 			
 			// So all the various plugins can run their magic on relevant inputs...
 			$(window).trigger('cmf.newform', { 'wrap':$itemWrap, 'data':newFormData });
@@ -231,23 +233,6 @@
 		function onModalClose() {
 			
 			clearCurrentForm();
-			
-		}
-		
-		// Opens the modal with the item's form inside
-		function onEditClick() {
-			
-			clearCurrentForm();
-			
-			var $item = $(this).parent(),
-			$form = $item.find('.item-form');
-			
-			$modalBody.append($form);
-			$modal.modal('toggle');
-			$currentForm = $form;
-			$currentItem = $item;
-			
-			return false;
 			
 		}
 		
@@ -262,10 +247,34 @@
 			$showHide = $('<span class="showhide-link"><i class="icon icon-eye-open"></i><i class="icon icon-eye-close"></i></span>').insertAfter($editLink).click(showHide),
 			$checkbox = $self.find('> .gallery-label input[type="checkbox"]').change(updateSelected),
 			$posField = $self.find('> input[data-field-name="pos"]'),
-			$visibleInput = $self.find('.item-form > div > label > input[type="checkbox"][name$="[visible]"]').eq(0).change(updateVisible);
+			$visibleInput = $self.find('.item-form > div > label > input[type="checkbox"][name$="[visible]"]').eq(0).change(updateVisible),
+			$form = $self.find('.item-form'),
+			formInitted = $self.hasClass('new-item');
+			//console.log('form initted: '+formInitted);
+			if (formInitted === false) { $form.remove(); }
 			
 			// Check if it's visible to start with
 			if ($visibleInput.length > 0) { updateVisible(); }
+			
+			// Opens the modal with the item's form inside
+			function onEditClick() {
+				
+				if (formInitted === false) {
+					// So all the various plugins can run their magic on relevant inputs...
+					$(window).trigger('cmf.newform', { 'wrap':$form });
+					formInitted = true;
+					
+				}
+				
+				clearCurrentForm();
+				
+				$modalBody.append($form);
+				$modal.modal('toggle');
+				$currentForm = $form;
+				$currentItem = $self;
+				
+				return false;
+			}
 			
 			function updateVisible() {
 				var checked = $visibleInput.is(':checked');
@@ -277,6 +286,16 @@
 			}
 			
 			function showHide() {
+				
+				if (formInitted === false) {
+					// So all the various plugins can run their magic on relevant inputs...
+					$(window).trigger('cmf.newform', { 'wrap':$form });
+					formInitted = true;
+					
+				}
+				
+				$self.append($form);
+				
 				var checked = $visibleInput.is(':checked');
 				if (checked) {
 					$visibleInput.removeAttr('checked');

@@ -50,7 +50,7 @@ class ManyToOne extends \CMF\Field\Base {
     	$options = $target_class::options();
         
         if ($settings['allow_empty']) {
-            $options = array_merge(array( null => '' ), $options);
+            $options = array( '' => '' ) + $options;
         }
     	
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);

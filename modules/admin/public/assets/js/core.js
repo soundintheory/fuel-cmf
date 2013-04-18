@@ -179,14 +179,14 @@ function initTree() {
 			baseUrl = '/admin/' + classData['table_name'];
 			baseUrlId = '/admin/' + classData['table_name'] + '/' + node.id;
 			
-			node.div = $li.find('.main');
-			node.title = $li.find('.jqtree-title');
-			node.icon = classData['icon'];
-			node.href = baseUrlId + '/edit';
-			node.update = '/admin/' + data['table_name'] + '/' + node.id + '/updatetree';
-			node.delete = baseUrlId + '/delete';
-			node.visible = (node.visible === 1 || node.visible === true);
-			node.hidden = (typeof node.hidden != 'undefined' && (node.hidden === true || node.hidden === 1));
+			node['div'] = $li.find('.main');
+			node['title'] = $li.find('.jqtree-title');
+			node['icon'] = classData['icon'];
+			node['href'] = baseUrlId + '/edit';
+			node['update'] = '/admin/' + data['table_name'] + '/' + node.id + '/updatetree';
+			node['delete'] = baseUrlId + '/delete';
+			node['visible'] = (node.visible === 1 || node.visible === true);
+			node['hidden'] = (typeof node.hidden != 'undefined' && (node.hidden === true || node.hidden === 1));
 			
 			if (node.hidden || !node.visible) { node.div.addClass('hidden-item'); }
 			if (!node.visible && node.children.length > 0) {
@@ -246,7 +246,7 @@ function initTree() {
 			var can_delete = node['can_delete'] = classData['can_delete'] && can_delete_item;
 			
 			if (!(typeof(classData.static) != 'undefined' && classData.static == true) && can_delete) {
-				actionsContent += '<a class="btn btn-small btn-icon btn-danger btn-remove" rel="tooltip" title="Delete" href="' + node.delete + '" data-singular="' + classData['singular'] + '"><i class="icon icon-remove"></i></a>';
+				actionsContent += '<a class="btn btn-small btn-icon btn-danger btn-remove" rel="tooltip" title="Delete" href="' + node['delete'] + '" data-singular="' + classData['singular'] + '"><i class="icon icon-remove"></i></a>';
 			}
 			
 			actionsContent += '</div>';

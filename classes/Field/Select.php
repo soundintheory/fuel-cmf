@@ -66,7 +66,7 @@ class Select extends Base {
         if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
             !(isset($settings['required']) && $settings['required']) &&
             $settings['allow_empty']) {
-            $options = array_merge(array( null => '' ), $options);
+            $options = array( '' => '' ) + $options;
         }
         
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
