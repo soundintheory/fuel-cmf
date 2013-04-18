@@ -61,7 +61,12 @@ class Controller_List extends Controller_Base {
 		\Admin::createStaticInstances($metadata);
 		
 		// See if the list order has been set in the session. If not, try and use the model's default order
-		$order = \Session::get($metadata->table['name'].".list.order", $class_name::order());
+		$order = \Session::get($metadata->table['name'].".list.order", null);
+		if (is_null($order)) {
+			$order = $class_name::order();
+		} else {
+			$order = $order + $class_name::order();
+		}
 		
 		// Start the query builder...
 		$qb = $class_name::select('item', 'item', 'item.id');
