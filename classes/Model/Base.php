@@ -150,6 +150,13 @@ class Base extends \Doctrine\Fuel\Model
     protected static $_sort_group = null;
     
     /**
+     * Whether or not the sort listener should run on these items if pos has changed
+     * @see \CMF\Model\Base::sortProcess()
+     * @var string
+     */
+    protected static $_sort_process = true;
+    
+    /**
      * Whether the model if static. Static means there will only ever be one record,
      * that cannot be removed. Use it for one-off pages, like a homepage model.
      * @var boolean
@@ -302,7 +309,15 @@ class Base extends \Doctrine\Fuel\Model
             
         }
         
+        $this->postPopulate();
+        
     }
+    
+    /**
+     * Custom CMF event handler - can be overridden to execute actions on the model before saving to the database
+     * @return void
+     */
+    protected function postPopulate() {}
     
     /**
      * @inheritdoc
@@ -457,6 +472,16 @@ class Base extends \Doctrine\Fuel\Model
     {
         $called_class = get_called_class();
         return $called_class::$_sort_group;
+    }
+    
+    /**
+     * @see \CMF\Model\Base::$_sort_process
+     * @return array
+     */
+    public static function sortProcess()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_sort_process;
     }
     
     public function sortGroupId($value=null)

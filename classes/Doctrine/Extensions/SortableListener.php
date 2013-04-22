@@ -52,6 +52,9 @@ class SortableListener implements EventSubscriber
     {
         $class = get_class($entity);
         
+        $process_enabled = $class::sortProcess();
+        if ($process_enabled !== true) return;
+        
         if (!$class::sortable()) return;
         
         $changeset = $uow->getEntityChangeSet($entity);

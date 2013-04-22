@@ -39,13 +39,16 @@ class Controller_Image extends \Controller {
 		if (!empty($this->mode)) $this->mode = \Arr::get($this->modes, $this->mode, $this->mode);
 
 		$path_segments = array_slice(\Uri::segments(), $start_segment);
-		foreach ($path_segments as $key => $value) {
-			$path_segments[$key] = urldecode($value);
-		}
 		$path_relative = implode('/', $path_segments);
-		//var_dump($path_segments);exit;
 
 		$this->path = DOCROOT.$path_relative.'.'.$ext;
+		if (!file_exists($this->path)) {
+			foreach ($path_segments as $key => $value) {
+				$path_segments[$key] = urldecode($value);
+			}
+			$path_relative = implode('/', $path_segments);
+		}
+		
 		$path_cache = APPPATH.'cache/image/'.dirname($path_relative).'/';
 		$this->mime_type = \Arr::get($this->mime_types, strtolower($output_ext), 'text/html');
 		if (!empty($this->mode)) $append .= '_'.$this->mode;
