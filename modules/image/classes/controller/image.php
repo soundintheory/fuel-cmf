@@ -12,6 +12,7 @@ class Controller_Image extends \Controller {
         '3' => 'fr', // Fit resize
         '4' => 'pr',  // Pad resize
         '5' => 'cc',  // Co-ordinate Crop
+        '6' => 'gc',  // Grid Crop
     );
     
     protected $mime_types = array(
@@ -123,6 +124,7 @@ class Controller_Image extends \Controller {
 		$this->mode = 'cc';
 		
 		$output = $this->_init_image(7, $cropx."_".$cropy."_".$cropx."_".$cropw."_".$cropy."_".$croph."_".$w."x".$h);
+		
 		if (!is_null($output)) return $output;
 		
 		$bgcolor = '#'.$this->param('bgcolor', 'fff');
@@ -135,7 +137,79 @@ class Controller_Image extends \Controller {
   		
 		return $this->serve_image($this->resized, $this->mime_type);
 	}
-	
+	public function action_grid_crop($grid = 'c', $w = null, $h = null, $path = null)
+	{
+		$w = intval($w);
+		$h = intval($h);
+		$this->mode = 'gc';
+		
+		$output = $this->_init_image(4, $grid."_".$w."x".$h);
+		if (!is_null($output)) return $output;
+		
+		$bgcolor = '#'.$this->param('bgcolor', 'fff');
+		//var_dump($this->path);
+		//exit;
+		$image_size = getimagesize($this->path);
+		$image = \Image::load($this->path);
+
+		$org_width = $image_size[0];
+		$org_height = $image_size[1];
+		//get natural width and height
+		//get desired final ratio (h/w)
+		//get original ratio
+		//if they are the same we can just resize.
+		//if they are not the same we have to crop to achieve the desired ratio. crop at max width and height
+		//if new ratio is bigger, than the height is the biggest. if its smaller then the width is the biggest.
+		//if the height is the biggest, (old height divided by new height) 
+		//if width is the biggest, (old width divided by new width)
+		//times the modifier by new width and new height separately
+		//we now have the maximum crop.
+		//figure out the starting position based on TL,L etc.
+		//crop it 
+		//resize it up.
+		$org_ratio = $org_height / $org_width;
+		$new_ratio = $h / $w;
+		if($org_ratio != $new_ratio){
+			//different ratio, work out maximum crop before resizing.
+			if($new_ratio > $org_ratio){
+				//height should be biggest in the new ratio
+				$modifier = $org_height / $h;
+				
+			}
+			else{
+				//width is biggest in new ratio
+				$modifier = $org_width / $w;
+			}
+			$final_w = round($w * $modifier);
+			$final_h = round($h * $modifier);
+			$src_x = round((($org_width - $final_w) / 2));
+			$src_y = round((($org_height - $final_h) / 2));
+			
+			$dst_x = $src_x + $final_w;
+			$dst_y = $src_y + $final_h;
+			// positional cropping!
+			if (strpos ($grid, 't') !== false) {
+				$src_y = 0;
+				$dst_y = $final_h;
+			}
+			if (strpos ($grid, 'b') !== false) {
+				$dst_y = $org_height;
+				$src_y = round($org_height - $final_h);
+			}
+			if (strpos ($grid, 'l') !== false) {
+				$src_x = 0;
+				$dst_x = $final_w;
+			}
+			if (strpos ($grid, 'r') !== false) {
+				$dst_x = $org_width;
+				$src_x = round($org_width - $final_w);
+			}
+			$image->crop($src_x, $src_y, $dst_x, $dst_y);
+		}
+		$image->resize($w, $h, false, true)
+		->save($this->resized);
+		return $this->serve_image($this->resized, $this->mime_type);
+	}
 	public function action_w_h($mode = null, $w = null, $h = null, $path = null) {
 	    
 		// Store our request params in more appropriate formats

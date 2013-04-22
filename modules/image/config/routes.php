@@ -2,6 +2,7 @@
 
 return array(
 	'image'  => 'image/image',  // The default route
+	'image/(tl|t||tr|l|c|r|bl|b|br)/(:num)/(:num)/(:any)' => 'image/grid_crop/$1/$2/$3/$4',
 	'image/(:alpha)/(:any)' => 'image/preset/$1',
 	//'image/cc/:cropx/:cropy/:cropw/:croph/:w/:h/(:any)' => 'image/coordinate_crop',
 	'image/(:num)/(:num)/(:num)/(:num)/(:num)/(:num)/(:any)' => 'image/coordinate_crop/$1/$2/$3/$4/$5/$6/$7',
