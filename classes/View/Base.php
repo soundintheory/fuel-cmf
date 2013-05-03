@@ -20,7 +20,7 @@ class Base extends \ViewModel
         return $this->_view;
     }
     
-    protected function pageTree($model = 'Model_Page_Base')
+    protected function pageTree($model = 'Model_Page_Page')
     {
         $nodes = $model::select('page.title, page.menu_title, page.lvl, page.lft, page.rgt, url.url, url.slug', 'page')
         ->leftJoin('page.url', 'url')
