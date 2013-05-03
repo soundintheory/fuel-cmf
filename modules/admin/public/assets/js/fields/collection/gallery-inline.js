@@ -410,13 +410,15 @@
 			
 			if (settings['sortable'] !== true) { return false; }
 			
-			$itemsWrap.find('> .gallery-item').each(function(i) {
+			$itemsWrap.find('.gallery-item').each(function(i) {
 				
 				var $el = $(this),
-				$pos = $el.find('> input[data-field-name="pos"]').val(i+''),
-				id = $el.find('> input.item-id').val();
+				$pos = $el.find('input[data-field-name="pos"]').eq(0).val(i+''),
+				$id = $el.find('input.item-id').eq(0);
 				
-				positions[id] = { 'pos':i };
+				if ($id.length > 0) {
+					positions[$id.val()] = { 'pos':i };
+				}
 				
 			});
 			

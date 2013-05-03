@@ -47,10 +47,12 @@ class Simple implements Driver {
 		// Return 304 not modified if the content hasn't changed, but only if the profiler isn't enabled.
 		if (!\Fuel::$profiling) {
 			$headers['Content-Length'] = strlen($content);
+			
 			if ($header_modified_since >= $cache_last_modified) {
-				$status = 304;
-				$content = '';
+				header('HTTP/1.1 304 Not Modified');
+    			exit();
 			}
+			
 		}
 		
 		// Send the response

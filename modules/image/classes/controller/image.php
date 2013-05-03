@@ -33,6 +33,7 @@ class Controller_Image extends \Controller {
 	
 	protected function _init_image($start_segment, $append, $output_ext = null)
 	{
+		
 	    // Get the path of the source file
 		$ext = Input::extension();
 

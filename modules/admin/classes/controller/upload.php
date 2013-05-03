@@ -50,6 +50,11 @@ class Controller_Upload extends Controller_Base {
         $item_id = \Input::get('item_id', urldecode(\Input::post('item_id', null)));
         $field_name = \Input::get('fieldName', urldecode(\Input::post('fieldName', null)));
         
+        // Log any errors
+        if (isset($result['error'])) {
+            logger(\Fuel::L_ERROR, 'UPLOAD ERROR: '.$result['error']);
+        }
+        
         if (!empty($this->target)) {
             
             // Set the data for the response
@@ -186,8 +191,8 @@ class Controller_Upload extends Controller_Base {
     public function handleUpload($uploadDirectory, $name = null)
     {
         // Make the chunks and upload directories if they don't exist
-        $chunks_folder = (!is_dir($this->chunksFolder)) ? @mkdir($this->chunksFolder) : true;
-        $upload_folder = (!is_dir($uploadDirectory)) ? @mkdir($uploadDirectory) : true;
+        $chunks_folder = (!is_dir($this->chunksFolder)) ? @mkdir($this->chunksFolder, 0775, true) : true;
+        $upload_folder = (!is_dir($uploadDirectory)) ? @mkdir($uploadDirectory, 0775, true) : true;
         
         if (is_writable($this->chunksFolder) &&
             1 == mt_rand(1, 1/$this->chunksCleanupProbability)){

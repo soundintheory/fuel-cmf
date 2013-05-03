@@ -5,7 +5,7 @@
 <!-- We need to output different templates for any different types that can be added -->
 {% for template_type, template_content in templates %}
 <div class="item-template" data-type="{{ template_type }}">
-	{% if sortable %}{{ form.hidden_fields.pos }}{% endif %}
+	{% if sortable %}{{ template_content.hidden_fields.pos }}{% endif %}
 	<input type="hidden" name="{{ template_content.prefix }}[__type__]" value="{{ template_type }}" />
 	{% for field_name, field in template_content.fields %}
 	{{ field }}
