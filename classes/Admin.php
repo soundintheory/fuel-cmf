@@ -179,7 +179,11 @@ class Admin
 				$special_mapping_type = $association_type.'_'.static::getTableForClass($mapping['targetEntity']);
 				
 				// If that custom type doesn't exist, try and use the '_inline' version for associations with orphanRemoval = true
-				if (!isset($fields_types[$special_mapping_type]) && $mapping['orphanRemoval'] === true) $special_mapping_type = $association_type.'_inline';
+				// Also an inline version can be invoked by having an 'inline' setting on the field. If this value is a string then it
+				// will also get appended to the inline mapping type. Eg. 'onetomany_inline_stacked' if 'inline' => 'stacked'
+				if (!isset($fields_types[$special_mapping_type]) && ($mapping['orphanRemoval'] === true || isset($field['inline']))) {
+					$special_mapping_type = $association_type.'_inline'.((isset($field['inline']) && is_string($field['inline'])) ? '_'.$field['inline'] : '');
+				}
 				
 				$mapping['type'] = isset($fields_types[$special_mapping_type]) ? $special_mapping_type : $association_type;
 				

@@ -1,28 +1,51 @@
 (function($) {
     
     $(document).ready(function() {
-        $('.field-type-file.image').each(initItem);
+        
+        $('.field-type-file.image').each(function() {
+            var field = new ImageField($(this), null);
+        });
+        
+        // When a new form is added, run it again!
+        $(window).bind('cmf.newform', function(e, data) {
+            
+            var initialData = (typeof(data.data) != 'undefined') ? data.data : {};
+            
+            data.wrap.find('.field-type-file.image').each(function() {
+                var $wrap = $(this),
+                fieldName = $wrap.attr('data-field-name'),
+                fieldData = (fieldName != null && typeof(initialData[fieldName]) != 'undefined') ? initialData[fieldName] : null,
+                field = new ImageField($wrap, fieldData);
+            });
+            
+        });
+        
     });
     
-    function initItem() {
+    function ImageField($wrap, initialData) {
         
-        var $wrap = $(this),
-        fieldId = $wrap.attr('id'),
+        var fieldName = $wrap.attr('data-field-name');
+        
+        if (fieldName.indexOf('__TEMP__') > -1) { return; }
+        
+        var fieldId = $wrap.attr('id'),
+        settings = typeof(field_settings[fieldName]) != 'undefined' ? field_settings[fieldName] : {},
         $label = $wrap.find('.item-label'),
-        title = $label.html(),
         $el = $wrap.find('.async-upload'),
-        $originalInput = $wrap.find('input.file-value'),
-        originalValue = $originalInput.val(),
-        fieldName = $originalInput.attr('name'),
+        $inputs = {
+            'src': $wrap.find('input[name="' + fieldName + '[src]"]'),
+            'width': $wrap.find('input[name="' + fieldName + '[width]"]'),
+            'height': $wrap.find('input[name="' + fieldName + '[height]"]')
+        },
+        originalValue = null,
         $previewLink = null,
         $modal = null,
+        title = $label.html(),
         cValue = null,
-        info = {},
-        _data = {};
-        
-        if (fieldName.indexOf('%TEMP%') > -1) { return; }
-        
-        var settings = typeof(field_settings[fieldName]) != 'undefined' ? field_settings[fieldName] : {},
+        cropSettings = settings['crop'],
+        cropOptions = {},
+        canCrop = typeof(cropSettings) != 'undefined' && cropSettings !== false,
+        jcropSettings = {},
         opts = {
             multiple: false,
             debug: false,
@@ -61,49 +84,40 @@
                 fail: 'error'
             },
             formatFileName: fileNameFormat
-        };
+        },
+        preventSave = false;
         
+        // Use the provided initial data, if any
+        //if (preventSave = (initialData != null)) {
+        if (initialData != null) {
+            originalValue = initialData;
+        } else {
+            originalValue = {
+                'src': $inputs['src'].val(),
+                'width': $inputs['width'].val(),
+                'height': $inputs['height'].val()
+            };
+        }
         
+        // Initialise the uploader
         $el.fineUploader(opts)
         .on('submit', submitHandler)
         .on('upload', uploadHandler)
         .on('error', errorHandler)
         .on('cancel', cancelHandler)
-        .on('manualRetry', manualRetryHandler)
         .on('complete', completeHandler);
         
-        var isObject = (typeof(settings['__object__']) != 'undefined' && settings['__object__'] === true),
-        $topRow = $el.find('.top-row'),
+        // Set up some stuff for our uploading functionality
+        var $topRow = $el.find('.top-row'),
         $clearBut = $('<span class="btn btn-small btn-clear"><i class="icon-remove"></i></span>').appendTo($topRow).click(clear),
-        $filePreview = $el.find('.file-preview'),
-        $input = $('<input type="hidden" name="' + fieldName + '" value="" />'),
-        cropSettings = settings['crop'],
-        canCrop = typeof(cropSettings) != 'undefined' && cropSettings !== false,
-        objectFieldName = null,
-        $widthInput = [],
-        $heightInput = [];
-        
-        // Construct the field name of the object containing this field if necessary
-        if (isObject) {
-            
-            var parts = fieldName.replace(/\]/g, '').split('['),
-            objectFieldName = parts.shift();
-            if (parts.length > 0) { parts.pop(); }
-            if (parts.length > 0) {
-                objectFieldName += '[' + parts.join('][') + ']';
-            }
-            
-            // Try and find the width and height inputs...
-            $widthInput = $('input[name="' + objectFieldName + '[width]"]');
-            $heightInput = $('input[name="' + objectFieldName + '[height]"]');
-            
-        }
+        $filePreview = $el.find('.file-preview');
         
         // This will show / hide any stuff appropriately if there is a value
         setValue(originalValue);
-        
+
         function submitHandler(evt, id, fileName) {
             
+            resetCrop();
             var $file = $($el.fineUploader('getItemByFileId', id));
             $topRow.hide();
             
@@ -111,13 +125,19 @@
         
         function completeHandler(evt, id, fileName, responseJSON) {
             
-            
             var $file = $($el.fineUploader('getItemByFileId', id));
             
             if (typeof(responseJSON['success']) != 'undefined' && responseJSON['success'] === true) {
-                info = responseJSON['info'] || {};
-                setValue(responseJSON['path'], true);
+                var info = responseJSON['info'] || [0,0],
+                newValue = {
+                    'src': responseJSON['path'],
+                    'width': info[0],
+                    'height': info[1]
+                };
+                resetCrop();
+                setValue(newValue, true);
             } else {
+                resetCrop();
                 setValue(originalValue);
             }
             
@@ -129,6 +149,9 @@
         function uploadHandler(evt, id, fileName) {
             
             var $file = $($el.fineUploader('getItemByFileId', id));
+            
+            console.log(qq.isXhrUploadSupported());
+            
             $file.find('.progress').addClass('active');
             $el.find('.top-row').hide();
             setStatus('Uploading...');
@@ -151,29 +174,16 @@
             
         }
         
-        function manualRetryHandler(id, fileName) {
-            
-            //var $file = $($el.fineUploader('getItemByFileId', id));
-            //$el.fineUploader('clearStoredFiles');
-            
-        }
-        
-        function createInputs() {
-            
-            if ($widthInput.length === 0) {
-                $widthInput = $('<input type="hidden" name="' + objectFieldName + '[width]" value="" />').appendTo($wrap);
-                $heightInput = $('<input type="hidden" name="' + objectFieldName + '[height]" value="" />').appendTo($wrap);
-            }
-            
-        }
-        
         // Sets a path value
         function setValue(val, save) {
             
             cValue = val;
             
-            $input.appendTo($el).val(val);
-            if (val == null || val == undefined || val == '') {
+            for (var p in $inputs) {
+                $inputs[p].appendTo($el).val((typeof(val[p]) != 'undefined') ? val[p] : '');
+            }
+            
+            if (isNull(val) || isNull(val['src']) || val['src'] == '') {
                 
                 $filePreview.html('<img style="height:' + settings['thumb_size']['height'] + 'px;" src="/image/2/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/placeholder.png" class="thumbnail" />');
                 setStatus('No file selected...');
@@ -182,7 +192,7 @@
                 
             } else {
                 
-                var pathParts = val.split('/'),
+                var pathParts = val['src'].split('/'),
                 displayName = fileNameFormat(pathParts[pathParts.length-1]),
                 cropMode = (settings['crop'] === true) ? 2 : 1;
                 
@@ -190,113 +200,135 @@
                     settings['thumb_size']['width'] = 0;
                 }
                 
-                var img = '<img src="/image/' + cropMode + '/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/' + val + '" />';
+                var img = '<img style="height:'+settings['thumb_size']['height']+'px;" src="/image/' + cropMode + '/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/' + val['src'] + '" />';
                 var icon = '<span class="hover-icon"><i class="icon icon-cog"></i></span>';
                 
                 $filePreview.html('<div></div>');
                 $el.addClass('populated');
-                
-                if (isObject) {
-                    
-                    // Add the size data to be saved (both as inputs and as async data)
-                    createInputs();
-                    info[0] = _data[objectFieldName+'[width]'] = typeof(info[0]) != 'undefined' ? info[0] : parseInt($widthInput.val());
-                    info[1] = _data[objectFieldName+'[height]'] = typeof(info[1]) != 'undefined' ? info[1] : parseInt($heightInput.val());
-                    $widthInput.val(info[0]);
-                    $heightInput.val(info[1]);
-                    
-                    // Set up the modal dialog
-                    initModal();
-                    $label.html(title + ' <span class="help">(click to edit)</span>');
-                    $previewLink = $('<a href="#' + fieldId +'-modal" target="_blank" class="thumbnail" role="button">' + img + icon + '</a>').click(launchModal);
-                    
-                } else {
-                    
-                    $previewLink = $('<a href="/' + val +'" target="_blank" class="thumbnail" role="button">' + img + '</a>');
-                    
-                }
-                
+                $label.html(title + ' <span class="help">(click to edit)</span>');
+                $previewLink = $('<a href="#' + fieldId +'-modal" target="_blank" class="thumbnail" role="button">' + img + icon + '</a>').click(launchModal);
                 $filePreview.find('div').append($previewLink);
+                
+                initModal();
                 
             }
             
-            if (save === true && isFunction(saveData)) {
-                originalValue = val;
-                _data[fieldName] = val;
-                saveData(null, null, _data);
+            if (save === true) {
+                originalValue = cValue = val;
+                saveImage();
             }
             
         }
         
+        /**
+         * Saves this whole image field to the database
+         */
+        function saveImage() {
+            
+            if (!isFunction(saveData) || preventSave === true) { return; }
+            
+            var _data = {};
+            
+            // Add any extra fields...?
+            
+            // This is the standard image data
+            for (var p in cValue) {
+                _data[fieldName+'['+p+']'] = cValue[p];
+            }
+            
+            // Finally add the crop data
+            for (var p in cropOptions) {
+                
+                var nameX = fieldName+'[crop]['+p+'][x]',
+                nameY = fieldName+'[crop]['+p+'][y]',
+                nameW = fieldName+'[crop]['+p+'][width]',
+                nameH = fieldName+'[crop]['+p+'][height]';
+                
+                _data[nameX] = $wrap.find('input[name="'+nameX+'"]').val();
+                _data[nameY] = $wrap.find('input[name="'+nameY+'"]').val();
+                _data[nameW] = $wrap.find('input[name="'+nameW+'"]').val();
+                _data[nameH] = $wrap.find('input[name="'+nameH+'"]').val();
+                
+            }
+            
+            saveData(null, null, _data);
+            
+        }
+        
         function launchModal() {
-            $modal.modal({});
+            $modal.modal('toggle');
+            
+            // Open the first crop tab if there are any
+            if (canCrop && cropSettings.length > 1) {
+                $modal.find('.crop-nav a').eq(0).tab('show');
+            }
+            
             return false;
         }
         
         function initModal() {
             
+            // If the modal is already created, update it
             if ($modal != null) {
-                
-                // Just update the data inside the modal.
                 updateModal();
                 return false;
-                
             }
             
+            // Will eventually check whether this image has extra fields to manage in this modal
+            var hasData = false;
+            
             // Top part of the modal
-            var modalContent = '<div id="#' + fieldId +'-modal" class="image-modal modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
+            var modalContent = '<div id="#' + fieldId +'-modal" class="image-modal modal hide fade' + (hasData ? '' : ' no-data') + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
             '<div class="modal-header">' +
-            '<div class="left-col">' +
-                '<h3>Edit image</h3>' +
-            '</div>' + // .left-col (header)
+            //'<div class="left-col">' +
+            //    '<h3>Edit image</h3>' +
+            //'</div>' + // .left-col (header)
             '<div class="right-col">';
             
-            // Add the crop options here, if any
+            // Add the crop options here as tabs, if there's more than one
             if (canCrop && cropSettings.length > 1) {
                 modalContent += '<ul class="crop-nav nav nav-pills">';
                 for (var i = 0; i < cropSettings.length; i++) {
                     var cropOption = cropSettings[i];
                     modalContent += '<li><a href="#' + fieldId + '-crop-' + cropOption['id'] + '">' + cropOption['title'] + '</a></li>';
                 }
-                modalContent += '</ul>';
+                modalContent += '</ul>' +
+                '<div class="alert alert-info">Select an option above to edit the different crops for this image</div>';
             }
             
+            // The top right close button
             modalContent += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>' +
             '</div>' + // .right-col (header)
             '<div class="clear"></div>' +
             '</div>' + // .modal-header
-            '<div class="modal-body">' +
-            '<div class="left-col">';
-            
+            '<div class="modal-body">';
             /*
-            // Add little explanation if there are any crop versions
-            modalContent += '<div class="popover bottom">' +
-            '<div class="arrow"></div>' +
-            '<div class="popover-content">' +
-            '<p>Select which occurence of this image you\'d like to edit...</p>' +
-            '</div>' +
-            '</div>';
-            */
+            '<div class="left-col">';
             
             // Add any data fields here - alt, title, caption etc
             modalContent += '<div class="image-data">';
-            modalContent += '<div class="controls control-group"><label class="item-label">Title</label><input type="text" class="input-xxlarge" value="The title of the image" /></div>';
-            modalContent += '<div class="controls control-group"><label class="item-label">Caption</label><input type="text" class="input-xxlarge" value="Image caption" /></div>';
-            modalContent += '<div class="controls control-group last"><label class="item-label">Credit</label><input type="text" class="input-xxlarge" value="Image credit" /></div>';
+            //modalContent += '<div class="controls control-group"><label class="item-label">Title</label><input type="text" class="input-xxlarge" value="The title of the image" /></div>';
+            //modalContent += '<div class="controls control-group"><label class="item-label">Caption</label><input type="text" class="input-xxlarge" value="Image caption" /></div>';
+            //modalContent += '<div class="controls control-group last"><label class="item-label">Credit</label><input type="text" class="input-xxlarge" value="Image credit" /></div>';
             modalContent += '</div>'; // .image-data
             
             modalContent += '</div>' + // .left-col
-            '<div class="right-col ' + (cropSettings.length > 1 ? 'tab-content' : '') + '">' +
+            */
+           
+            modalContent += '<div class="right-col ' + (cropSettings.length > 1 ? 'tab-content' : '') + '">' +
             '</div>' + // .right-col
+            '<div class="clear"></div>' +
             '</div>' + // .modal-body
             '<div class="modal-footer">' +
-            '<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>' +
-            '<button class="btn btn-primary">Save changes</button>' +
+            '<button class="btn btn-primary save-image" data-dismiss="modal"><i class="icon icon-ok"></i> &nbsp;Done</button>' +
             '</div>' +
             '</div>';
             
             $modal = $(modalContent);
             $('body').append($modal);
+            
+            $modal.on('hide', saveImage);
+            //.on('click', '.save-image', saveImage);
             
             updateModal();
             
@@ -307,7 +339,6 @@
                     e.preventDefault();
                     $(this).tab('show');
                 })
-                .eq(0)
                 .click();
                 
             }
@@ -316,20 +347,19 @@
         
         function updateModal() {
             
-            var maxW = 575,
-            maxH = 400,
-            imageW = info[0] || maxW,
-            imageH = info[1] || maxH,
+            var maxW = 565,
+            maxH = 390,
+            imageW = cValue['width'] || maxW,
+            imageH = cValue['height'] || maxH,
             newImageW = imageW,
             newImageH = imageH;
             
-            // NOTE: this is a little bit hacky because it relies on hardcoded
-            // values in the css, but it looks a bloody lot better!
+            cropOptions = {};
+            
             if (newImageW > maxW) {
                 newImageW = maxW;
                 newImageH = newImageW * (imageH / imageW);
             }
-            
             if (newImageH > maxH) {
                 newImageH = maxH;
                 newImageW = newImageH * (imageW / imageH);
@@ -342,8 +372,9 @@
                 
                 for (var i = 0; i < cropSettings.length; i++) {
                     var cropOption = cropSettings[i];
-                    rightCol += '<div id="' + fieldId + '-crop-' + cropOption['id'] + '" class="img tab-pane">';
-                    rightCol += '<img src="/image/3/575/400/' + cValue + '" />';
+                    cropOptions[cropOption['id']] = cropOption;
+                    rightCol += '<div id="' + fieldId + '-crop-' + cropOption['id'] + '" data-cropid="'+cropOption['id']+'" class="img tab-pane">';
+                    rightCol += '<img src="/image/3/565/390/' + cValue['src'] + '" />';
                     rightCol += '</div>'; // .img
                 }
                 
@@ -351,32 +382,115 @@
                 
             } else {
                 
-                rightCol += '<img class="main-img" src="/image/3/575/400/' + cValue + '" />';
+                rightCol += '<img class="main-img" src="/image/3/565/390/' + cValue + '" />';
                 
             }
             
             $modal.find('.modal-body .right-col').html(rightCol);
-            //.css({ 'height':newImageH });
-            //$modal.find('.right-col').css({ 'width':newImageW });
-            //$modal.css({ 'width':newImageW+325, 'margin-top':-(newImageH+140)/2, 'margin-left':-(newImageW+325)/2 });
+
+            // Instantiate Jcrop
+            $modal.find('.tab-pane.img').each(function() {
+                
+                var $img = $(this).find('img').eq(0),
+                cropId = $(this).attr('data-cropid'),
+                cropOption = cropOptions[cropId],
+                imageWidth = cValue['width'] || 0,
+                imageHeight = cValue['height'] || 0,
+                cropWidth = parseInt(cropOption.width),
+                cropHeight = parseInt(cropOption.height),
+                aspectRatio = (isSet(cropWidth) && isSet(cropHeight)) ? cropWidth / cropHeight : 0,
+                jcrop_api = null,
+                jcropSettings = {
+                    onChange: updateCoords,
+                    onSelect: updateCoords,
+                    bgColor:     'white',
+                    bgOpacity:   .5,
+                },
+                
+                // The inputs we'll be updating
+                $inputX = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][x]"]'),
+                $inputY = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][y]"]'),
+                $inputW = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][width]"]'),
+                $inputH = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][height]"]');
+                
+                // Tell jcrop the true size of the image
+                if (imageWidth > 0 && imageHeight > 0 ) {
+                    jcropSettings.trueSize = [imageWidth, imageHeight];
+                }
+                
+                // Get the initial selection from the inputs
+                var startX = parseInt($inputX.val()) || -1,
+                startY = parseInt($inputY.val()) || -1,
+                startW = parseInt($inputW.val()) || 0,
+                startH = parseInt($inputH.val()) || 0;
+                
+                // Use the settings from the inputs if they are valid, or set sensible defaults if not
+                if (startW > 0 && startH > 0) {
+                    if (startX === -1) { startX = 0; }
+                    if (startY === -1) { startY = 0; }
+                } else {
+                    var startW = imageWidth,
+                    startH = imageHeight;
+                    if (aspectRatio > 0) {
+                        startH = Math.round(startW / aspectRatio);
+                        if (startH > imageHeight) {
+                            startH = imageHeight;
+                            startW = Math.round(startH * aspectRatio);
+                        }
+                        if (startX === -1) { startX = Math.round((imageWidth - startW) / 2); }
+                        if (startY === -1) { startY = Math.round((imageHeight - startH) / 2); }
+                    } else {
+                        if (startX === -1) { startX = 0; }
+                        if (startY === -1) { startY = 0; }
+                    }
+                }
+                
+                // Set the initial select
+                jcropSettings.setSelect = [startX, startY, startX + startW, startY + startH];
+                
+                if (aspectRatio > 0) {
+                    jcropSettings.aspectRatio = aspectRatio;
+                }
+                
+                $img.Jcrop(jcropSettings, function() {
+                    jcrop_api = this;
+                });
+                
+                function updateCoords(c) {
+                    $inputX.val(Math.round(c.x));
+                    $inputY.val(Math.round(c.y));
+                    $inputW.val(Math.round(c.w));
+                    $inputH.val(Math.round(c.h));
+                }
+                
+            });
             
         }
         
+        function resetCrop() {
+            
+            for (var p in cropOptions) {
+                
+                $wrap.find('input[name="' + fieldName + '[crop][' + p + '][x]"]').val(null);
+                $wrap.find('input[name="' + fieldName + '[crop][' + p + '][y]"]').val(null);
+                $wrap.find('input[name="' + fieldName + '[crop][' + p + '][width]"]').val(null);
+                $wrap.find('input[name="' + fieldName + '[crop][' + p + '][height]"]').val(null);
+                
+            }
+            
+        }
+
         function setStatus(status) {}
         
         // Puts the input back to the state it started in
         function reset() {
-            
             setValue(originalValue, true);
-            
         }
         
         // Clears the value from the input completely
         function clear() {
-            
-            setValue('', true);
+            setValue({}, true);
             return false;
-            
         }
         
         function fileNameFormat(fileName) {
@@ -387,10 +501,5 @@
         }
         
     }
-    
-    // When a new form is added, run it again!
-    $(window).bind('cmf.newform', function(e, data) {
-        data.wrap.find('.field-type-file.image').each(initItem);
-    });
     
 })(jQuery);

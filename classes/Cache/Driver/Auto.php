@@ -42,6 +42,9 @@ class Auto extends Simple {
 				}
 			}
 			
+			// See if the cache defines a content type
+			if (isset($contents['content-type'])) $this->content_type = $contents['content-type'];
+			
 			// We are home and dry - the cache is completely valid.
 			// Replicate any logs that were made in the original request
 			\CMF\Log::addMultiple($contents['logs_made']);
@@ -178,6 +181,16 @@ class Auto extends Simple {
 		$result['content'] = strval($this->request->response);
 		$result['nocache'] = \CMF\Cache::getNoCacheAreas($result['content']);
 		$result['logs_made'] = \CMF\Log::$logs_made;
+		$result['content-type'] = 'text/html';
+		
+		// Store the content type header if it's set
+		$headers = headers_list();
+		foreach ($headers as $header) {
+			if (stripos($header, 'content-type: ') === 0) {
+				$result['content-type'] = substr($header, 14);
+				break;
+			}
+		}
 		
 		// serialize and write it to disk
 		\CMF\Cache::writeCacheFile($this->path, serialize($result));

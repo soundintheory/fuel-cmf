@@ -2,6 +2,9 @@
 
 namespace Admin;
 
+use Monolog\Logger,
+    Monolog\Handler\NullHandler;
+
 /*
     Deals with asyncronous file uploads
  */
@@ -18,14 +21,17 @@ class Controller_Upload extends Controller_Base {
     protected $uploadName;
     protected $originalName;
     protected $target;
-
-    function action_index(){
-        
+    
+    /**
+     * This is the endpoint for async file uploads
+     */
+    function action_index()
+    {
         try {
             set_time_limit(0);
             ini_set('memory_limit', '256M');
         } catch (\Exception $e) {
-            
+            // Nothing!
         }
         
         // Get the size limit as defined by PHP
@@ -39,30 +45,121 @@ class Controller_Upload extends Controller_Base {
         $path = trim($path, '/').'/';
         $result = $this->handleUpload(DOCROOT.$path);
         
-        // To save the upload with a specified name, set the second parameter.
-        // $result = $uploader->handleUpload('uploads/', md5(mt_rand()).'_'.$uploader->getName());
-        
+        // We may have been passed details about the owner of this video field
         $model_class = \Input::get('model', urldecode(\Input::post('model', null)));
         $item_id = \Input::get('item_id', urldecode(\Input::post('item_id', null)));
         $field_name = \Input::get('fieldName', urldecode(\Input::post('fieldName', null)));
         
-        $result['uploadName'] = $this->getUploadName();
-        $result['originalName'] = $this->getOriginalName();
-        $result['path'] = $path.$result['uploadName'];
-        $result['fieldName'] = $field_name;
+        // Log any errors
+        if (isset($result['error'])) {
+            logger(\Fuel::L_ERROR, 'UPLOAD ERROR: '.$result['error']);
+        }
         
-        $info = getimagesize($this->target);
-        if ($info !== false) $result['info'] = $info;
+        if (!empty($this->target)) {
+            
+            // Set the data for the response
+            $result['uploadName'] = $this->getUploadName();
+            $result['originalName'] = $this->getOriginalName();
+            $result['path'] = $path.$result['uploadName'];
+            $result['fieldName'] = $field_name;
+            
+            $info = @getimagesize($this->target);
+            if ($info !== false) $result['info'] = $info;
+            
+        }
         
         $this->headers = array("Content-Type: text/plain");
         return \Response::forge(json_encode($result), $this->status, $this->headers);
         
     }
+    
+    /**
+     * A special endpoint for video uploads. This starts the process of conversion into web formats
+     */
+    function action_video()
+    {
+        try {
+            set_time_limit(0);
+            ini_set('memory_limit', '256M');
+        } catch (\Exception $e) {
+            // Nothing!
+        }
+        
+        \Package::load(array('log'));
+        
+        // Get the size limit as defined by PHP
+        $this->sizeLimit = $this->toBytes(ini_get('upload_max_filesize'));
+        
+        // If you want to use resume feature for uploader, specify the folder to save parts.
+        $this->chunksFolder = APPPATH.'tmp/chunks';
+        
+        // Call handleUpload() with the name of the folder
+        $path = \Input::get('path', urldecode(\Input::post('path', 'uploads')));
+        $path = trim($path, '/').'/';
+        $result = $this->handleUpload(DOCROOT.$path);
+        
+        // We may have been passed details about the owner of this video field
+        $model_class = \Input::get('model', urldecode(\Input::post('model', null)));
+        $item_id = \Input::get('item_id', urldecode(\Input::post('item_id', null)));
+        $field_name = \Input::get('fieldName', urldecode(\Input::post('fieldName', null)));
+        
+        // Set the data for the response
+        $result['uploadName'] = $this->getUploadName();
+        $result['originalName'] = $this->getOriginalName();
+        $result['path'] = $path.$result['uploadName'];
+        $result['fieldName'] = $field_name;
+        
+        // We need to work out where the PID file for this conversion will sit...
+        $video_path = $result['path'];
+        $video_pid = 'videoconvert_'.md5(DOCROOT.$video_path);
+        $result['pid'] = $video_pid;
+        $pid_dir = APPPATH.'run';
+        if (!is_dir($pid_dir)) $dir_result = @mkdir($pid_dir, 0775, true);
+        
+        // Get the dimensions. These are important...
+        $config = \Config::get('cmf.ffmpeg');
+        $logger = new Logger('WebVideoConverter');
+        $logger->pushHandler(new NullHandler());
+        $full_video_path = DOCROOT.$video_path;
+        
+        // Set up the FFMpeg instances
+        $ffprobe = new \FFMpeg\FFProbe($config['ffprobe_binary'], $logger);
+        
+        // Probe the video for info
+        $format_info = json_decode($ffprobe->probeFormat($full_video_path));
+        $video_streams = json_decode($ffprobe->probeStreams($full_video_path));
+        $video_info = null;
+        foreach ($video_streams as $num => $stream) {
+            if ($stream->codec_type == 'video') {
+                $video_info = $stream;
+                break;
+            }
+        }
 
+        // Serve up an error if we can't find a video stream
+        if ($video_info === null) {
+            $this->headers = array("Content-Type: text/plain");
+            return \Response::forge(json_encode(array( 'error' => 'This is not a supported video type' )), $this->status, $this->headers);
+        }
+        
+        // Now add some useful video stats to the result
+        $result['width'] = intval(isset($video_info->width) ? $video_info->width : $config['default_size']['width']);
+        $result['height'] = intval(isset($video_info->height) ? $video_info->height : $config['default_size']['height']);
+        $result['duration'] = $format_info->duration;
+        
+        // Execute the oil conversion process as a separate 'thread'
+        $oil_path = realpath(APPPATH.'../../oil');
+        exec("php $oil_path r ffmpeg:webvideo -file='$video_path' > /dev/null 2>&1 & echo $! >> /dev/null");
+        
+        $this->headers = array("Content-Type: text/plain");
+        return \Response::forge(json_encode($result), $this->status, $this->headers);
+    }
+    
     /**
      * Get the original filename
      */
-    public function getName(){
+    public function getName()
+    {
         if (isset($_REQUEST['qqfilename']))
             return $_REQUEST['qqfilename'];
 
@@ -73,14 +170,16 @@ class Controller_Upload extends Controller_Base {
     /**
      * Get the name of the uploaded file
      */
-    public function getUploadName(){
+    public function getUploadName()
+    {
         return $this->uploadName;
     }
     
     /**
      * Get the name of the uploaded file
      */
-    public function getOriginalName(){
+    public function getOriginalName()
+    {
         return $this->originalName;
     }
 
@@ -89,8 +188,12 @@ class Controller_Upload extends Controller_Base {
      * @param string $uploadDirectory Target directory.
      * @param string $name Overwrites the name of the file.
      */
-    public function handleUpload($uploadDirectory, $name = null){
-
+    public function handleUpload($uploadDirectory, $name = null)
+    {
+        // Make the chunks and upload directories if they don't exist
+        $chunks_folder = (!is_dir($this->chunksFolder)) ? @mkdir($this->chunksFolder, 0775, true) : true;
+        $upload_folder = (!is_dir($uploadDirectory)) ? @mkdir($uploadDirectory, 0775, true) : true;
+        
         if (is_writable($this->chunksFolder) &&
             1 == mt_rand(1, 1/$this->chunksCleanupProbability)){
 
@@ -222,57 +325,11 @@ class Controller_Upload extends Controller_Base {
     }
 
     /**
-     * Returns a path to use with this upload. Check that the name does not exist,
-     * and appends a suffix otherwise.
-     * @param string $uploadDirectory Target directory
-     * @param string $filename The name of the file to use.
-     */
-    protected function getUniqueTargetPath($uploadDirectory, $filename)
-    {
-        // Allow only one process at the time to get a unique file name, otherwise
-        // if multiple people would upload a file with the same name at the same time
-        // only the latest would be saved.
-
-        if (function_exists('sem_acquire')){
-            $lock = sem_get(ftok(__FILE__, 'u'));
-            sem_acquire($lock);
-        }
-        
-        $pathinfo = pathinfo($filename);
-        $base = \CMF::slug($pathinfo['filename']);
-        $ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
-        $ext = $ext == '' ? $ext : '.' . $ext;
-
-        $unique = $base;
-        $suffix = 0;
-
-        // Get unique file name for the file, by appending an integer suffix.
-        $counter = 0;
-        do {
-            $suffix = '_'.++$counter;
-            $unique = $base.$suffix;
-        } while (file_exists($uploadDirectory . DIRECTORY_SEPARATOR . $unique . $ext));
-        
-        $result =  $uploadDirectory . DIRECTORY_SEPARATOR . $unique . $ext;
-
-        // Create an empty target file
-        if (!touch($result)){
-            // Failed
-            $result = false;
-        }
-
-        if (function_exists('sem_acquire')){
-            sem_release($lock);
-        }
-
-        return $result;
-    }
-
-    /**
      * Deletes all file parts in the chunks folder for files uploaded
      * more than chunksExpireIn seconds ago
      */
-    protected function cleanupChunks(){
+    protected function cleanupChunks()
+    {
         foreach (scandir($this->chunksFolder) as $item){
             if ($item == "." || $item == "..")
                 continue;

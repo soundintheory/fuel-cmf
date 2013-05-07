@@ -4,6 +4,7 @@
 
 	<meta charset="utf-8">
 	<title>{% block html_title %}Website Administration{% endblock %}</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Login">
 	<meta name="author" content="Sound in Theory">
@@ -14,6 +15,7 @@
 	
 	<link href="/admin/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 	<link href="/admin/assets/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+	<link href="/admin/assets/css/bootstrap-modal.css" rel="stylesheet" type="text/css">
 	<link href="/admin/assets/css/ui-theme/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">
 	{% block admin_css %}{% endblock %}
 	<link href="/admin/assets/less/core.less" rel="stylesheet" type="text/css">
@@ -42,6 +44,8 @@
 	<script type="text/javascript" src="/admin/assets/js/jquery-ui-timepicker-addon.js"></script>
 	<script type="text/javascript" src="/admin/assets/js/jquery-ui-sliderAccess.js"></script>
     <script src="/admin/assets/js/bootstrap.min.js"></script>
+    <script src="/admin/assets/js/bootstrap-modal.js"></script>
+    <script src="/admin/assets/js/bootstrap-modalmanager.js"></script>
     
 	{% block admin_js %}
 	<script type="text/javascript">

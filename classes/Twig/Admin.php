@@ -40,7 +40,9 @@ class Admin extends Twig_Extension
 			'pluralize' => new Twig_Function_Function('Inflector::pluralize'),
 			'singularize' => new Twig_Function_Function('Inflector::singularize'),
 			'str_repeat' => new Twig_Function_Function('str_repeat'),
-			'phpinfo' => new Twig_Function_Function('phpinfo')
+			'phpinfo' => new Twig_Function_Function('phpinfo'),
+			'basename' => new Twig_Function_Function('basename'),
+			'uri' => new Twig_Function_Function('Input::uri')
 		);
 	}
 	

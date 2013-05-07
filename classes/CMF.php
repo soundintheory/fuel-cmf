@@ -33,6 +33,11 @@ class CMF
         return \Inflector::friendly_title($input, '-', $lowercase);
     }
     
+    public static function fieldId($input)
+    {
+        return trim('field-'.str_replace(array('][', '[', ']'), '-', $input), '-');
+    }
+    
     /**
      * Finds the model associated with the current URL and returns it.
      * 
@@ -180,6 +185,15 @@ class CMF
     public static function settings($class = '\\Model_Settings')
     {
         return $class::instance();
+    }
+    
+    /**
+     * A bit like PHP's get_class, but makes sure we don't end up with a weird Proxy model class
+     */
+    public static function getClass($item)
+    {
+        $class = get_class($item);
+        return (strpos($class, 'Proxy') === 0) ? get_parent_class($item) : $class;
     }
     
     /**

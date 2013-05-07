@@ -44,7 +44,7 @@ function saveData(table, id, _data) {
 		
 		for (var i = 0; i < formData.length; i++) {
 			var name = formData[i]['name'] + '';
-			if (name.indexOf('%TEMP%') > -1) { continue; }
+			if (name.indexOf('__TEMP__') > -1) { continue; }
 			_data[name] = formData[i]['value'];
 		}
 		
@@ -62,11 +62,6 @@ function saveData(table, id, _data) {
 	
 	// Construct the URL and post the data
 	var url = '/admin/' + table + '/' + id + '/populate';
-	
-	// Abort the current request if it's not complete already
-	//if (cItemSaveRequest != null && cItemSaveRequest.readyState != 4) {
-	//	cItemSaveRequest.abort();
-	//}
 	
 	cItemSaveRequest = $.ajax({
 		'url': url,
@@ -184,14 +179,14 @@ function initTree() {
 			baseUrl = '/admin/' + classData['table_name'];
 			baseUrlId = '/admin/' + classData['table_name'] + '/' + node.id;
 			
-			node.div = $li.find('.main');
-			node.title = $li.find('.jqtree-title');
-			node.icon = classData['icon'];
-			node.href = baseUrlId + '/edit';
-			node.update = '/admin/' + data['table_name'] + '/' + node.id + '/updatetree';
-			node.delete = baseUrlId + '/delete';
-			node.visible = (node.visible === 1 || node.visible === true);
-			node.hidden = (typeof node.hidden != 'undefined' && (node.hidden === true || node.hidden === 1));
+			node['div'] = $li.find('.main');
+			node['title'] = $li.find('.jqtree-title');
+			node['icon'] = classData['icon'];
+			node['href'] = baseUrlId + '/edit';
+			node['update'] = '/admin/' + data['table_name'] + '/' + node.id + '/updatetree';
+			node['delete'] = baseUrlId + '/delete';
+			node['visible'] = (node.visible === 1 || node.visible === true);
+			node['hidden'] = (typeof node.hidden != 'undefined' && (node.hidden === true || node.hidden === 1));
 			
 			if (node.hidden || !node.visible) { node.div.addClass('hidden-item'); }
 			if (!node.visible && node.children.length > 0) {
@@ -233,7 +228,7 @@ function initTree() {
 				
 				if (childItems.length > 1) {
 					
-					actionsContent += '<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#" title="Add Child..."><i class="icon icon-plus"></i></a>' + 
+					actionsContent += '<a class="btn btn-small btn-icon dropdown-toggle" data-toggle="dropdown" href="#" title="Add Child..."><i class="icon icon-plus"></i></a>' + 
 					'<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' + 
 					'<li class="nav-header">Add a child...</li>' + 
 					childItems.join('') + 
@@ -241,7 +236,7 @@ function initTree() {
 					
 				} else if (childItems.length == 1) {
 					
-					actionsContent += '<a class="btn btn-small" href="' + childInfo[0]['edit'] + '" rel="tooltip" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="icon icon-plus"></i></a>';
+					actionsContent += '<a class="btn btn-small btn-icon" href="' + childInfo[0]['edit'] + '" rel="tooltip" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="icon icon-plus"></i></a>';
 					
 				}
 				
@@ -251,7 +246,7 @@ function initTree() {
 			var can_delete = node['can_delete'] = classData['can_delete'] && can_delete_item;
 			
 			if (!(typeof(classData.static) != 'undefined' && classData.static == true) && can_delete) {
-				actionsContent += '<a class="btn btn-small btn-danger btn-remove" rel="tooltip" title="Delete" href="' + node.delete + '" data-singular="' + classData['singular'] + '"><i class="icon icon-remove"></i></a>';
+				actionsContent += '<a class="btn btn-small btn-icon btn-danger btn-remove" rel="tooltip" title="Delete" href="' + node['delete'] + '" data-singular="' + classData['singular'] + '"><i class="icon icon-remove"></i></a>';
 			}
 			
 			actionsContent += '</div>';
@@ -449,7 +444,20 @@ function initItemList() {
 
 function initItemForm() {
 	
-	var submitted = false;
+	var $itemForm = $('form.item-form').eq(0),
+	submitted = false,
+	hasTabs = $itemForm.find('.nav > li').length > 0,
+	cookieId = data['model'],
+	isNew = true;
+	
+	var tabCookie = $.cookie(cookieId+'_tab');
+	
+	if (isSet(data['item_id']) && data['item_id'] != '') {
+		cookieId += '_' + data['item_id'];
+		var otherTabCookie = $.cookie(cookieId+'_tab');
+		if (isSet(otherTabCookie)) { tabCookie = otherTabCookie; }
+		isNew = false;
+	}
 	
 	$('#controls-fixed-bot .btn-remove').each(function() {
 		
@@ -465,25 +473,30 @@ function initItemForm() {
 		$(this).button('loading');
 	});
 	
-	$('#item-nav a').each(function() {
+	$itemForm.find('.nav > li > a').each(function() {
 		var el = $(this);
 		var selector = el.attr('href');
+		var tabId = selector.replace('#', '');
 		
 		var tab = $(selector);
-		if (tab.length > 0 && tab.find('.error').length > 0) {
+		if (tab.length > 0 && (tab.find('.error').length > 0 || tabId === tabCookie)) {
 			$(this).tab('show');
 		}
 		
 		el.click(function (e) {
 		    e.preventDefault();
 		    el.tab('show');
+		    return false;
 	    });
 	});
 	
 	$('.field-type-date').each(function() {
 		
 		$(this).find('input').datepicker({
-	        dateFormat: "dd/mm/yy"
+	        dateFormat: "dd/mm/yy",
+	        changeMonth: true,
+	        changeYear: true,
+	        yearRange: "c-20:c+20"
 	    });
 		
 	});
@@ -492,30 +505,73 @@ function initItemForm() {
 		dateFormat: "dd MM yy",
         timeFormat: "hh:mm tt"
     });
-	//.datetimepicker( "setDate" , new Date());
+    
+    // Save the initial state of the form to compare against later
+    var initialFormData = null;
+    $(window).load(function() {
+    	initialFormData = getFormString($itemForm);
+    });
+    
+    // Ask whether people want to leave the page if unsaved changes have been made
+    $(window).bind('beforeunload', onBeforeUnload);
+    
+    $itemForm.submit(function() {
+    	
+    	// Save the tab position if there is one
+    	if (hasTabs) {
+    		
+    		var date = new Date();
+    		date.setTime(date.getTime() + 10000);
+    		var tabId = $itemForm.find('.nav > li.active > a').attr('href').replace('#', '');
+    		var cookieOptions = { expires: date };
+    		if (isNew) { cookieOptions['path'] = '/'; }
+    		$.cookie(cookieId + '_tab', tabId, cookieOptions);
+    		
+    	}
+    	
+    	// There are some situations when we don't want to prompt before leaving the page
+    	$(window).unbind('beforeunload', onBeforeUnload);
+    	
+    });
+    
+    $('#controls-fixed-bot .btn-remove').click(function() {
+    	$(window).unbind('beforeunload', onBeforeUnload);
+    });
+    
+    function onBeforeUnload() {
+    	
+    	var e = e || window.event;
+    	
+    	var latestFormData = getFormString($itemForm);
+    	
+    	if (initialFormData != null && latestFormData != initialFormData) {
+    		console.log(latestFormData.substr(0, 120));
+    		console.log(initialFormData.substr(0, 120));
+    		var msg = "There are potentially unsaved changes to this item. You have two options:\n\n1) Stay and click the 'save' button.\n\n2) Continue and they may be lost.";
+    		e.returnValue = msg;
+    		return msg;
+    	} else {
+    		return;
+    	}
+    	
+    }
+    
+}
 
-    $('.help-icon').popover({ 'placement':'right', 'trigger':'click' });
+function getFormString($form) {
 	
-	/*
-	$('table.selectable tr').each(function() {
-		
-		var el = $(this), cb = $('td input[type="checkbox"]', el).eq(0);
-		if (cb.length == 0) { return; }
-		
-		el.click(function(evt) {
-			
-			if (evt.target == cb[0]) { return true; }
-			var tag = (''+evt.target.tagName).toLowerCase();
-			var parentTag = (''+$(evt.target).parent()[0].tagName).toLowerCase();
-			if (tag == 'input' || tag == 'a' || tag == 'select' || tag == 'option' || parentTag == 'a') { return; }
-			
-			cb.prop('checked', !cb.prop('checked'));
-			return false;
-			
-		});
-		
+	var formData = $form.serializeArray();
+	formData.sort(function(a, b) {
+		var textA = a.name.toUpperCase();
+		var textB = b.name.toUpperCase();
+		return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 	});
-	*/
+	
+	var output = '';
+	for (var i = 0; i < formData.length; i++) {
+		output += formData[i].name + '=' + formData[i].value + '&';
+	}
+	return output;
 	
 }
 

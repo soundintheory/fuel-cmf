@@ -1,18 +1,26 @@
 (function($) {
     
     $(document).ready(function() {
+        
         $('.field-type-file.file').each(initItem);
+        
+        // When a new form is added, run it again!
+        $(window).bind('cmf.newform', function(e, data) {
+            data.wrap.find('.field-type-file.file').each(initItem);
+        });
+        
     });
     
     function initItem() {
         
         var $wrap = $(this),
-        $el = $wrap.find('.async-upload'),
-        $originalInput = $wrap.find('input.file-value'),
-        originalValue = $originalInput.val(),
-        fieldName = $originalInput.attr('name');
+        fieldName = $wrap.attr('data-field-name');
         
-        if (fieldName.indexOf('%TEMP%') > -1) { return; }
+        if (fieldName.indexOf('__TEMP__') > -1) { return; }
+        
+        var $el = $wrap.find('.async-upload'),
+        $srcInput = $wrap.find('input[name="' + fieldName + '[src]"]'),
+        originalValue = $srcInput.val();
         
         var settings = typeof(field_settings[fieldName]) != 'undefined' ? field_settings[fieldName] : {},
         opts = {
@@ -60,13 +68,11 @@
         .on('upload', uploadHandler)
         .on('error', errorHandler)
         .on('cancel', cancelHandler)
-        .on('manualRetry', manualRetryHandler)
         .on('complete', completeHandler);
         
         var $topRow = $el.find('.top-row'),
         $clearBut = $('<span class="btn btn-small btn-clear"><i class="icon-remove"></i></span>').appendTo($topRow).click(clear),
-        $filePreview = $el.find('.file-preview'),
-        $input = $('<input type="hidden" name="' + fieldName + '" value="" />');
+        $filePreview = $el.find('.file-preview');
         
         // This will show / hide any stuff appropriately if there is a value
         setValue(originalValue);
@@ -118,17 +124,10 @@
             
         }
         
-        function manualRetryHandler(id, fileName) {
-            
-            //var $file = $($el.fineUploader('getItemByFileId', id));
-            //$el.fineUploader('clearStoredFiles');
-            
-        }
-        
         // Sets a path value
         function setValue(val, save) {
             
-            $input.appendTo($el).val(val);
+            $srcInput.appendTo($el).val(val);
             if (val == null || val == undefined || val == '') {
                 setStatus('No file selected...');
                 $el.removeClass('populated');
@@ -142,7 +141,7 @@
             if (save === true && isFunction(saveData)) {
                 originalValue = val;
                 var _data = {};
-                _data[fieldName] = val;
+                _data[fieldName+'[src]'] = val;
                 saveData(null, null, _data);
             }
             
@@ -177,10 +176,5 @@
         }
         
     }
-    
-    // When a new form is added, run it again!
-    $(window).bind('cmf.newform', function(e, data) {
-        data.wrap.find('.field-type-file.file').each(initItem);
-    });
     
 })(jQuery);

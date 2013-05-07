@@ -1,0 +1,8 @@
+{% if settings.title %}<label class="item-label">{{ settings.title }}</label>{% endif %}
+
+<input type="hidden" name="{{ settings.mapping.fieldName }}[src]" value="{{ value.src }}" />
+<input type="hidden" name="{{ settings.mapping.fieldName }}[width]" value="{{ value.width }}" />
+<input type="hidden" name="{{ settings.mapping.fieldName }}[height]" value="{{ value.height }}" />
+<input type="hidden" name="{{ settings.mapping.fieldName }}[duration]" value="{{ value.duration }}" />
+
+<div class="async-upload{{ value.src ? ' populated' : '' }}"></div>

@@ -8,7 +8,8 @@ define('CMFPATH', PKGPATH.'cmf/');
 
 // Add the nice capitalised cmf namespace
 Autoloader::add_namespace('CMF', CMFPATH.'classes/', true);
-Autoloader::add_namespace('Phly', __DIR__.'/vendor/Phly/', true);
+Autoloader::add_namespace('Symfony\\Component\\Process', __DIR__.'/vendor/Symfony/Component/Process/', true);
+Autoloader::add_namespace('FFMpeg', __DIR__.'/vendor/FFMpeg/', true);
 
 // Listen for events at the beginning of the request for caching
 \Event::register('controller_started', 'CMF\\Cache::start');
@@ -26,6 +27,7 @@ Autoloader::add_classes(array(
     'CMF\\Core\\Upload'  => __DIR__.'/classes/Core/Upload.php',
     'CMF\\Core\\View_Twig'  => __DIR__.'/classes/Core/View_Twig.php',
     'Twig_Loader_Filesystem'  => __DIR__.'/classes/Twig/Twig_Loader_Filesystem.php',
+    'Doctrine\\ORM\\Mapping\\Column'  => __DIR__.'/classes/Doctrine/Mapping/Column.php',
     // For parsing SQL in the automatic cache driver
     'PHPSQLParser' => __DIR__.'/vendor/PHPSQLParser/php-sql-parser.php'
 ));

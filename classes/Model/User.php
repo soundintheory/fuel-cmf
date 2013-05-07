@@ -44,8 +44,6 @@ class User extends Base
      * @var string
      */
     public $confirm_password;
-
-
     
     /**
      * Authenticates and allows a user to enter either their email address or
@@ -1018,6 +1016,8 @@ class User extends Base
         'roles' => array(
             'field' => 'CMF\\Field\\Collection\\Checkbox'
         ),
+        'reset_password_sent_at' => array( 'visible' => false ),
+        'reset_password_token' => array( 'visible' => false )
     );
     
     protected static $_list_fields = array(

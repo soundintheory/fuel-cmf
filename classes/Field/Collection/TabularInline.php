@@ -43,7 +43,7 @@ class TabularInline extends Multiselect {
         if ($sortable) $hidden_fields['pos'] = 0;
         
         // The form from which we'll render out each row, but also the blank form for the 'new item' template
-        $form_template = new ModelForm($target_metadata, new $target_class(), '%TEMP%'.$settings['mapping']['fieldName'].'[%num%]', $hidden_fields, $exclude);
+        $form_template = new ModelForm($target_metadata, new $target_class(), '__TEMP__'.$settings['mapping']['fieldName'].'[__NUM__]', $hidden_fields, $exclude);
         $cols = $form_template->field_keys;
         $rows = array();
         $js_data = $form_template->js_field_settings;
@@ -67,7 +67,7 @@ class TabularInline extends Multiselect {
             'assets' => $form_template->assets,
             'content' => strval(\View::forge('admin/fields/collection/tabular-inline.twig', array( 'settings' => $settings, 'singular' => $target_class::singular(), 'plural' => $target_class::plural(), 'rows' => $rows, 'cols' => $cols, 'template' => $form_template->getFieldContent(), 'form' => $form_template, 'sortable' => $sortable ), false)),
             'widget' => true,
-            'widget_class' => 'poos',
+            'widget_class' => '',
             'widget_icon' => $target_class::icon(),
             'js_data' => $js_data,
             'merge_data' => true

@@ -9,7 +9,7 @@
 	    $(document).ready(function() {
 	    	
 	    	var modelId = {{ model.id }},
-	    	modelTitle = "{{ model.display()|json_encode() }}",
+	    	modelTitle = {{ model.display()|json_encode() }},
 	    	cid = '{{ cid }}',
 	    	hasParent = (typeof(parent) != 'undefined' && parent != null);
 	    	

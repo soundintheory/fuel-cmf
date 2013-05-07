@@ -43,11 +43,9 @@ return array(
 		'enum_integer' => array( 'class' => 'Doctrine\\DBAL\\Types\\IntegerType' ),
 		'enum_float' => array( 'class' => 'Doctrine\\DBAL\\Types\\FloatType' ),
 		'enum_decimal' => array( 'class' => 'Doctrine\\DBAL\\Types\\DecimalType' ),
-		'file' => array( 'class' => 'Doctrine\\DBAL\\Types\\TextType' ),
-		'image' => array( 'class' => 'Doctrine\\DBAL\\Types\\TextType' ),
 		'video' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
-		'fileobject' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
-		'imageobject' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
+		'file' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
+		'image' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 		'link' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 		'measurement' => array( 'class' => 'Doctrine\\DBAL\\Types\\FloatType' )
 	),

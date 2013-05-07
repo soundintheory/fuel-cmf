@@ -17,6 +17,16 @@ class Base {
     );
     
     /**
+     * When a processed version of this field is requested, it will be run through this method first.
+     * Useful for conversions between database type and 'front end' type.
+     * @return mixed
+     */
+    public static function getValue($value, $settings, $model)
+    {
+        return $value;
+    }
+    
+    /**
      * Prepares the field's value for displaying in an item's list view.
      * @see \Admin::getFieldSettings()
      * @param mixed $value

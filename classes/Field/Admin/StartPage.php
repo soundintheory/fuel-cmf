@@ -91,17 +91,16 @@ class StartPage extends \CMF\Field\Base {
 				$tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery()->getArrayResult();
 				$tree = $repository->buildTree($tree, array());
 				$options[$name] = static::buildTreeOptions($tree, $prop, array());
-				
 				continue;
             }
             
-            $items = $type::select("item.id, item.$prop, url.url, url.id url_id")->leftJoin('item.url', 'url')->orderBy("item.$prop", "ASC")->getQuery()->getArrayResult();
+            $items = $type::select("item, url")->leftJoin('item.url', 'url')->getQuery()->getResult();
             
             if (is_array($items) && count($items) > 0) {
                 
                 foreach ($items as $item)
                 {
-                    $group[strval($item['url_id'])] = $item[$prop];
+                    $group[strval($item->url->id)] = $item->display();
                 }
                 $options[$name] = $group;
                 

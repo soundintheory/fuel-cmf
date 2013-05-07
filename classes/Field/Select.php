@@ -1,12 +1,28 @@
 <?php
 
+
 namespace CMF\Field;
 
 class Select extends Base {
     
     protected static $defaults = array(
-        'allow_empty' => true
+        'options' => array(),
+        'allow_empty' => true,
+        'use_key' => false,
+        'output' => 'value'
     );
+    
+    public static function getValue($value, $settings, $model)
+    {
+        if (!\Arr::is_assoc($settings['options']) || (isset($settings['use_key']) && $settings['use_key'] === true)) return $value;
+        if (is_numeric($value)) $value = trim(strval($value), ' ').' ';
+        $option = isset($settings['options'][$value]) ? $settings['options'][$value] : null;
+        if (is_array($option)) {
+            $output = isset($settings['output']) ? $settings['output'] : 'value';
+            return isset($option[$output]) ? $option[$output] : $option;
+        }
+        return $option;
+    }
     
     /** @inheritdoc */
     public static function displayList($value, $edit_link, &$settings, &$model)
@@ -35,12 +51,22 @@ class Select extends Base {
         
         if (!empty($options) && !\Arr::is_assoc($options)) {
             $options = array_combine($options, $options);
+        } else if (!empty($options)) {
+            reset($options);
+            $first = current($options);
+            if (is_array($first) && isset($first['value'])) {
+                $options = array_map(function($option) {
+                    return $option['value'];
+                }, $options);
+            }
         }
+        
+        if (is_numeric($value)) $value = trim(strval($value), ' ').' ';
         
         if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
             !(isset($settings['required']) && $settings['required']) &&
             $settings['allow_empty']) {
-            $options = array_merge(array( null => '---' ), $options);
+            $options = array( '' => '' ) + $options;
         }
         
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));

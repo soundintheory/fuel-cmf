@@ -12,6 +12,8 @@ class ModelForm
 	public $fields;
 	public $field_keys;
 	public $table_name;
+	public $disable_groups = false;
+	public $disable_widgets = false;
 	
 	// For internal workings
 	protected $tabs;
@@ -23,12 +25,14 @@ class ModelForm
 	protected $prepopulate;
 	protected $exclude;
 	
-	public function __construct($metadata, $model, $prefix = '', $prepopulate = array(), $exclude = array())
+	public function __construct($metadata, $model, $prefix = '', $prepopulate = array(), $exclude = array(), $disable_groups = false, $disable_widgets = false)
 	{
 		$class_name = $metadata->name;
 		$this->table_name = $metadata->table['name'];
 		$this->prepopulate = \Arr::merge(\Input::get(), $prepopulate);
 		$this->exclude = $exclude;
+		$this->disable_groups = $disable_groups;
+		$this->disable_widgets = $disable_widgets;
 		
 		// Tabs, Groups, Fields
 		$this->tabs = $class_name::tabs();
@@ -133,6 +137,10 @@ class ModelForm
 				}
 			}
 			
+			if ($this->disable_groups === true) {
+				$field['sub_group'] = $this->fields[$field_name]['sub_group'] = false;
+			}
+			
 			$field['required'] = $this->isRequired($field_name);
 			
 			// Get the field's content
@@ -157,7 +165,12 @@ class ModelForm
 				}
 				
 				$this->fields[$field_name] = $field = \Arr::merge($field_content, $this->fields[$field_name]);
-				$field_assets = \Arr::merge(($field_assets !== null && is_array($field_assets)) ? $field_assets : array(), $field_content['assets']);
+				if (isset($field_content['assets'])) {
+					$field_assets = \Arr::merge(($field_assets !== null && is_array($field_assets)) ? $field_assets : array(), $field_content['assets']);
+				} else {
+					$field_assets = ($field_assets !== null && is_array($field_assets)) ? $field_assets : array();
+				}
+				
 				$this->fields[$field_name]['content'] = $field_content = $field_content['content'];
 				
 				// If this is a widget, generate it

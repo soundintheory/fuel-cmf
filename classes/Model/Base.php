@@ -48,7 +48,7 @@ class Base extends \Doctrine\Fuel\Model
      * @ORM\Column(type="integer", nullable=true)
      * @var int
      **/
-    protected $pos = 0;
+    protected $pos = -1;
     
     /**
      * Associative array containing settings for all the model's fields - tells the
@@ -150,6 +150,13 @@ class Base extends \Doctrine\Fuel\Model
     protected static $_sort_group = null;
     
     /**
+     * Whether or not the sort listener should run on these items if pos has changed
+     * @see \CMF\Model\Base::sortProcess()
+     * @var string
+     */
+    protected static $_sort_process = true;
+    
+    /**
      * Whether the model if static. Static means there will only ever be one record,
      * that cannot be removed. Use it for one-off pages, like a homepage model.
      * @var boolean
@@ -168,6 +175,13 @@ class Base extends \Doctrine\Fuel\Model
      * @var string
      */
     protected static $_superlock = false;
+    
+    /**
+     * A bit like Doctrine's MappedSuperclass, when set to true tells the system that this model was never intended
+     * to be created or edited, so it gets left out of 'select a type...' lists and so on
+     * @var boolean
+     */
+    protected static $_superclass = false;
     
     /**
      * The icon to use for the model in the admin site.
@@ -201,6 +215,13 @@ class Base extends \Doctrine\Fuel\Model
      * @var object
      */
     protected static $instances = array();
+    
+    /**
+     * Stores this model's field settings as a form of cache
+     * @see CMF\Model\Base::fieldSettings()
+     * @var array
+     */
+    protected $_field_settings = null;
     
     /**
      * The URL-friendly identifier for the model. Uses the static slug_fields property to generate it.
@@ -277,11 +298,7 @@ class Base extends \Doctrine\Fuel\Model
      */
     public function populate($data, $overwrite=true)
     {
-        $class_name = get_class($this);
-        $fields = \Admin::getFieldSettings($class_name);
-        $field_settings = $this->settings();
-        $fields = \Arr::merge($fields, $field_settings);
-        
+        $fields = $this->fieldSettings();
         parent::populate($data, $overwrite);
         
         foreach ($fields as $field_name => $field) {
@@ -292,7 +309,15 @@ class Base extends \Doctrine\Fuel\Model
             
         }
         
+        $this->postPopulate();
+        
     }
+    
+    /**
+     * Custom CMF event handler - can be overridden to execute actions on the model before saving to the database
+     * @return void
+     */
+    protected function postPopulate() {}
     
     /**
      * @inheritdoc
@@ -322,6 +347,36 @@ class Base extends \Doctrine\Fuel\Model
             
         }
         return false;
+    }
+    
+    /**
+     * This will return the specified field on the model after having been passed through the CMF field class associated with it.
+     * It's a bit heavy because it has to grab the field settings etc, so this is an optional method
+     * 
+     * @return mixed
+     */
+    public function field($field_name, $extra_settings = null, $field_override = null)
+    {
+        if (!property_exists($this, $field_name)) return null;
+        $field_settings = $this->fieldSettings();
+        $field_settings = \Arr::get($field_settings, $field_name);
+        if ($extra_settings !== null) $field_settings = \Arr::merge($field_settings, $extra_settings);
+        $field_class = ($field_override !== null) ? $field_override : $field_settings['field'];
+        return $field_class::getValue($this->$field_name, $field_class::settings($field_settings), $this);
+    }
+    
+    /**
+     * Gets the field settings for this model, merges in any database ones and stores the result for later.
+     * @return array
+     */
+    public function fieldSettings()
+    {
+        if ($this->_field_settings !== null) return $this->_field_settings;
+        
+        $class_name = get_class($this);
+        $fields = \Admin::getFieldSettings($class_name);
+        $field_settings = $this->settings();
+        return $this->_field_settings = \Arr::merge($fields, $field_settings);
     }
     
     /**
@@ -417,6 +472,16 @@ class Base extends \Doctrine\Fuel\Model
     {
         $called_class = get_called_class();
         return $called_class::$_sort_group;
+    }
+    
+    /**
+     * @see \CMF\Model\Base::$_sort_process
+     * @return array
+     */
+    public static function sortProcess()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_sort_process;
     }
     
     public function sortGroupId($value=null)
@@ -538,13 +603,30 @@ class Base extends \Doctrine\Fuel\Model
     }
     
     /**
+     * @see \CMF\Model\Base::$_superclass
+     * @return string
+     */
+    public static function superclass()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_superclass;
+    }
+    
+    /**
      * Resaves all of the items in the DB
      * @return void
      */
     public static function saveAll()
     {
         $called_class = get_called_class();
-        $items = $called_class::select('item')->getQuery()->getResult();
+        $metadata = \DoctrineFuel::manager()->getClassMetadata($called_class);
+        $qb = $called_class::select('item');
+        
+        foreach ($metadata->associationMappings as $field => $mapping) {
+            $qb->leftJoin('item.'.$field, $field)->addSelect($field);
+        }
+        
+        $items = $qb->getQuery()->getResult();
         
         foreach ($items as $num => $item) {
             $item->updated_at = new \Datetime();

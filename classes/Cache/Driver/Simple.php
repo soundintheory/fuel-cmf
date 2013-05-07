@@ -6,6 +6,7 @@ class Simple implements Driver {
 	
 	protected $request;
 	protected $path;
+	protected $content_type = 'text/html';
 	
 	public function get($url)
 	{
@@ -35,7 +36,7 @@ class Simple implements Driver {
 		$headers = array(
 			'Cache-Control' => 'public',
 			'Last-Modified' => gmdate('D, d M Y H:i:s', $cache_last_modified).' GMT',
-			'Content-Type' => 'text/html'
+			'Content-Type' => $this->content_type
 		);
 		
 		// Still call the before method on the controller... is this a good idea? Perhaps not.
@@ -46,10 +47,12 @@ class Simple implements Driver {
 		// Return 304 not modified if the content hasn't changed, but only if the profiler isn't enabled.
 		if (!\Fuel::$profiling) {
 			$headers['Content-Length'] = strlen($content);
+			
 			if ($header_modified_since >= $cache_last_modified) {
-				$status = 304;
-				$content = '';
+				header('HTTP/1.1 304 Not Modified');
+    			exit();
 			}
+			
 		}
 		
 		// Send the response

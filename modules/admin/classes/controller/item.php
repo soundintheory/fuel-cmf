@@ -39,6 +39,7 @@ class Controller_Item extends Controller_Base {
 	    $model = new $class_name();
 	    
 	    // Get stuff ready for the template
+	    $this->js['model'] = $class_name;
 	    $this->form = new ModelForm($metadata, $model);
 	    $this->plural = $class_name::plural();
 		$this->singular = $class_name::singular();
@@ -72,7 +73,9 @@ class Controller_Item extends Controller_Base {
 		
 		// Load up the model with the Id
 	    $model = $class_name::find($id);
-	    if (is_null($model)) return $this->show404("That ".$this->singular." Doesn't Exist!");
+	    if (is_null($model)) {
+	    	\Response::redirect(\Uri::base(false)."admin/$table_name", 'location');
+	    }
 	    
 	    $can_edit = \CMF\Auth::can('edit', $model);
 		if (!$can_edit) {
@@ -127,9 +130,6 @@ class Controller_Item extends Controller_Base {
 			$model = new $class_name();
 			$actioned = "created";
 		}
-		
-		//print_r(\Input::post());
-		//exit();
 		
 		// Populate the model with posted data
 		$model->populate(\Input::post());

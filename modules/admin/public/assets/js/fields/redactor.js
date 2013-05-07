@@ -563,9 +563,9 @@
 			links = typeof(editor.opts['links']) != 'undefined' ? editor.opts['links'] : [];
 			
 			// Jiggle some things around a bit...
-			editor.opts.modal_link = modalContent;
-			editor.showLinkOrig = editor.showLink;
-			editor.showLink = editor.showCMFLink;
+			//editor.opts.modal_link = modalContent;
+			//editor.showLinkOrig = editor.showLink;
+			//editor.showLink = editor.showCMFLink;
 			
 			// Don't continue if there are no links
 			if (links.length === 0) { return false; }
@@ -1159,7 +1159,7 @@
 		settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {};
 		
 		// Don't run on temporary fields...
-		if (name.indexOf('%TEMP%') >= 0) { return; }
+		if (name.indexOf('__TEMP__') >= 0) { return; }
 		
 		var opts = {
 			buttons: ['html', '|', 'formatting', '|', 'bold', 'italic', 'deleted', '|', 'unorderedlist', 'orderedlist', 'outdent', 'indent', '|', 'image', 'video', 'file', 'table', 'link', '|', 'fontcolor', 'backcolor', '|', 'alignment', '|', 'horizontalrule'],

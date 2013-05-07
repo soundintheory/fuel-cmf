@@ -30,11 +30,11 @@
 			};
 			
 			// Don't run on temporary fields...
-			if (name.indexOf('%TEMP%') >= 0) { return; }
+			if (name.indexOf('__TEMP__') >= 0) { return; }
 			
 			var opts = (typeof(field_settings[name]) != 'undefined') ? field_settings[name] : {},
 			can_edit = multiple && typeof(opts.target_table) != 'undefined' && !hasParent && opts['edit'] !== false,
-			$addBut = $('#' + cid + ' .btn-add');
+			$addBut = $('#' + cid + ' .btn-create');
 			
 			// So the iframe can call this field on save...
 			window[cid] = { 'onSave':onSave };
@@ -42,7 +42,6 @@
 			if ($addBut.length > 0 && !hasParent) {
 				
 				$addBut.fancybox(fancyBoxOpts);
-				
 				$addBut.click(function(evt) {
 					evt.preventDefault();
 				});
