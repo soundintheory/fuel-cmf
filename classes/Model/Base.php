@@ -765,12 +765,18 @@ class Base extends \Doctrine\Fuel\Model
         if (!empty($_FILES)) \Upload::prepare();
     }
     
-    public function settings()
+    public function settings($name = null, $value = null)
     {
+        if ($name !== null) {
+            $settings = (isset($this->settings)) ? $this->settings : array();
+            \Arr::set($settings, $name, $value);
+            $this->settings = $settings;
+        }
+        
         if (isset($this->settings)) {
             return $this->settings;
         }
-        return array();
+        return $this->settings = array();
     }
     
     /**
