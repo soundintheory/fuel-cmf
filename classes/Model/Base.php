@@ -298,6 +298,10 @@ class Base extends \Doctrine\Fuel\Model
      */
     public function populate($data, $overwrite=true)
     {
+        if (is_array($data)) {
+            $overwrite = \Arr::get($data, '__overwrite__', $overwrite);
+        }
+        
         $fields = $this->fieldSettings();
         parent::populate($data, $overwrite);
         
@@ -376,7 +380,14 @@ class Base extends \Doctrine\Fuel\Model
         $class_name = get_class($this);
         $fields = \Admin::getFieldSettings($class_name);
         $field_settings = $this->settings();
-        return $this->_field_settings = \Arr::merge($fields, $field_settings);
+        
+        foreach ($field_settings as $field_name => $field_setting) {
+            if (isset($fields[$field_name])) {
+                $fields[$field_name] = \Arr::merge($fields[$field_name], $field_setting);
+            }
+        }
+        
+        return $this->_field_settings = $fields;
     }
     
     /**

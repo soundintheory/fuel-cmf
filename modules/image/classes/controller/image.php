@@ -33,6 +33,12 @@ class Controller_Image extends \Controller {
 	
 	protected function _init_image($start_segment, $append, $output_ext = null)
 	{
+		try {
+            set_time_limit(0);
+            ini_set('memory_limit', '256M');
+        } catch (\Exception $e) {
+            // Nothing!
+        }
 		
 	    // Get the path of the source file
 		$ext = Input::extension();
@@ -129,11 +135,11 @@ class Controller_Image extends \Controller {
 		if (!is_null($output)) return $output;
 		
 		$bgcolor = '#'.$this->param('bgcolor', 'fff');
-
+		
 		\Image::load($this->path)
 		->config('bgcolor', $bgcolor)
   		->crop($cropx, $cropy, $cropx + $cropw, $cropy + $croph)
-  		->resize($w, $h)
+  		->resize($w, $h, false)
   		->save($this->resized);
   		
 		return $this->serve_image($this->resized, $this->mime_type);

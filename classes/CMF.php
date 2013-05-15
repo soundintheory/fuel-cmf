@@ -318,5 +318,15 @@ class CMF
         return preg_replace(array("/^\<\!DOCTYPE.*?<html>.*<body>/si", "!</body></html>$!si"), "", $doc->saveHTML());
         
     }
+    
+    public static function getCropUrl($image, $cropid, $w, $h)
+    {
+        $crop = empty($image) ? false : \Arr::get($image, 'crop.'.$cropid, false);
+        $src = (isset($image['src']) && !empty($image['src'])) ? $image['src'] : 'placeholder.png';
+        
+        if ($crop === false) return '/image/2/'.$w.'/'.$h.'/'.$src;
+        
+        return '/image/'.$crop['x'].'/'.$crop['y'].'/'.$crop['width'].'/'.$crop['height'].'/'.$w.'/'.$h.'/'.$src;
+    }
 	
 }
