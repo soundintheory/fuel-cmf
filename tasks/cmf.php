@@ -29,6 +29,85 @@ class Cmf
 	}
 	
 	/**
+	 * Converts any old image fields (strings) into the new style object ones
+	 */
+	public function convertimages()
+	{
+		$em = \DoctrineFuel::manager();
+		$driver = $em->getConfiguration()->getMetadataDriverImpl();
+		$tables_fields = array();
+		$sql = array();
+		
+		// Loop through all the model metadata and check for image fields
+		foreach ($driver->getAllClassNames() as $class) {
+			
+			$metadata = $em->getClassMetadata($class);
+			$fields = $metadata->fieldMappings;
+			$convert = array();
+			
+			foreach ($fields as $field_name => $field) {
+				
+				if ($field['type'] == 'image') $convert[] = $field_name;
+				
+			}
+			
+			if (count($convert) > 0) {
+				
+				$table = $metadata->table['name'];
+				$refl_fields = $metadata->reflFields;
+				
+				foreach ($convert as $convert_field) {
+					
+					if (isset($refl_fields[$convert_field]) && $refl_fields[$convert_field]->class != $class) {
+						$field_table = \Admin::getTableForClass($refl_fields[$convert_field]->class);
+					} else {
+						$field_table = $table;
+					}
+					
+					$table_fields = \Arr::get($tables_fields, $field_table, array());
+					if (!in_array($convert_field, $table_fields)) $table_fields[] = $convert_field;
+					$tables_fields[$field_table] = $table_fields;
+					
+				}
+				
+			}
+			
+		}
+		
+		foreach ($tables_fields as $table => $fields) {
+			
+			$results = \DB::query("SELECT id, ".implode(', ', $fields)." FROM $table")->execute();
+			
+			foreach ($results as $result) {
+				
+				foreach ($fields as $field) {
+					
+					$image = @unserialize($result[$field]);
+					if ($image === false) {
+						
+						$newimage = array( 'src' => $result[$field], 'alt' => '' );
+						$newimage = \DB::quote(serialize($newimage));
+						$sql[] = "UPDATE $table SET $field = $newimage WHERE id = ".$result['id'];
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		foreach ($sql as $query) {
+			
+			\DB::query($query)->execute();
+			
+		}
+		
+		\Cli::write('Done!', 'green');
+		
+	}
+	
+	/**
 	 * Creates a super user
 	 * 
 	 * @return void
@@ -88,6 +167,28 @@ class Cmf
 			// Sometimes the cache driver is set to an 'unclearable' one, but don't stress about it!
 		}
 		
+		// See if there are any previous migrations to run
+		$this->checkMigrations($name, $type);
+		
+		$diff = $this->getDiff();
+		if (array_key_exists('error', $diff))
+		{
+			\Cli::write($diff['error'], 'red');
+			return;
+		}
+		
+		$this->generate($diff['up'], $diff['down']);
+		
+		if (\Cli::prompt('Would you like to run the new migration now?', array('y','n')) == 'y')
+		{
+			Migrate::latest($name, $type);
+			\CMF\Admin::createAllStaticInstances();
+		}
+		
+	}
+	
+	protected function checkMigrations($name = 'default', $type = 'app')
+	{
 		Migrate::_init();
 		
 		$files = glob(APPPATH."migrations/*_*.php");
@@ -114,22 +215,6 @@ class Cmf
 			}
 			
 		}
-		
-		$diff = $this->getDiff();
-		if (array_key_exists('error', $diff))
-		{
-			\Cli::write($diff['error'], 'red');
-			return;
-		}
-		
-		$this->generate($diff['up'], $diff['down']);
-		
-		if (\Cli::prompt('Would you like to run the new migration now?', array('y','n')) == 'y')
-		{
-			Migrate::latest($name, $type);
-			\CMF\Admin::createAllStaticInstances();
-		}
-		
 	}
 	
 	/**

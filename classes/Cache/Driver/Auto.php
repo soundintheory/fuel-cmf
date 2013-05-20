@@ -179,6 +179,7 @@ class Auto extends Simple {
 		}
 		
 		// Add the rest of the stuff to the result
+		$result['query_count'] = $num;
 		$result['sql'] = $sql;
 		$result['files'] = $this->files;
 		$result['content'] = strval($this->request->response);
