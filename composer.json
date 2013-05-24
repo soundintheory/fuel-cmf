@@ -15,7 +15,15 @@
         "email": "andy@soundintheory.co.uk"
     },
     "require": {
-        "soundintheory/hooked-package-installer": "*"
+        "soundintheory/hooked-package-installer": "*",
+        "aspendigital/fuel-doctrine2": "~1.0.0",
+        "symfony/validator": "2.2.*",
+        "gedmo/doctrine-extensions": "2.3.*",
+        "twig/twig": "~1.13.0",
+        "twig/extensions": "~1.0.0",
+        "roderik/pwgen-php": "*",
+        "vesselinv/fuel-sprockets": "1.0.x-dev",
+        "soundintheory/php-sql-parser": "*"
     },
     "suggest": {
         "tecnick.com/tcpdf": "If you need to do any custom (very exact) PDF generation",
