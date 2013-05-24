@@ -1,0 +1,23 @@
+{% macro form_loop(rows, fields) %}
+    
+    {% for row in rows %}
+    <div class="row-fluid">
+        
+        {% for field in row %}
+        
+        {% set field_object = field.field_object %}
+        {% set form_content = field_object.display_form()|raw %}
+        {% set attributes = field_object.get_attributes() %}
+        
+        {% if form_content != '' %}
+        <div class="control-group {{ attributes.class }} field-type-{{ field_object.get_type() }} field{{ field_object.group != '' ? '-'~field_object.group : '' }}-{{ field_object.name }}" id="{{ field_object.getId }}">
+            {{ form_content }}
+        </div>
+        {% endif %}
+        
+        {% endfor %}
+    
+    </div>
+    {% endfor %}
+    
+{% endmacro %}

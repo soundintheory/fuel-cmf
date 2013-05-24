@@ -1,0 +1,42 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block content %}
+	
+	<div id="login-container" class="row-fluid">
+		
+		<div id="login-header">
+			<h3>Project Setup</h3>
+		</div> <!-- #login-header -->
+		    <div class="progress">
+    {% if status %} 
+	<div class="bar bar-success" style="width: 40%;"></div>
+	{% else %}
+	<div class="bar bar-success" style="width: 20%;"></div>
+    {% endif %}
+    </div>
+		<div id="login-content" class="clearfix">
+
+			{% if status %} 
+			<p>Excellent! All files copies successfully. Next step - database.</p>
+			<p><a class="btn btn-success span6 offset3" href="/admin/install/database">Database Setup</a></p>
+			{% else %}
+			<form method="post" action="/admin/install/setup/go">
+				<p><em>Enter project info and submit to copy the files and set the project up.</em></p>
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label" for="form_admin_title">Project Title</label>
+						<div class="controls-row">
+							<input type="text" class="span12" id="form_admin_title" name="admin_title" value="">
+						</div>
+					</div>
+				</fieldset>
+				
+				<div class="pull-right">
+					<button type="submit" class="btn-primary btn-large">Setup Project</button>
+				</div>
+				
+			</form>
+			{% endif %} 
+	</div> <!-- #login-container -->
+	
+{% endblock %}

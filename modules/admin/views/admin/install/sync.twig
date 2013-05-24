@@ -1,0 +1,50 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block content %}
+	
+	<div id="login-container" class="row-fluid">
+		
+		<div id="login-header">
+			<h3>Sync</h3>
+		</div> <!-- #login-header -->
+		<div id="login-content" class="clearfix">
+			{% if status != null and status == false %}
+				<p>Failed, double check and try again.
+				<br/></p>
+			{% else %}
+			<p>Click the button to sync and automatically be redirected upon success
+				<br/></p>
+			{% endif %}
+			<p><a class="btn btn-success span6 offset3" href="/admin/install/sync/go">Sync</a></p>
+			<!-- <form method="post" action="/admin/login">
+				
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label" for="form_username">Username</label>
+						<div class="controls-row">
+							<input type="text" class="span12" id="form_username" name="username">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="form_password">Password</label>
+						<div class="controls-row">
+							<input type="password" class="span12" id="form_password" name="password">
+						</div>
+					</div>
+				</fieldset>
+				
+				<div class="pull-right">
+					<button type="submit" class="btn-primary btn-large">Login</button>
+				</div>
+				
+			</form> -->
+			
+		</div> <!-- #login-content -->
+		
+		<!-- div id="login-extra">
+			<p><a href="#">Forgotten your password?</a></p>
+		</div --> <!-- #login-extra -->
+		
+	</div> <!-- #login-container -->
+	
+{% endblock %}

@@ -1,0 +1,26 @@
+<div class="sidebar-nav">
+	<div class="sidebar-inner">
+	    
+	    {% for area in sidebar %}
+	    
+	    {% if area.heading %}<h3 class="nav-header">{{ area.heading }}</h3>{% endif %}
+	    <ul class="nav nav-tabs nav-stacked">
+	    	
+			{% for item in area.items %}
+			    <li class="{{ item.active ? 'active' : '' }}">
+			    	<a href="{{ item.href }}"><i class="icon-{{ item.icon }} item-icon"></i> {{ item.title }}<i class="icon icon-chevron-right arrow"></i></a>
+			    </li>
+			{% endfor %}
+			
+		</ul>
+		
+	    {% endfor %}
+	    
+	    {% if user.super_user %}
+	    <ul class="nav nav-tabs nav-stacked">
+	   		<li class=""><a href="/admin/install/sync"><i class="icon-repeat item-icon"></i> Sync/Migrate Models<i class="icon icon-chevron-right arrow"></i></a></li>
+	   	</ul>
+		{% endif %}
+		
+	</div><!--/.sidebar-inner -->
+</div><!--/.well -->

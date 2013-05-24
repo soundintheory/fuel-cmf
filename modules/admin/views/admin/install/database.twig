@@ -1,0 +1,56 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block content %}
+	
+	<div id="login-container" class="row-fluid">
+		
+		<div id="login-header">
+			<h3>Database Setup</h3>
+		</div> <!-- #login-header -->
+		<div class="progress progress-success">
+    		<div class="bar" style="width: 60%;"></div>
+    	</div>
+    	{% if status.error != null %}
+    	<div class="alert alert-danger">
+    		{{ status.error }}
+    	</div>
+    	{% endif %}
+		<div id="login-content" class="clearfix">
+			<form method="post" action="/admin/install/database">
+				
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label" for="form_database_host">Database Host</label>
+						<div class="controls-row">
+							<input type="text" class="span12" id="form_database_host" name="database_host" value="{% if post.database_host != null %}{{ post.database_host }}{% else %}localhost{% endif %}">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="form_password">Database Name</label>
+						<div class="controls-row">
+							<input type="text" class="span12" id="form_password" name="database_name" value="{% if post.database_name != null %}{{ post.database_name }}{% endif %}">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="form_database_username">Database Username</label>
+						<div class="controls-row">
+							<input type="text" class="span12" id="form_database_username" name="database_username" value="{% if post.database_username != null %}{{ post.database_username }}{% endif %}">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="form_database_password">Database Password</label>
+						<div class="controls-row">
+							<input type="text" class="span12" id="form_database_password" name="database_password" value="{% if post.database_password != null %}{{ post.database_password }}{% endif %}">
+						</div>
+					</div>
+					
+				</fieldset>
+				
+				<div class="pull-right">
+					<button type="submit" class="btn-primary btn-large">Create Database</button>
+				</div>
+				
+			</form>
+	</div> <!-- #login-container -->
+	
+{% endblock %}

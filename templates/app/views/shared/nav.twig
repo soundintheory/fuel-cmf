@@ -1,0 +1,7 @@
+<ul id="nav">
+    {% for page in level1 %}
+	<li class="{{ (loop.index == loop.length) ? 'last' : '' }}{{ page.active ? ' active' : '' }}">
+	    <a href="{{ page.url }}">{{ page.menu_title }}</a>
+	</li>
+	{% endfor %}
+</ul>

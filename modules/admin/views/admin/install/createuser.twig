@@ -1,0 +1,60 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block content %}
+	
+	<div id="login-container" class="row-fluid">
+		
+		<div id="login-header">
+			<h3>Super Admin Creation</h3>
+		</div> <!-- #login-header -->
+		<div class="progress progress-success">
+    		<div class="bar" style="width: 90%;"></div>
+    	</div>
+    	{% if error != null %}
+    	<div class="alert alert-danger">
+    		{{ error|raw }}
+    	</div>
+    	{% endif %}
+		<div id="login-content" class="clearfix">
+			<form method="post" action="/admin/install/createuser">
+				
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label" for="form_database_host">Email Address</label>
+						<div class="controls-row">
+							<input type="text" class="span12" id="form_email" name="email_address" value="{{ email_address }}">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="form_database_host">Username</label>
+						<div class="controls-row">
+							<input type="text" class="span12" id="form_username" name="username" value="{{ username }}">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="form_password">Password</label>
+						<div class="controls-row">
+							<input type="password" class="span12" id="form_password" name="password" value="{{ password }}">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="form_confirm_password">Password</label>
+						<div class="controls-row">
+							<input type="password" class="span12" id="form_confirm_password" name="confirm_password" value="{{ password }}">
+						</div>
+					</div>
+					<div class="span12">
+						<p>Auto generated password: {{ password }}</p>
+						<a href="" class="btn btn-mini btn-warning">Regenerate Password</a>
+					</div>
+				</fieldset>
+				
+				<div class="span12 clearfix" style="margin-bottom:10px;">
+					<button type="submit" class="pull-right btn-primary btn-large">Create SuperUser</button>
+				</div>
+				
+			</form>
+	<a class="offset10 btn btn-mini" href="/admin/install/finishing">Skip</a>
+	</div> <!-- #login-container -->
+	
+{% endblock %}

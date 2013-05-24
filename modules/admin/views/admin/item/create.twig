@@ -1,0 +1,114 @@
+{% extends interface_template|default("admin/shared/interface.twig") %}
+
+{% block html_title %}{% if static %}{{ singular }}{% else %}New {{ singular }}{% endif %} : {{ admin_title }}{% endblock %}
+
+{% block main_pane %}
+    
+    {% include 'admin/shared/alert.twig' %}
+    
+    <form action="" method="post" class="item-form" enctype="multipart/form-data">
+    
+    <input type="hidden" name="_mode" value="{{ mode }}" />
+    <input type="hidden" name="_cid" value="{{ cid }}" />
+    
+    <div class="inner">
+
+        <h2 class="main-heading"><i class="icon icon-{{ icon }}"></i>{% if static %}{{ singular }}{% else %} New {{ singular }}{% endif %}</h2>
+        
+        {% if form.content|length > 1 %}
+        <ul class="nav nav-pills">
+            {% for tab in form.content %}
+            <li class="{{ loop.index == 1 ? 'active' : '' }}"><a href="#tab-{{ tab.slug }}" data-toggle="tab">{{ tab.title }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+            
+        <!-- START ITEM EDIT FORM -->
+        
+        <div class="tab-content">
+            
+            {% for tab in form.content %}
+            
+            <div class="tab-pane {{ loop.index == 1 ? 'active' : '' }}" id="tab-{{ tab.slug }}">
+                
+                {% for group in tab.groups %}
+                    
+                    <div class="row-fluid">
+                    <div class="widget{{ (group.collapsible and tab.groups|length > 1) ? ' collapsible' : '' }}{{ (group.closed and tab.groups|length > 1) ? ' closed' : '' }} span12 {{ group.class }}">
+                        
+                        <div class="widget-title">
+                            <h3><i class="icon icon-{{ group.icon }}"></i> {{ group.title }}</h3>
+                        </div>
+                        <div class="widget-content">
+                            
+                            {% for field in group.fields %}
+                            
+                            {{ form.fields[field].content }}
+                            
+                            {% endfor %}
+                            
+                        </div>
+                        
+                    </div>
+                    </div>
+                    
+                {% endfor %}
+                
+            </div>
+            
+            {% endfor %}
+            
+        </div>
+        
+        {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}    
+        {% endfor %}
+        
+        <!-- END ITEM EDIT FORM -->
+    
+    </div> <!-- .inner -->
+
+{% endblock %}
+
+{% block bottom %}
+
+    <div id="controls-fixed-bot"><div class="inner">
+
+        <div class="status pull-left">
+            <!-- span>Page rendered in {exec_time}s using {mem_usage}mb of memory.</span -->
+        </div>
+
+        <div class="actions pull-right">
+            <button data-loading-text="Creating {{ singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> {{ static ? 'Save' : 'Create' }} {{ singular }}</button>
+        </div>
+
+    </div></div>
+
+    </form>
+    
+    
+
+{% endblock %}
+
+{% block breadcrumb %}
+    <li><a href="/admin">Dashboard</a> <span class="divider">/</span></li>
+    {% if not static %}<li><a href="/admin/{{ table_name }}/list">{{ plural }}</a> <span class="divider">/</span></li>{% endif %}
+    <li class="active">{{ singular }}</li>
+{% endblock %}
+
+{% block admin_css %}
+    {% for css in form.assets.css %}
+        <link rel="stylesheet" type="text/css" href="{{ css }}">
+    {% endfor %}
+{% endblock %}
+
+{% block admin_js %}
+    {{ parent() }}
+    {% for js in form.assets.js %}
+        <script type="text/javascript" src="{{ js }}?v=3"></script>
+    {% endfor %}
+    <script type="text/javascript">
+        var field_settings = {{ form.js_field_settings|json_encode }};
+        var field_values = {};
+    </script>
+{% endblock %}

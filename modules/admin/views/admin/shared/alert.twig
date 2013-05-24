@@ -1,0 +1,8 @@
+{% set main_alert = get_flash('main_alert') %}
+{% if main_alert %}
+<!-- Alert area! -->
+<div id="main-alert" class="alert {{ main_alert.attributes.class }}">
+    <button class="close" data-dismiss="alert">×</button>
+    {{ main_alert.msg }}
+</div>
+{% endif %}

@@ -1,0 +1,426 @@
+{% extends "admin/shared/interface.twig" %}
+
+{% block html_title %}CMF Item List Page{% endblock %}
+{% block main_class %}controls-bot{% endblock %}
+
+{% block main_pane %}
+
+    {% include 'admin/shared/alert.twig' %}
+    
+    <div class="inner">
+
+        <h2 class="main-heading"><i class="icon icon-tag"></i> Listing 22 Items</h2>
+        <div class="clear"></div>
+        
+        <!-- The list of added filters -->
+        <div class="filter-list row-fluid">
+            
+            <div class="filter-item">
+                <div class="inner well">
+                    <label class="control-label" for="filter2">type:</label>
+                    <select class="input span12" name="filter2" id="filter2">
+                        <option selected>any</option>
+                        <option>Category #2</option>
+                        <option>Category #3</option>
+                        <option>Category #4</option>
+                        <option>Category #5</option>
+                    </select>
+                    <span class="btn btn-remove btn-icon"><i class="icon icon-remove"></i></span>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            
+            <div class="filter-item odd">
+                <div class="inner well">
+                    <label class="control-label" for="filter2">description category:</label>
+                    <select class="input span12" name="filter2" id="filter2">
+                        <option selected>any</option>
+                        <option>Category #2</option>
+                        <option>Category #3</option>
+                        <option>Category #4</option>
+                        <option>Category #5</option>
+                    </select>
+                    <span class="btn btn-remove btn-icon"><i class="icon icon-remove"></i></span>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            
+            <div class="filter-item">
+                <div class="inner well">
+                    <label class="control-label" for="filter2">type:</label>
+                    <select class="input span12" name="filter2" id="filter2">
+                        <option selected>any</option>
+                        <option>Category #2</option>
+                        <option>Category #3</option>
+                        <option>Category #4</option>
+                        <option>Category #5</option>
+                    </select>
+                    <span class="btn btn-remove btn-icon"><i class="icon icon-remove"></i></span>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            
+            <div class="filter-item odd">
+                <div class="inner well">
+                    <label class="control-label" for="filter2">type:</label>
+                    <select class="input span12" name="filter2" id="filter2">
+                        <option selected>any</option>
+                        <option>Category #2</option>
+                        <option>Category #3</option>
+                        <option>Category #4</option>
+                        <option>Category #5</option>
+                    </select>
+                    <span class="btn btn-remove btn-icon"><i class="icon icon-remove"></i></span>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            
+            <div class="clear"></div>
+            
+        </div>
+        
+        <!-- div class="row-fluid">
+            <div class="widget collapsible item-filters span12">
+                <div class="widget-title">
+                    <h3><i class="icon icon-filter"></i> Filter list...</h3>
+                </div>
+                <div class="widget-content">
+                    <form action="" method="get">
+                        
+                        <div class="row-fluid">
+                            <div class="control-group span4">
+                                <label class="control-label" for="filter1"><i class="icon icon-search"></i> Search</label>
+                                <input type="text" id="filter1" placeholder="Enter text to search by..." class="span12" />
+                            </div>
+                            <div class="control-group span4">
+                                <label class="control-label" for="filter2">Item type</label>
+                                <select class="span12" id="filter2">
+                                    <option selected>any</option>
+                                    <option>Category #2</option>
+                                    <option>Category #3</option>
+                                    <option>Category #4</option>
+                                    <option>Category #5</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row-fluid">
+                            <div class="control-group span4">
+                                <label class="control-label" for="filter1"><i class="icon icon-search"></i> Search</label>
+                                <input type="text" id="filter1" placeholder="Enter text to search by..." class="span12" />
+                            </div>
+                            <div class="control-group span4">
+                                <label class="control-label" for="filter2">Item type</label>
+                                <select class="span12" id="filter2">
+                                    <option selected>any</option>
+                                    <option>Category #2</option>
+                                    <option>Category #3</option>
+                                    <option>Category #4</option>
+                                    <option>Category #5</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div -->
+
+        <div class="item-list">
+
+            <div class="row-fluid">
+        
+                <table class="table table-striped table-bordered selectable sortable fixed-head">
+                    <thead>
+                        <tr>
+                            <th class="handle"></th>
+                            <th class="select"><input type="checkbox"></th>
+                            <th class="list-field-image"></th>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-icon btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-icon btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-icon btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-icon btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt="" width="50" height="50"></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small btn-icon" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="child-label"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td class="handle"><i class="icon-move"></i></td>
+                            <td class="select"><input type="checkbox"></td>
+                            <td class="list-field-image"><span><img src="http://placehold.it/50x50" alt=""></span></td>
+                            <td class="list-field-text"><a href="#">Item title</a></td>
+                            <td class="child-label">16/08/2012</td>
+                            <td class="actions"><span>
+                                <a class="btn btn-small" href="#" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a> 
+                                <a class="btn btn-small btn-danger" href="#" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i></a>
+                            </span></td>
+                        </tr>
+                    </tbody>
+                </table>
+        
+            </div> <!-- .row-fluid -->
+            
+        </div> <!-- .item-list -->
+
+    </div> <!-- .inner -->
+    
+{% endblock %}
+
+{% block bottom %}
+    
+    <div id="controls-fixed-bot"><div class="inner">
+
+        <div class="pagination pull-left">
+            <ul>
+                <li class="disabled"><a href="#">&laquo;</a></li>
+                <li class="active"><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">4</a></li>
+                <li><a href="#">&raquo;</a></li>
+            </ul>
+            <ul>
+                <li><a href="#"><i class="icon-list"></i> View all</a></li>
+            </ul>
+            <div class="clear"></div>
+        </div>
+
+        <div class="actions pull-right">
+            <button class="btn btn-large btn-primary"><i class="icon-plus icon-white"></i> Add Item</button>
+        </div>
+        
+        <div class="clear"></div>
+
+    </div></div>
+    
+{% endblock %}
+

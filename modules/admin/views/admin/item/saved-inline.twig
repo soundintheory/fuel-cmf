@@ -1,0 +1,43 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block admin_js %}
+	
+	{{ parent() }}
+
+	<script type="text/javascript">
+	    
+	    $(document).ready(function() {
+	    	
+	    	var modelId = {{ model.id }},
+	    	modelTitle = {{ model.display()|json_encode() }},
+	    	cid = '{{ cid }}',
+	    	hasParent = (typeof(parent) != 'undefined' && parent != null);
+	    	
+	    	// Try and make the callback to the field in the parent, if it exists...
+	    	if (hasParent && typeof(parent.{{ cid }}.onSave) == 'function') {
+	    		parent.{{ cid }}.onSave({
+	    			'id': modelId,
+	    			'title': modelTitle,
+	    			'options': {{ options|json_encode() }},
+	    			'pos': {{ pos }}
+	    		});
+	    	}
+	    	
+	    	// Try and close fancybox in the parent, if that exists...
+	    	if (hasParent && typeof(parent.jQuery.fancybox.close) == 'function') {
+	    		parent.jQuery.fancybox.close();
+	    	}
+	    	
+	    });
+	    
+	</script>
+	
+{% endblock %}
+
+{% block content %}
+
+<div>
+	<p>Item ID: {{ model.id }}</p>
+</div>
+
+{% endblock %}

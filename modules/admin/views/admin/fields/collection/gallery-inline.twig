@@ -1,0 +1,50 @@
+<div class="controls control-group field-type-gallery-inline" data-field-name="{{ settings.mapping.fieldName }}">
+<div class="gallery-inner">
+<label class="item-label"><i class="icon icon-{{ icon }}"></i> &nbsp;{{ settings.title }}</label>
+
+<!-- We need to output different templates for any different types that can be added -->
+{% for template_type, template_content in templates %}
+<div class="item-template" data-type="{{ template_type }}">
+	{% if sortable %}{{ template_content.hidden_fields.pos }}{% endif %}
+	<input type="hidden" name="{{ template_content.prefix }}[__type__]" value="{{ template_type }}" />
+	{% for field_name, field in template_content.fields %}
+	{{ field }}
+	{% endfor %}
+</div>
+{% endfor %}
+
+<input type="hidden" name="{{ settings.mapping.fieldName }}" value="" />
+<!-- Output the items -->
+<div class="gallery-items{{ sortable ? ' sortable' : '' }}" data-field-name="{{ settings.mapping.fieldName }}">
+	{% for row in rows %}
+	<div class="gallery-item selectable">
+		{{ row.hidden_fields.id }}
+		{% if sortable %}{{ row.hidden_fields.pos }}{% endif %}
+		<span class="img"><img src="/image/1/0/90/{{ row._model_.get(settings.image_field).src }}" class="gallery-thumb" /></span>
+		<label class="gallery-label"><span><input type="checkbox" /></span></label>
+		<div class="item-form">
+			{% for field_name, field in row.fields %}
+			{{ field }}
+			{% endfor %}
+		</div>
+		<span class="gallery-filename">{{ basename(row._model_.get(settings.image_field).src) }}</span>
+	</div>
+	{% endfor %}
+	<div class="gallery-uploader">
+		<!-- This is the wrapper for the JS uploader, which will contain the extra uploaded items -->
+	</div>
+	<div class="clear"></div>
+</div> <!-- .items -->
+
+<div class="gallery-controls">
+	<span class="selected-actions">
+		<span class="btn btn-small btn-remove-selected"><i class="icon icon-remove icon-danger"></i> &nbsp;Remove...</span>&nbsp;
+	</span>
+	<span class="actions">
+		<label class="checkbox btn btn-small btn-checkbox"><input type="checkbox" class="gallery-show-hidden" checked="checked" /> Show hidden</label>&nbsp;
+		<span type="button" class="btn btn-small btn-toggle-select">Select all</span>
+	</span>
+</div>
+
+</div>
+</div>
