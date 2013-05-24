@@ -22,7 +22,7 @@
         "twig/twig": "~1.13.0",
         "twig/extensions": "~1.0.0",
         "roderik/pwgen-php": "*",
-        "vesselinv/fuel-sprockets": "*",
+        "vesselinv/fuel-sprockets": "master",
         "soundintheory/php-sql-parser": "*"
     },
     "suggest": {
