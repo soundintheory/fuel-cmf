@@ -70,8 +70,19 @@ class Link extends Object {
     
     protected static function getOptions(&$settings, $model)
     {
-    	if (static::$options !== null && is_array(static::$options)) return static::$options;
-    	
+      
+    	if (static::$options !== null && is_array(static::$options)) {
+
+            $options = static::$options;
+
+            if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
+                !(isset($settings['required']) && $settings['required']) &&
+                $settings['allow_empty']) {
+                $options = array( '' => '' ) + $options;
+            }
+            return $options;
+        }
+
     	$options = (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable']) ? array( null => '' ) : array();
         $target_class = 'CMF\\Model\\URL';
         $filters = array();
@@ -146,8 +157,16 @@ class Link extends Object {
         uksort($options, function($a, $b) {
             return strcmp(strtolower($a), strtolower($b));
         });
-        
-        return static::$options = $options;
+
+        static::$options = $options;
+
+        if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
+            !(isset($settings['required']) && $settings['required']) &&
+            $settings['allow_empty']) {
+            $options = array( '' => '' ) + $options;
+        }
+
+        return $options;
     	
     }
     

@@ -324,6 +324,8 @@ class CMF
         if (is_numeric($output)) {
             $link = \CMF\Model\URL::select('item.url')->where('item.id = '.$output)->getQuery()->getArrayResult();
             $output = (count($link) > 0) ? $link[0]['url'] : null;
+        } elseif (empty($output)) {
+            $output = null;
         } else {
             $output = "http://" . $output;
         }
