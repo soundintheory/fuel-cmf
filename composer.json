@@ -49,14 +49,14 @@
         "vendor-dir": "vendor"
     },
     "autoload": {
-        "psr-0": { "CMF": "src/" }
+        "psr-0": { "CMF\\": "src/" }
     },
     "minimum-stability": "dev",
     "extra": {
         "installer-name": "cmf",
         "installer-path": "fuel/packages/cmf/",
-        "pre-package-install": "CMF\\Composer\\Hooks::preInstall",
-        "post-package-install": "CMF\\Composer\\Hooks::postInstall",
+        "pre-package-install": "\\CMF\\Composer\\Hooks::preInstall",
+        "post-package-install": "\\CMF\\Composer\\Hooks::postInstall",
         "branch-alias": {
             "master": "1.6-dev",
             "dev-master": "1.6.x-dev"
