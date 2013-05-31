@@ -1182,7 +1182,9 @@ select option {
 	.no-items {
 		border-left: none;
 	}
-	
+	table.populated{
+		overflow:hidden;
+	}
 	table.populated > tbody > .no-items-row {
 		display: none;
 	}
@@ -1236,9 +1238,10 @@ select option {
 		}
 		
 		.field-with-controls {
-			
+			padding-top: 30px;
 			.controls-top, .controls-bot {
-				display: none;
+				display: block;
+				
 			}
 			
 		}
