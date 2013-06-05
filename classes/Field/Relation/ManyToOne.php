@@ -103,7 +103,7 @@ class ManyToOne extends \CMF\Field\Base {
         
         $input = \Form::select($settings['mapping']['fieldName'], $id, $options, $input_attributes);
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
-        return html_tag('div', array( 'class' => 'controls control-group field-with-controls'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input).'<div class="clear"><!-- --></div>';
+        return html_tag('div', array( 'class' => 'controls control-group field-with-controls'.($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input.$controls_top).'<div class="clear"><!-- --></div>';
     }
     
     /** inheritdoc */
