@@ -209,12 +209,25 @@ class Controller_Item extends Controller_Base {
 	    
 	    $singular = $class_name::singular();
 	    $entity = $class_name::find($id);
+	    $error = null;
 	    
 	    if (!is_null($entity)) {
 	        $em->remove($entity);
-	        $em->flush();
+	        
+	        try {
+	        	$em->flush();
+	        } catch (\Exception $e) {
+	        	$error = $e->getMessage();
+	        }
 	    }
 	    
+	    if (!empty($error)) {
+	    	
+	    	$default_redirect = \Uri::base(false)."admin/$table_name";
+			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => "Could not delete item: ".$error ));
+			\Response::redirect(\Input::referrer($default_redirect), 'location');
+	    	
+	    }
 	    
 	    // Do something depending on what mode we're in...
 	    switch (\Input::param('_mode', 'default')) {
