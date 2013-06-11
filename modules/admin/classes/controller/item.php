@@ -212,9 +212,9 @@ class Controller_Item extends Controller_Base {
 	    $error = null;
 	    
 	    if (!is_null($entity)) {
-	        $em->remove($entity);
 	        
 	        try {
+	        	$em->remove($entity);
 	        	$em->flush();
 	        } catch (\Exception $e) {
 	        	$error = $e->getMessage();
