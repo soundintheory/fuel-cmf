@@ -54,7 +54,7 @@
     "minimum-stability": "dev",
     "extra": {
         "installer-name": "cmf",
-        "installer-path": "fuel/packages/cmf/",
+        "installer-path": "fuel/packages/cmf",
         "pre-package-install": "\\CMF\\Composer\\Hooks::preInstall",
         "post-package-install": "\\CMF\\Composer\\Hooks::postInstall",
         "branch-alias": {
