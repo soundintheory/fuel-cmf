@@ -76,8 +76,7 @@ class Link extends Object {
             $options = static::$options;
 
             if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
-                !(isset($settings['required']) && $settings['required']) &&
-                $settings['allow_empty']) {
+                !(isset($settings['required']) && $settings['required'])) {
                 $options = array( '' => '' ) + $options;
             }
             return $options;
@@ -161,8 +160,7 @@ class Link extends Object {
         static::$options = $options;
 
         if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
-            !(isset($settings['required']) && $settings['required']) &&
-            $settings['allow_empty']) {
+            !(isset($settings['required']) && $settings['required'])){
             $options = array( '' => '' ) + $options;
         }
 
