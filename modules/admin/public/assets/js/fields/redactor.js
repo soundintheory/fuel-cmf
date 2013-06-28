@@ -1170,7 +1170,7 @@
 			convertDivs: false,
 			autoresize: true,
 			formattingTags: ['p', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4'],
-			plugins: ['tidy', 'cmflink', 'cmfimages']
+			plugins: [ 'cmflink', 'cmfimages']
 		};
 		
 		// Any additional plugins in the field settings
