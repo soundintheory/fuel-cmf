@@ -136,7 +136,7 @@ class Cmf
 		    $em->persist($role);
 		}
 		
-		$user->add('roles', $role);
+		$user->add('roles', $role[0]);
 		
 		if (!$user->validate())
 		{
