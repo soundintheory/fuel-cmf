@@ -1236,14 +1236,13 @@ select option {
 			margin-top: 0; margin-bottom: 0;
 			padding-top: 0; padding-bottom: 0;
 		}
-		
+
 		.field-with-controls {
-			padding-top: 30px;
+			padding-top:30px;
 			.controls-top, .controls-bot {
 				display: block;
 				
 			}
-			
 		}
 		
 		&.col-type-checkbox {
@@ -1344,8 +1343,12 @@ select option {
 	td .field-type-link {
 		overflow: visible;
 		display: inline-block;
-		padding-bottom: 0;
+		padding-bottom: 30px;
+		padding-top: 30px;
 		
+		label.checkbox.external-checkbox{
+			top:0;
+		}
 		select {
 			width: 180px;
 		}
