@@ -83,6 +83,7 @@ return array (
         'date' => 'CMF\\Field\\Date',
         'time' =>'CMF\\Field\\DateTime',
         'text' => 'CMF\\Field\\Textarea',
+        'color' => 'CMF\\Field\\Color',
         'richtext' => 'CMF\\Field\\Redactor',
         'object' => 'CMF\\Field\\Object\\Object',
         'array' => 'CMF\\Field\\Object\\ArrayField',

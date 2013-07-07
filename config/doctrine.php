@@ -39,6 +39,7 @@ return array(
 	'types' => array(
 		'point' => array( 'class' => 'Doctrine\\Fuel\\Types\\Point', 'dbtype' => 'point' ),
 		'richtext' => array( 'class' => 'Doctrine\\DBAL\\Types\\TextType' ),
+		'color' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 		'enum' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 		'enum_integer' => array( 'class' => 'Doctrine\\DBAL\\Types\\IntegerType' ),
 		'enum_float' => array( 'class' => 'Doctrine\\DBAL\\Types\\FloatType' ),
