@@ -53,6 +53,7 @@ return array(
 	
 	'ignore_tables' => array(
 		'migration',
+		'wp_*'
 	)
 	
 );
