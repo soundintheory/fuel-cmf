@@ -42,7 +42,8 @@ class Admin extends Twig_Extension
 			'str_repeat' => new Twig_Function_Function('str_repeat'),
 			'phpinfo' => new Twig_Function_Function('phpinfo'),
 			'basename' => new Twig_Function_Function('basename'),
-			'uri' => new Twig_Function_Function('Input::uri')
+			'uri' => new Twig_Function_Function('Input::uri'),
+			'base' => new Twig_Function_Function('Uri::base')
 		);
 	}
 	
@@ -51,7 +52,8 @@ class Admin extends Twig_Extension
         return array(
         	'item_links' => new Twig_Filter_Method($this, 'itemLinks'),
         	'placeholder' => new Twig_Filter_Method($this, 'placeholder'),
-        	'slug' => new Twig_Filter_Function('CMF::slug')
+        	'slug' => new Twig_Filter_Function('CMF::slug'),
+        	'rtrim' => new Twig_Filter_Function('rtrim')
         );
     }
     
