@@ -131,6 +131,8 @@ class Controller_Item extends Controller_Base {
 			$actioned = "created";
 		}
 		
+		//print_r(\Input::post()); exit();
+		
 		// Populate the model with posted data
 		$model->populate(\Input::post());
 		

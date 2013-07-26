@@ -63,6 +63,8 @@ class Controller_Base extends \Controller {
         // HTML Title
         $this->admin_title = \Config::get("cmf.admin.title", array());
         
+        $this->headers['X-XSS-Protection'] = 0;
+        
         return \Response::forge(\View::forge($this->template, $this->data, false), $this->status, $this->headers);
     }
     

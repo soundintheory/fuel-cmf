@@ -1166,9 +1166,11 @@
 			imageUpload: '/admin/redactor/imageupload',
 			fileUpload: '/admin/redactor/fileupload',
 			imageGetJson: '/admin/redactor/getimages',
-			minHeight: 300,
+			minHeight: settings['minHeight'],
 			convertDivs: false,
 			autoresize: true,
+			air: false,
+			airButtons: ['link', 'formatting', '|', 'bold', 'italic', 'deleted', '|', 'unorderedlist', 'orderedlist', 'outdent', 'indent', '|', 'fontcolor', 'backcolor'],
 			formattingTags: ['p', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4'],
 			plugins: [ 'cmflink', 'cmfimages']
 		};

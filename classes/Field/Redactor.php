@@ -8,7 +8,8 @@ class Redactor extends Textarea {
         'input_attributes' => array(
             'class' => 'input-xxlarge'
         ),
-        'css' => '/assets/less/less.php?f=/assets/less/editor.less'
+        'css' => '/assets/less/less.php?f=/assets/less/editor.less',
+        'minHeight' => 300
     );
     
     public function get_type()

@@ -34,6 +34,7 @@ class Admin extends Twig_Extension
 			'field_list_value' => new Twig_Function_Method($this, 'fieldListValue'),
 			'get_flash' => new Twig_Function_Function('Session::get_flash'),
 			'get_link' => new Twig_Function_Function('CMF::getLink'),
+			'video_embed' => new Twig_Function_Function('CMF\\Field\\Object\\VideoEmbed::getEmbedCode'),
 			'get_route' => new Twig_Function_Function('Router::get'),
 			'get_setting' => new Twig_Function_Method($this, 'settings'),
 			'static_url' => new Twig_Function_Function('CMF::getStaticUrl'),
@@ -43,7 +44,8 @@ class Admin extends Twig_Extension
 			'phpinfo' => new Twig_Function_Function('phpinfo'),
 			'basename' => new Twig_Function_Function('basename'),
 			'uri' => new Twig_Function_Function('Input::uri'),
-			'base' => new Twig_Function_Function('Uri::base')
+			'base' => new Twig_Function_Function('Uri::base'),
+			'crop_url' => new Twig_Function_Function('CMF\\Field\\Object\\Image::getCropUrl')
 		);
 	}
 	
