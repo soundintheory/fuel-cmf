@@ -122,6 +122,16 @@ class Base extends \Doctrine\Fuel\Model
     protected static $_list_fields = array();
     
     /**
+     * Tabs that should appear in the admin list for the model.
+     * 
+     * This is not inherited from parent classes. When defining a new list order for 
+     * child classes, the whole lot must be redeclared.
+     * 
+     * @var array
+     */
+    protected static $_list_tabs = array();
+    
+    /**
      * The plural verbose name for the model (eg. Categories)
      * @see \CMF\Model\Base::plural()
      * @var string
@@ -453,6 +463,16 @@ class Base extends \Doctrine\Fuel\Model
     {
         $called_class = get_called_class();
         return $called_class::$_list_fields;
+    }
+    
+    /**
+     * @see \CMF\Model\Base::$_list_tabs
+     * @return array
+     */
+    public static function listTabs()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_list_tabs;
     }
     
     /**

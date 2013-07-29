@@ -40,6 +40,7 @@ class Admin extends Twig_Extension
 			'static_url' => new Twig_Function_Function('CMF::getStaticUrl'),
 			'pluralize' => new Twig_Function_Function('Inflector::pluralize'),
 			'singularize' => new Twig_Function_Function('Inflector::singularize'),
+			'ordinalize' => new Twig_Function_Function('Inflector::ordinalize'),
 			'str_repeat' => new Twig_Function_Function('str_repeat'),
 			'phpinfo' => new Twig_Function_Function('phpinfo'),
 			'basename' => new Twig_Function_Function('basename'),

@@ -12,9 +12,8 @@
 /**
  * Integration test helper
  *
- * @package twig
- * @author  Fabien Potencier <fabien@symfony.com>
- * @author  Karma Dordrak <drak@zikula.org>
+ * @author Fabien Potencier <fabien@symfony.com>
+ * @author Karma Dordrak <drak@zikula.org>
  */
 abstract class Twig_Test_IntegrationTestCase extends PHPUnit_Framework_TestCase
 {
@@ -129,10 +128,10 @@ abstract class Twig_Test_IntegrationTestCase extends PHPUnit_Framework_TestCase
 
             $expected = trim($match[3], "\n ");
 
-            if ($expected != $output)  {
+            if ($expected != $output) {
                 echo 'Compiled template that failed:';
 
-                foreach (array_keys($templates) as $name)  {
+                foreach (array_keys($templates) as $name) {
                     echo "Template: $name\n";
                     $source = $loader->getSource($name);
                     echo $twig->compile($twig->parse($twig->tokenize($source, $name)));

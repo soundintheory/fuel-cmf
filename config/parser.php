@@ -77,6 +77,7 @@ return array(
 		'extensions' => array(
 			'Twig_Fuel_Extension',
 			'Twig_Extensions_Extension_Text',
+			'Twig_Extension_StringLoader',
 			'CMF\\Twig\\Admin',
 			'CMF\\Twig\\Cache'
 		),
