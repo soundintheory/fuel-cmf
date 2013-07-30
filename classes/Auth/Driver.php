@@ -114,7 +114,7 @@ class Driver
     {
         $user   = $this->current_user();
         $status = !!$user;
-
+        
         if ($status) {
             if ($user->super_user) return true;
             
@@ -170,8 +170,9 @@ class Driver
                             $resource_permissions++;
                         }
                     }
-                    if ($resource_permissions === 0) $role_passed = count($action);
+                    // if ($resource_permissions === 0) $role_passed = count($action);
                     $passed += $role_passed;
+                    
                     
                 }
                 

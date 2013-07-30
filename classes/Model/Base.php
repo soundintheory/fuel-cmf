@@ -303,8 +303,19 @@ class Base extends \Doctrine\Fuel\Model
         }
         
         $fields = $this->fieldSettings();
+        
+        // Pre process the data
+        foreach ($fields as $field_name => $field) {
+            
+            $field_class = $field['field'];
+            if (!isset($data[$field_name]) || !is_callable($field_class.'::preProcess')) continue;
+            $data[$field_name] = $field_class::preProcess($data[$field_name], $field, $this);
+            
+        }
+        
         parent::populate($data, $overwrite);
         
+        // Process the data once it's populated
         foreach ($fields as $field_name => $field) {
             
             $field_class = $field['field'];
