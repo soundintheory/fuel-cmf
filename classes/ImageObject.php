@@ -41,7 +41,7 @@ class ImageObject
 			$this->pathinfo['path_relative'] = $path;
 		} else {
 			$this->pathinfo['path'] = $path;
-			$this->pathinfo['path_relative'] = substr($path, 1);
+			$this->pathinfo['path_relative'] = str_replace(DOCROOT, '', $path);
 		}
 	}
 	
@@ -105,6 +105,108 @@ class ImageObject
 		\Image::load($this->pathinfo['path'])
 		->config('bgcolor', $bgcolor)
 		->preset($preset_name)
+		->save($this->resized);
+		
+		// Return the newly created filename
+		return $this->resized;
+	}
+
+	public function coordinate_crop($cropx = null, $cropy = null, $cropw = null, $croph = null, $w = null, $h = null)
+	{
+		if (is_array($cropx)) {
+			$w = $cropy;
+			$h = $cropw;
+			$cropy = $cropx['y'];
+			$cropw = $cropx['width'];
+			$croph = $cropx['height'];
+			$cropx = $cropx['x'];
+		} else {
+			$cropx = intval($cropx);
+			$cropy = intval($cropy); 
+			$cropw = intval($cropw); 
+			$croph = intval($croph); 
+			$w = intval($w);
+			$h = intval($h);
+		}
+		
+		$this->mode = 'cc';
+		$output = $this->_init_image($cropx."_".$cropy."_".$cropx."_".$cropw."_".$cropy."_".$croph."_".$w."x".$h);
+		if (!is_null($output)) return $output;
+		
+		$bgcolor = '#'.\Input::param('bgcolor', 'fff');
+		
+		\Image::load($this->pathinfo['path'])
+		->force_rgb()
+		->config('bgcolor', $bgcolor)
+  		->crop($cropx, $cropy, $cropx + $cropw, $cropy + $croph)
+  		->resize($w, $h, false)
+  		->save($this->resized);
+  		
+		// Return the newly created filename
+		return $this->resized;
+	}
+	
+	public function grid_crop($grid = 'c', $w = null, $h = null)
+	{
+		$w = intval($w);
+		$h = intval($h);
+		$this->mode = 'gc';
+		
+		$output = $this->_init_image($grid."_".$w."x".$h);
+		if (!is_null($output)) return $output;
+		
+		$bgcolor = '#'.$this->param('bgcolor', 'fff');
+		$image_size = getimagesize($this->path);
+		$image = \Image::load($this->pathinfo['path'])->force_rgb();
+
+		$org_width = $image_size[0];
+		$org_height = $image_size[1];
+		
+		$org_ratio = $org_height / $org_width;
+		$new_ratio = $h / $w;
+		
+		if ($org_ratio != $new_ratio) {
+			
+			//different ratio, work out maximum crop before resizing.
+			if($new_ratio > $org_ratio) {
+				//height should be biggest in the new ratio
+				$modifier = $org_height / $h;
+				
+			} else {
+				//width is biggest in new ratio
+				$modifier = $org_width / $w;
+			}
+			
+			$final_w = round($w * $modifier);
+			$final_h = round($h * $modifier);
+			$src_x = round((($org_width - $final_w) / 2));
+			$src_y = round((($org_height - $final_h) / 2));
+			
+			$dst_x = $src_x + $final_w;
+			$dst_y = $src_y + $final_h;
+			
+			// positional cropping!
+			if (strpos ($grid, 't') !== false) {
+				$src_y = 0;
+				$dst_y = $final_h;
+			}
+			if (strpos ($grid, 'b') !== false) {
+				$dst_y = $org_height;
+				$src_y = round($org_height - $final_h);
+			}
+			if (strpos ($grid, 'l') !== false) {
+				$src_x = 0;
+				$dst_x = $final_w;
+			}
+			if (strpos ($grid, 'r') !== false) {
+				$dst_x = $org_width;
+				$src_x = round($org_width - $final_w);
+			}
+			$image->crop($src_x, $src_y, $dst_x, $dst_y);
+			
+		}
+		
+		$image->resize($w, $h, false, true)
 		->save($this->resized);
 		
 		// Return the newly created filename

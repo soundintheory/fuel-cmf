@@ -98,6 +98,7 @@ return array (
         'link' => 'CMF\\Field\\Object\\Link',
         'file' => 'CMF\\Field\\Object\\File',
         'image' => 'CMF\\Field\\Object\\Image',
+        'videoembed' => 'CMF\\Field\\Object\\VideoEmbed',
         'video' => 'CMF\\Field\\Object\\Video',
         'enum' => 'CMF\\Field\\Select',
         'enum_integer' => 'CMF\\Field\\Select',

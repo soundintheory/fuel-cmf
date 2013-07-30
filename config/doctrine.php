@@ -44,6 +44,7 @@ return array(
 		'enum_integer' => array( 'class' => 'Doctrine\\DBAL\\Types\\IntegerType' ),
 		'enum_float' => array( 'class' => 'Doctrine\\DBAL\\Types\\FloatType' ),
 		'enum_decimal' => array( 'class' => 'Doctrine\\DBAL\\Types\\DecimalType' ),
+		'videoembed' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 		'video' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 		'file' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 		'image' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),

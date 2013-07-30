@@ -26,7 +26,7 @@ class Checkbox extends Base {
 
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label;
     	
-        return html_tag('div', array( 'class' => 'field-type-checkbox controls control-group'.($has_errors ? ' error' : '') ), $off_input.$label.$description);
+        return html_tag('div', array( 'class' => 'field-type-checkbox controls control-group'.($has_errors ? ' error' : '') ), $off_input.$label.$description).'<div class="clear"></div>';
     }
 	
 }

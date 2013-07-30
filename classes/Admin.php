@@ -105,7 +105,12 @@ class Admin
 		{
 		    $metadata = $em->getClassMetadata($class_name);
 		    
-		    static::$tables_to_classes[$metadata->table['name']] = $class_name;
+		    if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE) {
+		    	static::$tables_to_classes[$metadata->table['name']] = $metadata->rootEntityName;
+		    } else {
+		    	static::$tables_to_classes[$metadata->table['name']] = $class_name;
+		    } 
+		    
 		    static::$classes_to_tables[$class_name] = $metadata->table['name'];
 		    
 		    if (!$metadata->isMappedSuperclass && is_subclass_of($class_name, 'CMF\\Model\\Base') && $class_name::hasPermissions()) {

@@ -1,0 +1,8 @@
+<div class="{{ form.attributes.class }} field-type-videoembed">
+	<div class="sub-group">
+		<h5>{{ form.title }}</h5>
+		{% if value.provider and value.video_id %}{{ video_embed(value, '100%', 300) }}{% endif %}
+		{{ form.settings.fields.url.content }}
+		{{ form.settings.fields.poster_image.content }}
+	</div>
+</div>

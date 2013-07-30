@@ -34,15 +34,19 @@ class Admin extends Twig_Extension
 			'field_list_value' => new Twig_Function_Method($this, 'fieldListValue'),
 			'get_flash' => new Twig_Function_Function('Session::get_flash'),
 			'get_link' => new Twig_Function_Function('CMF::getLink'),
+			'video_embed' => new Twig_Function_Function('CMF\\Field\\Object\\VideoEmbed::getEmbedCode'),
 			'get_route' => new Twig_Function_Function('Router::get'),
 			'get_setting' => new Twig_Function_Method($this, 'settings'),
 			'static_url' => new Twig_Function_Function('CMF::getStaticUrl'),
 			'pluralize' => new Twig_Function_Function('Inflector::pluralize'),
 			'singularize' => new Twig_Function_Function('Inflector::singularize'),
+			'ordinalize' => new Twig_Function_Function('Inflector::ordinalize'),
 			'str_repeat' => new Twig_Function_Function('str_repeat'),
 			'phpinfo' => new Twig_Function_Function('phpinfo'),
 			'basename' => new Twig_Function_Function('basename'),
-			'uri' => new Twig_Function_Function('Input::uri')
+			'uri' => new Twig_Function_Function('Input::uri'),
+			'base' => new Twig_Function_Function('Uri::base'),
+			'crop_url' => new Twig_Function_Function('CMF\\Field\\Object\\Image::getCropUrl')
 		);
 	}
 	
@@ -51,7 +55,8 @@ class Admin extends Twig_Extension
         return array(
         	'item_links' => new Twig_Filter_Method($this, 'itemLinks'),
         	'placeholder' => new Twig_Filter_Method($this, 'placeholder'),
-        	'slug' => new Twig_Filter_Function('CMF::slug')
+        	'slug' => new Twig_Filter_Function('CMF::slug'),
+        	'rtrim' => new Twig_Filter_Function('rtrim')
         );
     }
     
