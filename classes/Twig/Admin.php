@@ -53,6 +53,7 @@ class Admin extends Twig_Extension
 	public function getFilters()
     {
         return array(
+        	'time_ago' => new Twig_Filter_Function('Date::time_ago'),
         	'item_links' => new Twig_Filter_Method($this, 'itemLinks'),
         	'placeholder' => new Twig_Filter_Method($this, 'placeholder'),
         	'slug' => new Twig_Filter_Function('CMF::slug'),
