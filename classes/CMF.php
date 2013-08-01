@@ -154,7 +154,10 @@ class CMF
         
         foreach ($types as $type) {
             
-            $items = $type::select('item')->where('item.visible = true')->getQuery()->getResult();
+            $items = $type::select('item');
+            if (!$type::_static()) $items->where('item.visible = true');
+            $items = $items->getQuery()->getResult();
+            
             if (property_exists($type, 'url')) {
                 foreach ($items as $item) {
                     
