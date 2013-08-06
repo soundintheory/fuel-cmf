@@ -536,6 +536,7 @@ class Auth
      */
     public static function generate_token()
     {
+        return md5(uniqid().time());
         $token = join(':', array(\Str::random('alnum', 15), time()));
         return str_replace(
 	        array('+', '/', '=', 'l', 'I', 'O', '0'), 
@@ -686,7 +687,7 @@ class Auth
      *
      * @return \CMF\Auth\Driver
      */
-    protected static function driver()
+    public static function driver()
     {
         return static::forge()->driver;
     }
