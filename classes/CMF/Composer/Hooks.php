@@ -43,16 +43,16 @@ class Hooks
      */
     protected static function bootstrap()
     {
-    	print('DIR: '.__DIR__.DIRECTORY_SEPARATOR."\n");
-    	return false;
+        $dir = rtrim(realpath(__DIR__.'/../../../../../../'), '/').'/';
+    	print('DIR: '.$dir."\n");
     	
     	error_reporting(-1);
     	ini_set('display_errors', 1);
     	
-    	define('DOCROOT', __DIR__.DIRECTORY_SEPARATOR);
-    	define('APPPATH', realpath(__DIR__.'/../fuel/app/').DIRECTORY_SEPARATOR);
-    	define('PKGPATH', realpath(__DIR__.'/../fuel/packages/').DIRECTORY_SEPARATOR);
-    	define('COREPATH', realpath(__DIR__.'/../fuel/core/').DIRECTORY_SEPARATOR);
+    	define('DOCROOT', $dir.'public/');
+    	define('APPPATH', $dir.'fuel/app/');
+    	define('PKGPATH', $dir.'fuel/packages/');
+    	define('COREPATH', $dir.'fuel/core/');
     	
     	// Get the start time and memory for use later
     	defined('FUEL_START_TIME') or define('FUEL_START_TIME', microtime(true));
