@@ -62,3 +62,4 @@ class Hooks
     	require APPPATH.'bootstrap.php';
     	\Package::load('cmf');
     }
+}
