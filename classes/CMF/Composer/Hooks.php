@@ -44,7 +44,7 @@ class Hooks
     protected static function bootstrap()
     {
         $dir = rtrim(realpath(__DIR__.'/../../../../../../'), '/').'/';
-    	print('DIR: '.$dir."\n");
+    	print('PROJECT DIR: '.$dir."\n");
     	
     	error_reporting(-1);
     	ini_set('display_errors', 1);
