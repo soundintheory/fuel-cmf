@@ -176,11 +176,11 @@ function initTree() {
 			
 			var className = node['class'],
 			classData = data['classes'][className],
-			baseUrl = '/admin/' + classData['table_name'];
+			baseUrl = '/admin/' + classData['table_name'],
 			baseUrlId = '/admin/' + classData['table_name'] + '/' + node.id;
 			
 			node['div'] = $li.find('.main');
-			node['title'] = $li.find('.jqtree-title');
+			node['title'] = $li.find('.jqtree-title').text(node.menu_title);
 			node['icon'] = classData['icon'];
 			node['href'] = baseUrlId + '/edit';
 			node['update'] = '/admin/' + data['table_name'] + '/' + node.id + '/updatetree';

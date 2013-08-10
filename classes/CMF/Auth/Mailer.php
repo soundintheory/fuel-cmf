@@ -2,7 +2,7 @@
 
 namespace CMF\Auth;
 
-use PasswordHash,
+use Hautelook\Phpass\PasswordHash,
     Model\User,
     Model\Permission,
     Model\Role;

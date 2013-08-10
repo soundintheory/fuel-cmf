@@ -27,10 +27,10 @@ class Controller_Actions extends Controller_Base {
 		        $item = $item[0];
 		        
 		        $item->update_url();
-    		    \DoctrineFuel::manager()->persist($item);
-    		    \DoctrineFuel::manager()->persist($url);
+    		    \D::manager()->persist($item);
+    		    \D::manager()->persist($url);
     		    
-		        $output .= "updated ".$item->url()."<br />";
+		        $output .= "updated ".$item->getUrl()."<br />";
 		        $updated++;
 		        usleep(5000);
 		        
@@ -56,7 +56,7 @@ class Controller_Actions extends Controller_Base {
 		        foreach ($all as $item)
 		        {
 		            $item->update_url();
-		            \DoctrineFuel::manager()->persist($item);
+		            \D::manager()->persist($item);
 		            $updated++;
 		            usleep(5000);
 		        }
@@ -65,7 +65,7 @@ class Controller_Actions extends Controller_Base {
 		    
 		}
 		
-		\DoctrineFuel::manager()->flush();
+		\D::manager()->flush();
 		$output .= "<br /><br />updated ".$updated." urls<br />";
 		
 		return $output;

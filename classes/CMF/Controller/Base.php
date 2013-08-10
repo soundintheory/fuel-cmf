@@ -154,9 +154,7 @@ class Base extends \Controller
         }
         
         // if not, we got ourselfs a genuine 404!
-        throw new \HttpNotFoundException();
-        
-		
+        return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
     }
     
     protected function bindData($viewModel)

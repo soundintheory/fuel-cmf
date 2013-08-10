@@ -21,9 +21,12 @@
         "gedmo/doctrine-extensions": "2.3.*",
         "twig/twig": "~1.13.0",
         "twig/extensions": "~1.0.0",
-        "roderik/pwgen-php": "*",
-        "vesselinv/fuel-sprockets": "1.0.x-dev",
-        "soundintheory/php-sql-parser": "*"
+        "roderik/pwgen-php": "0.1.*",
+        "vesselinv/fuel-sprockets": "1.*",
+        "soundintheory/php-sql-parser": "*",
+        "hautelook/phpass": "0.3.*",
+        "dg/mysql-dump": "1.*",
+        "soundintheory/php-sql-parser": "1.*"
     },
     "suggest": {
         "tecnick.com/tcpdf": "If you need to do any custom (very exact) PDF generation",
@@ -31,25 +34,20 @@
         "php-ffmpeg/php-ffmpeg": "Enables the video field. Requires installation of ffmpeg",
         "ruudk/twitter-oauth": "Need to interact with the twitter API?"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/aspendigital/fuel-doctrine2"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/soundintheory/fuel-sprockets"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/soundintheory/php-sql-parser"
-        }
-    ],
     "config": {
         "vendor-dir": "vendor"
     },
     "autoload": {
-        "psr-0": { "CMF": "classes/" }
+        "psr-0": {
+            "CMF\\": "classes/"
+        },
+        "classmap": [
+            "classes/CMF/Doctrine/Manager.php",
+            "classes/CMF/Twig/Twig_Loader_Filesystem.php",
+            "classes/CMF/Doctrine/AnnotationReader.php",
+            "classes/Symfony/Component/Validator/Constraints/UniqueEntity.php",
+            "classes/Symfony/Component/Validator/Constraints/UniqueEntityValidator.php"
+        ]
     },
     "minimum-stability": "dev",
     "extra": {

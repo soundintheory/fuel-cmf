@@ -69,7 +69,7 @@ class StartPage extends \CMF\Field\Base {
             if (isset($options[$name])) continue;
             
             $group = \Arr::get($options, $name, array());
-            $repository = \DoctrineFuel::manager()->getRepository($type);
+            $repository = \D::manager()->getRepository($type);
             $prop = property_exists('menu_title', $type) ? 'menu_title' : 'title';
             
             if (($repository instanceof \Gedmo\Tree\Entity\Repository\NestedTreeRepository) && !in_array($name, $tree_types))

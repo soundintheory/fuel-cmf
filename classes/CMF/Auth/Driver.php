@@ -2,7 +2,7 @@
 
 namespace CMF\Auth;
 
-use PasswordHash,
+use Hautelook\Phpass\PasswordHash,
     CMF\Auth,
     CMF\Model\User,
     Admin\Model_User,
@@ -120,7 +120,7 @@ class Driver
             
             $status   = false;
             $action   = (is_array($action) ? $action : array($action));
-            $resource_id = ($resource instanceof \Doctrine\Fuel\Model) ? $resource->id : null;
+            $resource_id = ($resource instanceof \CMF\Doctrine\Model) ? $resource->id : null;
             $resource = (is_object($resource) ? get_class($resource) : $resource);
             $resource = (is_array($resource) ? $resource : array($resource));
             $roles = $user->roles;
@@ -170,7 +170,7 @@ class Driver
                             $resource_permissions++;
                         }
                     }
-                    if ($resource_permissions === 0) $role_passed = count($action);
+                    // if ($resource_permissions === 0) $role_passed = count($action);
                     $passed += $role_passed;
                     
                 }

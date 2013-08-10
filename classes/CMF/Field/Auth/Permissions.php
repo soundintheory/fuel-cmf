@@ -4,6 +4,8 @@ namespace CMF\Field\Auth;
 
 class Permissions extends \CMF\Field\Collection\Multiselect {
     
+    public static $always_process = true;
+    
     /** inheritdoc */
     public static function getAssets()
     {
@@ -14,7 +16,7 @@ class Permissions extends \CMF\Field\Collection\Multiselect {
     }
     
     /** inheritdoc */
-    public static function process($value, $settings, $model)
+    public static function preProcess($value, $settings, $model)
     {
         $values = array();
         

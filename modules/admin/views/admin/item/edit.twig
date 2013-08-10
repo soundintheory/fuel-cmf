@@ -1,5 +1,21 @@
 {% extends interface_template|default("admin/shared/interface.twig") %}
 
+{% macro action_link(action_id, action, model, table, context) %}
+    {{ include(template_from_string(action.content|default("
+    <a class=\"btn {{ action.class|default('btn-info') }}\" href=\"{{ include(template_from_string(action.href)) }}\">
+        <i class=\"icon icon-{{ action.icon|default('cog') }}\"></i>&nbsp; {{ action.title }}
+    </a>"))) }}
+{% endmacro %}
+
+{% macro action_method(action_id, action, model, table, context) %}
+    {{ include(template_from_string(action.content|default("
+    <a class=\"btn {{ action.class|default('btn-info') }}\" href=\"/admin/{{ table }}/{{ model.id }}/{{ action_id }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
+        <i class=\"icon icon-{{ action.icon|default('cog') }}\"></i>
+    </a>"))) }}
+{% endmacro %}
+
+{% import _self as this %}
+
 {% block html_title %}Edit {{ singular }} : {{ admin_title }}{% endblock %}
 
 {% block main_pane %}
@@ -14,9 +30,11 @@
     <div class="inner">
 
         <h2 class="main-heading pull-left"><i class="icon icon-{{ icon }}"></i> Edit {{ singular }}</h2>
-        <!-- div class="item-actions-top pull-right">
-            <a href="#" class="btn btn-medium btn-inverse btn-permissions" rel="tooltip" title="Edit {{ singular|lower }} permissions"><i class="icon icon-lock"></i></a>
-        </div -->
+        <div class="item-actions-top pull-right">
+            {% for action_id, action in actions if action.edit is not defined or action.edit != false %}
+            {{ attribute(this, 'action_'~action.type, [action_id, action, model, table_name, 'list']) }}
+            {% endfor %}
+        </div>
         <div class="clear"></div>
         
         {% if form.content|length > 1 %}
@@ -113,7 +131,7 @@
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}?v=3"></script>
+        <script type="text/javascript" src="{{ js }}?v=4"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

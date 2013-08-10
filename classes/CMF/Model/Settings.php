@@ -74,8 +74,8 @@ class Settings extends Base
                 $result = new $called_class();
                 $result->blank();
                 
-                \DoctrineFuel::manager()->persist($result);
-                \DoctrineFuel::manager()->flush();
+                \D::manager()->persist($result);
+                \D::manager()->flush();
                 $called_class::$instances[$called_class] = $result;
             } else {
                 $called_class::$instances[$called_class] = $result[0];

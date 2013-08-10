@@ -65,7 +65,7 @@ class User extends Base
             return null;
         }
 
-		$em = \DoctrineFuel::manager();
+		$em = \D::manager();
         $called_class = get_called_class();
 
 		if (is_int($username_or_email_or_id)) {
@@ -253,7 +253,7 @@ class User extends Base
 		$this->password = $new_password;
         $this->clear_reset_password_token();
 		//var_dump($this->reset_password_sent_at);exit;
-		$em = \DoctrineFuel::manager();
+		$em = \D::manager();
 		$em->persist($this);
 		$em->flush();
         return true;
@@ -274,7 +274,7 @@ class User extends Base
      */
     public static function reset_password_by_token($reset_password_token, $new_password)
     {
-		$em = \DoctrineFuel::manager();
+		$em = \D::manager();
         //get the current class. Maybe we need to check for the proxy class? sometimes happens.
         $current_class = get_called_class();
 
@@ -338,7 +338,7 @@ class User extends Base
         $this->reset_password_sent_at = new \Datetime();
         //\Date::time('UTC')->format('mysql');
         //var_dump($this->reset_password_sent_at);exit;
-        $em = \DoctrineFuel::manager();
+        $em = \D::manager();
 		$em->persist($this);
 		$em->flush();
 
@@ -403,7 +403,7 @@ class User extends Base
         if ($this->is_confirmation_required()) {
             $this->is_confirmed = true;
             $this->confirmation_token = null;
-			$em = \DoctrineFuel::manager();
+			$em = \D::manager();
 			$em->persist($this);
 			$em->flush();
 			return true;
@@ -476,7 +476,7 @@ class User extends Base
         $this->confirmation_sent_at = \Date::time('UTC')->format('mysql');
 
 		if ($save === true) {
-			$em = \DoctrineFuel::manager();
+			$em = \D::manager();
 			$em->persist($this);
 			$em->flush();
 		}
@@ -549,7 +549,7 @@ class User extends Base
         $this->authentication_token = null;
 		
 		// Save and make sure session is destroyed completely
-		$em = \DoctrineFuel::manager();
+		$em = \D::manager();
 		$em->persist($this);
 		$em->flush();
 		
@@ -595,7 +595,7 @@ class User extends Base
         $this->unlock_token = null;
 
 		if ($save === true) {
-			\DoctrineFuel::manager()->persist($this)->flush();
+			\D::manager()->persist($this)->flush();
 			return true;
 		}
 		
@@ -623,7 +623,7 @@ class User extends Base
             $this->lock_access();
             throw new Failure('locked');
         } else {
-			\DoctrineFuel::manager()->persist($this)->flush();
+			\D::manager()->persist($this)->flush();
         }
     }
 
@@ -846,7 +846,7 @@ class User extends Base
             // Check for default role
             if (($default_role = \Config::get('cmf.auth.default_role'))) {
 				
-				$em = \DoctrineFuel::manager();
+				$em = \D::manager();
 				$query = $em->createQuery("SELECT r FROM CMF\Model\Role r WHERE r.name = '$default_role'");
 				$record = $query->getSingleResult();
 

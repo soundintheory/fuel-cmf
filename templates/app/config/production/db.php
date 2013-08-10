@@ -1,17 +1,14 @@
 <?php
 /**
- * The production database settings.
+ * The production database settings. These get merged with the global settings.
  */
 
 return array(
 	'default' => array(
-		'profiling' => false,
-		'connection' => array(
-			'dsn' => 'mysql:host=localhost;dbname=changeme',
-			'username' => 'root',
-			'password' => 'root',
-			'driver' => 'pdo_mysql',
-		    'dbname' => 'changeme'
+		'connection'  => array(
+			'dsn'        => 'mysql:host=localhost;dbname=fuel_prod',
+			'username'   => 'fuel_app',
+			'password'   => 'super_secret_password',
 		),
 	),
 );

@@ -5,14 +5,14 @@ namespace CMF\Doctrine\Extensions;
 /**
  * Extension that powers the CMF's special URL field
  */
-class URL extends \Doctrine\Fuel\Extensions\Extension
+class URL extends \CMF\Doctrine\Extensions\Extension
 {
 	
 	/** @override */
-	public static function init(&$config, &$reader, &$event_manager)
+	public static function init($em, $reader)
 	{
 		$listener = new URLListener();
-		$event_manager->addEventSubscriber($listener);
+		$em->getEventManager()->addEventSubscriber($listener);
 	}
 	
 }

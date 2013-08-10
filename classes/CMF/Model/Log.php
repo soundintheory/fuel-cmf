@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\Entity
  * @ORM\Table(name="logs")
  **/
-class Log extends \Doctrine\Fuel\Model
+class Log extends \CMF\Doctrine\Model
 {
     
     public function display()

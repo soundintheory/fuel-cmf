@@ -2,7 +2,7 @@
 
 namespace CMF;
 
-use PasswordHash,
+use Hautelook\Phpass\PasswordHash,
     Admin\Model_User,
     CMF\Model\User,
     CMF\Model\Permission,
@@ -536,6 +536,7 @@ class Auth
      */
     public static function generate_token()
     {
+        return md5(uniqid().time());
         $token = join(':', array(\Str::random('alnum', 15), time()));
         return str_replace(
 	        array('+', '/', '=', 'l', 'I', 'O', '0'), 
@@ -624,7 +625,7 @@ class Auth
         $permission = $qb->setMaxResults(1)->getQuery()->getResult();
         
         if (count($permission) === 0) {
-            $em = \DoctrineFuel::manager();
+            $em = \D::manager();
             $permission = new Permission();
             $permission->set('action', $action);
             $permission->set('resource', $resource);
@@ -648,7 +649,7 @@ class Auth
         $activeClasses['user_defined'] = array_keys(\Config::get('cmf.auth.resources', array()));
         
         $roles = Role::select('item')->getQuery()->getResult();
-        $em = \DoctrineFuel::manager();
+        $em = \D::manager();
         
         foreach ($activeClasses as $parent_class => $classes) {
             

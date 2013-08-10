@@ -26,11 +26,21 @@ return array(
 	'admin/(:segment)/options'                  => 'admin/list/options/$1',
 	'admin/(:segment)/permissions/(:num)'       => 'admin/list/permissions/$1/$2',
 	'admin/(:segment)/permissions/(:num)/save'  => 'admin/list/save_permissions/$1/$2',
+	'admin/(:segment)/list/order'               => 'admin/list/order/$1',
+	'admin/(:segment)/(:num)/populate'          => array(array('POST', new Route('admin/item/populate/$1/$2'))),
+	'admin/(:segment)/(:num)/updatetree'        => array(array('POST', new Route('admin/list/updatetree/$1/$2'))),
+	'admin/(:segment)/updatetree'               => array(array('POST', new Route('admin/list/updatetree/$1/$2'))),
+	
+	// Standard item actions
+	'admin/(:segment)/create'            => array(array('GET', new Route('admin/item/create/$1')), array('POST', new Route('admin/item/save/$1'))),
+	'admin/(:segment)/(:num)/edit'       => array(array('GET', new Route('admin/item/edit/$1/$2')), array('POST', new Route('admin/item/save/$1/$2'))),
+	'admin/(:segment)/(:num)/save'       => array(array('POST', new Route('admin/item/save/$1/$2'))),
+	'admin/(:segment)/(:num)/delete'     => 'admin/item/delete/$1/$2',
 	'admin/(:segment)/populate'          => array(array('POST', new Route('admin/item/populate/$1'))),
-	'admin/(:segment)/list/order'        => 'admin/list/order/$1',
-	'admin/(:segment)/(:num)/populate'   => array(array('POST', new Route('admin/item/populate/$1/$2'))),
-	'admin/(:segment)/(:num)/updatetree' => array(array('POST', new Route('admin/list/updatetree/$1/$2'))),
-	'admin/(:segment)/(:num)/(:alpha)'   => array(array('GET', new Route('admin/item/$3/$1/$2')), array('POST', new Route('admin/item/save/$1/$2'))),
-	'admin/(:segment)/(:alpha)'          => array(array('GET', new Route('admin/item/$2/$1')), array('POST', new Route('admin/item/save/$1//$2'))),
+	'admin/(:segment)/(:segment)'        => 'admin/list/index/$1/$2',
+	
+	// Custom actions
+	'admin/(:segment)/(:num)/(:segment)' => 'admin/item/action/$1/$2/$3',
+	'admin/(:segment)/(:num)/(:alpha)'   => array(array('GET', new Route('admin/item/$3/$1/$2')), array('POST', new Route('admin/item/save/$1/$2')))
 	
 );

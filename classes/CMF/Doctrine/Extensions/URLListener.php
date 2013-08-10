@@ -91,8 +91,6 @@ class URLListener implements EventSubscriber
         
     	if (!empty($url_associations)) {
             
-            //print("processing $entity_class");
-    		
             // A bit hacky, but if this is a root tree item don't bother
             if (property_exists($entity, 'is_root') && $entity->is_root === true) return;
             
@@ -117,7 +115,7 @@ class URLListener implements EventSubscriber
             if (isset($url_settings['keep_updated']) && !$url_settings['keep_updated']) {
                 $slug = \CMF::slug($url_item->slug);
             } else {
-                $slug = $entity->slug();
+                $slug = $entity->urlSlug();
             }
             
             $url = $prefix.$slug;

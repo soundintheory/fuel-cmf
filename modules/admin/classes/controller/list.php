@@ -11,7 +11,7 @@ class Controller_List extends Controller_Base {
 	 * @param string $table_name
 	 * @return void
 	 */
-	public function action_index($table_name)
+	public function action_index($table_name, $tab_id = null)
 	{
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) {
@@ -51,11 +51,23 @@ class Controller_List extends Controller_Base {
 		
 		$excluded_ids = array();
 		$fields = \Admin::getFieldSettings($class_name);
+		$list_tabs = $class_name::listTabs();
 		$list_fields = $class_name::listFields();
+		$list_filters = array();
 		if (empty($list_fields)) $list_fields = array_keys($fields);
 		$columns = array();
 		$joins = array();
 		$methods = array();
+		
+		// Find out the tab we're on
+		if (count($list_tabs) > 0) {
+			$this->default_tab = key($list_tabs);
+			if ($tab_id === null || !isset($list_tabs[$tab_id])) $tab_id = $this->default_tab;
+			$tab = \Arr::get($list_tabs, $tab_id, array());
+			$list_fields = \Arr::get($tab, 'fields', $list_fields);
+			$list_filters = \Arr::get($tab, 'filters', $list_filters);
+			$this->current_tab = $tab_id;
+		}
 		
 		// Create static items
 		\Admin::createStaticInstances($metadata);
@@ -161,6 +173,16 @@ class Controller_List extends Controller_Base {
             
             $columns[] = $column;
 			
+		}
+		
+		// Add list filters
+		foreach ($list_filters as $num => $filter) {
+			$filter_str = is_array($filter) ? 'item.'.implode(' OR item.', $filter) : 'item.'.$filter;
+			if ($num === 0) {
+				$qb->where($filter_str);
+			} else {
+				$qb->andWhere($filter_str);
+			}
 		}
 		
 		// Make the list drag and drop, if editing is possible
@@ -284,6 +306,9 @@ class Controller_List extends Controller_Base {
 			
 		}
 		
+		// Actions
+		$this->actions = $class_name::actions();
+		
 		\Admin::$current_class = $this->current_class = $class_name;
 		$this->plural = $class_name::plural();
 		$this->excluded_ids = $excluded_ids;
@@ -298,6 +323,7 @@ class Controller_List extends Controller_Base {
 		$this->superlock = $class_name::superlock();
 		$this->sortable = $sortable && $can_edit;
 		$this->sort_group = $sort_group;
+		$this->tabs = $list_tabs;
 		
 		// Permissions
 		$this->can_create = $can_create && $can_edit;
@@ -430,7 +456,7 @@ class Controller_List extends Controller_Base {
 	    ->setParameter(1, $ids)
 	    ->getQuery()->getResult();
 	    
-	    $em = \DoctrineFuel::manager();
+	    $em = \D::manager();
 	    
 	    foreach ($permissions as $permission) {
 	    	$actions = isset($post[$permission->item_id]) ? $post[$permission->item_id] : array();
@@ -505,7 +531,7 @@ class Controller_List extends Controller_Base {
 	    
 	    $class_name = \Admin::getClassForTable($table_name);
 	    $metadata = $class_name::metadata();
-	    $em = \DoctrineFuel::manager();
+	    $em = \D::manager();
 	    
 	    // Load up the entity with the Id
 	    $entity = $class_name::find($id);
@@ -630,7 +656,7 @@ class Controller_List extends Controller_Base {
 		$excluded_ids = array();
 		
 		$root_node = $class_name::getRootNode(true);
-		$tree = $this->processTreeNodes(\DoctrineFuel::manager()->getRepository($class_name)->childrenHierarchy($root_node), $metadata, $ids);
+		$tree = $this->processTreeNodes(\D::manager()->getRepository($class_name)->childrenHierarchy($root_node), $metadata, $ids);
 		
 		if (!$user->super_user) {
 			

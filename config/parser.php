@@ -1,16 +1,16 @@
 <?php
 /**
+ * Fuel
+ *
  * Fuel is a fast, lightweight, community driven PHP5 framework.
  *
  * @package    Fuel
- * @version    1.0
+ * @version    1.6
  * @author     Fuel Development Team
  * @license    MIT License
- * @copyright  2010 - 2012 Fuel Development Team
+ * @copyright  2010 - 2013 Fuel Development Team
  * @link       http://fuelphp.com
- */
-
-/**
+ *
  * NOTICE:
  *
  * If you need to make modifications to the default configuration, copy
@@ -27,6 +27,7 @@ return array(
 	'extensions' => array(
 		'php'       => 'View',
 		'twig'      => 'View_Twig',
+		'mthaml'    =>  array('class' => 'View_HamlTwig', 'extension' => 'twig'),
 		'mustache'  => 'View_Mustache',
 		'md'        => 'View_Markdown',
 		'dwoo'      => array('class' => 'View_Dwoo', 'extension' => 'tpl'),
@@ -53,7 +54,6 @@ return array(
 	// TWIG ( http://www.twig-project.org/documentation )
 	// ------------------------------------------------------------------------
 	'View_Twig' => array(
-		'include' => PKGPATH.'cmf'.DS.'vendor'.DS.'Twig'.DS.'Autoloader.php',
 		'auto_encode' => true,
 		'views_paths' => array(
 			APPPATH.'views',
@@ -68,7 +68,7 @@ return array(
 			'debug'                => false,
 			'charset'              => 'utf-8',
 			'base_template_class'  => 'Twig_Template',
-			'cache'                => APPPATH.'cache'.DS.'twig',
+			'cache'                => APPPATH.'cache'.DS.'twig'.DS,
 			'auto_reload'          => true,
 			'strict_variables'     => false,
 			'autoescape'           => false,
@@ -77,8 +77,26 @@ return array(
 		'extensions' => array(
 			'Twig_Fuel_Extension',
 			'Twig_Extensions_Extension_Text',
-			'CMF\\Twig\\Admin',
+			'Twig_Extension_StringLoader',
+			'CMF\\Twig\\Extension',
 			'CMF\\Twig\\Cache'
+		),
+	),
+
+	// HamlTwig with MtHaml https://github.com/arnaud-lb/MtHaml
+	// Twig configuration is grabbed from 'View_Twig' config key
+	// Packagist url: https://packagist.org/packages/mthaml/mthaml
+	// Uses > 1.1.1 (Master branch ATM)
+	// ------------------------------------------------------------------------
+	'View_HamlTwig' => array(
+		//'include' => APPPATH.'vendor'.DS.'MtHaml'.DS.'Autoloader.php',
+		'auto_encode' => true,
+		'environment' => array(
+			'auto_escaper' => true,
+			'escape_html'	 => true,
+			'escape_attrs' => true,
+			'charset' 		 => 'UTF-8',
+			'format' 		 	 => 'html5',
 		),
 	),
 
@@ -108,12 +126,12 @@ return array(
 	// MUSTACHE ( https://github.com/bobthecow/mustache.php )
 	// ------------------------------------------------------------------------
 	'View_Mustache' => array(
-		'include' => \Package::exists('parser').'vendor'.DS.'Mustache'.DS.'Mustache.php',
 		'auto_encode' => true,
-		'delimiters' => array('left' => '{{', 'right' => '}}'),
 		'environment' => array(
-			'charset' => 'UTF-8',
-			'pragmas' => array(),
+			'cache_dir' => APPPATH.'cache'.DS.'mustache'.DS,
+			'partials'  => array(),
+			'helpers'   => array(),
+			'charset'   => 'UTF-8',
 		),
 	),
 
@@ -137,8 +155,7 @@ return array(
 	// SMARTY ( http://www.smarty.net/documentation )
 	// ------------------------------------------------------------------------
 	'View_Smarty'   => array(
-		'include'       => APPPATH.'vendor'.DS.'Smarty'.DS.'libs'.DS.'Smarty.class.php',
-		'auto_encode' => true,
+		'auto_encode'   => true,
 		'delimiters'    => array('left' => '{', 'right' => '}'),
 		'environment'   => array(
 			'compile_dir'       => APPPATH.'tmp'.DS.'Smarty'.DS.'templates_c'.DS,

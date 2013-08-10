@@ -37,6 +37,8 @@ class Textarea extends Base
         
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
         
+        $description = isset($settings['description']) ? '<span class="help-block">'.$settings['description'].'</span>' : '';
+        
         // Add the 'keep updated' control if the field has a template
         if (isset($settings['template']) && !empty($settings['template'])) {
             
@@ -47,7 +49,7 @@ class Textarea extends Base
             $label .= $auto_update;
             
             return array(
-                'content' => html_tag('div', $attributes, $label.$input).'<div class="clear"><!-- --></div>',
+                'content' => html_tag('div', $attributes, $label.$description.$input).'<div class="clear"><!-- --></div>',
                 'widget' => false,
                 'assets' => array( 'js' => array('/admin/assets/js/twig.min.js', '/admin/assets/js/fields/template.js') ),
                 'js_data' => $settings
@@ -55,7 +57,7 @@ class Textarea extends Base
             
         }
 
-        return html_tag('div', $attributes, $label.$input);
+        return html_tag('div', $attributes, $label.$description.$input);
     }
     
 }

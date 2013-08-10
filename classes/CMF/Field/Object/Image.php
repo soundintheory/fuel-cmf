@@ -27,6 +27,26 @@ class Image extends File {
         return 'image';
     }
     
+    public static function getCropUrl($image, $width, $height, $crop_id = 'main')
+    {
+        $crop = \Arr::get($image, "crop.$crop_id", false);
+        $src = \Arr::get($image, 'src', false);
+        if ($src === false) return null;
+        
+        if ($crop === false) {
+            return "/image/2/$width/$height/".$src;
+        }
+        
+        return "/image/".
+        $crop['x']."/".
+        $crop['y']."/".
+        $crop['width']."/".
+        $crop['height']."/".
+        $width."/".
+        $height."/".
+        $src;
+    }
+    
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
         $src = (isset($value) && !empty($value['src'])) ? $value['src'] : 'placeholder.png';

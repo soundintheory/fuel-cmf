@@ -38,7 +38,7 @@ class Controller_Assets extends \Controller {
 		}
 		
 		$header_modified_since = strtotime(\Input::server('HTTP_IF_MODIFIED_SINCE', 0));
-		include_once(CMFPATH.'vendor'.DS.'lessc'.DS.'lessc.php');
+		include_once(VENDORPATH.'leafo/lessphp/lessc.inc.php');
 		ob_clean();
 		
 		// load the cache

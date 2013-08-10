@@ -36,7 +36,8 @@ class Simple implements Driver {
 		$headers = array(
 			'Cache-Control' => 'public',
 			'Last-Modified' => gmdate('D, d M Y H:i:s', $cache_last_modified).' GMT',
-			'Content-Type' => $this->content_type
+			'Content-Type' => $this->content_type,
+			'X-UA-Compatible' => 'IE=edge'
 		);
 		
 		// Still call the before method on the controller... is this a good idea? Perhaps not.

@@ -31,7 +31,7 @@ class Node extends Base
      */
     public static function getEntireTree()
 	{
-	    return \DoctrineFuel::manager()->getRepository(get_called_class())->childrenHierarchy();
+	    return \D::manager()->getRepository(get_called_class())->childrenHierarchy();
 	}
     
     /**
@@ -44,7 +44,7 @@ class Node extends Base
      */
     public function getChildrenIds($direct = false, $sortByField = null, $direction = 'ASC', $includeNode = false)
     {
-        $children = \DoctrineFuel::manager()->getRepository(get_class($this))->childrenQueryBuilder($this, $direct, $sortByField, $direction, $includeNode)->select('node.id')->getQuery()->getScalarResult();
+        $children = \D::manager()->getRepository(get_class($this))->childrenQueryBuilder($this, $direct, $sortByField, $direction, $includeNode)->select('node.id')->getQuery()->getScalarResult();
         
         return array_map(function($item) {
             return $item['id'];
@@ -82,17 +82,14 @@ class Node extends Base
 	    
 	    if (is_null($root)) {
 	        
-	        $em = \DoctrineFuel::manager();
+	        $em = \D::manager();
 	        $root = new $root_class();
             $root->blank(array('lft', 'lvl', 'rgt', 'root', 'url'));
 	        $root->set('is_root', true);
             
 	        $em->persist($root);
 	        if ($flush === true) {
-                //print("Created root node for ".$root_class." and flushing\n");
                 $em->flush();
-            } else {
-                //print("Created root node for ".$root_class."\n");
             }
 	        
 	    }
@@ -137,14 +134,14 @@ class Node extends Base
         return $options;
     }
     
-    public function url()
+    public function getUrl()
     {
-        return ($this->is_root) ? '' : parent::url();
+        return ($this->is_root) ? '' : parent::getUrl();
     }
     
-    public function slug()
+    public function urlSlug()
     {
-        return ($this->is_root) ? '' : parent::slug();
+        return ($this->is_root) ? '' : parent::urlSlug();
     }
     
     /**
@@ -154,7 +151,7 @@ class Node extends Base
     public function urlPrefix()
     {
         if (isset($this->parent)) {
-            $parent_url = $this->parent->url();
+            $parent_url = $this->parent->getUrl();
             return $parent_url . (($parent_url == '/') ? '' : '/');
         }
         return '/';
@@ -199,7 +196,7 @@ class Node extends Base
                 $result->blank();
                 
                 $called_class::repository()->persistAsFirstChildOf($result, $root_node);
-                \DoctrineFuel::manager()->flush();
+                \D::manager()->flush();
                 
                 $called_class::$instances[$called_class] = $result;
             } else {

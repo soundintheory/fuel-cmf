@@ -6,10 +6,18 @@ use Doctrine\DBAL\Logging\SQLLogger;
 
 class QueryLogger implements SQLLogger {
 	
+	protected $logger;
 	public $queries = array();
+	
+	public function __construct($logger = null)
+	{
+		$this->logger = $logger;
+	}
 
 	public function startQuery($sql, array $params = null, array $types = null)
 	{
+		if ($this->logger) $this->logger->startQuery($sql, $params, $types);
+		
 		// Store select queries for later use
 		if (substr($sql, 0, 6) == 'SELECT') {
 			
@@ -54,7 +62,7 @@ class QueryLogger implements SQLLogger {
 						$index = $replace_name + $first_param_index;
 					}
 					
-					$final_sql .= \DoctrineFuel::manager()->getConnection()->quote( $params[ $index ], \Arr::get($types, $index) );
+					$final_sql .= \D::manager()->getConnection()->quote( $params[ $index ], \Arr::get($types, $index) );
 				}
 				
 				$final_sql .= substr($sql, $src_pos);
@@ -72,6 +80,6 @@ class QueryLogger implements SQLLogger {
 
 	public function stopQuery()
 	{
-		
+		if ($this->logger) $this->logger->stopQuery();
 	}
 }

@@ -14,6 +14,8 @@ class ObjectForm
 	public $assets = array( 'css' => array(), 'js' => array() );
 	public $settings;
 	public $values;
+	public $title;
+	public $attributes;
 	public $js_field_settings = array();
 	
 	public function __construct($settings, $values)
@@ -92,7 +94,7 @@ class ObjectForm
 				$field_content = $field_class::displayForm(isset($this->values[$field_name]) ? $this->values[$field_name] : null, $field, $model);
 				
 				if (is_array($field_content)) {
-					$this->assets = \Arr::merge($this->assets, $field_content['assets']);
+					if (isset($field_content['assets']) && is_array($field_content['assets'])) $this->assets = \Arr::merge($this->assets, $field_content['assets']);
 					$this->settings['fields'][$field_name]['content'] = $field_content['content'];
 					
 					if (isset($field_content['js_data'])) {
@@ -162,7 +164,7 @@ class ObjectForm
 			$field_content = $field_class::displayForm(isset($this->values[$field_name]) ? $this->values[$field_name] : null, $field, $model);
 			
 			if (is_array($field_content)) {
-				$this->assets = \Arr::merge($this->assets, $field_content['assets']);
+				if (isset($field_content['assets']) && is_array($field_content['assets'])) $this->assets = \Arr::merge($this->assets, $field_content['assets']);
 				$output[] = $this->settings['fields'][$field_name]['content'] = $field_content['content'];
 				
 				if (isset($field_content['js_data'])) {
@@ -175,11 +177,11 @@ class ObjectForm
 				}
 				
 			} else {
-				$output[] = $field_content;
+				$output[] = $this->settings['fields'][$field_name]['content'] = $field_content;
 			}
 		}
 		
-		$attributes = array( 'class' => 'field-type-object controls control-group'.($has_errors ? ' error' : '') );
+		$attributes = $this->attributes = array( 'class' => 'field-type-object controls control-group'.($has_errors ? ' error' : '') );
 		
 		// If it isn't a widget, maybe it wants to be a sub group (wrapped in a grey box)...
 		if ($this->settings['widget'] !== true && $this->settings['sub_group'] === true) {
@@ -187,6 +189,7 @@ class ObjectForm
 			if (isset($this->settings['widget_icon']) && !empty($this->settings['widget_icon']))
 				$title = '<i class="icon icon-'.$this->settings['widget_icon'].'"></i> '.$title;
 			
+			$this->title = $title;
 			$heading = html_tag('h5', array(), $title);
 			$content = html_tag('div', array( 'class' => 'sub-group' ), $heading.implode("\n\n", $output));
             return html_tag('div', $attributes, $content);

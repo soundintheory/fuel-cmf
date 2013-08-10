@@ -70,9 +70,11 @@ class Link extends Object {
     
     protected static function getOptions(&$settings, $model)
     {
-    	if (static::$options !== null && is_array(static::$options)) return static::$options;
-    	
-    	$options = (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable']) ? array( null => '' ) : array();
+        $allow_empty = isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && !(isset($settings['required']) && $settings['required']);
+        
+        if (static::$options !== null && is_array(static::$options)) return $allow_empty ? array( '' => '' ) + static::$options : static::$options;
+        
+        $options = array();
         $target_class = 'CMF\\Model\\URL';
         $filters = array();
         $tree_types = array();
@@ -93,7 +95,7 @@ class Link extends Object {
             if (isset($options[$name])) continue;
             
             $group = \Arr::get($options, $name, array());
-            $repository = \DoctrineFuel::manager()->getRepository($type);
+            $repository = \D::manager()->getRepository($type);
             $prop = property_exists('menu_title', $type) ? 'menu_title' : 'title';
             
             if (($repository instanceof \Gedmo\Tree\Entity\Repository\NestedTreeRepository) && !in_array($name, $tree_types))
@@ -147,8 +149,8 @@ class Link extends Object {
             return strcmp(strtolower($a), strtolower($b));
         });
         
-        return static::$options = $options;
-    	
+        static::$options = $options;
+        return $allow_empty ? array( '' => '' ) + $options : $options;
     }
     
     protected static function buildTreeOptions(&$tree, $prop, $options = array( null => '---' ), $prefix = '')

@@ -23,8 +23,6 @@ class Ffmpeg
 		$video_path = \Cli::option('file', null);
 		if ($video_path === null) return;
 		
-		\Package::load(array('log'));
-		
 		// We need the log package loaded for Monolog
 		$doc_root = realpath(APPPATH.'../../public').'/';
 		$config = \Config::get('cmf.ffmpeg');

@@ -1,5 +1,22 @@
 {% extends "admin/shared/interface.twig" %}
 
+{% macro action_link(action_id, action, model, table, context) %}
+    {{ include(template_from_string(action.content|default("
+    <a class=\"btn btn-small btn-icon {{ action.class|default('btn-info') }}\" href=\"{{ include(template_from_string(action.href)) }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
+        <i class=\"icon icon-{{ action.icon|default('cog') }}\"></i>
+    </a>
+    "))) }}
+{% endmacro %}
+
+{% macro action_method(action_id, action, model, table, context) %}
+    {{ include(template_from_string(action.content|default("
+    <a class=\"btn btn-small btn-icon {{ action.class|default('btn-info') }}\" href=\"/admin/{{ table }}/{{ model.id }}/{{ action_id }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
+        <i class=\"icon icon-{{ action.icon|default('cog') }}\"></i>
+    </a>"))) }}
+{% endmacro %}
+
+{% import _self as this %}
+
 {% block html_title %}{{ plural }} List : {{ admin_title }}{% endblock %}
 
 {% block main_pane %}
@@ -9,6 +26,13 @@
     <div class="inner">
         
         <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }} ({{ rows|length }})</h2>
+        {% if tabs|length > 1 %}
+        <ul class="nav nav-pills">
+            {% for tab_id, tab in tabs %}
+            <li class="{{ current_tab == tab_id ? 'active' : '' }}"><a href="/admin/{{ table_name }}{{ loop.first ? '' : '/'~tab_id }}">{{ tab.title }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         <div class="actions-top-right">
             {% if can_manage %}
             <a href="/admin/{{ table_name }}/permissions" class="btn btn-icon btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="icon icon-lock"></i></a>
@@ -16,7 +40,7 @@
         </div>
         <div class="clear"></div>
 
-    	<div class="item-list">
+        <div class="item-list">
 
             <div class="row-fluid">
         
@@ -51,6 +75,9 @@
                                 {% endif %}
                             {% endfor %}
                             <td class="actions"><span>
+                                {% for action_id, action in actions if action.list is not defined or action.list != false %}
+                                {{ attribute(this, 'action_'~action.type, [action_id, action, row, table_name, 'list']) }}
+                                {% endfor %}
                                 {% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a>{% endif %} 
                                 {% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i></a>{% endif %}
                             </span></td>
@@ -60,9 +87,13 @@
                         <tr>
                             <td class="no-items" colspan="{{ columns|length + 1 }}">
                                 
+                                {% if tabs|length > 1 and current_tab != default_tab %}
+                                <p>No {{ plural|lower }} were found.</p>
+                                {% else %}
                                 <p>There are no {{ plural|lower }} added yet.</p>
                                 {% if can_create %}
                                 <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
+                                {% endif %}
                                 {% endif %}
                                 
                             </td>

@@ -83,6 +83,7 @@ class Controller_Item extends Controller_Base {
 		}
 	    
 	   	// Get stuff ready for the template
+	   	$this->actions = $class_name::actions();
 	   	$this->form = new ModelForm($metadata, $model);
 		$this->icon = $class_name::icon();
 		$this->static = $class_name::_static();
@@ -140,7 +141,7 @@ class Controller_Item extends Controller_Base {
 	    	// Save any uploads
 	    	\Upload::save();
 	    	
-	    	$em = \DoctrineFuel::manager();
+	    	$em = \D::manager();
 	    	$em->persist($model);
 	        $em->flush();
 	        
@@ -171,6 +172,7 @@ class Controller_Item extends Controller_Base {
 	    }
 	    
 	    // If it's come this far, we have a problem. Render out the form with the errors...
+	    $this->actions = $class_name::actions();
 	    $this->form = new ModelForm($metadata, $model);
 		$this->icon = $class_name::icon();
 		$this->table_name = $metadata->table['name'];
@@ -197,7 +199,7 @@ class Controller_Item extends Controller_Base {
 	 */
 	public function action_delete($table_name, $id)
 	{
-	    $em = \DoctrineFuel::manager();
+	    $em = \D::manager();
 	    $class_name = \Admin::getClassForTable($table_name);
 	    
 	    $can_delete = $class_name::superlock() === false && \CMF\Auth::can('delete', $class_name) === true;
@@ -209,12 +211,22 @@ class Controller_Item extends Controller_Base {
 	    
 	    $singular = $class_name::singular();
 	    $entity = $class_name::find($id);
+	    $error = null;
 	    
 	    if (!is_null($entity)) {
-	        $em->remove($entity);
-	        $em->flush();
+	        try {
+	        	$em->remove($entity);
+	        	$em->flush();
+	        } catch (\Exception $e) {
+	        	$error = $e->getMessage();
+	        }
 	    }
 	    
+	    if (!empty($error)) {
+	    	$default_redirect = \Uri::base(false)."admin/$table_name";
+			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => "Could not delete item: ".$error ));
+			\Response::redirect(\Input::referrer($default_redirect), 'location');
+	    }
 	    
 	    // Do something depending on what mode we're in...
 	    switch (\Input::param('_mode', 'default')) {
@@ -260,7 +272,7 @@ class Controller_Item extends Controller_Base {
 			$result = array( 'success' => true, 'num_updated' => 0 );
 			$post_data = \Input::post();
 			$ids = array_keys($post_data);
-			$em = \DoctrineFuel::manager();
+			$em = \D::manager();
 			
 			if (count($ids) == 0) {
 				return \Response::forge(json_encode($result), $this->status, $this->headers);
@@ -327,7 +339,7 @@ class Controller_Item extends Controller_Base {
 		// Try and save it
 		try {
 			
-			$em = \DoctrineFuel::manager();
+			$em = \D::manager();
 			$em->persist($model);
 			$em->flush();
 			
@@ -340,6 +352,66 @@ class Controller_Item extends Controller_Base {
 		
 		// Return the JSON response
         return \Response::forge(json_encode($result), $this->status, $this->headers);
+		
+	}
+	
+	/**
+	 * Processes an action on the item from the $_actions array
+	 */
+	public function action_action($table_name, $id, $action_id)
+	{
+		// Find class name and metadata etc
+		$class_name = \Admin::getClassForTable($table_name);
+		if ($class_name === false) {
+			return $this->customPageOr404(array($table_name, $action_id), "Can't find that type!");
+		}
+		
+		// Load up the model with the Id
+	    $model = $class_name::find($id);
+	    if (is_null($model)) {
+	    	\Response::redirect(\Uri::base(false)."admin/$table_name", 'location');
+	    }
+		
+		$actions = $class_name::actions();
+		if (!isset($actions[$action_id])) {
+			return $this->customPageOr404(array($table_name, $action_id), "The page you requested could not be found");
+		}
+		
+		$action = $actions[$action_id];
+		$type = \Arr::get($action, 'type');
+		
+		switch ($type) {
+			
+			case 'method':
+				
+				// Call a method on the model...
+				$method = "action_".\Arr::get($action, 'method', $action_id);
+				$result = null;
+				$error = null;
+				
+				try {
+					$result = $model->$method($table_name);
+				} catch (\Exception $e) {
+					$error = $e->getMessage();
+				}
+				
+				if (!is_null($error)) {
+					\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => $error ));
+				} else {
+					\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => $result ));
+				}
+				
+				$redirect = \Input::referrer(\Uri::base(false)."admin/$table_name/$id");
+				\Response::redirect($redirect, 'location');
+				
+			break;
+			default:
+				
+				return $this->customPageOr404(array($table_name, $action_id), "The page you requested could not be found");
+				
+			break;
+			
+		}
 		
 	}
 	

@@ -94,7 +94,7 @@ class Admin
 	 */
 	protected static function initClassTableMap()
 	{
-		$em = DoctrineFuel::manager();
+		$em = \D::manager();
 		$driver = $em->getConfiguration()->getMetadataDriverImpl();
 		static::$tables_to_classes = array();
 		static::$classes_to_tables = array();
@@ -105,7 +105,12 @@ class Admin
 		{
 		    $metadata = $em->getClassMetadata($class_name);
 		    
-		    static::$tables_to_classes[$metadata->table['name']] = $class_name;
+		    if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE) {
+		    	static::$tables_to_classes[$metadata->table['name']] = $metadata->rootEntityName;
+		    } else {
+		    	static::$tables_to_classes[$metadata->table['name']] = $class_name;
+		    }
+		    
 		    static::$classes_to_tables[$class_name] = $metadata->table['name'];
 		    
 		    if (!$metadata->isMappedSuperclass && is_subclass_of($class_name, 'CMF\\Model\\Base') && $class_name::hasPermissions()) {
@@ -299,57 +304,5 @@ class Admin
 			
 		}
 		
-	}
-	
-	/**
-	 * Populates the 'tables > classes' and 'classes > tables' maps.
-	 * @return void
-	 */
-	public static function createAllStaticInstances()
-	{
-		$em = DoctrineFuel::manager();
-		$driver = $em->getConfiguration()->getMetadataDriverImpl();
-		
-		// Loop through all Doctrine's class names, get metadata for each and populate the maps
-		foreach ($driver->getAllClassNames() as $class)
-		{
-			$metadata = $em->getClassMetadata($class);
-			
-			if (!$metadata->isMappedSuperclass && is_subclass_of($class, 'CMF\\Model\\Base')) {
-				if ($class::_static() === true) {
-					$class::instance();
-				}
-			}
-		}
-		
-	}
-	
-   /**
-	 * Gets installation settings for the installer at admin/install
-	 *  
-	 *  @return array installation details
-	 */
-	public static function installer()
-	{
-		return \Config::get('cmf.admin.install', true);
-	} 
-
-	/**
-	 * Unfinished.
-	 *
-	 * @param   array   $content  config array
-	 * @return  string  formatted config file contents
-	 */
-	public static function save_config($path, $contents)
-	{
-		$contents = var_export($contents, true);
-		$contents = preg_replace('/[0-9]+[\s|\n|\r]+\=\>[\s|\n|\r]+[a-z]+[(]{1}[\s|\n|\r]+(.[^)]+)\)\,[\s|\n|\r]+/', '$1', $contents);
-		$output = <<<CONF
-<?php
-
-CONF;
-		$output .= 'return '.str_replace(array('  ', 'array (', '\''.APPPATH, '\''.DOCROOT, '\''.COREPATH, '\''.PKGPATH), array("\t", 'array(', 'APPPATH.\'', 'DOCROOT.\'', 'COREPATH.\'', 'PKGPATH.\''), $contents).";\n";
-		$config = new \Config_Php;
-		return $config->save($path, $output);
 	}
 }

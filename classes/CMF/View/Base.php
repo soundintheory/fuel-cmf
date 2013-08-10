@@ -20,7 +20,7 @@ class Base extends \ViewModel
         return $this->_view;
     }
     
-    protected function pageTree($model = 'Model_Page_Page')
+    protected function pageTree($model = 'Model_Page_Base')
     {
         $nodes = $model::select('page.title, page.menu_title, page.lvl, page.lft, page.rgt, url.url, url.slug', 'page')
         ->leftJoin('page.url', 'url')
@@ -33,7 +33,7 @@ class Base extends \ViewModel
         if (empty($uri)) { $uri = '/'; }
         else { $uri .= '/'; }
         
-        $nodes = \DoctrineFuel::manager()->getRepository($model)->buildTree($nodes, array());
+        $nodes = \D::manager()->getRepository($model)->buildTree($nodes, array());
         $this->processNodes($nodes, $uri, 1);
         
         return $this->level1 = $nodes;

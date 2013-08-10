@@ -83,7 +83,13 @@
                 success: 'success',
                 fail: 'error'
             },
-            formatFileName: fileNameFormat
+            formatFileName: fileNameFormat,
+            validation: {
+                allowedExtensions: ['jpg', 'jpeg', 'gif', 'png'],
+                sizeLimit: 0,
+                minSizeLimit: 0,
+                stopOnFirstInvalidFile: false
+            }
         },
         preventSave = false;
         
@@ -251,7 +257,7 @@
                 
             }
             
-            saveData(null, null, _data);
+            // saveData(null, null, _data);
             
         }
         

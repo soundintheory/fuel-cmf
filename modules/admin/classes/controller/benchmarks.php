@@ -36,7 +36,7 @@ class Controller_Benchmarks extends \Controller_Base {
 	
 	protected function metadata1()
 	{
-		$metadata = \DoctrineFuel::manager()->getClassMetadata('CMF\Model\Base');
+		$metadata = \D::manager()->getClassMetadata('CMF\Model\Base');
 	}
 	
 	protected function metadata2()

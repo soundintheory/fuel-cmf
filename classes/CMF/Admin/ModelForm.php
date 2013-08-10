@@ -40,7 +40,7 @@ class ModelForm
 		$this->default_tab = $class_name::defaultTab();
 		$this->default_group = $class_name::defaultGroup();
 		$this->fields = \Admin::getFieldSettings($class_name);
-		$this->validator_meta = \DoctrineFuel::validator()->getMetadataFactory()->getClassMetadata($class_name);
+		$this->validator_meta = \D::validator()->getMetadataFactory()->getMetadataFor($class_name);
 		
 		// Merge any DB settings into the mix...
 		$model_settings = $model->settings;

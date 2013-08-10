@@ -15,10 +15,10 @@ class Page extends Base
     protected static $_fields = array(
         'visible' => array( 'visible' => true, 'group' => 'title' ),
         'url' => array( 'after' => 'menu_title' ),
-        'menu_title' => array( 'after' => 'title' ),
+        'menu_title' => array( 'after' => 'title', 'template' => '{{ title }}' ),
         'title' => array( 'group' => 'title', 'after' => 'visible' ),
-        'html_title' => array( 'group' => 'meta' ),
-        'meta_desc' => array( 'title' => 'Meta description', 'after' => 'html_title' ),
+        'html_title' => array( 'group' => 'meta', 'template' => '{{ title }}' ),
+        'meta_desc' => array( 'title' => 'Meta description', 'after' => 'html_title', 'field' => 'CMF\\Field\\Textarea' ),
         'content' => array( 'widget' => true )
     );
     

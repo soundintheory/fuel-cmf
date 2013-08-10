@@ -5,14 +5,14 @@ namespace CMF\Doctrine\Extensions;
 /**
  * Extension that powers the CMF's sortable functionality
  */
-class Sortable extends \Doctrine\Fuel\Extensions\Extension
+class Sortable extends \CMF\Doctrine\Extensions\Extension
 {
 	
 	/** @override */
-	public static function init(&$config, &$reader, &$event_manager)
+	public static function init($em, $reader)
 	{
 		$listener = new SortableListener();
-		$event_manager->addEventSubscriber($listener);
+		$em->getEventManager()->addEventSubscriber($listener);
 	}
 	
 }

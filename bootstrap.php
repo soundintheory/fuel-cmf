@@ -6,21 +6,24 @@ define('CMFPATH', PKGPATH.'cmf/');
 \Config::load('parser', true);
 \Config::load('cmf', true);
 
+if (isset($_GET['debug']) && !\Fuel::$profiling) {
+	\Fuel::$profiling = true;
+	\Profiler::init();
+	\Config::load('db', true);
+	\Config::set('db.default.profiling', true);
+}
+
 // Listen for events at the beginning of the request for caching
 \Event::register('controller_started', 'CMF\\Cache::start');
 
 // Load up the required packages
-Package::load(array('email', 'parser', 'doctrine', 'oil'));
-
-// Enable classes in 'CMF\Core' to automatically override classes in 'Fuel\Core'
-Autoloader::add_core_namespace('CMF\\Core', true);
+Package::load(array('email', 'parser'));
 
 // Override some external classes
+Autoloader::add_core_namespace('CMF\\Core', true);
 Autoloader::add_classes(array(
-    'CMF\\Core\\Upload'  => __DIR__.'/classes/Core/Upload.php',
-    'CMF\\Core\\View_Twig'  => __DIR__.'/classes/Core/View_Twig.php',
-    'Twig_Loader_Filesystem'  => __DIR__.'/classes/Twig/Twig_Loader_Filesystem.php',
-    'Doctrine\\ORM\\Mapping\\Column'  => __DIR__.'/classes/Doctrine/Mapping/Column.php'
+    'CMF\\Core\\Upload'  => __DIR__.'/classes/CMF/Core/Upload.php',
+    'CMF\\Core\\View_Twig'  => __DIR__.'/classes/CMF/Core/View_Twig.php'
 ));
 
 // Add CMF's modules directory so it's modules can be autoloaded

@@ -63,8 +63,9 @@ class Auto extends Simple {
 	
 	protected function startListeners()
 	{
-		$this->logger = new \CMF\Doctrine\QueryLogger();
-		\DoctrineFuel::manager()->getConnection()->getConfiguration()->setSQLLogger($this->logger);
+		$connection = \D::manager()->getConnection()->getConfiguration();
+		$this->logger = new \CMF\Doctrine\QueryLogger($connection->getSQLLogger());
+		$connection->setSQLLogger($this->logger);
 	}
 	
 	public function set($response)
@@ -108,7 +109,7 @@ class Auto extends Simple {
 		});
 		
 		// Construct an allowed list of tables for the cache queries
-		$em = \DoctrineFuel::manager();
+		$em = \D::manager();
 		foreach ($model_classes as $model) {
 			$meta = $em->getClassMetadata($model);
 			if ($meta->isMappedSuperclass || !isset($meta->columnNames['updated_at']) || $meta->rootEntityName != $meta->name) continue;
@@ -126,7 +127,7 @@ class Auto extends Simple {
 		$num = 0;
 		foreach ($queries as $query) {
 			
-			$parser = new \PHPSQLParser();
+			$parser = new \PHPSQL\Parser();
 			$parsed = $parser->parse($query, true);
 			if (!isset($parsed['FROM']) || count($parsed['FROM']) === 0) {
 				continue;
@@ -179,6 +180,7 @@ class Auto extends Simple {
 		}
 		
 		// Add the rest of the stuff to the result
+		$result['query_count'] = $num;
 		$result['sql'] = $sql;
 		$result['files'] = $this->files;
 		$result['content'] = strval($this->request->response);

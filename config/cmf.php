@@ -3,17 +3,14 @@
 return array (
     
     'admin' => array(
-        
         'title' => 'Website Administration',
         'interface_templates' => array(
             'default' => 'admin/shared/interface.twig',
             'inline' => 'admin/shared/chromeless.twig'
         )
-        
     ),
     
     'auth' => array(
-        
         // Set the remember-me cookie lifetime, in seconds. The default
         // lifetime is two weeks.
         'lifetime' => 1209600,
@@ -36,12 +33,10 @@ return array (
             'users' => array(
                 //'user' => 'password'
             )
-        ),
-        
+        )
     ),
     
     'ffmpeg' => array(
-        
         // These binaries are in varying positions depending on whether we use homebrew etc
         'ffmpeg_binary' => '/usr/local/bin/ffmpeg',
         'ffprobe_binary' => '/usr/local/bin/ffprobe',
@@ -51,11 +46,9 @@ return array (
             'width' => 1280,
             'height' => 720
         )
-        
     ),
     
     'cache' => array(
-        
         'enabled' => true,
         'driver' => 'auto',
         
@@ -67,12 +60,10 @@ return array (
         
         // Session vars to index the cache by
         'session_index' => array()
-        
     ),
     
     // Maps field types to field classes
     'fields_types' => array(
-        
         'string' => 'CMF\\Field\\Text',
         'integer' => 'CMF\\Field\\Integer',
         'smallint' => 'CMF\\Field\\Integer',
@@ -83,6 +74,7 @@ return array (
         'date' => 'CMF\\Field\\Date',
         'time' =>'CMF\\Field\\DateTime',
         'text' => 'CMF\\Field\\Textarea',
+        'color' => 'CMF\\Field\\Color',
         'richtext' => 'CMF\\Field\\Redactor',
         'object' => 'CMF\\Field\\Object\\Object',
         'array' => 'CMF\\Field\\Object\\ArrayField',
@@ -97,6 +89,7 @@ return array (
         'link' => 'CMF\\Field\\Object\\Link',
         'file' => 'CMF\\Field\\Object\\File',
         'image' => 'CMF\\Field\\Object\\Image',
+        'videoembed' => 'CMF\\Field\\Object\\VideoEmbed',
         'video' => 'CMF\\Field\\Object\\Video',
         'enum' => 'CMF\\Field\\Select',
         'enum_integer' => 'CMF\\Field\\Select',

@@ -142,6 +142,50 @@ class CMF
     }
     
     /**
+     * Gets all the urls in the site ready for generating a sitemap
+     * 
+     * @return array The urls
+     */
+    public static function getUrlsForSitemap()
+    {
+        $types = \CMF\Model\URL::select('item.type type')->distinct()->getQuery()->getScalarResult();
+        $types = array_map('current', $types);
+        $urls = array();
+        
+        foreach ($types as $type) {
+            
+            $items = $type::select('item');
+            if (!$type::_static()) $items->where('item.visible = true');
+            $items = $items->getQuery()->getResult();
+            
+            if (property_exists($type, 'url')) {
+                foreach ($items as $item) {
+                    
+                    $item_url = '/';
+                    $updated_at = $item->updated_at;
+                    
+                    if (!is_null($item->url)) {
+                        $item_url = $item->url->url;
+                        $urls[] = array( 'url' => $item_url, 'updated_at' => $updated_at );
+                    }
+                    
+                    $child_urls = $item->childUrls();
+                    if (count($child_urls) > 0) {
+                        foreach ($child_urls as $child_url) {
+                            $urls[] = array( 'url' => $item_url.'/'.$child_url, 'updated_at' => $updated_at );
+                        }
+                    }
+                    
+                }
+            }
+            
+        }
+        
+        return $urls;
+        
+    }
+    
+    /**
      * Used in the 'behind the scenes' logic during a frontend request, this checks whether
      * there is a viewmodel associated with a particular template.
      * 
@@ -283,6 +327,8 @@ class CMF
         if (is_numeric($output)) {
             $link = \CMF\Model\URL::select('item.url')->where('item.id = '.$output)->getQuery()->getArrayResult();
             $output = (count($link) > 0) ? $link[0]['url'] : null;
+        } elseif (empty($output)) {
+            $output = null;
         } else {
             $output = "http://" . $output;
         }

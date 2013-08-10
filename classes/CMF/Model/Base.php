@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
  **/
-class Base extends \Doctrine\Fuel\Model
+class Base extends \CMF\Doctrine\Model
 {
     /**
      * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
@@ -122,6 +122,16 @@ class Base extends \Doctrine\Fuel\Model
     protected static $_list_fields = array();
     
     /**
+     * Tabs that should appear in the admin list for the model.
+     * 
+     * This is not inherited from parent classes. When defining a new list order for 
+     * child classes, the whole lot must be redeclared.
+     * 
+     * @var array
+     */
+    protected static $_list_tabs = array();
+    
+    /**
      * The plural verbose name for the model (eg. Categories)
      * @see \CMF\Model\Base::plural()
      * @var string
@@ -228,13 +238,14 @@ class Base extends \Doctrine\Fuel\Model
      * @see  CMF\Model\Base::$_slug_fields
      * @return string
      */
-    public function slug()
+    public function urlSlug()
     {
         $class_name = get_class($this);
         $self = $this;
         $values = array_map(function($prop) use($self) {
             return $self->$prop;
         }, $class_name::$_slug_fields);
+        
         return \CMF::slug(implode(' ', $values));
     }
     
@@ -249,31 +260,6 @@ class Base extends \Doctrine\Fuel\Model
     }
     
     /**
-     * The full URL for the model. By default it's a combination of urlPrefix() and slug().
-     * 
-     * @return string the URL
-     */
-    public function url()
-    {
-        return $this->urlPrefix().$this->slug();
-    }
-    
-    /**
-     * The folder name under which this model's controller, viewmodel and template
-     * should be categorised. Default is 'website'
-     * 
-     * eg. the controller will go in 'app/classes/controller/website/', the view
-     * will go in 'app/classes/view/website/'and the template will go in
-     * 'app/views/website/
-     * 
-     * @return string The group name
-     */
-    public static function group()
-	{
-	    return 'website';
-	}
-    
-    /**
      * The name of the template the model will try to render to. By default it is automatically generated
      * from the de-namespaced (and lower cased) class name. eg. 'Model_Image' would be 'image.twig'
      * 
@@ -284,9 +270,9 @@ class Base extends \Doctrine\Fuel\Model
     public static function template()
 	{
         $called_class = get_called_class();
-        if ($called_class::$_template !== null) return $called_class::group().'/'.$called_class::$_template;
+        if ($called_class::$_template !== null) return $called_class::$_template;
 	    $called_class::$_template = str_replace(array("model_", "_"), array("", "/"), strtolower(\Inflector::denamespace(get_called_class()))).'.twig';
-        return $called_class::group().'/'.$called_class::$_template;
+        return $called_class::$_template;
 	}
     
     /**
@@ -303,8 +289,19 @@ class Base extends \Doctrine\Fuel\Model
         }
         
         $fields = $this->fieldSettings();
+        
+        // Pre process the data
+        foreach ($fields as $field_name => $field) {
+            
+            $field_class = $field['field'];
+            if (!isset($data[$field_name]) || !is_callable($field_class.'::preProcess')) continue;
+            $data[$field_name] = $field_class::preProcess($data[$field_name], $field, $this);
+            
+        }
+        
         parent::populate($data, $overwrite);
         
+        // Process the data once it's populated
         foreach ($fields as $field_name => $field) {
             
             $field_class = $field['field'];
@@ -456,6 +453,16 @@ class Base extends \Doctrine\Fuel\Model
     }
     
     /**
+     * @see \CMF\Model\Base::$_list_tabs
+     * @return array
+     */
+    public static function listTabs()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_list_tabs;
+    }
+    
+    /**
      * @see \CMF\Model\Base::$_slug_fields
      * @return array
      */
@@ -495,6 +502,9 @@ class Base extends \Doctrine\Fuel\Model
         return $called_class::$_sort_process;
     }
     
+    /**
+     * Provides a string identifier for an entity in order to group sorting
+     */
     public function sortGroupId($value=null)
     {
         if (is_null($value)) {
@@ -508,7 +518,7 @@ class Base extends \Doctrine\Fuel\Model
         // If the group is an object or array, get a string identifier
         if($value instanceof \DateTime) {
             $identifier = $value->format('c');
-        } elseif ($value instanceof \Doctrine\Fuel\Model) {
+        } elseif ($value instanceof \CMF\Doctrine\Model) {
             $id = $value->get('id');
             $identifier = (!is_null($id)) ? $id : 'newitem';
         } elseif (is_array($value)) {
@@ -630,7 +640,7 @@ class Base extends \Doctrine\Fuel\Model
     public static function saveAll()
     {
         $called_class = get_called_class();
-        $metadata = \DoctrineFuel::manager()->getClassMetadata($called_class);
+        $metadata = \D::manager()->getClassMetadata($called_class);
         $qb = $called_class::select('item');
         
         foreach ($metadata->associationMappings as $field => $mapping) {
@@ -642,10 +652,10 @@ class Base extends \Doctrine\Fuel\Model
         foreach ($items as $num => $item) {
             $item->updated_at = new \Datetime();
             $item->populate(array());
-            \DoctrineFuel::manager()->persist($item);
+            \D::manager()->persist($item);
         }
         
-        \DoctrineFuel::manager()->flush();
+        \D::manager()->flush();
         
     }
     
@@ -756,24 +766,14 @@ class Base extends \Doctrine\Fuel\Model
                 $result = new $called_class();
                 $result->blank();
                 
-                \DoctrineFuel::manager()->persist($result);
-                \DoctrineFuel::manager()->flush();
+                \D::manager()->persist($result);
+                \D::manager()->flush();
                 $called_class::$instances[$called_class] = $result;
             } else {
                 $called_class::$instances[$called_class] = $result[0];
             }
         }
         return $called_class::$instances[$called_class];
-    }
-    
-    /**
-     * Called when Fuel's autoloader discovers the model class
-     * 
-     * @return void
-     */
-    public static function _init()
-    {
-        if (!empty($_FILES)) \Upload::prepare();
     }
     
     public function settings($name = null, $value = null)
@@ -811,6 +811,16 @@ class Base extends \Doctrine\Fuel\Model
     public function thumbnail()
     {
         return false;
+    }
+    
+    /**
+     * Called when Fuel's autoloader discovers the model class
+     * 
+     * @return void
+     */
+    public static function _init()
+    {
+        if (!empty($_FILES)) \Upload::prepare();
     }
     
     public function __toString()

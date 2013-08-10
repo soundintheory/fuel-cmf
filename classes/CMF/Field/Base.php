@@ -54,6 +54,7 @@ class Base {
      */
     public static function displayForm($value, &$settings, $model)
     {
+        $class = get_called_class();
         $settings = static::settings($settings);
         $include_label = isset($settings['label']) ? $settings['label'] : true;
         $required = isset($settings['required']) ? $settings['required'] : false;
@@ -61,8 +62,8 @@ class Base {
         $has_errors = count($errors) > 0;
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
         if (!isset($input_attributes['id'])) $input_attributes['id'] = 'form_'.$settings['mapping']['fieldName'];
-        $attributes = array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') );
-        $input = '<input type="text" name="'.$settings['mapping']['fieldName'].'" '.array_to_attr($input_attributes).' value="'.strval($value).'" />';
+        $attributes = array( 'class' => 'controls control-group'.($has_errors ? ' error' : '').' field-type-'.$class::type($settings) );
+        $input = '<input type="text" name="'.$settings['mapping']['fieldName'].'" '.array_to_attr($input_attributes).' value="'.\Security::htmlentities(strval($value), ENT_QUOTES).'" />';
         //$input = \Form::input($settings['mapping']['fieldName'], strval($value), $input_attributes);
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         

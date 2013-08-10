@@ -53,8 +53,8 @@ class Video extends File {
                 $field_name = $settings['mapping']['fieldName'];
                 $model->set($field_name, $value);
                 
-                \DoctrineFuel::manager()->persist($model);
-                \DoctrineFuel::manager()->flush();
+                \D::manager()->persist($model);
+                \D::manager()->flush();
                 
             }
             

@@ -39,12 +39,7 @@ class URL extends Base
         return $type::select('item')->where('item.id = '.$this->item_id)->getQuery()->getResult();
     }
     
-    public function slug()
-    {
-        return $this->slug;
-    }
-    
-    public function _slug()
+    public function urlSlug()
     {
         return $this->slug;
     }
