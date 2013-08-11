@@ -23,11 +23,12 @@ class Hooks
     public static function postInstall(PackageInterface $package, Composer $composer)
     {
         static::bootstrap();
+        
+        \Cli::write('CMF is installing...', 'green');
     }
     
     /**
-     * post-update hook for composer - will trigger the installer to run again
-     * and fill in any potential gaps
+     * post-update hook for composer
      * 
      * @param  PackageInterface $package
      * @param  Composer         $composer
@@ -44,7 +45,6 @@ class Hooks
     protected static function bootstrap()
     {
         $dir = rtrim(realpath(__DIR__.'/../../../../../../'), '/').'/';
-    	print('PROJECT DIR: '.$dir."\n");
     	
     	error_reporting(-1);
     	ini_set('display_errors', 1);
