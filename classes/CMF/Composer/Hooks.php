@@ -12,6 +12,7 @@ use Composer\Package\PackageInterface;
  */
 class Hooks
 {
+    protected static $task;
 	
 	/**
 	 * post-install hook for composer - will run the initial installer process
@@ -23,8 +24,7 @@ class Hooks
     public static function postInstall(PackageInterface $package, Composer $composer)
     {
         static::bootstrap();
-        
-        \Cli::write('CMF is installing...', 'green');
+        static::$task->install();
     }
     
     /**
@@ -61,5 +61,9 @@ class Hooks
     	// Boot the app and the CMF
     	require APPPATH.'bootstrap.php';
     	\Package::load('cmf');
+        
+        // Instantiate CMF's fuel task class
+        include(CMFPATH.'tasks/cmf.php');
+        static::$task = new \Fuel\Tasks\Cmf();
     }
 }
