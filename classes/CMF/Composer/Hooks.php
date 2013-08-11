@@ -60,7 +60,7 @@ class Hooks
     	
     	// Boot the app and the CMF
     	require APPPATH.'bootstrap.php';
-    	\Package::load('cmf');
+    	\Package::load(array('oil', 'cmf'));
         
         // Instantiate CMF's fuel task class
         include(CMFPATH.'tasks/cmf.php');
