@@ -157,9 +157,6 @@ class Auto extends Simple {
 			
 		}
 		
-		//print('queries: '.$num);
-		//return;
-		
 		if (!empty($sql)) {
 			// Complete the mega query that will check if items are updated or not...
 			if (count($subqueries) > 1) {

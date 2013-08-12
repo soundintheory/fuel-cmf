@@ -28,7 +28,7 @@ class Cache {
 		}
 		
 		// Check for excluded URLS
-		$uri = '/'.trim($_SERVER['REQUEST_URI'], '/');
+		$uri = '/'.str_replace(array('?debug', '&debug'), '', trim($_SERVER['REQUEST_URI'], '/'));
 		$excluded_urls = $config['excluded_urls'];
 		foreach ($excluded_urls as $url) {
 			if (strpos($url, '*') !== false && strpos($uri.'/', str_replace('*', '', $url)) === 0) {
@@ -86,7 +86,7 @@ class Cache {
     	
     	$session_keys = \Config::get('cmf.cache.session_index', array());
     	$session = \Session::get();
-    	
+        
     	foreach ($session as $key => $value) {
     		if (in_array($key, $session_keys)) {
     			return static::$uriCacheKey = $key.'/'.$value.'/'.md5($uri);
