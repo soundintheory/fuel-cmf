@@ -1,11 +1,12 @@
 <?php
 
+define('PROJECTROOT', realpath(APPPATH.'../../').'/');
 define('CMFPATH', PKGPATH.'cmf/');
 
-// Set up twig to be loaded from here
-\Config::load('parser', true);
+// Load cmf config
 \Config::load('cmf', true);
 
+// Quick and easy profiling using 'debug' in the query string
 if (isset($_GET['debug']) && !\Fuel::$profiling) {
 	\Fuel::$profiling = true;
 	\Profiler::init();
@@ -17,7 +18,19 @@ if (isset($_GET['debug']) && !\Fuel::$profiling) {
 \Event::register('controller_started', 'CMF\\Cache::start');
 
 // Load up the required packages
-Package::load(array('email', 'parser'));
+Package::load(array('email', 'parser', 'sprockets'));
+
+\Config::load('sprockets', true);
+\Config::load(CMFPATH.'config/sprockets.php', 'sprockets');
+$assets_dir = \Config::get('sprockets.asset_compile_dir');
+
+// Check the compiled assets dir is working
+if (!is_dir($assets_dir)) {
+	@mkdir($assets_dir);
+	@mkdir($assets_dir.'js');
+	@mkdir($assets_dir.'css');
+	@mkdir($assets_dir.'img');
+}
 
 // Override some external classes
 Autoloader::add_core_namespace('CMF\\Core', true);

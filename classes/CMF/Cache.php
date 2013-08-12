@@ -27,9 +27,6 @@ class Cache {
 			return;
 		}
 		
-		$class = 'CMF\\Cache\\Driver\\'.ucfirst($config['driver']);
-		if (!class_exists($class)) return;
-		
 		// Check for excluded URLS
 		$uri = '/'.trim($_SERVER['REQUEST_URI'], '/');
 		$excluded_urls = $config['excluded_urls'];
@@ -41,13 +38,21 @@ class Cache {
 		}
 		
 		// Create the driver and try to get cached content from it
-		static::$driver = new $class();
+		$driver = static::driver();
 		static::$started = true;
-		$content = static::$driver->get($uri);
 		
+        // Add any extra files to check
+        $files = \Arr::get($config, 'check_files', array());
+        foreach ($files as $file) {
+            $driver->addFile($file);
+        }
+        
+        // Try and get the cached content
+        $content = $driver->get($uri);
+        
 		// Serve the cached content if found, or continue and add the finish listener
 		if (static::$active = ($content !== false)) {
-			static::$driver->serve($content);
+			$driver->serve($content);
 		} else {
 			\Event::register('request_finished', 'CMF\\Cache::finish');
 		}
@@ -142,6 +147,13 @@ class Cache {
     public static function active()
     {
     	return static::$active;
+    }
+    
+    public static function driver()
+    {
+    	if (isset(static::$driver)) return static::$driver;
+    	$class = 'CMF\\Cache\\Driver\\'.ucfirst(\Config::get('cmf.cache.driver', 'Simple'));
+    	return static::$driver = new $class();
     }
 	
 }

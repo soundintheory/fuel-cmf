@@ -58,6 +58,11 @@ return array (
             '/image/*'
         ),
         
+        // Also check these files (or all files in a directory) for last modified date
+        'check_files' => array(
+            DOCROOT.'assets'
+        ),
+        
         // Session vars to index the cache by
         'session_index' => array()
     ),

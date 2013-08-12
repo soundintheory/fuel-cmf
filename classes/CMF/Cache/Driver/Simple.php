@@ -7,6 +7,7 @@ class Simple implements Driver {
 	protected $request;
 	protected $path;
 	protected $content_type = 'text/html';
+	protected $files = array();
 	
 	public function get($url)
 	{
@@ -65,6 +66,43 @@ class Simple implements Driver {
 		
 		exit();
 		
+	}
+	
+	/**
+	 * Adds a file into the list to check for last modified date
+	 * 
+	 * @param string $path
+	 */
+	public function addFile($path)
+	{
+		if (is_dir($path)) {
+			$contents = \File::read_dir($path, 0, array(
+			    '!^\.', // no hidden files/dirs
+			    '!^private' => 'dir', // no private dirs
+			    '!^compiled' => 'dir', // no private dirs
+			    '\.css$' => 'file', // or css files
+			    '\.js$' => 'file', // or css files
+			    '\.scss$' => 'file', // or css files
+			    '!^_', // exclude everything that starts with an underscore.
+			));
+			$this->addFiles($contents, rtrim($path).'/');
+		} else if (file_exists($path)) {
+			$this->files[] = str_replace(PROJECTROOT, '', $path);
+		}
+	}
+	
+	/**
+	 * Loops through an array of files and adds them, recursively if there are any arrays
+	 */
+	public function addFiles($files, $prefix = '')
+	{
+		foreach ($files as $key => $path) {
+			if (is_array($path)) {
+				$this->addFiles($path, $prefix.$key);
+			} else {
+				$this->addFile($prefix.$path);
+			}
+		}
 	}
 	
 }

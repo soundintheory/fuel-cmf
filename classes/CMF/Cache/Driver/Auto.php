@@ -6,7 +6,6 @@ class Auto extends Simple {
 	
 	protected $path;
 	protected $logger;
-	protected $files = array();
 	
 	public function get($url)
 	{
@@ -23,7 +22,7 @@ class Auto extends Simple {
 			// Check the files first
 			$cache_modified = filemtime($this->path);
 			foreach ($contents['files'] as $file) {
-				$file = APPPATH.$file;
+				$file = PROJECTROOT.$file;
 				if (!file_exists($file) || filemtime($file) > $cache_modified) {
 					$this->startListeners();
 					return false;
@@ -76,9 +75,6 @@ class Auto extends Simple {
 		$view = $this->request->response->body;
 		$driver = $this;
 		
-		// We need to add any file dependencies for the view now, because it will be a string later on
-		//if (!is_null($view)) $this->addFilesForClass(get_class($view));
-		
 		\Event::register('shutdown', function() use($driver) {
 			$driver->shutdown();
 		});
@@ -120,7 +116,7 @@ class Auto extends Simple {
 		
 		// Remove the app path from each file path, making them relative
 		$this->files = array_map(function($path) {
-			return str_replace(APPPATH, '', $path);
+			return str_replace(PROJECTROOT, '', $path);
 		}, $this->files);
 		
 		// Construct ourselves a number of sub queries to check all the relevant records in the database
