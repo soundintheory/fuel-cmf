@@ -3,6 +3,7 @@
 namespace CMF\Composer;
 
 use Composer\Composer;
+use Composer\Script\Event;
 use Composer\Package\PackageInterface;
 
 /**
@@ -21,7 +22,7 @@ class Hooks
 	 * @param  Composer         $composer
 	 * @return void
 	 */
-    public static function postInstall(PackageInterface $package, Composer $composer)
+    public static function postInstall(Event $event)
     {
         static::bootstrap();
         static::$task->install();
