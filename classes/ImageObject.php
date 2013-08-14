@@ -136,7 +136,6 @@ class ImageObject
 		$bgcolor = '#'.\Input::param('bgcolor', 'fff');
 		
 		\Image::load($this->pathinfo['path'])
-		->force_rgb()
 		->config('bgcolor', $bgcolor)
   		->crop($cropx, $cropy, $cropx + $cropw, $cropy + $croph)
   		->resize($w, $h, false)
@@ -157,7 +156,7 @@ class ImageObject
 		
 		$bgcolor = '#'.$this->param('bgcolor', 'fff');
 		$image_size = getimagesize($this->path);
-		$image = \Image::load($this->pathinfo['path'])->force_rgb();
+		$image = \Image::load($this->pathinfo['path']);
 
 		$org_width = $image_size[0];
 		$org_height = $image_size[1];
