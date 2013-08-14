@@ -3,6 +3,9 @@
 define('PROJECTROOT', realpath(APPPATH.'../../').'/');
 define('CMFPATH', PKGPATH.'cmf/');
 
+// Add in the 404 route which routes through the CMF
+\Router::add(array( '_404_' => 'base/404' ));
+
 // Load cmf config
 \Config::load('cmf', true);
 

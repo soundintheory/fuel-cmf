@@ -8,7 +8,6 @@ class Redactor extends Textarea {
         'input_attributes' => array(
             'class' => 'input-xxlarge'
         ),
-        'css' => '/assets/less/less.php?f=/assets/less/editor.less',
         'minHeight' => 300
     );
     
@@ -22,7 +21,7 @@ class Redactor extends Textarea {
     {
 		return array(
 			'js' => array(
-				'/admin/assets/redactor/redactor.min.js',
+				'/admin/assets/redactor/redactor.js',
 				'/admin/assets/js/fields/redactor.js'
 			),
 			'css' => array(
