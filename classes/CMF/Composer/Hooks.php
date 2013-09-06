@@ -24,7 +24,10 @@ class Hooks
     public static function postInstall(Event $event)
     {
         static::bootstrap();
-        static::$task->install();
+        
+        if (strtolower(\Cli::prompt('Install CMF now? WARNING: This will reset the contents of your app folder!', array('y','n'))) === 'y') {
+            static::$task->install();
+        }
     }
     
     /**
