@@ -25,7 +25,6 @@
         "soundintheory/fuel-sprockets": "1.*",
         "soundintheory/php-sql-parser": "*",
         "hautelook/phpass": "0.3.*",
-        "dg/mysql-dump": "1.*",
         "soundintheory/php-sql-parser": "1.*"
     },
     "suggest": {
@@ -53,11 +52,9 @@
     "extra": {
         "installer-name": "cmf",
         "installer-path": "fuel/packages/cmf",
-        "pre-package-install": "CMF\\Composer\\Hooks::preInstall",
         "post-package-install": "CMF\\Composer\\Hooks::postInstall",
         "branch-alias": {
-            "master": "1.6-dev",
-            "dev-master": "1.6.x-dev"
+            "dev-master": "1.0.x-dev"
         }
     }
 }

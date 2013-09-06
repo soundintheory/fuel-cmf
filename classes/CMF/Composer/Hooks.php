@@ -18,26 +18,13 @@ class Hooks
 	/**
 	 * post-install hook for composer - will run the initial installer process
 	 * 
-	 * @param  PackageInterface $package
-	 * @param  Composer         $composer
+	 * @param  \Composer\Script\Event $event
 	 * @return void
 	 */
     public static function postInstall(Event $event)
     {
         static::bootstrap();
         static::$task->install();
-    }
-    
-    /**
-     * post-update hook for composer
-     * 
-     * @param  PackageInterface $package
-     * @param  Composer         $composer
-     * @return void
-     */
-    public static function postUpdate(PackageInterface $package, Composer $composer)
-    {
-        static::bootstrap();
     }
     
     /**
