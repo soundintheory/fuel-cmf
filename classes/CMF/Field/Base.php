@@ -119,7 +119,7 @@ class Base {
      */
     public static function process($value, $settings, $model)
     {
-        if (!(isset($settings['auto_update']) && $settings['auto_update'] == '0') && 
+        if (!(isset($settings['auto_update']) && !$settings['auto_update']) && 
             (isset($settings['template']) && !empty($settings['template']))) {
             
             $post_data = \Input::post();
