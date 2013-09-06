@@ -6,6 +6,8 @@
 	
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>{% block html_title %} | {{ settings.site_title|default('Title Not Set') }}{% endblock %}</title>
+	{{ sprockets_js('core.js') }}
+	{{ sprockets_css('screen.scss') }}
 	
 </head>
 <body>
