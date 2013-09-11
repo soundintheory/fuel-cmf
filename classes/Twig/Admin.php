@@ -46,7 +46,9 @@ class Admin extends Twig_Extension
 			'basename' => new Twig_Function_Function('basename'),
 			'uri' => new Twig_Function_Function('Input::uri'),
 			'base' => new Twig_Function_Function('Uri::base'),
-			'crop_url' => new Twig_Function_Function('CMF\\Field\\Object\\Image::getCropUrl')
+			'crop_url' => new Twig_Function_Function('CMF\\Field\\Object\\Image::getCropUrl'),
+			'session_get'  => new Twig_Function_Function('Session::get'),
+			'session_set'  => new Twig_Function_Function('Session::set')
 		);
 	}
 	
