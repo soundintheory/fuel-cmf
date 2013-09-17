@@ -813,16 +813,6 @@ class Base extends \CMF\Doctrine\Model
         return false;
     }
     
-    /**
-     * Called when Fuel's autoloader discovers the model class
-     * 
-     * @return void
-     */
-    public static function _init()
-    {
-        if (!empty($_FILES)) \Upload::prepare();
-    }
-    
     public function __toString()
     {
         return strval($this->id);
