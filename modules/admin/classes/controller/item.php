@@ -138,9 +138,6 @@ class Controller_Item extends Controller_Base {
 		// Validate the model
 	    if ($model->validate(null, null, array('id', 'pos'))) {
 	    	
-	    	// Save any uploads
-	    	\Upload::save();
-	    	
 	    	$em = \D::manager();
 	    	$em->persist($model);
 	        $em->flush();
