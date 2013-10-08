@@ -8,7 +8,6 @@ class Redactor extends Textarea {
         'input_attributes' => array(
             'class' => 'input-xxlarge'
         ),
-        'css' => '/assets/less/less.php?f=/assets/less/editor.less',
         'minHeight' => 300
     );
     
@@ -17,22 +16,22 @@ class Redactor extends Textarea {
         return 'redactor';
     }
     
-	/** inheritdoc */
+    /** inheritdoc */
     public static function getAssets()
     {
-		return array(
-			'js' => array(
-				'/admin/assets/redactor/redactor.min.js',
-				'/admin/assets/js/fields/redactor.js'
-			),
-			'css' => array(
-				'/admin/assets/redactor/redactor.css'
-			)
-		);
+        return array(
+            'js' => array(
+                '/admin/assets/redactor/redactor.js',
+                '/admin/assets/js/fields/redactor.js'
+            ),
+            'css' => array(
+                '/admin/assets/redactor/redactor.css'
+            )
+        );
     }
     
     /** inheritdoc */
-	public static function displayForm($value, &$settings, $model)
+    public static function displayForm($value, &$settings, $model)
     {
         $settings = static::settings($settings);
         $include_label = isset($settings['label']) ? $settings['label'] : true;
@@ -83,5 +82,5 @@ class Redactor extends Textarea {
             'js_data' => $settings
         );
     }
-	
+    
 }

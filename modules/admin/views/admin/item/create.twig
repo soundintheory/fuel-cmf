@@ -98,14 +98,14 @@
 
 {% block admin_css %}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{{ css }}">
+        <link rel="stylesheet" type="text/css" href="{{ css }}?v=2">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}?v=4"></script>
+        <script type="text/javascript" src="{{ js }}?v=5"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

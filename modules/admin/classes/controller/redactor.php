@@ -57,16 +57,14 @@ class Controller_Redactor extends \Controller {
     
     private function uploadImage()
     {
-        // This is a simplified example, which doesn't cover security of uploaded images. 
-        // This example just demonstrate the logic behind the process.
-         
         // files storage folder
-        // $dir = CMFPATH.'modules'.DS.'admin'.DS.'public'.DS.'assets'.DS.'filemanager'.DS;;
         $public_dir = $_SERVER['DOCUMENT_ROOT'] . DS . 'uploads/images/';
-
+        if (!($exists = is_dir($public_dir))) {
+            $exists = @mkdir($public_dir, 0775, true);
+        }
+        
         $_FILES['file']['type'] = strtolower($_FILES['file']['type']);
-        //$extension = pathinfo($_FILES['file']['tmp_name'], PATHINFO_EXTENSION);
-
+        
         if ($_FILES['file']['type'] == 'image/png' 
         || $_FILES['file']['type'] == 'image/jpg' 
         || $_FILES['file']['type'] == 'image/gif' 
@@ -93,44 +91,34 @@ class Controller_Redactor extends \Controller {
         		'filelink' => '/uploads/images/'.$filename
         	);
         	
-        	return stripslashes(json_encode($array));   
-            
+        	return stripslashes(json_encode($array));
         }
     }
 
     private function uploadFile()
     {
-        // This is a simplified example, which doesn't cover security of uploaded files. 
-        // This example just demonstrate the logic behind the process.
-
-        copy($_FILES['file']['tmp_name'], DOCROOT . DS .'uploads/files/'.$_FILES['file']['name']);
-                            
+        $public_dir = DOCROOT . DS .'uploads/files/';
+        if (!($exists = is_dir($public_dir))) {
+            $exists = @mkdir($public_dir, 0775, true);
+        }
+        
+        copy($_FILES['file']['tmp_name'], $public_dir.$_FILES['file']['name']);
+        
         $array = array(
             'filelink' => '/uploads/files/'.$_FILES['file']['name'],
             'filename' => $_FILES['file']['name']
         );
-
+        
         echo stripslashes(json_encode($array));
-            
     }
+    
     public function action_getimages(){
-        //find all images in said folder, encode as json.
-
-        /* example
-        [
-            { "thumb": "/img/1m.jpg", "image": "/img/1.jpg", "title": "Image 1", "folder": "Folder 1" },
-            { "thumb": "/img/2m.jpg", "image": "/img/2.jpg", "title": "Image 2", "folder": "Folder 1" },
-            { "thumb": "/img/3m.jpg", "image": "/img/3.jpg", "title": "Image 3", "folder": "Folder 1" },
-            { "thumb": "/img/4m.jpg", "image": "/img/4.jpg", "title": "Image 4", "folder": "Folder 2" },
-            { "thumb": "/img/5m.jpg", "image": "/img/5.jpg", "title": "Image 5", "folder": "Folder 2" }
-        ]
-        */
-        //lets just get one level, no folders.
-        //read the uploads folder, depth 0.
+        
+        // find all images in said folder, encode as json.
         $folder = 'uploads/images';
         $full_folder = DOCROOT . DS . $folder;
         if(!is_dir($folder)){
-            mkdir($folder);
+            @mkdir($folder, 0775, true);
         }
         if(is_dir($folder)){
             $all_files = \File::read_dir($folder, 0, array(
@@ -144,7 +132,7 @@ class Controller_Redactor extends \Controller {
             $image_array = array();
             foreach ($all_files as $key => $file) {
                 $image_array[] = array(
-                    'thumb'=>'/image/1/40/40/'.$folder.DS.$file,
+                    'thumb'=>'/image/1/90/90/'.$folder.DS.$file,
                     'image'=> DS . $folder . DS . $file
                 );
             }
