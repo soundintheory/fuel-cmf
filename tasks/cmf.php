@@ -133,7 +133,7 @@ class Cmf
 				foreach ($fields as $field) {
 					
 					$file = @unserialize($result[$field]);
-					if ($image === false) {
+					if ($file === false) {
 						
 						$newfile = array( 'src' => $result[$field] );
 						$newfile = \DB::quote(serialize($newfile));
