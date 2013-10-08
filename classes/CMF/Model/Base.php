@@ -260,6 +260,14 @@ class Base extends \CMF\Doctrine\Model
     }
     
     /**
+     * Returns the url for the model (returns blank on the base model)
+     */
+    public function getUrl()
+    {
+        return '';
+    }
+    
+    /**
      * The name of the template the model will try to render to. By default it is automatically generated
      * from the de-namespaced (and lower cased) class name. eg. 'Model_Image' would be 'image.twig'
      * 

@@ -254,8 +254,8 @@ class Admin
 				
 				$metadata = $class_name::metadata();
 				$output[$current_group]['items'][] = array(
-					'icon' => $class_name::icon(),
-					'title' => $class_name::plural(),
+					'icon' => isset($item['icon']) ? $item['icon'] : $class_name::icon(),
+					'title' => isset($item['title']) ? $item['title'] : $class_name::plural(),
 					'href' => '/admin/'.$metadata->table['name'],
 					'class' => $class_name,
 					'active' => $class_name === static::$current_class
@@ -268,13 +268,14 @@ class Admin
 					$item['title'] = \Inflector::humanize(str_replace('-', ' ', array_pop($parts)));
 				}
 				
-				$uri = \Input::uri();
+				$uri = trim(\Input::uri(), '/');
+				$cmp = trim($item['link'], '/');
 				
 				$output[$current_group]['items'][] = array(
 					'icon' => isset($item['icon']) ? $item['icon'] : 'dashboard',
 					'title' => $item['title'],
 					'href' => $item['link'],
-					'active' => strpos($uri, $item['link']) === 0
+					'active' => strpos($uri, $cmp) === 0
 				);
 				
 			}

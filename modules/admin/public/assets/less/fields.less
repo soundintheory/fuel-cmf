@@ -394,8 +394,6 @@
 			width: 40px;
 			white-space: nowrap;
 		}
-		
-		.input
 	}
 	
 	&.external {
@@ -1816,6 +1814,7 @@ select option {
 @colorPickerSaturationImage: '../bootstrap-colorpicker/saturation.png';
 @colorPickerHueImage:        '../bootstrap-colorpicker/hue.png';
 @colorPickerAlphaImage:      '../bootstrap-colorpicker/alpha.png';
+@white: #FFF;
 
 .colorpicker-saturation {
 	width: 100px;
@@ -1828,7 +1827,7 @@ select option {
 		height: 5px;
 		width: 5px;
 		border: 1px solid #000;
-		.border-radius(5px);
+		.border-radius(5px, 5px, 5px, 5px);
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -1838,7 +1837,7 @@ select option {
 			height: 5px;
 			width: 5px;
 			border: 1px solid #fff;
-			.border-radius(5px);
+			.border-radius(5px, 5px, 5px, 5px);
 		}
 	}
 }
@@ -1876,7 +1875,7 @@ select option {
 	padding: 4px;
 	min-width: 120px;
 	margin-top: 1px;
-	.border-radius(4px);
+	.border-radius(4px, 4px, 4px, 4px);
 	&:before {
 		content: '';
 		display: inline-block;

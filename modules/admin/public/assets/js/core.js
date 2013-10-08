@@ -501,10 +501,24 @@ function initItemForm() {
 		
 	});
 	
+	$('.field-type-datetime').each(function() {
+		
+		$(this).find('input').datetimepicker({
+	        dateFormat: "dd/mm/yy",
+	        timeFormat: "hh:mm",
+	        changeMonth: true,
+	        changeYear: true,
+	        yearRange: "c-20:c+20"
+	    });
+		
+	});
+	
+	/*
 	$('.datetimepicker input[type="text"]').datetimepicker({
 		dateFormat: "dd MM yy",
         timeFormat: "hh:mm tt"
     });
+	*/
     
     // Save the initial state of the form to compare against later
     var initialFormData = null;
