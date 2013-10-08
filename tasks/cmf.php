@@ -29,25 +29,29 @@ class Cmf
 	}
 	
 	/**
-	 * Converts any old image fields (strings) into the new style object ones
+	 * Converts any old image and file fields (strings) into the new style object ones
 	 */
-	public function convertimages()
+	public function convertfields()
 	{
 		$em = \DoctrineFuel::manager();
 		$driver = $em->getConfiguration()->getMetadataDriverImpl();
 		$tables_fields = array();
+		$tables_filefields = array();
 		$sql = array();
 		
-		// Loop through all the model metadata and check for image fields
+		// Loop through all the model metadata and check for image and file fields
 		foreach ($driver->getAllClassNames() as $class) {
 			
 			$metadata = $em->getClassMetadata($class);
 			$fields = $metadata->fieldMappings;
 			$convert = array();
+			$convertfiles = array();
 			
 			foreach ($fields as $field_name => $field) {
 				
 				if ($field['type'] == 'image') $convert[] = $field_name;
+				
+				if ($field['type'] == 'file') $convertfiles[] = $field_name;
 				
 			}
 			
@@ -72,8 +76,30 @@ class Cmf
 				
 			}
 			
+			if (count($convertfiles) > 0) {
+				
+				$table = $metadata->table['name'];
+				$refl_fields = $metadata->reflFields;
+				
+				foreach ($convertfiles as $convert_field) {
+					
+					if (isset($refl_fields[$convert_field]) && $refl_fields[$convert_field]->class != $class) {
+						$field_table = \Admin::getTableForClass($refl_fields[$convert_field]->class);
+					} else {
+						$field_table = $table;
+					}
+					
+					$table_fields = \Arr::get($tables_filefields, $field_table, array());
+					if (!in_array($convert_field, $table_fields)) $table_fields[] = $convert_field;
+					$tables_filefields[$field_table] = $table_fields;
+					
+				}
+				
+			}
+			
 		}
 		
+		// Finally, convert image fields
 		foreach ($tables_fields as $table => $fields) {
 			
 			$results = \DB::query("SELECT id, ".implode(', ', $fields)." FROM $table")->execute();
@@ -88,6 +114,30 @@ class Cmf
 						$newimage = array( 'src' => $result[$field], 'alt' => '' );
 						$newimage = \DB::quote(serialize($newimage));
 						$sql[] = "UPDATE $table SET $field = $newimage WHERE id = ".$result['id'];
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		// ... then convert file fields
+		foreach ($tables_filefields as $table => $fields) {
+			
+			$results = \DB::query("SELECT id, ".implode(', ', $fields)." FROM $table")->execute();
+			
+			foreach ($results as $result) {
+				
+				foreach ($fields as $field) {
+					
+					$file = @unserialize($result[$field]);
+					if ($image === false) {
+						
+						$newfile = array( 'src' => $result[$field] );
+						$newfile = \DB::quote(serialize($newfile));
+						$sql[] = "UPDATE $table SET $field = $newfile WHERE id = ".$result['id'];
 						
 					}
 					

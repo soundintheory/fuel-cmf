@@ -115,7 +115,15 @@ class Admin extends Twig_Extension
 		
 		foreach ($opts as $opts_type => &$type_opts) {
 			if (!is_array($type_opts)) continue;
-			$type_opts['field'] = isset($type_opts['field']) ? $type_opts['field'] : $default['field'];
+			
+			$field = isset($type_opts['field']) ? $type_opts['field'] : $default['field'];
+			$type_opts['prop'] = false;
+			if (strpos($field, '.') !== false) {
+				$parts = explode('.', $field);
+				$type_opts['field'] = array_shift($parts);
+				$type_opts['prop'] = implode('.', $parts);
+			}
+			
 			$type_opts['prefix'] = isset($type_opts['prefix']) ? $type_opts['prefix'] : $default['prefix'];
 			$type_opts['suffix'] = isset($type_opts['suffix']) ? $type_opts['suffix'] : $default['suffix'];
 		}
@@ -123,7 +131,11 @@ class Admin extends Twig_Extension
 		// Process the item links
 		return \CMF::processItemLinks($value, function($item, $type) use($opts, $default) {
 			$item_opts = \Arr::get($opts, $type, $default);
-		    return $item_opts['prefix'].$item->get($item_opts['field']).$item_opts['suffix'];
+			$val = $item->get($item_opts['field']);
+			if ($item_opts['prop'] !== false && is_array($val)) {
+				$val = \Arr::get($val, $item_opts['prop']);
+			}
+		    return $item_opts['prefix'].$val.$item_opts['suffix'];
 		});
 	}
 	
