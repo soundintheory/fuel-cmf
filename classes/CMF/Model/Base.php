@@ -264,7 +264,7 @@ class Base extends \CMF\Doctrine\Model
      */
     public function getUrl()
     {
-        return '';
+        return $this->urlPrefix().$this->urlSlug();
     }
     
     /**
