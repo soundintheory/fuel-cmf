@@ -29,9 +29,8 @@ class Base extends \ViewModel
         ->orderBy('page.root, page.lft', 'ASC')
         ->getQuery()->getArrayResult();
         
-        $uri = rtrim(\Input::uri(), '/');
-        if (empty($uri)) { $uri = '/'; }
-        else { $uri .= '/'; }
+        $uri = '/'.trim(\Input::uri(), '/');
+        if ($uri != '/') { $uri .= '/'; }
         
         $nodes = \D::manager()->getRepository($model)->buildTree($nodes, array());
         $this->processNodes($nodes, $uri, 1);
