@@ -61,7 +61,7 @@ class Select extends Base {
             }
         }
         
-        if (is_numeric($value)) $value = trim(strval($value), ' ').' ';
+        //if (is_numeric($value)) $value = trim(strval($value), ' ').' ';
         
         if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
             !(isset($settings['required']) && $settings['required']) &&
