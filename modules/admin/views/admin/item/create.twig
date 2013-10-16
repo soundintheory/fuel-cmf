@@ -79,7 +79,8 @@
         </div>
 
         <div class="actions pull-right">
-            <button data-loading-text="Creating {{ singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> {{ static ? 'Save' : 'Create' }} {{ singular }}</button>
+            <button data-loading-text="Creating {{ singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> {{ static ? 'Save' : 'Create' }} {{ singular }}</button> 
+            {% if not static %}<button name="create_new" value="1" data-loading-text="Creating {{ singular }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> {{ 'Create & New' }} {{ singular }}</button>{% endif %}
         </div>
 
     </div></div>
