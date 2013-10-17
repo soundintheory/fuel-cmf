@@ -133,23 +133,12 @@ class Base extends \Controller
         
     }
     
-    /*
     public function router($resource, $arguments)
     {
-        // If they call user, go to $this->post_user();
-        $input_method = strtolower(\Input::method());
-        $controller_method = $input_method . '_' . $resource;
-
-        // Fall back to action_ if no HTTP request method based method exists
-        if ( ! method_exists($this, $controller_method))
-        {
-            $controller_method = 'action_'.str_replace('-', '_', $resource);
-        }
-
-        // If method is not available, throw an HttpNotFound Exception
-        if (method_exists($this, $controller_method))
-        {
-            return call_user_func_array(array($this, $controller_method), $arguments);
+        try {
+            return parent::router($resource, $arguments);
+        } catch (\HttpNotFoundException $e) {
+            // Nothing
         }
         
         // Still route through the CMF if it hasn't been touched
@@ -159,8 +148,8 @@ class Base extends \Controller
         
         // if not, we got ourselfs a genuine 404!
         return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
+        
     }
-    */
     
     protected function bindData($viewModel)
     {

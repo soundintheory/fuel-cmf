@@ -90,7 +90,7 @@ class Base extends \ViewModel
     
     public function before()
     {
-        $uri = \Input::uri();
+        $uri = trim($_SERVER['REQUEST_URI'], '/');
         $this->uri = empty($uri) ? '/' : $uri;
         $this->view = $this;
         $this->settings = $this->getSettings();
