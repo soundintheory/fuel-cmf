@@ -11,6 +11,22 @@ a, input, label, select, option {
 	clear: both;
 }
 
+.clearfix {
+
+	&:after {
+		content: "\0020";
+		display: block;
+		height: 0;
+		overflow: hidden;
+	}
+
+	&:after {
+		clear: both;
+	}
+	
+	zoom: 1;
+}
+
 /******************************** MIXINS ETC ********************************/
 
 
@@ -110,17 +126,17 @@ body.sorting {
 	
 	.breadcrumb {
 		background: transparent;
-		margin: 0 0 0 5px;
+		margin: 0 0 0 5px; padding-top: 9px; padding-bottom: 4px;
 		font-size: 12px;
 		
 		li {
 			margin-top: 1px;
+			white-space: nowrap;
+			overflow: hidden;
 		}
 		
 		.active {
 			max-width: 500px;
-			white-space: nowrap;
-			overflow: hidden;
 			text-overflow: ellipsis;
 		}
 	}

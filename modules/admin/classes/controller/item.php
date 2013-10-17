@@ -131,15 +131,12 @@ class Controller_Item extends Controller_Base {
 			$model = new $class_name();
 			$actioned = "created";
 		}
-		
+		$create_new = \Input::post('create_new');
 		// Populate the model with posted data
 		$model->populate(\Input::post());
 		
 		// Validate the model
 	    if ($model->validate(null, null, array('id', 'pos'))) {
-	    	
-	    	// Save any uploads
-	    	\Upload::save();
 	    	
 	    	$em = \D::manager();
 	    	$em->persist($model);
@@ -164,6 +161,7 @@ class Controller_Item extends Controller_Base {
 	        	
 	        	default:
 	        		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => $class_name::singular()." $actioned successfully" ));
+	        		if($create_new) \Response::redirect(\Uri::base(false)."admin/$table_name/create", 'location');
 	        		\Response::redirect(\Uri::base(false)."admin/$table_name/".$model->get('id')."/edit", 'location');
 	        		break;
 	        	

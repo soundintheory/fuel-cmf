@@ -260,6 +260,14 @@ class Base extends \CMF\Doctrine\Model
     }
     
     /**
+     * Returns the url for the model (returns blank on the base model)
+     */
+    public function getUrl()
+    {
+        return $this->urlPrefix().$this->urlSlug();
+    }
+    
+    /**
      * The name of the template the model will try to render to. By default it is automatically generated
      * from the de-namespaced (and lower cased) class name. eg. 'Model_Image' would be 'image.twig'
      * 
@@ -811,16 +819,6 @@ class Base extends \CMF\Doctrine\Model
     public function thumbnail()
     {
         return false;
-    }
-    
-    /**
-     * Called when Fuel's autoloader discovers the model class
-     * 
-     * @return void
-     */
-    public static function _init()
-    {
-        if (!empty($_FILES)) \Upload::prepare();
     }
     
     public function __toString()

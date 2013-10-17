@@ -73,21 +73,5 @@ class File extends Object {
             )
         );
     }
-    
-    /** @inheritdoc */
-    /*
-    public static function process($value, $settings, $model)
-    {
-        if (isset($value) && is_array($value)) {
-            $settings = static::settings($settings);
-            $value['model'] = $model;
-            $value['field_settings'] = $settings;
-            $value['saved_to'] = $settings['path'];
-            \Upload::set_file($value['file_index'], $value);
-            return $value['file'];
-        }
-        return $value;
-    }
-    */
 	
 }

@@ -200,13 +200,10 @@
                 
                 var pathParts = val['src'].split('/'),
                 displayName = fileNameFormat(pathParts[pathParts.length-1]),
-                cropMode = (settings['crop'] === true) ? 2 : 1;
+                cropMode = (settings['crop'] === true) ? 2 : 1,
+                thumbW = (cropMode === 1) ? 0 : settings['thumb_size']['width'];
                 
-                if (cropMode === 1) {
-                    settings['thumb_size']['width'] = 0;
-                }
-                
-                var img = '<img style="height:'+settings['thumb_size']['height']+'px;" src="/image/' + cropMode + '/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/' + val['src'] + '" />';
+                var img = '<img style="height:'+settings['thumb_size']['height']+'px;" src="/image/' + cropMode + '/' + thumbW + '/' + settings['thumb_size']['height'] + '/' + val['src'] + '" />';
                 var icon = '<span class="hover-icon"><i class="icon icon-cog"></i></span>';
                 
                 $filePreview.html('<div></div>');

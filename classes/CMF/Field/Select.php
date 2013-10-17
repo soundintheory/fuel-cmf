@@ -14,7 +14,7 @@ class Select extends Base {
     
     public static function getValue($value, $settings, $model)
     {
-        if (!\Arr::is_assoc($settings['options']) || (isset($settings['use_key']) && $settings['use_key'] === true)) return $value;
+        if (!\Arr::is_assoc($settings['options']) || $settings['use_key'] === true) return $value;
         if (is_numeric($value)) $value = trim(strval($value), ' ').' ';
         $option = isset($settings['options'][$value]) ? $settings['options'][$value] : null;
         if (is_array($option)) {
@@ -49,7 +49,7 @@ class Select extends Base {
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
         $options = isset($settings['options']) ? $settings['options'] : array();
         
-        if (!empty($options) && !\Arr::is_assoc($options)) {
+        if (!empty($options) && !\Arr::is_assoc($options) && $settings['use_key'] !== true) {
             $options = array_combine($options, $options);
         } else if (!empty($options)) {
             reset($options);
@@ -61,7 +61,7 @@ class Select extends Base {
             }
         }
         
-        if (is_numeric($value)) $value = trim(strval($value), ' ').' ';
+        //if (is_numeric($value)) $value = trim(strval($value), ' ').' ';
         
         if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
             !(isset($settings['required']) && $settings['required']) &&

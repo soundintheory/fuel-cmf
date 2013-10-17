@@ -97,7 +97,9 @@ class Controller_Base extends \Controller {
         $main = array_shift($segments);
         $method = strtolower(\Input::method());
         $action = ((count($segments) > 0) ? array_shift($segments) : 'index');
+        if ($action == null) $action = 'index';
         $controller = 'Controller_Admin_'.ucfirst($main);
+        $action = str_replace('-', '_', $action);
         
         // Return normal 404 if we can't find the controller class
         if (!class_exists($controller)) return $this->show404($msg);
