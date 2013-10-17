@@ -25,6 +25,8 @@ class Node extends Base
     
     protected static $_slug_fields = array('title');
     
+    protected $root_url = '';
+    
     /**
      * Does exactly what it says - results are in array form.
      * @return array Nested result set representing the whole tree.
@@ -136,7 +138,7 @@ class Node extends Base
     
     public function getUrl()
     {
-        return ($this->is_root) ? '' : parent::getUrl();
+        return ($this->is_root) ? $this->root_url : parent::getUrl();
     }
     
     public function urlSlug()

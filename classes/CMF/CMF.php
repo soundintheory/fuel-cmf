@@ -39,6 +39,16 @@ class CMF
     }
     
     /**
+     * For the router, to translate hyphens to underscores
+     * @param  string $uri
+     * @return string
+     */
+    public static function hyphens_to_underscores($uri)
+    {
+        return str_replace('-', '_', $uri);
+    }
+    
+    /**
      * Finds the model associated with the current URL and returns it.
      * 
      * @param class $type The model class, in case you want to narrow down the search
