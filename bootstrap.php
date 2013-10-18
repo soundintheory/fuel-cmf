@@ -3,8 +3,12 @@
 define('PROJECTROOT', realpath(APPPATH.'../../').'/');
 define('CMFPATH', PKGPATH.'cmf/');
 
+// Alias some of the cmf classes to root namespace
+Autoloader::alias_to_namespace('CMF\\CMF');
+Autoloader::alias_to_namespace('CMF\\Admin');
+
 // Hyphens to underscores
-if (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), 'admin/assets/') !== 0) {
+if (strpos(\CMF::original_uri(), '/admin') !== 0) {
 	\Config::set('security.uri_filter', array_merge(
 		array('\CMF::hyphens_to_underscores'),
 	    \Config::get('security.uri_filter')
@@ -53,7 +57,3 @@ Autoloader::add_classes(array(
 $module_paths = Config::get('module_paths');
 $module_paths[] = CMFPATH.'modules/';
 Config::set('module_paths', $module_paths);
-
-// Alias some of the cmf classes to root namespace
-Autoloader::alias_to_namespace('CMF\\CMF');
-Autoloader::alias_to_namespace('CMF\\Admin');

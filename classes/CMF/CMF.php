@@ -11,6 +11,7 @@ namespace CMF;
 class CMF
 {
     protected static $model;
+    protected static $uri = null;
     
     public static $static_urls = array();
     public static $module = '';
@@ -36,6 +37,90 @@ class CMF
     public static function fieldId($input)
     {
         return trim('field-'.str_replace(array('][', '[', ']'), '-', $input), '-');
+    }
+    
+    public static function original_uri()
+    {
+        if (static::$uri !== null)
+        {
+            return static::$uri;
+        }
+
+        if (\Fuel::$is_cli)
+        {
+            if ($uri = \Cli::option('uri') !== null)
+            {
+                static::$uri = $uri;
+            }
+            else
+            {
+                static::$uri = \Cli::option(1);
+            }
+
+            return static::$uri;
+        }
+
+        // We want to use PATH_INFO if we can.
+        if ( ! empty($_SERVER['PATH_INFO']))
+        {
+            $uri = $_SERVER['PATH_INFO'];
+        }
+        // Only use ORIG_PATH_INFO if it contains the path
+        elseif ( ! empty($_SERVER['ORIG_PATH_INFO']) and ($path = str_replace($_SERVER['SCRIPT_NAME'], '', $_SERVER['ORIG_PATH_INFO'])) != '')
+        {
+            $uri = $path;
+        }
+        else
+        {
+            // Fall back to parsing the REQUEST URI
+            if (isset($_SERVER['REQUEST_URI']))
+            {
+                $uri = $_SERVER['REQUEST_URI'];
+            }
+            else
+            {
+                throw new \FuelException('CMF was unable to detect the URI.');
+            }
+
+            // Remove the base URL from the URI
+            $base_url = parse_url(\Config::get('base_url'), PHP_URL_PATH);
+            if ($uri != '' and strncmp($uri, $base_url, strlen($base_url)) === 0)
+            {
+                $uri = substr($uri, strlen($base_url));
+            }
+
+            // If we are using an index file (not mod_rewrite) then remove it
+            $index_file = \Config::get('index_file');
+            if ($index_file and strncmp($uri, $index_file, strlen($index_file)) === 0)
+            {
+                $uri = substr($uri, strlen($index_file));
+            }
+
+            // When index.php? is used and the config is set wrong, lets just
+            // be nice and help them out.
+            if ($index_file and strncmp($uri, '?/', 2) === 0)
+            {
+                $uri = substr($uri, 1);
+            }
+
+            // Lets split the URI up in case it contains a ?.  This would
+            // indicate the server requires 'index.php?' and that mod_rewrite
+            // is not being used.
+            preg_match('#(.*?)\?(.*)#i', $uri, $matches);
+
+            // If there are matches then lets set set everything correctly
+            if ( ! empty($matches))
+            {
+                $uri = $matches[1];
+                $_SERVER['QUERY_STRING'] = $matches[2];
+                parse_str($matches[2], $_GET);
+            }
+        }
+
+        // Deal with any trailing dots
+        $uri = '/'.trim(rtrim($uri, '.'), '/');
+
+        return static::$uri = $uri;
     }
     
     /**
