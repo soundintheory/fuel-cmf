@@ -4,7 +4,7 @@ define('PROJECTROOT', realpath(APPPATH.'../../').'/');
 define('CMFPATH', PKGPATH.'cmf/');
 
 // Hyphens to underscores
-if (strpos(ltrim($_SERVER['REQUEST_URI'], '/'), 'admin/assets/') !== 0) {
+if (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), 'admin/assets/') !== 0) {
 	\Config::set('security.uri_filter', array_merge(
 		array('\CMF::hyphens_to_underscores'),
 	    \Config::get('security.uri_filter')
