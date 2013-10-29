@@ -7,14 +7,6 @@ define('CMFPATH', PKGPATH.'cmf/');
 Autoloader::alias_to_namespace('CMF\\CMF');
 Autoloader::alias_to_namespace('CMF\\Admin');
 
-// Hyphens to underscores
-if (strpos(\CMF::original_uri(), '/admin') !== 0) {
-	\Config::set('security.uri_filter', array_merge(
-		array('\CMF::hyphens_to_underscores'),
-	    \Config::get('security.uri_filter')
-	));
-}
-
 // Add in the 404 route which routes through the CMF
 \Router::add(array( '_404_' => 'base/404' ));
 

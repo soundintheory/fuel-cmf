@@ -133,12 +133,20 @@ class Base extends \Controller
         
     }
     
-    public function router($resource, $arguments)
+    public function router($method, $arguments)
     {
-        try {
-            return parent::router($resource, $arguments);
-        } catch (\HttpNotFoundException $e) {
-            // Nothing
+        $input_method = strtolower(\Input::method());
+        $method = str_replace('-', '_', $method);
+        $controller_method = $input_method.'_'.$method;
+        if (method_exists($this, $controller_method))
+        {
+            return call_user_func_array(array($this, $controller_method), $arguments);
+        }
+        
+        $controller_method = 'action_'.$method;
+        if (method_exists($this, $controller_method))
+        {
+            return call_user_func_array(array($this, $controller_method), $arguments);
         }
         
         // Still route through the CMF if it hasn't been touched
@@ -148,7 +156,6 @@ class Base extends \Controller
         
         // if not, we got ourselfs a genuine 404!
         return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
-        
     }
     
     protected function bindData($viewModel)

@@ -14,6 +14,7 @@ use Doctrine\Common\EventArgs,
 class URLListener implements EventSubscriber
 {
     protected $toFlush = array();
+    protected $savedUrls = array();
     
     /**
      * Specifies the list of events to listen to
@@ -120,6 +121,31 @@ class URLListener implements EventSubscriber
             
             $url = $prefix.$slug;
             $current_url = $url_item->url;
+            $entity_id = $entity->id;
+            
+            // Check for duplicates, only if this is an already existing item
+            if (!empty($entity_id) && !is_null($entity_id)) {
+                
+                // Set it to the item's ID if empty
+                if (is_null($slug) || strlen($slug) === 0) {
+                    $slug = $entity_id."";
+                    $url = $prefix.$slug;
+                }
+                
+                $slug_orig = $slug;
+                $unique = $this->checkUnique($url, $entity_id);
+                $counter = 2;
+                
+                while (!$unique) {
+                    $slug = $slug_orig.'-'.$counter;
+                    $url = $prefix.$slug;
+                    $unique = $this->checkUnique($url, $entity_id);
+                    $counter++;
+                }
+                
+                // Add it to the list of saved URLs
+                $this->savedUrls[$url] = $entity_id;
+            }
             
             // Skip this if the url hasn't changed
             if (!$new_url && $current_url == $url) return;
@@ -163,6 +189,24 @@ class URLListener implements EventSubscriber
         
     }
     
+    protected function checkUnique($url, $item_id)
+    {
+        if (isset($this->savedUrls[$url])) {
+            if ($this->savedUrls[$url] === $item_id) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        if (\DB::query("SELECT url FROM urls WHERE url = '$url' AND item_id <> $item_id", \DB::SELECT)->execute()->count() > 0) {
+            $this->savedUrls[$url] = $item_id;
+            return false;
+        }
+        
+        return true;
+    }
+    
     protected function processNew(&$entity, &$em, &$uow)
     {
         $metadata = $em->getClassMetadata(get_class($entity));
@@ -184,7 +228,32 @@ class URLListener implements EventSubscriber
             if ($url_field == null) return;
             
             $url_item = $entity->get($url_field);
-            $url_item->set('item_id', $entity->get('id'));
+            $entity_id = $entity->get('id');
+            $prefix = $url_item->get('prefix');
+            $slug = $url_item->get('slug');
+            $url = $url_item->get('url');
+            
+            // Set the slug to the item's ID if empty
+            if (is_null($slug) || strlen($slug) === 0) {
+                $slug = $entity_id."";
+                $url = $prefix.$slug;
+            }
+            
+            $slug_orig = $slug;
+            $unique = $this->checkUnique($url, $entity_id);
+            $counter = 2;
+            
+            while (!$unique) {
+                $slug = $slug_orig.'-'.$counter;
+                $url = $prefix.$slug;
+                $unique = $this->checkUnique($url, $entity_id);
+                $counter++;
+            }
+            
+            $url_item->set('item_id', $entity_id);
+            $url_item->set('slug', $slug);
+            $url_item->set('url', $url);
+            
             array_push($this->toFlush, $url_item);
             
         }

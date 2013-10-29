@@ -27,6 +27,25 @@ class Image extends File {
         return 'image';
     }
     
+    /** @inheritdoc */
+    public static function process($value, $settings, $model)
+    {
+        if (!is_array($value)) return parent::process($value, $settings, $model);
+        
+        $src = DOCROOT.\Arr::get($value, 'src', 'none');
+        if (!file_exists($src)) return parent::process($value, $settings, $model);
+        
+        $info = @getimagesize($src);
+        
+        if ($info === false) return parent::process($value, $settings, $model);
+        
+        // Insert image sizes
+        if (\Arr::get($value, 'width', 0) === 0) $value['width'] = $info[0];
+        if (\Arr::get($value, 'height', 0) === 0) $value['height'] = $info[1];
+        
+        return parent::process($value, $settings, $model);
+    }
+    
     public static function getCropUrl($image, $width, $height, $crop_id = 'main')
     {
         $crop = \Arr::get($image, "crop.$crop_id", false);
