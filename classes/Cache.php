@@ -27,11 +27,11 @@ class Cache {
 			return;
 		}
 		
+		$class = 'CMF\\Cache\\Driver\\'.ucfirst($config['driver']);
+		if (!class_exists($class)) return;
+		
 		// Check for excluded URLS
-		$uri = '/'.str_replace(array('?debug', '&debug'), '', trim($_SERVER['REQUEST_URI'], '/'));
-        $jq = \Input::get('_', null);
-        if ($jq !== null) $uri = str_replace(array("?_=$jq", "&_=$jq"), '', $uri);
-        
+		$uri = '/'.trim($_SERVER['REQUEST_URI'], '/');
 		$excluded_urls = $config['excluded_urls'];
 		foreach ($excluded_urls as $url) {
 			if (strpos($url, '*') !== false && strpos($uri.'/', str_replace('*', '', $url)) === 0) {
@@ -41,21 +41,13 @@ class Cache {
 		}
 		
 		// Create the driver and try to get cached content from it
-		$driver = static::driver();
+		static::$driver = new $class();
 		static::$started = true;
+		$content = static::$driver->get($uri);
 		
-        // Add any extra files to check
-        $files = \Arr::get($config, 'check_files', array());
-        foreach ($files as $file) {
-            $driver->addFile($file);
-        }
-        
-        // Try and get the cached content
-        $content = $driver->get($uri);
-        
 		// Serve the cached content if found, or continue and add the finish listener
 		if (static::$active = ($content !== false)) {
-			$driver->serve($content);
+			static::$driver->serve($content);
 		} else {
 			\Event::register('request_finished', 'CMF\\Cache::finish');
 		}
@@ -89,7 +81,7 @@ class Cache {
     	
     	$session_keys = \Config::get('cmf.cache.session_index', array());
     	$session = \Session::get();
-        
+    	
     	foreach ($session as $key => $value) {
     		if (in_array($key, $session_keys)) {
     			return static::$uriCacheKey = $key.'/'.$value.'/'.md5($uri);
@@ -150,24 +142,6 @@ class Cache {
     public static function active()
     {
     	return static::$active;
-    }
-    
-    public static function driver()
-    {
-    	if (isset(static::$driver)) return static::$driver;
-    	$class = 'CMF\\Cache\\Driver\\'.ucfirst(\Config::get('cmf.cache.driver', 'Simple'));
-    	return static::$driver = new $class();
-    }
-    
-    public static function __callStatic($name, $args)
-    {
-        if (!isset(static::$driver)) return null;
-        
-        if (method_exists(static::$driver, $name)) {
-            return call_user_func_array(array(static::$driver, $name), $args);
-        }
-        
-        throw new \Exception("Method '$name' not found in the cache driver");
     }
 	
 }

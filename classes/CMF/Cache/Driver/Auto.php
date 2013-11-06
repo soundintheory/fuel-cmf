@@ -6,6 +6,7 @@ class Auto extends Simple {
 	
 	protected $path;
 	protected $logger;
+	protected $queries = array();
 	
 	public function get($url)
 	{
@@ -58,6 +59,14 @@ class Auto extends Simple {
 		$this->startListeners();
 		return false;
 		
+	}
+	
+	/**
+	 * Adds a SQL query to check when validating the cache. Must return a MySQL datetime field
+	 */
+	public function addQuery($sql)
+	{
+		$this->queries[] = $sql;
 	}
 	
 	protected function startListeners()
@@ -154,6 +163,60 @@ class Auto extends Simple {
 			$subqueries[] = 'q'.$num;
 			$sql .= ($num > 0 ? ',' : '').' (SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'IFNULL(MAX('.implode('.updated_at),0), IFNULL(MAX(', $aliases).'.updated_at),0)'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
 			$num++;
+			
+		}
+		
+		if (count($this->queries) > 0) {
+			
+			foreach ($this->queries as $query) {
+				
+				$parser = new \PHPSQL\Parser();
+				$parsed = $parser->parse($query, true);
+				$field = null;
+				if (!isset($parsed['FROM']) || count($parsed['FROM']) === 0) {
+					continue;
+				}
+				
+				if (!isset($parsed['SELECT']) || count($parsed['SELECT']) === 0) {
+					continue;
+				}
+				
+				foreach ($parsed['SELECT'] as $select) {
+					if ($select['expr_type'] == 'colref') {
+						$field = $select['base_expr'];
+						break;
+					}
+				}
+				
+				if ($field === null) continue;
+				
+				$aliases = array();
+				foreach ($parsed['FROM'] as $part) {
+					if ($part['expr_type'] == 'table') {
+						$aliases[] = isset($part['alias']['name']) ? $part['alias']['name'] : $part['table'];
+					}
+				}
+				
+				$from_pos = $parsed['FROM'][0]['position'];
+				if (isset($parsed['ORDER']) && count($parsed['ORDER']) > 0) {
+					$append = ' FROM '.substr($query, $from_pos, $parsed['ORDER'][0]['position'] - $from_pos - 10);
+				} else {
+					$append = ' FROM '.substr($query, $from_pos);
+				}
+				
+				if (count($aliases) > 1) {
+					$append = ', (COUNT('.implode('.'.$field.')+COUNT(',$aliases).'.'.$field.')) as count'.$append;
+				} else if (count($aliases) === 1) {
+					$append = ', COUNT('.$aliases[0].'.'.$field.') as count'.$append;
+				} else {
+					continue;
+				}
+				
+				$subqueries[] = 'q'.$num;
+				$sql .= ($num > 0 ? ',' : '').' (SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'IFNULL(MAX('.implode('.'.$field.'),0), IFNULL(MAX(', $aliases).'.'.$field.'),0)'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
+				$num++;
+				
+			}
 			
 		}
 		
