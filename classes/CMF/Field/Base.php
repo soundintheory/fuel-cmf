@@ -67,6 +67,16 @@ class Base {
         //$input = \Form::input($settings['mapping']['fieldName'], strval($value), $input_attributes);
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         
+        // Translation?
+        if (\CMF::$lang_enabled) {
+            
+            // If there is no translation
+            if (!$model->hasTranslation($settings['mapping']['fieldName'])) {
+                $attributes['class'] .= ' no-translation';
+            }
+            
+        }
+        
         // Prepend or append things...
         if (isset($settings['prepend'])) {
             $input = html_tag('div', array( 'class' => 'input-prepend' ), html_tag('span', array( 'class' => 'add-on' ), $settings['prepend']).$input);

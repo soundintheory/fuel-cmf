@@ -13,6 +13,9 @@ Autoloader::alias_to_namespace('CMF\\Admin');
 // Load cmf config
 \Config::load('cmf', true);
 
+// Sort out the language
+$lang = \CMF::lang();
+
 // Quick and easy profiling using 'debug' in the query string
 if (isset($_GET['debug']) && !\Fuel::$profiling) {
 	\Fuel::$profiling = true;

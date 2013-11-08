@@ -46,7 +46,11 @@ class Extension extends Twig_Extension
 			'basename' => new Twig_Function_Function('basename'),
 			'uri' => new Twig_Function_Function('Input::uri'),
 			'base' => new Twig_Function_Function('Uri::base'),
-			'crop_url' => new Twig_Function_Function('CMF\\Field\\Object\\Image::getCropUrl')
+			'crop_url' => new Twig_Function_Function('CMF\\Field\\Object\\Image::getCropUrl'),
+			'url' => new Twig_Function_Function('CMF::url'),
+			'language' => new Twig_Function_Function('CMF::lang'),
+			'languages' => new Twig_Function_Function('CMF::languages'),
+			'__' => new Twig_Function_Function('__')
 		);
 	}
 	

@@ -51,6 +51,13 @@ class Base extends \CMF\Doctrine\Model
     protected $pos = -1;
     
     /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
+    
+    public $_translated = array();
+    
+    /**
      * Associative array containing settings for all the model's fields - tells the
      * admin module how to display the edit form.
      * 
@@ -712,6 +719,30 @@ class Base extends \CMF\Doctrine\Model
         }
         
         return $called_class::$_options[$cache_id] = $options;
+    }
+    
+    /**
+     * Gets a list of translatable fields for the object
+     */
+    public function translatable()
+    {
+        return \Admin::getTranslatable(get_class($this));
+    }
+    
+    /**
+     * Returns true if the object has all the translations
+     */
+    public function hasAllTranslations()
+    {
+        return count(array_diff($this->translatable(), $this->_translated)) === 0;
+    }
+    
+    /**
+     * Returns true if the field has been translated for the item
+     */
+    public function hasTranslation($field)
+    {
+        return in_array($field, $this->_translated);
     }
     
     /**

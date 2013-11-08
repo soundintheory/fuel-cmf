@@ -50,6 +50,12 @@ class Admin
     protected static $field_settings = array();
     
     /**
+     * Stores translatable fields per class, that are populated as the translatable
+     * listener iterates over them
+     */
+    protected static $translatable = array();
+    
+    /**
      * Array mapping association types to a human readable format.
      * @var array
      */
@@ -305,5 +311,21 @@ class Admin
 			
 		}
 		
+	}
+	
+	/**
+	 * Adds a field to the translatable list for a class
+	 */
+	public static function addTranslatable($class, $field)
+	{
+		static::$translatable[$class][] = $field;
+	}
+	
+	/**
+	 * Gets a list of translatable fields for a class
+	 */
+	public static function getTranslatable($class)
+	{
+		return \Arr::get(static::$translatable, $class, array());
 	}
 }

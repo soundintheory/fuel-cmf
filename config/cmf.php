@@ -101,6 +101,7 @@ return array (
         'enum_float' => 'CMF\\Field\\Select',
         'enum_decimal' => 'CMF\\Field\\Select',
         'measurement' => 'CMF\\Field\\Measurement',
+        'language' => 'CMF\\Field\\Language',
         
         // Associations with specific tables can be mapped...
         'onetoone_urls' => 'CMF\\Field\\Relation\\URL',
@@ -113,6 +114,22 @@ return array (
         'onetomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline',
         'manytomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline',
         'onetomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline'
+    ),
+    
+    'languages' => array(
+        'enabled' => false,
+        'translatable_fields' => array(
+            'string',
+            'integer',
+            'smallint',
+            'bigint',
+            'decimal',
+            'text',
+            'object',
+            'array',
+            'float',
+            'richtext'
+        )
     ),
     
 );

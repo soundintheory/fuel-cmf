@@ -21,6 +21,12 @@ class Controller_Base extends \Controller {
     }
 	
 	public function before() {
+        
+        // Find the lang from the session
+        if ($this->lang_enabled = \Config::get('cmf.languages.enabled', false)) {
+            $lang = \Session::get('cmf.admin.language');
+            if ($lang !== null) \CMF::setLang($lang);
+        }
 		
 		if (!\CMF\Auth::check(null, 'view', 'admin_site')) {
             \Response::redirect(\Uri::base(false)."admin/login?next=".\Uri::string(), 'location');

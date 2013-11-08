@@ -12,6 +12,8 @@ return array(
 	'admin/upload'            => 'admin/upload/index',
 	'admin/upload/video'      => 'admin/upload/video',
 	'admin/phpinfo'           => 'admin/base/phpinfo',
+	'admin/lang/set'          => 'admin/lang/set',
+	'admin/lang/snippets'     => 'admin/lang/snippets',
 	
 	// Auth actions
 	'admin/login'             => array(array('GET', new Route('admin/auth/login')), array('POST', new Route('admin/auth/perform_login'))),

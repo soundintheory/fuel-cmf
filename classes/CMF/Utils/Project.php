@@ -264,6 +264,14 @@ MIGRATION;
 		// Ignore tables...
 		$ignored_tables = \Config::get('db.doctrine2.ignore_tables', array());
 		
+		// Check if languages are enabled
+		$languages = \Config::get('cmf.languages.enabled', false);
+		if (!$languages) {
+			$ignored_tables[] = 'languages';
+			$ignored_tables[] = 'lang';
+			$ignored_tables[] = 'ext_translations';
+		}
+		
 		// Construct an array of wildcard-checking lambda functions
 		$wildcard_checks = array();
 		foreach ($ignored_tables as $num => $ignored_table) {
@@ -288,11 +296,13 @@ MIGRATION;
 		}
 		
 		// Go through all the table names and check for wildcard matches
-		$table_names = $fromSchema->getTableNames();
+		$table_names = array_merge($fromSchema->getTableNames(), $toSchema->getTableNames());
 		foreach ($table_names as $table_name) {
 			
 			// Remove the schema name from the table name
-			$table_name = str_replace($fromSchema->getName().".", '', $table_name); 
+			$table_name = str_replace(array($fromSchema->getName().".", $toSchema->getName()."."), '', $table_name); 
+			
+			if (in_array($table_name, $ignored_tables)) continue;
 			
 			foreach ($wildcard_checks as $check) {
 				if ($check($table_name) === true) {
@@ -303,16 +313,25 @@ MIGRATION;
 			
 		}
 		
+		// Strip the ignored tables from the schemas
 		foreach ($ignored_tables as $ignored_table) {
-			// Only ignore the table if it isn't defined by entities
-			if ($fromSchema->hasTable($ignored_table) && !$toSchema->hasTable($ignored_table)) 
-			{
-				$fromSchema->dropTable($ignored_table);
-			}
+			if ($fromSchema->hasTable($ignored_table)) $fromSchema->dropTable($ignored_table);
+			if ($toSchema->hasTable($ignored_table)) $toSchema->dropTable($ignored_table);
 		}
 		
         $up = static::buildCodeFromSql($fromSchema->getMigrateToSql($toSchema, $platform));
         $down = static::buildCodeFromSql($fromSchema->getMigrateFromSql($toSchema, $platform));
+        
+        // TODO: Create a more generic way of implementing data fixtures for each class
+        if ($languages && ($toSchema->hasTable('languages') && !$fromSchema->hasTable('languages'))) {
+        	
+        	$up .= "\n\t\t// Creating the first language";
+        	$up .= "\n\t\t\$lang = new \CMF\Model\Language();";
+        	$up .= "\n\t\t\$lang->set('code', \Lang::get_lang());";
+        	$up .= "\n\t\t\D::manager()->persist(\$lang);";
+        	$up .= "\n\t\t\D::manager()->flush();";
+        	
+        }
         
         if ( ! $up && ! $down) {
 			return array( 'error' => "\tNo changes detected in your mapping information.\n" );

@@ -51,7 +51,8 @@ return array(
 			'file' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 			'image' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 			'link' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
-			'measurement' => array( 'class' => 'Doctrine\\DBAL\\Types\\FloatType' )
+			'measurement' => array( 'class' => 'Doctrine\\DBAL\\Types\\FloatType' ),
+			'language' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' )
 		),
 		
 		'ignore_tables' => array(

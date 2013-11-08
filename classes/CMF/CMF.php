@@ -12,7 +12,11 @@ class CMF
 {
     protected static $model;
     protected static $uri = null;
+    protected static $lang = null;
+    protected static $lang_default = null;
+    protected static $lang_prefix = '';
     
+    public static $lang_enabled = false;
     public static $static_urls = array();
     public static $module = '';
     public static $path = '';
@@ -134,6 +138,101 @@ class CMF
     }
     
     /**
+     * Gets the current language from either TLD, URL prefix or 
+     */
+    public static function lang()
+    {
+        if (static::$lang !== null) return static::$lang;
+        
+        // First load our languages
+        \Lang::load('languages', true);
+        
+        static::$lang_enabled = \Config::get('cmf.languages.enabled', false);
+        
+        // Get the language from the request
+        $fallback = \Lang::get_lang();
+        $iso = \Arr::get(explode('/', static::original_uri()), 1, \Lang::get_lang())."";
+        if (strlen($iso) !== 2 || \Lang::get("languages.$iso") === null) $iso = \Lang::get_lang();        
+        
+        // Set the languages into Fuel for future reference
+        \Config::set('language_fallback', $fallback);
+        \Config::set('language', $iso);
+        
+        // Load the languages back in, now we might have a translation for them
+        if ($fallback != $iso) {
+            \Lang::load('languages', true, $iso, true);
+            static::$lang_prefix = "/$iso";
+        }
+        
+        // Set the uri filter so we don't see the lang prefix
+        \Config::set('security.uri_filter', array_merge(
+            array('\CMF::removeLangPrefix'),
+            \Config::get('security.uri_filter')
+        ));
+        
+        // Log to console
+        if (\Fuel::$profiling) {
+            \Profiler::console('Language is '.$iso);
+        }
+        
+        static::$lang_default = $fallback;
+        return static::$lang = $iso;
+    }
+    
+    /**
+     * Sets the current language
+     */
+    public static function setLang($lang)
+    {
+        static::$lang = $lang;
+        \Config::set('language', $lang);
+        
+        if (static::$lang_default != $lang) {
+            \Lang::load('languages', true, $lang, true);
+            static::$lang_prefix = "/$lang";
+        }
+    }
+    
+    /**
+     * Gets a list of the active languages that have been configured
+     */
+    public static function languages()
+    {
+        return \CMF\Model\Language::select('item.code', 'item', 'item.code')->where('item.visible = true')->getQuery()->getArrayResult();
+    }
+    
+    /**
+     * Removes the current lang prefix from the given url
+     */
+    public static function removeLangPrefix($url)
+    {
+        $prefix = '/'.static::lang();
+        
+        if ($url == $prefix) {
+            return '/';
+        } else if (strlen($url) > 3 && strpos($url, $prefix.'/') === 0) {
+            return substr($url, 3);
+        }
+        
+        return $url;
+    }
+    
+    /**
+     * Transforms a URL to make sure it includes the correct lang prefix
+     */
+    public static function url($url, $lang = null)
+    {
+        $url = $url == '/' ? '/' : rtrim($url, '/');
+        $lang = $lang === null ? static::lang() : $lang;
+        
+        if ($lang == static::$lang_default ||
+            substr($url, 0, 1) != '/' ||
+            (strlen($url) > 3 && strpos($url, $lang_prefix.'/') === 0)) return $url;
+        
+        return $url == $lang_prefix ? $url : static::$lang_prefix.$url;
+    }
+    
+    /**
      * Finds the model associated with the current URL and returns it.
      * 
      * @param class $type The model class, in case you want to narrow down the search
@@ -143,7 +242,7 @@ class CMF
     {
         if (isset(static::$model)) return static::$model;
 	    
-	    $url = '/'.trim($_SERVER['REQUEST_URI'], '/');
+	    $url = \Input::uri();
         if (empty($url)) $url = '/';
         
 	    $model = static::getItemByUrl($url, $type);
