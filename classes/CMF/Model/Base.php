@@ -153,6 +153,27 @@ class Base extends \CMF\Doctrine\Model
     protected static $_singular = null;
     
     /**
+     * Whether the model has any query fields in the admin interface. Will search 
+     * @see \CMF\Model\Base::pagination()
+     * @var string
+     */
+    protected static $_query_fields = array();
+    
+    /**
+     * Whether the model is pagination in the admin interface. Uses the $_per_page property.
+     * @see \CMF\Model\Base::pagination()
+     * @var string
+     */
+    protected static $_pagination = false;
+    
+    /**
+     * Items per page
+     * @see \CMF\Model\Base::per_page()
+     * @var string
+     */
+    protected static $_per_page = "50";
+    
+    /**
      * Whether the model is sortable in the admin interface. Uses the $pos property.
      * @see \CMF\Model\Base::sortable()
      * @var string
@@ -488,6 +509,36 @@ class Base extends \CMF\Doctrine\Model
     {
         $called_class = get_called_class();
         return $called_class::$_slug_fields;
+    }
+    
+    /**
+     * @see \CMF\Model\Base::$_query_fields
+     * @return array
+     */
+    public static function query_fields()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_query_fields;
+    }
+    
+    /**
+     * @see \CMF\Model\Base::$_pagination
+     * @return array
+     */
+    public static function pagination()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_pagination;
+    }
+    
+    /**
+     * @see \CMF\Model\Base::$_per_page
+     * @return array
+     */
+    public static function per_page()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_per_page;
     }
     
     /**

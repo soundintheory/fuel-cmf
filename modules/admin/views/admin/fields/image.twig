@@ -10,6 +10,7 @@
 <input type="hidden" name="{{ settings.mapping.fieldName }}[crop][{{ crop.id }}][y]" value="{{ value.crop[crop.id].y }}" />
 <input type="hidden" name="{{ settings.mapping.fieldName }}[crop][{{ crop.id }}][width]" value="{{ value.crop[crop.id].width }}" />
 <input type="hidden" name="{{ settings.mapping.fieldName }}[crop][{{ crop.id }}][height]" value="{{ value.crop[crop.id].height }}" />
+<input type="hidden" name="{{ settings.mapping.fieldName }}[crop][{{ crop.id }}][scale]" value="{{ value.crop[crop.id].scale|default('100') }}" />
 {% endfor %}
 
 <div class="async-upload{{ value.src ? ' populated' : '' }}"></div>

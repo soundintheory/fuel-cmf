@@ -26,6 +26,25 @@
     <div class="inner">
         
         <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }} ({{ rows|length }})</h2>
+        {% if searchable %}
+            <div class="search">
+                <form class="form-search" action="" method="get">
+                  <input name="query" type="text" class="input-medium search-query" value="{{query}}" placeholder="Search">
+                  <button type="submit" class="btn">Search</button>
+                </form>
+            </div>
+            {% if query is not empty %}
+                <form class="pull-left" action="" method="get">
+                  <input type="hidden" class="input-medium search-query" value="">
+                  <button type="submit" class="btn btn-mini">Reset</button>
+                </form>
+                <p>&nbsp; Search results for "{{query}}". 
+            </p>
+            {% endif %}
+        {% endif %}
+        <div class="pagination">
+            {{pagination}}
+        </div>
         {% if tabs|length > 1 %}
         <ul class="nav nav-pills">
             {% for tab_id, tab in tabs %}
