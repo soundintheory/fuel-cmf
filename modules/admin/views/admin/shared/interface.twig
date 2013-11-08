@@ -49,7 +49,7 @@
 			
 			<ul class="breadcrumb">
 				{% if lang_enabled %}
-				<li><span><img src="/admin/assets/img/lang/{{ language() }}.png" class="lang-flag" /></span></li>
+				<li><a href="/admin/languages"><img src="/admin/assets/img/lang/{{ language() }}.png" class="lang-flag" /></a></li>
 				{% endif %}
 				{% block breadcrumb %}{% endblock %}
 			</ul>

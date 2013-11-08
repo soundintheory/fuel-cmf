@@ -80,7 +80,14 @@
                     
                     <tbody>
                         {% for row in rows if row.id not in excluded_ids %}
+                        
+                        {% if class_lang_enabled %}
+                        {% set has_translations = lang_enabled and row._translated|length > 0 %}
+                        {% set has_all_translations = lang_enabled and row.hasAllTranslations() %}
+                        <tr data-id="{{ row.id }}"{% if sortable %} data-sort-group="{{ row.sortGroupId() }}"{% endif %} class="{% if not has_translations %}no-translations{% elseif not has_all_translations %}incomplete-translations{% endif %}">
+                        {% else %}
                         <tr data-id="{{ row.id }}"{% if sortable %} data-sort-group="{{ row.sortGroupId() }}"{% endif %}>
+                        {% endif %}
                             {% set editable = can_edit and (item_permissions[row.id]|length == 0 or 'edit' in item_permissions[row.id]) %}
                             {% set deletable = can_delete and (item_permissions[row.id]|length == 0 or 'delete' in item_permissions[row.id]) %}
                             {% set edit_link = "/admin/"~table_name~"/"~row.get('id')~"/edit" %}
@@ -89,6 +96,17 @@
                                 <td class="handle"><div><i class="icon-move"></i></div></td>
                                 {% elseif column.type == 'method' %}
                                 <td class="col-type-{{ column.type }}"><a href="{{ editable ? edit_link : '' }}">{{ row.get(column.name) }}</a></td>
+                                {% elseif column.type == 'lang' %}
+                                <td class="col-type-{{ column.type }}">
+                                    {% if not has_translations %}
+                                    <img class="lang-flag default" src="/admin/assets/img/lang/{{ default_language() }}.png" />
+                                    {% elseif not has_all_translations %}
+                                    <img class="lang-flag" src="/admin/assets/img/lang/{{ default_language() }}.png" />
+                                    <img class="lang-flag" src="/admin/assets/img/lang/{{ language() }}.png" />
+                                    {% else %}
+                                    <img class="lang-flag" src="/admin/assets/img/lang/{{ language() }}.png" />
+                                    {% endif %}
+                                </td>
                                 {% else %}
                                 <td class="col-type-{{ column.type }}">{{ field_list_value(row.get(column.name), editable ? edit_link : false, fields[column.name], row)|default('(empty)') }}</td>
                                 {% endif %}

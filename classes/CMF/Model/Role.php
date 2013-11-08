@@ -20,6 +20,8 @@ class Role extends Base
         'name',
         'description'
     );
+    
+    protected static $_lang_enabled = false;
 	
     public function display()
     {

@@ -482,6 +482,10 @@ class TranslatableListener extends MappedEventSubscriber
                     );
                 }
             }
+        } else if (is_subclass_of($object, 'CMF\\Model\\Base')) {
+            
+            $object->_translated = \Admin::getTranslatable($meta->name);
+            
         }
     }
 

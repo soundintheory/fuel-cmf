@@ -326,6 +326,6 @@ class Admin
 	 */
 	public static function getTranslatable($class)
 	{
-		return \Arr::get(static::$translatable, $class, array());
+		return \Arr::filter_keys(\Arr::get(static::$translatable, $class, array()), $class::excludeTranslations(), true);
 	}
 }

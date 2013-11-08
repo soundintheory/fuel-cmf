@@ -7,13 +7,14 @@ namespace CMF\Doctrine\Extensions;
  */
 class Translatable extends Extension
 {
+	protected static $listener = null;
 	
 	/** @override */
 	public static function init($em, $reader)
 	{
 		// http://www.w3schools.com/tags/ref_language_codes.asp
 		
-		$listener = new \Gedmo\Translatable\TranslatableListener();
+		static::$listener = $listener = new \Gedmo\Translatable\TranslatableListener();
 		
 		// Current translation locale should be set from session or hook later into the listener
 		// Most importantly, before the entity manager is flushed
@@ -27,6 +28,12 @@ class Translatable extends Extension
 		$listener->setTranslationFallback(true);
 		
 		$em->getEventManager()->addEventSubscriber($listener);
+	}
+	
+	public static function setLang($code)
+	{
+		static::$listener->setTranslatableLocale($code);
+		static::$listener->setTranslationFallback(true);
 	}
 	
 }

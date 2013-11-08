@@ -63,19 +63,27 @@ class Base {
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
         if (!isset($input_attributes['id'])) $input_attributes['id'] = 'form_'.$settings['mapping']['fieldName'];
         $attributes = array( 'class' => 'controls control-group'.($has_errors ? ' error' : '').' field-type-'.$class::type($settings) );
-        $input = '<input type="text" name="'.$settings['mapping']['fieldName'].'" '.array_to_attr($input_attributes).' value="'.\Security::htmlentities(strval($value), ENT_QUOTES).'" />';
-        //$input = \Form::input($settings['mapping']['fieldName'], strval($value), $input_attributes);
-        $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
+        $label_text = $settings['title'].($required ? ' *' : '');
         
         // Translation?
-        if (\CMF::$lang_enabled) {
+        if (\CMF::$lang_enabled && !\CMF::langIsDefault() && $model->isTranslatable($settings['mapping']['columnName'])) {
             
             // If there is no translation
-            if (!$model->hasTranslation($settings['mapping']['fieldName'])) {
+            if (!$model->hasTranslation($settings['mapping']['columnName'])) {
                 $attributes['class'] .= ' no-translation';
+                $input_attributes['class'] .= ' no-translation';
+                $label_text = '<img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::defaultLang().'.png" />&nbsp; '.$label_text;
+            } else {
+                $label_text = '<img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::lang().'.png" />&nbsp; '.$label_text;
             }
             
         }
+        
+        // Build the input
+        $input = '<input type="text" name="'.$settings['mapping']['fieldName'].'" '.array_to_attr($input_attributes).' value="'.\Security::htmlentities(strval($value), ENT_QUOTES).'" />';
+        
+        // Build the label
+        $label = (!$include_label) ? '' : \Form::label($label_text.($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         
         // Prepend or append things...
         if (isset($settings['prepend'])) {

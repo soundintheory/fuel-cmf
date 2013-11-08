@@ -35,7 +35,7 @@ class CMF
     public static function slug($input, $lowercase = true)
     {
         $input = str_replace(array(".", ",", "'", '"'), "", $input);
-        return \Inflector::friendly_title($input, '-', $lowercase);
+        return \Inflector::friendly_title($input, '-', $lowercase, true);
     }
     
     public static function fieldId($input)
@@ -138,6 +138,24 @@ class CMF
     }
     
     /**
+     * The current fallback language
+     */
+    public static function defaultLang()
+    {
+        return static::$lang_default;
+    }
+    
+    public static function langIsDefault()
+    {
+        return static::$lang == static::$lang_default;
+    }
+    
+    public static function langEnabled()
+    {
+        return static::$lang_enabled;
+    }
+    
+    /**
      * Gets the current language from either TLD, URL prefix or 
      */
     public static function lang()
@@ -191,6 +209,8 @@ class CMF
             \Lang::load('languages', true, $lang, true);
             static::$lang_prefix = "/$lang";
         }
+        
+        \CMF\Doctrine\Extensions\Translatable::setLang($lang);
     }
     
     /**
@@ -198,7 +218,7 @@ class CMF
      */
     public static function languages()
     {
-        return \CMF\Model\Language::select('item.code', 'item', 'item.code')->where('item.visible = true')->getQuery()->getArrayResult();
+        return \CMF\Model\Language::select('item.code', 'item', 'item.code')->orderBy('item.pos', 'ASC')->where('item.visible = true')->getQuery()->getArrayResult();
     }
     
     /**

@@ -38,12 +38,29 @@ class Redactor extends Textarea {
         $required = isset($settings['required']) ? $settings['required'] : false;
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
-
+        
+        $attributes = array( 'class' => 'controls control-group '.($has_errors ? ' error' : '') );
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
         //add redactor to the class for the field
         $input_attributes['class'] = $input_attributes['class'] . " redactor";
-        $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
+        $label_text = $settings['title'].($required ? ' *' : '');
         $input = \Form::textarea($settings['mapping']['fieldName'], strval($value), $input_attributes);
+        
+        // Translation?
+        if (\CMF::$lang_enabled && !\CMF::langIsDefault() && $model->isTranslatable($settings['mapping']['columnName'])) {
+            
+            // If there is no translation
+            if (!$model->hasTranslation($settings['mapping']['columnName'])) {
+                $attributes['class'] .= ' no-translation';
+                $label_text = '<span class="no-translation"><img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::defaultLang().'.png" />&nbsp; '.$label_text.'</span>';
+            } else {
+                $label_text = '<img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::lang().'.png" />&nbsp; '.$label_text;
+            }
+            
+        }
+        
+        // Build the label
+        $label = (!$include_label) ? '' : \Form::label($label_text.($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         
         // Set up required information for any links specified
         if (isset($settings['links']) && is_array($settings['links'])) {
@@ -68,7 +85,7 @@ class Redactor extends Textarea {
                 'assets' => array(),
                 'content' => $input,
                 'widget' => true,
-                'widget_title' => $settings['title'],
+                'widget_title' => $label_text,
                 'widget_icon' => 'align-left',
                 'js_data' => $settings
             );
@@ -77,7 +94,7 @@ class Redactor extends Textarea {
         // Return the normal field
         return array(
             'assets' => array(),
-            'content' => html_tag('div', array( 'class' => 'controls control-group '.($has_errors ? ' error' : '') ), $label.$input),
+            'content' => html_tag('div', $attributes, $label.$input),
             'widget' => false,
             'js_data' => $settings
         );

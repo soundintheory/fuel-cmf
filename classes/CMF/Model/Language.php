@@ -23,6 +23,8 @@ class Language extends Base
         'code'
     );
     
+    protected static $_lang_enabled = false;
+    
     protected static $_icon = 'globe';
     
     protected static $_sortable = true;
@@ -54,5 +56,10 @@ class Language extends Base
      * @ORM\Column(type="language")
      **/
     protected $code;
+    
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     **/
+    protected $top_level_domain;
 	
 }

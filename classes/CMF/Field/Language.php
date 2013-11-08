@@ -5,18 +5,23 @@ namespace CMF\Field;
 class Language extends Base {
     
     protected static $defaults = array(
-        'allow_empty' => true
+        'allow_empty' => true,
+        'active_only' => false
     );
     
     /** @inheritdoc */
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
-        return '<img src="/admin/assets/img/lang/'.$value.'.png" style="width:24px;height:24px;" />&nbsp; '.__("languages.$value");
+        if (empty($value) || is_null($value) || strlen($value) === 0) return '<a href="'.$edit_link.'" class="item-link">(none)</a>';
+        return '<a href="'.$edit_link.'" class="item-link"><img src="/admin/assets/img/lang/'.$value.'.png" style="width:24px;height:24px;" />&nbsp; '.__("languages.$value").'</a>';
     }
     
     /** @inheritdoc */
     public static function displayForm($value, &$settings, $model)
     {
+        // No point in ever showing this field if lang isn't enabled
+        if (!\CMF::$lang_enabled) return '';
+        
         $settings = static::settings($settings);
         $include_label = isset($settings['label']) ? $settings['label'] : true;
         $required = isset($settings['required']) ? $settings['required'] : false;
@@ -24,7 +29,15 @@ class Language extends Base {
         $has_errors = count($errors) > 0;
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
         
-        $options = \Arr::get(\Lang::$lines, 'en.languages', array());
+        if ($settings['active_only']) {
+            
+            $options = array_map(function($lang) {
+                return \Arr::get(\Lang::$lines, 'en.languages.'.$lang['code'], '(Language name not found)');
+            }, \CMF\Model\Language::select('item.code', 'item', 'item.code')->orderBy('item.pos', 'ASC')->where('item.visible = true')->getQuery()->getArrayResult());
+            
+        } else {
+            $options = \Arr::get(\Lang::$lines, 'en.languages', array());
+        }
         
         // Whether to allow an empty option
         if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && !$required && $settings['allow_empty']) {

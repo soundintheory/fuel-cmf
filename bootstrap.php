@@ -13,6 +13,17 @@ Autoloader::alias_to_namespace('CMF\\Admin');
 // Load cmf config
 \Config::load('cmf', true);
 
+// Load up the required packages
+Package::load(array('email', 'parser', 'sprockets'));
+
+// Override some external classes
+Autoloader::add_core_namespace('CMF\\Core', true);
+Autoloader::add_classes(array(
+    'CMF\\Core\\View_Twig'  => __DIR__.'/classes/CMF/Core/View_Twig.php',
+    'CMF\\Core\\Image_Driver'  => __DIR__.'/classes/CMF/Core/Image_Driver.php',
+    'CMF\\Core\\Lang'  => __DIR__.'/classes/CMF/Core/Lang.php',
+));
+
 // Sort out the language
 $lang = \CMF::lang();
 
@@ -27,9 +38,6 @@ if (isset($_GET['debug']) && !\Fuel::$profiling) {
 // Listen for events at the beginning of the request for caching
 \Event::register('controller_started', 'CMF\\Cache::start');
 
-// Load up the required packages
-Package::load(array('email', 'parser', 'sprockets'));
-
 \Config::load('sprockets', true);
 \Config::load(CMFPATH.'config/sprockets.php', 'sprockets');
 $assets_dir = \Config::get('sprockets.asset_compile_dir');
@@ -41,13 +49,6 @@ if (!is_dir($assets_dir)) {
 	@mkdir($assets_dir.'css');
 	@mkdir($assets_dir.'img');
 }
-
-// Override some external classes
-Autoloader::add_core_namespace('CMF\\Core', true);
-Autoloader::add_classes(array(
-    'CMF\\Core\\View_Twig'  => __DIR__.'/classes/CMF/Core/View_Twig.php',
-    'CMF\\Core\\Image_Driver'  => __DIR__.'/classes/CMF/Core/Image_Driver.php'
-));
 
 // Add CMF's modules directory so it's modules can be autoloaded
 $module_paths = Config::get('module_paths');

@@ -26,8 +26,24 @@ class Textarea extends Base
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
         $attributes = array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') );
         $input = \Form::textarea($settings['mapping']['fieldName'], strval($value), $input_attributes);
-        $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
-
+        $label_text = $settings['title'].($required ? ' *' : '');
+        
+        // Translation?
+        if (\CMF::$lang_enabled && !\CMF::langIsDefault() && $model->isTranslatable($settings['mapping']['columnName'])) {
+            
+            // If there is no translation
+            if (!$model->hasTranslation($settings['mapping']['columnName'])) {
+                $attributes['class'] .= ' no-translation';
+                $label_text = '<img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::defaultLang().'.png" />&nbsp; '.$label_text;
+            } else {
+                $label_text = '<img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::lang().'.png" />&nbsp; '.$label_text;
+            }
+            
+        }
+        
+        // Build the label
+        $label = (!$include_label) ? '' : \Form::label($label_text.($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
+        
         if (isset($settings['prepend'])) {
             $input = html_tag('div', array( 'class' => 'input-prepend' ), html_tag('span', array( 'class' => 'add-on' ), $settings['prepend']).$input);
         }

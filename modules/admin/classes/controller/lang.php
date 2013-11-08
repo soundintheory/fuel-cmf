@@ -25,9 +25,9 @@ class Controller_Lang extends Controller_Base {
 	/**
 	 * An editor view for the fuel lang entries
 	 */
-	public function action_snippets()
+	public function action_terms()
 	{
-		$this->template = 'admin/lang/snippets.twig';
+		$this->template = 'admin/lang/terms.twig';
 		
 	}
 	

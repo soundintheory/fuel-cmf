@@ -22,7 +22,8 @@ class Controller_Auth extends \Controller {
 	public function action_logout()
 	{
 	    if (\CMF\Auth::logout()) {
-             \Response::redirect(\Uri::base(false).'admin/login', 'location');
+	    	\Session::delete('cmf.admin.language');
+            \Response::redirect(\Uri::base(false).'admin/login', 'location');
         }
 	}
 	

@@ -48,7 +48,9 @@ class Extension extends Twig_Extension
 			'base' => new Twig_Function_Function('Uri::base'),
 			'crop_url' => new Twig_Function_Function('CMF\\Field\\Object\\Image::getCropUrl'),
 			'url' => new Twig_Function_Function('CMF::url'),
+			'lang_enabled' => new Twig_Function_Function('CMF::langEnabled'),
 			'language' => new Twig_Function_Function('CMF::lang'),
+			'default_language' => new Twig_Function_Function('CMF::defaultLang'),
 			'languages' => new Twig_Function_Function('CMF::languages'),
 			'__' => new Twig_Function_Function('__')
 		);

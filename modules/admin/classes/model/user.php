@@ -16,6 +16,11 @@ use Doctrine\ORM\Mapping as ORM,
  **/
 class Model_User extends \CMF\Model\User
 {
+    protected static $_fields = array(
+        'default_language' => array(
+            'active_only' => true
+        )
+    );
 	
     protected static $_list_fields = array(
         'username',
@@ -29,5 +34,11 @@ class Model_User extends \CMF\Model\User
     {
         return $this->username;
     }
+    
+    /**
+     * @ORM\Column(type="language", nullable=true)
+     */
+    protected $default_language;
+    
 	
 }

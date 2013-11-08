@@ -87,7 +87,7 @@ class Controller_List extends Controller_Base {
 		$qb = $class_name::select('item', 'item', 'item.id');
 		
 		// Add any joins to the query builder (prevents the query buildup that comes from accessing lazily loaded associations)
-		foreach ($list_fields as $field) {
+		foreach ($list_fields as $num => $field) {
 			
 			if ($field == 'id') continue;
 			
@@ -116,6 +116,7 @@ class Controller_List extends Controller_Base {
 				if (method_exists($class_name, $field_name)) {
 					
 					$column = array(
+						'num' => $num,
 						'type' => 'method',
 						'name' => $field_name,
 						'heading' => \Inflector::humanize(\Inflector::underscore($field_name))
@@ -203,6 +204,11 @@ class Controller_List extends Controller_Base {
 				$qb->andWhere($query_str);
 			}
 		}
+		
+		if (\CMF::$lang_enabled && !\CMF::langIsDefault() && $class_name::langEnabled()) {
+			array_unshift($columns, array( 'name' => '', 'type' => 'lang', 'heading' => '' ));
+		}
+		
 		// Make the list drag and drop, if editing is possible
 		if ($sortable && $can_edit) {
 			array_unshift($columns, array( 'name' => '', 'type' => 'handle', 'heading' => '' ));
@@ -360,6 +366,7 @@ class Controller_List extends Controller_Base {
 		$this->actions = $class_name::actions();
 		
 		\Admin::$current_class = $this->current_class = $class_name;
+		$this->class_lang_enabled = $class_name::langEnabled();
 		$this->plural = $class_name::plural();
 		$this->excluded_ids = $excluded_ids;
 		$this->item_permissions = $item_permissions;

@@ -18,6 +18,8 @@ class Permission extends Base
     
     protected static $_icon = 'key';
     
+    protected static $_lang_enabled = false;
+    
 	/**
 	 * @ORM\ManyToMany(targetEntity="\CMF\Model\Role", mappedBy="permissions")
 	 **/

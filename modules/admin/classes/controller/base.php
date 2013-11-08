@@ -21,15 +21,19 @@ class Controller_Base extends \Controller {
     }
 	
 	public function before() {
-        
-        // Find the lang from the session
-        if ($this->lang_enabled = \Config::get('cmf.languages.enabled', false)) {
-            $lang = \Session::get('cmf.admin.language');
-            if ($lang !== null) \CMF::setLang($lang);
-        }
 		
 		if (!\CMF\Auth::check(null, 'view', 'admin_site')) {
             \Response::redirect(\Uri::base(false)."admin/login?next=".\Uri::string(), 'location');
+        }
+        
+        // Find the lang from the session, or from the user
+        if ($this->lang_enabled = \Config::get('cmf.languages.enabled', false)) {
+            $lang = \Session::get('cmf.admin.language');
+            if ($lang === null) {
+                $user = \CMF\Auth::current_user();
+                $lang = $user->default_language;
+            }
+            if (!empty($lang) && strlen($lang) !== 0 && $lang !== null) \CMF::setLang($lang);
         }
         
         // Allows us to set the interface template via an integer

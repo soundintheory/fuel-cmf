@@ -1,0 +1,36 @@
+    {% extends interface_template|default("admin/shared/interface.twig") %}
+
+{% block html_title %}Edit {{ singular }} : {{ admin_title }}{% endblock %}
+
+{% block main_pane %}
+    
+    {% include 'admin/shared/alert.twig' %}
+    
+    <p>Lang stuff!!</p>
+
+{% endblock %}
+
+{% block breadcrumb %}
+
+<li><a href="/admin">Dashboard</a> <span class="divider">/</span></li>
+<li><a href="/admin/languages">{{ plural }}</a> <span class="divider">/</span></li>
+<li class="active">{{ model.display() }}</li>
+
+{% endblock %}
+
+{% block admin_css %}
+    {% for css in form.assets.css %}
+        <link rel="stylesheet" type="text/css" href="{{ css }}">
+    {% endfor %}
+{% endblock %}
+
+{% block admin_js %}
+    {{ parent() }}
+    {% for js in form.assets.js %}
+        <script type="text/javascript" src="{{ js }}?v=4"></script>
+    {% endfor %}
+    <script type="text/javascript">
+        var field_settings = {{ form.js_field_settings|json_encode }};
+        var field_values = {};
+    </script>
+{% endblock %}

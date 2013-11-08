@@ -988,6 +988,16 @@ class User extends Base
     }
     
     /** inheritdoc */
+    public static function listFields()
+    {
+        $called_class = get_called_class();
+        $fields = $called_class::$_list_fields;
+        if (\CMF::$lang_enabled) array_push($fields, 'default_language');
+        
+        return $fields;
+    }
+    
+    /** inheritdoc */
     public function blank($ignore_fields = null)
     {
         parent::blank($ignore_fields);
@@ -1024,6 +1034,8 @@ class User extends Base
         'username',
         'email'
     );
+    
+    protected static $_lang_enabled = false;
     
     protected static $_icon = 'user';
     

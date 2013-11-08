@@ -671,13 +671,50 @@ hr {
 .item-form {
 	padding: 0 0 20px 0;
 	
-	.controls {
-		margin: 0 0 4px 0;
+	.lang-icon {
+		color: #08c;
 	}
 	
-	.item-label .help {
-		color: #999;
-		font-size: 0.8em;
+	.lang-icon.no-translation {
+		color: #CCC;
+	}
+	
+	.controls {
+		margin: 0 0 4px 0;
+		
+		&.no-translation {
+			
+			.lang-icon {
+				color: #CCC;
+			}
+			
+			.item-label {
+				color: #999;
+			}
+			
+			input[type="text"], textarea {
+				color: #999;
+				font-style: italic;
+			}
+			
+			.lang-flag {
+				opacity: .5;
+			}
+		}
+	}
+	
+	.item-label {
+		
+		.lang-flag {
+			width: 16px; height: 16px;
+			vertical-align: middle;
+			margin-top: -2px;
+		}
+		
+		.help {
+			color: #999;
+			font-size: 0.8em;
+		}
 	}
 	
 	.checkbox-group {
@@ -694,6 +731,24 @@ hr {
 	
 	.tab-content {
 		padding-top: 0px;
+	}
+	
+	.widget-title {
+		
+		.lang-flag {
+			width: 18px; height: 18px;
+			vertical-align: middle;
+			margin-top: -2px; margin-left: 2px;
+		}
+		
+		.no-translation {
+			color: #999;
+			font-style: italic;
+			
+			.lang-flag {
+				opacity: .5;
+			}
+		}
 	}
 	
 	.widget-content {
@@ -730,6 +785,41 @@ body.chromeless .item-form {
 		padding: 9px;
 	}
 	
+	.col-type-lang {
+		width: 40px;
+		text-align: center;
+		
+		.lang-flag {
+			width: 18px; height: 18px;
+		}
+		
+		.lang-flag.default {
+			opacity: .5;
+		}
+		
+		.lang-flag.incomplete {
+			opacity: .5;
+		}
+	}
+	
+	tr.no-translations {
+		
+		td, td a.item-link, td span {
+			color: #999;
+			font-style: italic;
+		}
+		
+		.icon-move {
+			color: #999;
+		}
+	}
+	
+	tr.incomplete-translations {
+		
+		td, td a {
+			font-style: italic;
+		}
+	}
 }
 
 #main .no-items {

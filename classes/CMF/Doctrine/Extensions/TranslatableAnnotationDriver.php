@@ -65,6 +65,7 @@ class Annotation extends AbstractAnnotationDriver
             ) {
                 continue;
             }
+            
             // translatable property
             if ($translatable = $this->reader->getPropertyAnnotation($property, self::TRANSLATABLE)) {
                 $field = $property->getName();
@@ -79,14 +80,14 @@ class Annotation extends AbstractAnnotationDriver
             }
             // BEGIN CMF EDIT:
             // Automatically translates all text based fields, so no annotations required
-            else if ($isCmf) {
+            else if ($isCmf && $className::langEnabled(false)) {
                 
                 $field = $property->getName();
                 if (!$meta->hasField($field)) continue;
                 
                 $allowed = \Config::get('cmf.languages.translatable_fields', array());
                 $fieldMapping = $meta->getFieldMapping($field);
-                if (!in_array($fieldMapping['type'], $allowed)) continue;
+                if (!in_array($fieldMapping['type'], $allowed) || in_array($field, $className::excludeTranslations())) continue;
                 
                 $config['fields'][] = $field;
                 \Admin::addTranslatable($className, $field);

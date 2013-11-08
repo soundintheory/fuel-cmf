@@ -57,6 +57,10 @@ class Base extends \CMF\Doctrine\Model
     
     public $_translated = array();
     
+    protected static $_exclude_translations = array();
+    
+    protected static $_lang_enabled = true;
+    
     /**
      * Associative array containing settings for all the model's fields - tells the
      * admin module how to display the edit form.
@@ -793,7 +797,35 @@ class Base extends \CMF\Doctrine\Model
      */
     public function hasTranslation($field)
     {
-        return in_array($field, $this->_translated);
+        $class = get_class($this);
+        return in_array($field, $class::$_exclude_translations) || in_array($field, $this->_translated);
+    }
+    
+    /**
+     * Returns a list of fields excluded from translation
+     */
+    public static function excludeTranslations()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_exclude_translations;
+    }
+    
+    /**
+     * Checks if a particular field is translatable
+     */
+    public function isTranslatable($field)
+    {
+        $class = get_class($this);
+        return in_array($field, \Admin::getTranslatable($class));
+    }
+    
+    /**
+     * Checks whether the model is translatable or not
+     */
+    public static function langEnabled($check_fields = true)
+    {
+        if ($check_fields) return static::$_lang_enabled && count(\Admin::getTranslatable(get_called_class())) > 0;
+        return static::$_lang_enabled;
     }
     
     /**

@@ -120,14 +120,7 @@ return array (
         'enabled' => false,
         'translatable_fields' => array(
             'string',
-            'integer',
-            'smallint',
-            'bigint',
-            'decimal',
             'text',
-            'object',
-            'array',
-            'float',
             'richtext'
         )
     ),
