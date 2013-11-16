@@ -47,6 +47,9 @@ class Controller_List extends Controller_Base {
 		// Get the data for the list
 		$metadata = $class_name::metadata();
 		$sortable = $class_name::sortable();
+		$query_fields = $class_name::query_fields();
+		$pagination = $class_name::pagination();
+		$per_page = $class_name::per_page();
 		$sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
 		
 		$excluded_ids = array();
@@ -184,7 +187,22 @@ class Controller_List extends Controller_Base {
 				$qb->andWhere($filter_str);
 			}
 		}
-		
+		if(!empty($query_fields) && count($query_fields) > 0){
+			//if query string then search the fields provided
+			$this->searchable = true;
+			$query = \Input::get('query');
+			$this->query = $query;
+			if($query){
+				$query_str = "";
+				foreach ($query_fields as $num => $field) {
+					$query_str .= "item.".$field." LIKE '%".$query."%'";
+					if($num != (count($query_fields) -1)){
+						$query_str .= " OR ";
+					}
+				}
+				$qb->andWhere($query_str);
+			}
+		}
 		// Make the list drag and drop, if editing is possible
 		if ($sortable && $can_edit) {
 			array_unshift($columns, array( 'name' => '', 'type' => 'handle', 'heading' => '' ));
@@ -245,7 +263,39 @@ class Controller_List extends Controller_Base {
 		    }
 			
 		}
-		
+		if($pagination){
+			/* PAGINATION */
+
+			$count = count($qb->getQuery()->getScalarResult());
+
+			$config = array(
+			    'pagination_url' => 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PATH_INFO'],
+			    'total_items'    => $count,
+			    'per_page'       => $per_page,
+			    //'uri_segment'    => 1,
+			    // or if you prefer pagination by query string
+			    'uri_segment'    => 'p',
+			    'wrapper' => '<div class="pagination"><ul>{pagination}</ul></div>',
+			    'first' => '<li class="first">{link}</li>',
+			    'previous' => '<li class="prev">{link}</i>',
+			    'previous-inactive' => '',//<li class="prev inactive">&lt; Prev</li>
+			    'regular' => '<li>{link}</li>',
+			    'active' => '<li class="active">{link}</li>',
+			    'next' => '<li class="next">{link}</li>',
+			    'next-inactive' => '',//<li class="next inactive">Next &gt</li>
+			    'previous-marker' => '&lt; Prev',
+			    'next-marker' => 'Next &gt;'
+			);
+			$pagination = \Pagination::forge('default', $config);
+			
+
+			$qb->setMaxResults($pagination->per_page);
+			$qb->setFirstResult($pagination->offset);
+			$this->pagination = $pagination->render();
+		}
+		else{
+			$this->pagination = null;
+		}
 		// Get the results and prepare data for the template
 		$rows = $qb->getQuery()->getResult();
 		$ids = array_keys($rows);
