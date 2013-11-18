@@ -43,6 +43,57 @@ class Image extends File {
         if (\Arr::get($value, 'width', 0) === 0) $value['width'] = $info[0];
         if (\Arr::get($value, 'height', 0) === 0) $value['height'] = $info[1];
         
+        // Generate crops if there are any missing
+        if (is_array($crop = \Arr::get($settings, 'crop'))) {
+            
+            $crop_values = \Arr::get($value, 'crop', array());
+            foreach ($crop as $cropid => $crop_setting) {
+                
+                $crop_value = \Arr::get($crop_values, $cropid, array());
+                if (!isset($crop_value['x']) ||
+                    !isset($crop_value['y']) ||
+                    !isset($crop_value['width']) ||
+                    !isset($crop_value['height'])) {
+                    
+                    // Insert some sensible defaults for the crop here
+                    if (\Arr::get($crop_setting, 'width', 0) > 0 && \Arr::get($crop_setting, 'height', 0) > 0) {
+                        
+                        // There is an aspect ratio
+                        $aspect = $crop_setting['width'] / $crop_setting['height'];
+                        
+                        $cropw = $value['width'];
+                        $croph = round($value['width'] / $aspect);
+                        
+                        if ($croph < $value['height']) {
+                            $croph = $value['height'];
+                            $cropw = round($croph * $aspect);
+                        }
+                        
+                        $crop_value['width'] = $cropw;
+                        $crop_value['height'] = $croph;
+                        $crop_value['x'] = round(($value['width'] - $cropw) / 2);
+                        $crop_value['y'] = round(($value['height'] - $croph) / 2);
+                        
+                    } else {
+                        
+                        // It's a free crop
+                        $crop_value['width'] = $value['width'];
+                        $crop_value['height'] = $value['height'];
+                        $crop_value['x'] = 0;
+                        $crop_value['y'] = 0;
+                        
+                    }
+                    
+                }
+                
+                $crop_values[$cropid] = $crop_value;
+                
+            }
+            
+            $value['crop'] = $crop_values;
+            
+        }
+        
         return parent::process($value, $settings, $model);
     }
     
