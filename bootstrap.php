@@ -42,7 +42,8 @@ if (!is_dir($assets_dir)) {
 // Override some external classes
 Autoloader::add_core_namespace('CMF\\Core', true);
 Autoloader::add_classes(array(
-    'CMF\\Core\\View_Twig'  => __DIR__.'/classes/CMF/Core/View_Twig.php'
+    'CMF\\Core\\View_Twig'  => __DIR__.'/classes/CMF/Core/View_Twig.php',
+    'CMF\\Core\\Image_Driver'  => __DIR__.'/classes/CMF/Core/Image_Driver.php'
 ));
 
 // Add CMF's modules directory so it's modules can be autoloaded

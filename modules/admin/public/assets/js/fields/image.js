@@ -40,6 +40,7 @@
         originalValue = null,
         $previewLink = null,
         $modal = null,
+        modalOpened = false,
         title = $label.html(),
         cValue = null,
         cropSettings = settings['crop'],
@@ -156,7 +157,7 @@
             
             var $file = $($el.fineUploader('getItemByFileId', id));
             
-            console.log(qq.isXhrUploadSupported());
+            // console.log(qq.isXhrUploadSupported());
             
             $file.find('.progress').addClass('active');
             $el.find('.top-row').hide();
@@ -259,6 +260,7 @@
         }
         
         function launchModal() {
+            modalOpened = true;
             $modal.modal('toggle');
             
             // Open the first crop tab if there are any
@@ -293,7 +295,7 @@
                 modalContent += '<ul class="crop-nav nav nav-pills">';
                 for (var i = 0; i < cropSettings.length; i++) {
                     var cropOption = cropSettings[i];
-                    modalContent += '<li><a href="#' + fieldId + '-crop-' + cropOption['id'] + '">' + cropOption['title'] + '</a></li>';
+                    modalContent += '<li><a href="#' + fieldId + '-crop-' + cropOption['id'] + '" data-cropid="' + cropOption['id'] + '">' + cropOption['title'] + '</a></li>';
                 }
                 modalContent += '</ul>' +
                 '<div class="alert alert-info">Select an option above to edit the different crops for this image</div>';
@@ -323,6 +325,7 @@
             '<div class="clear"></div>' +
             '</div>' + // .modal-body
             '<div class="modal-footer">' +
+            '<div class="footer-left clearfix"></div>' +
             '<button class="btn btn-primary save-image" data-dismiss="modal"><i class="icon icon-ok"></i> &nbsp;Done</button>' +
             '</div>' +
             '</div>';
@@ -376,9 +379,9 @@
                 for (var i = 0; i < cropSettings.length; i++) {
                     var cropOption = cropSettings[i];
                     cropOptions[cropOption['id']] = cropOption;
-                    rightCol += '<div id="' + fieldId + '-crop-' + cropOption['id'] + '" data-cropid="'+cropOption['id']+'" class="img tab-pane">';
+                    rightCol += '<div id="' + fieldId + '-crop-' + cropOption['id'] + '" data-cropid="'+cropOption['id']+'" class="img tab-pane"><div class="crop-canvas">';
                     rightCol += '<img src="/image/3/565/390/' + cValue['src'] + '" />';
-                    rightCol += '</div>'; // .img
+                    rightCol += '</div></div>'; // .img
                 }
                 
                 rightCol += '<div class="clear"></div>';
@@ -394,76 +397,250 @@
             // Instantiate Jcrop
             $modal.find('.tab-pane.img').each(function() {
                 
-                var $img = $(this).find('img').eq(0),
+                var $canvas = $(this).find('.crop-canvas').eq(0),
+                $img = $(this).find('img').eq(0).imagesLoaded(onImageLoad),
                 cropId = $(this).attr('data-cropid'),
                 cropOption = cropOptions[cropId],
                 imageWidth = cValue['width'] || 0,
                 imageHeight = cValue['height'] || 0,
+                canvasWidth = 565,
+                canvasHeight = 390,
+                sImageWidth = 0,
+                sImageHeight = 0,
+                origin = { x:0, y:0 },
+                imgScale = 1,
+                cScale = -1,
                 cropWidth = parseInt(cropOption.width),
                 cropHeight = parseInt(cropOption.height),
                 aspectRatio = (isSet(cropWidth) && isSet(cropHeight)) ? cropWidth / cropHeight : 0,
+                $zoomSlider = null,
+                $resetBut = $('<span class="btn btn-warning btn-reset"><i class="icon-refresh"></i> Reset Crop</span>').on('click', resetCropArea),
                 jcrop_api = null,
                 jcropSettings = {
                     onChange: updateCoords,
                     onSelect: updateCoords,
                     bgColor:     'white',
-                    bgOpacity:   .5,
+                    bgOpacity:   .5
                 },
                 
                 // The inputs we'll be updating
                 $inputX = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][x]"]'),
                 $inputY = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][y]"]'),
                 $inputW = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][width]"]'),
-                $inputH = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][height]"]');
+                $inputH = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][height]"]'),
+                $inputS = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][scale]"]');
                 
-                // Tell jcrop the true size of the image
-                if (imageWidth > 0 && imageHeight > 0 ) {
-                    jcropSettings.trueSize = [imageWidth, imageHeight];
+                cScale = parseInt($inputS.val()) / 100;
+                
+                $modal.find('.crop-nav a[data-cropid="' + cropId + '"]').on('shown', onTabShow);
+                
+                // Set the scaled image width, in case our load handler doesn't report back properly
+                if (imageWidth > 0 && imageHeight > 0) {
+                    sImageHeight = canvasHeight;
+                    sImageWidth = Math.round(sImageHeight * (imageWidth / imageHeight));
+                    
+                    imgScale = imageHeight / sImageHeight;
+                    
+                    sImageWidth *= cScale;
+                    sImageHeight *= cScale;
+                    
+                    if (sImageWidth > canvasWidth) {
+                        sImageWidth = canvasWidth;
+                        sImageHeight = Math.round(sImageWidth * (imageHeight / imageWidth));
+                        
+                        imgScale = imageWidth / sImageWidth;
+                        
+                        sImageWidth *= cScale;
+                        sImageHeight *= cScale;
+                    }
+                    
+                    centerImage();
                 }
+                
+                // Make sure our canvas is the correct size
+                $canvas.css({ 'width':canvasWidth, 'height':canvasHeight });
                 
                 // Get the initial selection from the inputs
-                var startX = parseInt($inputX.val()) || -1,
-                startY = parseInt($inputY.val()) || -1,
+                var isFresh = false,
+                startX = $inputX.val() ? parseInt($inputX.val()) : null,
+                startY = $inputY.val() ? parseInt($inputY.val()) : null,
                 startW = parseInt($inputW.val()) || 0,
                 startH = parseInt($inputH.val()) || 0;
-                
-                // Use the settings from the inputs if they are valid, or set sensible defaults if not
-                if (startW > 0 && startH > 0) {
-                    if (startX === -1) { startX = 0; }
-                    if (startY === -1) { startY = 0; }
-                } else {
-                    var startW = imageWidth,
-                    startH = imageHeight;
-                    if (aspectRatio > 0) {
-                        startH = Math.round(startW / aspectRatio);
-                        if (startH > imageHeight) {
-                            startH = imageHeight;
-                            startW = Math.round(startH * aspectRatio);
-                        }
-                        if (startX === -1) { startX = Math.round((imageWidth - startW) / 2); }
-                        if (startY === -1) { startY = Math.round((imageHeight - startH) / 2); }
-                    } else {
-                        if (startX === -1) { startX = 0; }
-                        if (startY === -1) { startY = 0; }
-                    }
-                }
-                
-                // Set the initial select
-                jcropSettings.setSelect = [startX, startY, startX + startW, startY + startH];
                 
                 if (aspectRatio > 0) {
                     jcropSettings.aspectRatio = aspectRatio;
                 }
                 
-                $img.Jcrop(jcropSettings, function() {
+                $canvas.Jcrop(jcropSettings, function() {
                     jcrop_api = this;
                 });
                 
+                // Use the settings from the inputs if they are valid, or set sensible defaults if not
+                if (startW > 0 && startH > 0) {
+                    
+                    if (startX === null) { startX = 0; }
+                    if (startY === null) { startY = 0; }
+                    
+                    // Set the initial select
+                    jcrop_api.setSelect([
+                        ((startX / imgScale) *cScale) + origin.x,
+                        ((startY / imgScale) * cScale) + origin.y,
+                        (((startX + startW) / imgScale) * cScale) + origin.x,
+                        (((startY + startH) / imgScale) * cScale) + origin.y
+                    ]);
+                    
+                } else {
+                    isFresh = true;
+                    resetCrop();
+                }
+                
+                if (canCrop && cropSettings.length === 1) {
+                    $(this).trigger('show');
+                }
+                
+                function onTabShow() {
+                    
+                    initZoomSlider();
+                    
+                    // Detach any old zoom sliders and add this tab's
+                    
+                    $footerLeft = $modal.find('.modal-footer .footer-left');
+                    $footerLeft.find('.zoom-slider').detach();
+                    $footerLeft.find('.btn-reset').detach();
+                    $footerLeft.html('');
+                    $footerLeft.append($resetBut);
+                    $footerLeft.append($('<div class="slider-label">Scale: </div>'));
+                    $footerLeft.append($zoomSlider);
+                    
+                }
+                
+                function initZoomSlider() {
+                    
+                    if ($zoomSlider !== null) { return; }
+                    
+                    $zoomSlider = $('<div class="zoom-slider" id="zoom-slider-'+cropId+'" style="width: 260px; margin: 15px;"></div>');
+                    $zoomSlider.slider({
+                        value: parseInt($inputS.val()),
+                        orientation: "horizontal",
+                        range: "min",
+                        min: 0,
+                        max: 100,
+                        animate: true,
+                        slide: onZoomSlideChange,
+                        change: onZoomSlideChange
+                    });
+                    
+                }
+                
+                function onZoomSlideChange(evt, ui) {
+                    
+                    if (ui.value < 20) {
+                        evt.preventDefault();
+                        evt.stopPropagation();
+                        $zoomSlider.slider( "value", 20);
+                        ui.value = 20;
+                    }
+                    
+                    // Update the image etc
+                    setScale(ui.value / 100);
+                }
+                
+                function setScale(scale) {
+                    
+                    if (cScale === scale) { return; }
+                    
+                    sImageWidth = (imageWidth / imgScale) * scale;
+                    sImageHeight = (imageHeight / imgScale) * scale;
+                    cScale = scale;
+                    $inputS.val(Math.round(scale * 100));
+                    centerImage();
+                    
+                    updateCoords(jcrop_api.tellSelect());
+                    
+                }
+                
                 function updateCoords(c) {
-                    $inputX.val(Math.round(c.x));
-                    $inputY.val(Math.round(c.y));
-                    $inputW.val(Math.round(c.w));
-                    $inputH.val(Math.round(c.h));
+                    $inputX.val(Math.round(((c.x - origin.x) * imgScale) / cScale));
+                    $inputY.val(Math.round(((c.y - origin.y) * imgScale) / cScale));
+                    $inputW.val(Math.round((c.w * imgScale) / cScale));
+                    $inputH.val(Math.round((c.h * imgScale) / cScale));
+                }
+                
+                function onImageLoad(e) {
+                    
+                    if (e.images && e.images.length > 0) {
+                        
+                        var img = e.images[0];
+                        
+                        if (img.isLoaded && img.img && img.img.width > 0 && img.img.height > 0) {
+                            sImageWidth = img.img.width * cScale;
+                            sImageHeight = img.img.height * cScale;
+                            imgScale = imageWidth / img.img.width;
+                        }
+                        
+                        // Set the starting scale
+                        cScale = -1;
+                        setScale(parseInt($inputS.val()) / 100);
+                        
+                    }
+                    
+                    centerImage();
+                    if (isFresh) {
+                        isFresh = false;
+                        resetCropArea();
+                    }
+                    
+                }
+                
+                function centerImage() {
+                    origin.x = Math.round((canvasWidth - sImageWidth) / 2);
+                    origin.y = Math.round((canvasHeight - sImageHeight) / 2);
+                    
+                    $img.css({ 'top':origin.y, 'left':origin.x, 'width':sImageWidth, 'height':sImageHeight });
+                }
+                
+                function resetCropArea() {
+                    
+                    initZoomSlider();
+                    $zoomSlider.slider( "value", 100);
+                    
+                    startW = sImageWidth;
+                    startH = sImageHeight;
+                    var startScale = 1;
+                    
+                    if (aspectRatio > 0) {
+                        
+                        startH = Math.round(startW / aspectRatio);
+                        if (startH < sImageHeight) {
+                            startH = sImageHeight;
+                            startW = Math.round(startH * aspectRatio);
+                        }
+                        
+                        if (startH > canvasHeight) {
+                            startScale = canvasHeight / startH;
+                            startH = canvasHeight;
+                            startW = Math.round(startH * aspectRatio);
+                        }
+                        
+                        if (startW > canvasWidth) {
+                            startScale = startScale * (canvasWidth / startW);
+                            startW = canvasWidth;
+                            startH = Math.round(startW / aspectRatio);
+                        }
+                        
+                        if (startScale < 1) {
+                            $zoomSlider.slider( "value", Math.round(startScale * 100));
+                        }
+                        
+                        startX = Math.round((sImageWidth - startW) / 2);
+                        startY = Math.round((sImageHeight - startH) / 2);
+                        
+                    } else {
+                        startX = 0;
+                        startY = 0;
+                    }
+                    
+                    jcrop_api.setSelect([startX + origin.x, startY + origin.y, startX + startW + origin.x, startY + startH + origin.y]);
                 }
                 
             });

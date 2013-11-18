@@ -655,11 +655,12 @@ td.col-type-file {
 
 .image-modal {
 	margin: 0 0 0 -450px;
-	width: 900px;
+	min-width: 648px !important;
 	
 	.right-col {
-		width: 575px;
-		float: right; display: inline;
+		width: 600px;
+		margin: 0 auto;
+		// float: right; display: inline;
 	}
 	
 	.left-col .alert {
@@ -680,6 +681,7 @@ td.col-type-file {
 	}
 	
 	.modal-header {
+		position: relative; z-index: 2;
 		border: none;
 		padding: 15px 15px 0px 15px;
 		
@@ -692,7 +694,7 @@ td.col-type-file {
 		}
 		
 		button.close {
-			position: absolute; top: 14px; right: 18px;
+			position: absolute; top: 14px; right: 18px; z-index: 2;
 		}
 		
 		.alert {
@@ -713,6 +715,39 @@ td.col-type-file {
 		
 		.img {
 			margin: 0 auto;
+		}
+		
+		.crop-canvas {
+			width: 565px; height: 390px;
+			
+			img {
+				position: absolute; top: 0px; left: 0px;
+			}
+		}
+		
+	}
+	
+	.modal-footer {
+		position: relative;
+		
+		.save-image {
+			position: absolute; top: 20px; right: 20px;
+			white-space: nowrap;
+		}
+		
+		.slider-label {
+			float: left; display: inline;
+			font-size: 12px; line-height: 40px; white-space: nowrap;
+			padding: 0 6px 0 10px;
+		}
+		
+		.zoom-slider {
+			float: left; display: inline;
+		}
+		
+		.btn-reset {
+			float: left; display: inline;
+			margin: 5px 20px 0 6px;
 		}
 	}
 	
