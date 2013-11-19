@@ -495,7 +495,7 @@
                 }
                 
                 if (canCrop && cropSettings.length === 1) {
-                    $(this).trigger('show');
+                    onTabShow();
                 }
                 
                 function onTabShow() {

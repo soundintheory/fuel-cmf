@@ -55,6 +55,12 @@ class Image extends File {
                     !isset($crop_value['width']) ||
                     !isset($crop_value['height'])) {
                     
+                    // Find the canvas scale
+                    $cscale = 390 / $value['height'];
+                    if (round($value['width'] * $cscale) > 565) $cscale = 565 / $value['width'];
+                    if ($cscale > 1) $cscale = 1;
+                    if ($cscale < .2) $cscale = .2;
+                    
                     // Insert some sensible defaults for the crop here
                     if (\Arr::get($crop_setting, 'width', 0) > 0 && \Arr::get($crop_setting, 'height', 0) > 0) {
                         
@@ -69,10 +75,19 @@ class Image extends File {
                             $cropw = round($croph * $aspect);
                         }
                         
+                        $actualw = round($cropw * $cscale);
+                        $actualh = round($croph * $cscale);
+                        $cropscale = 1;
+                        
+                        // Adjust the crop scale if it's not gonna fit the canvas
+                        if ($actualh > 390) $cropscale = 390 / $actualh;
+                        if (round($actualw * $cropscale) > 565) $cropscale = 565 / $actualw;
+                        
                         $crop_value['width'] = $cropw;
                         $crop_value['height'] = $croph;
                         $crop_value['x'] = round(($value['width'] - $cropw) / 2);
                         $crop_value['y'] = round(($value['height'] - $croph) / 2);
+                        $crop_value['scale'] = round($cropscale * 100);
                         
                     } else {
                         
@@ -81,6 +96,7 @@ class Image extends File {
                         $crop_value['height'] = $value['height'];
                         $crop_value['x'] = 0;
                         $crop_value['y'] = 0;
+                        $crop_value['scale'] = 100;
                         
                     }
                     
