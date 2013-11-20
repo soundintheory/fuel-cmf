@@ -67,9 +67,6 @@ class Image extends File {
                     if ($bias_x !== 0) $bias_x = 100 / $bias_x;
                     if ($bias_y !== 0) $bias_y = 100 / $bias_y;
                     
-                    print('Bias X: '.$bias_x."\n");
-                    print('Bias Y: '.$bias_y."\n\n");
-                    
                     // Insert some sensible defaults for the crop here
                     if (\Arr::get($crop_setting, 'width', 0) > 0 && \Arr::get($crop_setting, 'height', 0) > 0) {
                         
@@ -219,7 +216,6 @@ class Image extends File {
             }
             
             $value['crop'] = $crop_values;
-            print_r($value);
             
         }
         
