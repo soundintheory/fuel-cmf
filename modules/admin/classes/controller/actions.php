@@ -4,6 +4,61 @@ namespace Admin;
 
 class Controller_Actions extends Controller_Base {
 	
+	public function action_reset_images()
+	{
+		try {
+		    set_time_limit(0);
+		    ini_set('memory_limit', '512M');
+		} catch (\Exception $e) {
+		    // Nothing!
+		}
+		
+		$em = \D::manager();
+		$driver = $em->getConfiguration()->getMetadataDriverImpl();
+		$tables_fields = array();
+		$sql = array();
+		
+		// Loop through all the model metadata and check for image fields
+		foreach ($driver->getAllClassNames() as $class) {
+		    
+		    $metadata = $em->getClassMetadata($class);
+		    $fields = $metadata->fieldMappings;
+		    $image_fields = array();
+		    
+		    foreach ($fields as $field_name => $field) {
+		        
+		        if ($field['type'] == 'image') $image_fields[] = $field_name;
+		        
+		    }
+		    
+		    if (count($image_fields) === 0) continue;
+		    
+		    $items = $class::select('item')->getQuery()->getResult();
+		    foreach ($items as $num => $item) {
+		    	
+		    	$item->set('updated_at', new \Datetime());
+		    	$data = array();
+		    	
+		    	foreach ($image_fields as $image_field) {
+		    		
+		    		$image_value = $item->$image_field;
+		    		
+		    		if (is_array($image_value))
+		    			$data[$image_field] = \Arr::filter_keys($image_value, array('src', 'width', 'height', 'alt'));
+		    		
+		    	}
+		    	
+		    	$item->populate($data);
+		    	\D::manager()->persist($item);
+		    }
+		    
+		}
+		
+		\D::manager()->flush();
+		$this->heading = 'All the images have been reset!';
+		$this->template = 'admin/generic.twig';
+	}
+	
 	/**
 	 * Go through every entry in the system and make sure the URL is up to date
 	 */

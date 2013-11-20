@@ -141,6 +141,26 @@ class Controller_Base extends \Controller {
         $this->data = array( 'msg' => $msg );
         return;
     }
+    
+    public function router($method, $arguments)
+    {
+        $input_method = strtolower(\Input::method());
+        $method = str_replace('-', '_', $method);
+        $controller_method = $input_method.'_'.$method;
+        if (method_exists($this, $controller_method))
+        {
+            return call_user_func_array(array($this, $controller_method), $arguments);
+        }
+        
+        $controller_method = 'action_'.$method;
+        if (method_exists($this, $controller_method))
+        {
+            return call_user_func_array(array($this, $controller_method), $arguments);
+        }
+        
+        // if not, we got ourselfs a genuine 404!
+        $this->show404('That page could not be found!');
+    }
 	
 	public function __get($key)
     {
