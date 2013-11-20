@@ -62,10 +62,8 @@ class Image extends File {
                     
                     // Scale of the image within the crop can be overridden
                     $image_scale = 100 / intval(\Input::param('imagecropscale', 100));
-                    $bias_x = intval(\Input::param('imagecropbiasx', 0));
-                    $bias_y = intval(\Input::param('imagecropbiasy', 0));
-                    if ($bias_x !== 0) $bias_x = 100 / $bias_x;
-                    if ($bias_y !== 0) $bias_y = 100 / $bias_y;
+                    $bias_x = intval(\Input::param('imagecropbiasx', 0)) / 100;
+                    $bias_y = intval(\Input::param('imagecropbiasy', 0)) / 100;
                     
                     // Insert some sensible defaults for the crop here
                     if (\Arr::get($crop_setting, 'width', 0) > 0 && \Arr::get($crop_setting, 'height', 0) > 0) {
