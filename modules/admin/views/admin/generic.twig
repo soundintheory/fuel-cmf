@@ -6,9 +6,9 @@
 
     <div class="row-fluid">
         <div class="span12">
-            <h2 class="main-heading">Welcome to your admin system</h2>
+            {% if heading %}<h2 class="main-heading">{{ heading }}</h2>{% endif %}
             <hr>
-            <p>To get started, select an option from the sidebar<br><br></p>
+            {% if content %}{{ content }}{% endif %}
         </div>
     </div><!--/row-->
 
@@ -16,7 +16,7 @@
 
 {% block breadcrumb %}
 
-<li><a href="/admin">Dashboard</a> <span class="divider">/</span></li>
+<li class="active">Dashboard  <span class="divider">/</span></li>
 {% if heading %}<li class="active">{{ heading }}</li>{% endif %}
 
 {% endblock %}

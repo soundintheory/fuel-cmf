@@ -398,7 +398,7 @@
             $modal.find('.tab-pane.img').each(function() {
                 
                 var $canvas = $(this).find('.crop-canvas').eq(0),
-                $img = $(this).find('img').eq(0).imagesLoaded(onImageLoad),
+                $img = $(this).find('img').eq(0),
                 cropId = $(this).attr('data-cropid'),
                 cropOption = cropOptions[cropId],
                 imageWidth = cValue['width'] || 0,
@@ -430,29 +430,17 @@
                 $inputH = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][height]"]'),
                 $inputS = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][scale]"]');
                 
-                cScale = parseInt($inputS.val()) / 100;
-                
                 $modal.find('.crop-nav a[data-cropid="' + cropId + '"]').on('shown', onTabShow);
                 
                 // Set the scaled image width, in case our load handler doesn't report back properly
                 if (imageWidth > 0 && imageHeight > 0) {
-                    sImageHeight = canvasHeight;
-                    sImageWidth = Math.round(sImageHeight * (imageWidth / imageHeight));
                     
-                    imgScale = imageHeight / sImageHeight;
+                    imgScale = 390 / imageHeight;
+                    if (Math.round(imageWidth * imgScale) > 565) imgScale = 565 / imageWidth;
+                    if (imgScale > 1) imgScale = 1;
                     
-                    sImageWidth *= cScale;
-                    sImageHeight *= cScale;
-                    
-                    if (sImageWidth > canvasWidth) {
-                        sImageWidth = canvasWidth;
-                        sImageHeight = Math.round(sImageWidth * (imageHeight / imageWidth));
-                        
-                        imgScale = imageWidth / sImageWidth;
-                        
-                        sImageWidth *= cScale;
-                        sImageHeight *= cScale;
-                    }
+                    sImageWidth = Math.round(imageWidth * imgScale);
+                    sImageHeight = Math.round(imageHeight * imgScale);
                     
                     centerImage();
                 }
@@ -462,10 +450,15 @@
                 
                 // Get the initial selection from the inputs
                 var isFresh = false,
-                startX = $inputX.val() ? parseInt($inputX.val()) : null,
-                startY = $inputY.val() ? parseInt($inputY.val()) : null,
-                startW = parseInt($inputW.val()) || 0,
-                startH = parseInt($inputH.val()) || 0;
+                startX = parseInt($inputX.val()),
+                startY = parseInt($inputY.val()),
+                startW = parseInt($inputW.val()),
+                startH = parseInt($inputH.val());
+                
+                if (isNaN(startX)) { startX = 0; }
+                if (isNaN(startY)) { startY = 0; }
+                if (isNaN(startW)) { startW = 0; }
+                if (isNaN(startH)) { startH = 0; }
                 
                 if (aspectRatio > 0) {
                     jcropSettings.aspectRatio = aspectRatio;
@@ -481,13 +474,16 @@
                     if (startX === null) { startX = 0; }
                     if (startY === null) { startY = 0; }
                     
+                    setScale(parseInt($inputS.val()) / 100);
+                    
                     // Set the initial select
                     jcrop_api.setSelect([
-                        ((startX / imgScale) *cScale) + origin.x,
-                        ((startY / imgScale) * cScale) + origin.y,
-                        (((startX + startW) / imgScale) * cScale) + origin.x,
-                        (((startY + startH) / imgScale) * cScale) + origin.y
+                        ((startX * imgScale) *cScale) + origin.x,
+                        ((startY * imgScale) * cScale) + origin.y,
+                        (((startX + startW) * imgScale) * cScale) + origin.x,
+                        (((startY + startH) * imgScale) * cScale) + origin.y
                     ]);
+                    
                     
                 } else {
                     isFresh = true;
@@ -549,8 +545,8 @@
                     
                     if (cScale === scale) { return; }
                     
-                    sImageWidth = (imageWidth / imgScale) * scale;
-                    sImageHeight = (imageHeight / imgScale) * scale;
+                    sImageWidth = (imageWidth * imgScale) * scale;
+                    sImageHeight = (imageHeight * imgScale) * scale;
                     cScale = scale;
                     $inputS.val(Math.round(scale * 100));
                     centerImage();
@@ -560,36 +556,10 @@
                 }
                 
                 function updateCoords(c) {
-                    $inputX.val(Math.round(((c.x - origin.x) * imgScale) / cScale));
-                    $inputY.val(Math.round(((c.y - origin.y) * imgScale) / cScale));
-                    $inputW.val(Math.round((c.w * imgScale) / cScale));
-                    $inputH.val(Math.round((c.h * imgScale) / cScale));
-                }
-                
-                function onImageLoad(e) {
-                    
-                    if (e.images && e.images.length > 0) {
-                        
-                        var img = e.images[0];
-                        
-                        if (img.isLoaded && img.img && img.img.width > 0 && img.img.height > 0) {
-                            sImageWidth = img.img.width * cScale;
-                            sImageHeight = img.img.height * cScale;
-                            imgScale = imageWidth / img.img.width;
-                        }
-                        
-                        // Set the starting scale
-                        cScale = -1;
-                        setScale(parseInt($inputS.val()) / 100);
-                        
-                    }
-                    
-                    centerImage();
-                    if (isFresh) {
-                        isFresh = false;
-                        resetCropArea();
-                    }
-                    
+                    $inputX.val(Math.round(((c.x - origin.x) / imgScale) / cScale));
+                    $inputY.val(Math.round(((c.y - origin.y) / imgScale) / cScale));
+                    $inputW.val(Math.round((c.w / imgScale) / cScale));
+                    $inputH.val(Math.round((c.h / imgScale) / cScale));
                 }
                 
                 function centerImage() {
