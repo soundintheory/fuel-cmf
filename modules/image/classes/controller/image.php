@@ -78,7 +78,7 @@ class Controller_Image extends \Controller {
 			$this->filename = 'placeholder.jpg';
     		$this->resized = $path_cache.'placeholder'.$append.'.'.$output_ext;
 		}
-			
+		
 		if (file_exists($this->resized))
 		{
 		    $path_last_modified = filemtime($this->path);
@@ -134,7 +134,7 @@ class Controller_Image extends \Controller {
 		
 		if (!is_null($output)) return $output;
 		
-		$bgcolor = '#'.$this->param('bgcolor', 'fff');
+		$bgcolor = '#'.\Input::param('bgcolor', 'fff');
 		
 		\Image::load($this->path)
 		->config('bgcolor', $bgcolor)
