@@ -62,6 +62,13 @@ class Image extends File {
                     
                     // Scale of the image within the crop can be overridden
                     $image_scale = 100 / intval(\Input::param('imagecropscale', 100));
+                    $bias_x = intval(\Input::param('imagecropbiasx', 0));
+                    $bias_y = intval(\Input::param('imagecropbiasy', 0));
+                    if ($bias_x !== 0) $bias_x = 100 / $bias_x;
+                    if ($bias_y !== 0) $bias_y = 100 / $bias_y;
+                    
+                    print('Bias X: '.$bias_x."\n");
+                    print('Bias Y: '.$bias_y."\n\n");
                     
                     // Insert some sensible defaults for the crop here
                     if (\Arr::get($crop_setting, 'width', 0) > 0 && \Arr::get($crop_setting, 'height', 0) > 0) {
@@ -85,12 +92,59 @@ class Image extends File {
                         if ($actualh > 390) $cropscale = 390 / $actualh;
                         if (round($actualw * $cropscale) > 565) $cropscale = 565 / $actualw;
                         
+                        // This is the 'real' size of the crop in the editor
+                        $actualw = round($actualw * $cropscale);
+                        $actualh = round($actualh * $cropscale);
+                        
                         $crop_value['width'] = $cropw;
                         $crop_value['height'] = $croph;
                         $crop_value['x'] = round(($value['width'] - $cropw) / 2);
                         $crop_value['y'] = round(($value['height'] - $croph) / 2);
-                        $crop_value['scale'] = round($cropscale * 100);
                         
+                         // Crop offset using the bias param
+                        $crop_offset_x = round($crop_value['x'] * $bias_x);
+                        $crop_offset_y = round($crop_value['y'] * $bias_y);
+                        $crop_value['x'] = $crop_value['x'] + $crop_offset_x;
+                        $crop_value['y'] = $crop_value['y'] + $crop_offset_y;
+                        
+                        // Figure out the actual sizes
+                        $actual_crop_offset_x = round(round($crop_value['x'] * $cscale) * $cropscale);
+                        $actual_crop_offset_y = round(round($crop_value['y'] * $cscale) * $cropscale);
+                        $actual_imagew = round(round($value['width'] * $cscale) * $cropscale);
+                        $actual_imageh = round(round($value['height'] * $cscale) * $cropscale);
+                        $origin_x = round((565 - $actual_imagew) / 2);
+                        $origin_y = round((390 - $actual_imageh) / 2);
+                        
+                        // Check if we need to scale for horizontal offset
+                        if ($origin_x + $actual_crop_offset_x < 0) {
+                            $diff = abs($origin_x + $actual_crop_offset_x);
+                            $cropscale *= (565 / (565 + ($diff * 2)));
+                        } else if (($origin_x + $actual_crop_offset_x + $actualw) > 565) {
+                            $diff = ($origin_x + $actual_crop_offset_x + $actualw) - 565;
+                            $cropscale *= (565 / (565 + ($diff * 2)));
+                        }
+                        
+                        // Now recalculate all the actual sizes...
+                        $actualw = round(round($cropw * $cscale) * $cropscale);
+                        $actualh = round(round($croph * $cscale) * $cropscale);
+                        $actual_crop_offset_x = round(round($crop_value['x'] * $cscale) * $cropscale);
+                        $actual_crop_offset_y = round(round($crop_value['y'] * $cscale) * $cropscale);
+                        $actual_imagew = round(round($value['width'] * $cscale) * $cropscale);
+                        $actual_imageh = round(round($value['height'] * $cscale) * $cropscale);
+                        $origin_x = round((565 - $actual_imagew) / 2);
+                        $origin_y = round((390 - $actual_imageh) / 2);
+                        
+                        // Check if we need to scale for vertical offset
+                        if ($origin_y + $actual_crop_offset_y < 0) {
+                            $diff = abs($origin_y + $actual_crop_offset_y);
+                            $cropscale *= (390 / (390 + ($diff * 2)));
+                        } else if ($origin_y + $actual_crop_offset_y + $actualh > 390) {
+                            $diff = ($origin_y + $actual_crop_offset_y + $actualh) - 390;
+                            $cropscale *= (390 / (390 + ($diff * 2)));
+                        }
+                        
+                        $crop_value['scale'] = round($cropscale * 100);
+                         
                     } else {
                         
                         // It's a free crop
@@ -108,6 +162,52 @@ class Image extends File {
                         if ($actualh > 390) $cropscale = 390 / $actualh;
                         if (round($actualw * $cropscale) > 565) $cropscale = 565 / $actualw;
                         
+                        // This is the 'real' size of the crop in the editor
+                        $actualw = round($actualw * $cropscale);
+                        $actualh = round($actualh * $cropscale);
+                        
+                        // Crop offset using the bias param
+                        $crop_offset_x = round($crop_value['x'] * $bias_x);
+                        $crop_offset_y = round($crop_value['y'] * $bias_y);
+                        $crop_value['x'] = $crop_value['x'] + $crop_offset_x;
+                        $crop_value['y'] = $crop_value['y'] + $crop_offset_y;
+                        
+                        // Figure out the actual sizes
+                        $actual_crop_offset_x = round(round($crop_value['x'] * $cscale) * $cropscale);
+                        $actual_crop_offset_y = round(round($crop_value['y'] * $cscale) * $cropscale);
+                        $actual_imagew = round(round($value['width'] * $cscale) * $cropscale);
+                        $actual_imageh = round(round($value['height'] * $cscale) * $cropscale);
+                        $origin_x = round((565 - $actual_imagew) / 2);
+                        $origin_y = round((390 - $actual_imageh) / 2);
+                        
+                        // Check if we need to scale for horizontal offset
+                        if ($origin_x + $actual_crop_offset_x < 0) {
+                            $diff = abs($origin_x + $actual_crop_offset_x);
+                            $cropscale *= (565 / (565 + ($diff * 2)));
+                        } else if (($origin_x + $actual_crop_offset_x + $actualw) > 565) {
+                            $diff = ($origin_x + $actual_crop_offset_x + $actualw) - 565;
+                            $cropscale *= (565 / (565 + ($diff * 2)));
+                        }
+                        
+                        // Now recalculate all the actual sizes...
+                        $actualw = round(round($cropw * $cscale) * $cropscale);
+                        $actualh = round(round($croph * $cscale) * $cropscale);
+                        $actual_crop_offset_x = round(round($crop_value['x'] * $cscale) * $cropscale);
+                        $actual_crop_offset_y = round(round($crop_value['y'] * $cscale) * $cropscale);
+                        $actual_imagew = round(round($value['width'] * $cscale) * $cropscale);
+                        $actual_imageh = round(round($value['height'] * $cscale) * $cropscale);
+                        $origin_x = round((565 - $actual_imagew) / 2);
+                        $origin_y = round((390 - $actual_imageh) / 2);
+                        
+                        // Check if we need to scale for vertical offset
+                        if ($origin_y + $actual_crop_offset_y < 0) {
+                            $diff = abs($origin_y + $actual_crop_offset_y);
+                            $cropscale *= (390 / (390 + ($diff * 2)));
+                        } else if ($origin_y + $actual_crop_offset_y + $actualh > 390) {
+                            $diff = ($origin_y + $actual_crop_offset_y + $actualh) - 390;
+                            $cropscale *= (390 / (390 + ($diff * 2)));
+                        }
+                        
                         $crop_value['scale'] = round($cropscale * 100);
                         
                     }
@@ -119,6 +219,7 @@ class Image extends File {
             }
             
             $value['crop'] = $crop_values;
+            print_r($value);
             
         }
         
