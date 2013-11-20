@@ -59,7 +59,9 @@ class Image extends File {
                     $cscale = 390 / $value['height'];
                     if (round($value['width'] * $cscale) > 565) $cscale = 565 / $value['width'];
                     if ($cscale > 1) $cscale = 1;
-                    if ($cscale < .2) $cscale = .2;
+                    
+                    // Scale of the image within the crop can be overridden
+                    $image_scale = 100 / intval(\Input::param('imagecropscale', 100));
                     
                     // Insert some sensible defaults for the crop here
                     if (\Arr::get($crop_setting, 'width', 0) > 0 && \Arr::get($crop_setting, 'height', 0) > 0) {
@@ -67,11 +69,11 @@ class Image extends File {
                         // There is an aspect ratio
                         $aspect = $crop_setting['width'] / $crop_setting['height'];
                         
-                        $cropw = $value['width'];
-                        $croph = round($value['width'] / $aspect);
+                        $cropw = round($value['width'] * $image_scale);
+                        $croph = round($cropw / $aspect);
                         
-                        if ($croph < $value['height']) {
-                            $croph = $value['height'];
+                        if ($croph < round($value['height'] * $image_scale)) {
+                            $croph = round($value['height'] * $image_scale);
                             $cropw = round($croph * $aspect);
                         }
                         
@@ -92,11 +94,21 @@ class Image extends File {
                     } else {
                         
                         // It's a free crop
-                        $crop_value['width'] = $value['width'];
-                        $crop_value['height'] = $value['height'];
-                        $crop_value['x'] = 0;
-                        $crop_value['y'] = 0;
-                        $crop_value['scale'] = 100;
+                        $crop_value['width'] = round($value['width'] * $image_scale);
+                        $crop_value['height'] = round($value['height'] * $image_scale);
+                        $crop_value['x'] = round(($value['width'] - $crop_value['width']) / 2);
+                        $crop_value['y'] = round(($value['height'] - $crop_value['height']) / 2);
+                        
+                        // Work out crop scale...
+                        $actualw = round($crop_value['width'] * $cscale);
+                        $actualh = round($crop_value['height'] * $cscale);
+                        $cropscale = 1;
+                        
+                        // Adjust the crop scale if it's not gonna fit the canvas
+                        if ($actualh > 390) $cropscale = 390 / $actualh;
+                        if (round($actualw * $cropscale) > 565) $cropscale = 565 / $actualw;
+                        
+                        $crop_value['scale'] = round($cropscale * 100);
                         
                     }
                     
