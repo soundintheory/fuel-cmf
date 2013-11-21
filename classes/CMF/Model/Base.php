@@ -320,6 +320,10 @@ class Base extends \CMF\Doctrine\Model
             $overwrite = \Arr::get($data, '__overwrite__', $overwrite);
         }
         
+        // Merge settings in first!
+        if (isset($data['settings']) && is_array($data['settings']))
+            $this->settings = \Arr::merge($this->settings(), $data['settings']);
+        
         $fields = $this->fieldSettings();
         
         // Pre process the data

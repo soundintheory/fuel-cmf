@@ -487,7 +487,7 @@
                     
                 } else {
                     isFresh = true;
-                    resetCrop();
+                    resetCropArea();
                 }
                 
                 if (canCrop && cropSettings.length === 1) {
