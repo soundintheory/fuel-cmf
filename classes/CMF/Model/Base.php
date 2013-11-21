@@ -296,9 +296,8 @@ class Base extends \CMF\Doctrine\Model
      */
     public function getUrl()
     {
-        if (property_exists($this, 'url') && isset($this->url) && isset($this->url->url)) {
-            return $this->url->url;
-        }
+        if (property_exists($this, 'url') && isset($this->url))
+            return $this->url->get('url', '/');
         return $this->urlPrefix().$this->urlSlug();
     }
     

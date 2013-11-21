@@ -47,12 +47,12 @@ class Extension extends Twig_Extension
 			'uri' => new Twig_Function_Function('Input::uri'),
 			'base' => new Twig_Function_Function('Uri::base'),
 			'crop_url' => new Twig_Function_Function('CMF\\Field\\Object\\Image::getCropUrl'),
-			'url' => new Twig_Function_Function('CMF::url'),
+			'link' => new Twig_Function_Function('CMF::link'),
 			'lang_enabled' => new Twig_Function_Function('CMF::langEnabled'),
 			'language' => new Twig_Function_Function('CMF::lang'),
 			'default_language' => new Twig_Function_Function('CMF::defaultLang'),
 			'languages' => new Twig_Function_Function('CMF::languages'),
-			'__' => new Twig_Function_Function('__')
+			'_' => new Twig_Function_Function('Lang::get')
 		);
 	}
 	

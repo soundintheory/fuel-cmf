@@ -86,6 +86,7 @@ class Cache {
     	if ($uri === null && static::$uriCacheKey !== null) return static::$uriCacheKey;
     	$uri = ($uri !== null) ? trim($uri, '/') : trim($_SERVER['REQUEST_URI'], '/');
     	if ($uri == '') $uri = '__home__';
+        if (\CMF::$lang_enabled) $uri .= \CMF::lang();
     	
     	$session_keys = \Config::get('cmf.cache.session_index', array());
     	$session = \Session::get();

@@ -51,7 +51,7 @@ class URL extends Base
     
     public function __toString()
     {
-        return strval($this->url);
+        return \CMF::link(strval($this->url));
     }
     
     /**

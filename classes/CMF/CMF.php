@@ -15,9 +15,11 @@ class CMF
     protected static $lang = null;
     protected static $lang_default = null;
     protected static $lang_prefix = '';
+    protected static $languages = null;
     
     public static $lang_enabled = false;
     public static $static_urls = array();
+    public static $static_links = array();
     public static $module = '';
     public static $path = '';
     public static $template = '';
@@ -193,8 +195,16 @@ class CMF
             \Profiler::console('Language is '.$iso);
         }
         
+        // Set the lang vars
         static::$lang_default = $fallback;
-        return static::$lang = $iso;
+        static::$lang = $iso;
+        
+        // Redirect to default language if this one isn't configured
+        if (!array_key_exists($iso, static::languages())) {
+            \Response::redirect(static::link(\Input::uri(), $fallback));
+        }
+        
+        return $iso;
     }
     
     /**
@@ -218,7 +228,12 @@ class CMF
      */
     public static function languages()
     {
-        return \CMF\Model\Language::select('item.code', 'item', 'item.code')->orderBy('item.pos', 'ASC')->where('item.visible = true')->getQuery()->getArrayResult();
+        if (static::$languages !== null) return static::$languages;
+        
+        return static::$languages = \CMF\Model\Language::select('item.code', 'item', 'item.code')
+        ->orderBy('item.pos', 'ASC')
+        ->where('item.visible = true')
+        ->getQuery()->getArrayResult();
     }
     
     /**
@@ -240,16 +255,20 @@ class CMF
     /**
      * Transforms a URL to make sure it includes the correct lang prefix
      */
-    public static function url($url, $lang = null)
+    public static function link($url = null, $lang = null)
     {
-        $url = $url == '/' ? '/' : rtrim($url, '/');
+        if ($url === null) $url = \Input::uri();
+        if (!static::$lang_enabled) return $url;
+        
+        $url = $url == '/' || $url == '' ? '/' : rtrim($url, '/');
         $lang = $lang === null ? static::lang() : $lang;
+        $prefix = '/'.$lang;
         
         if ($lang == static::$lang_default ||
             substr($url, 0, 1) != '/' ||
-            (strlen($url) > 3 && strpos($url, $lang_prefix.'/') === 0)) return $url;
+            (strlen($url) > 3 && strpos($url, $prefix.'/') === 0)) return $url;
         
-        return $url == $lang_prefix ? $url : static::$lang_prefix.$url;
+        return $url == $prefix ? $url : rtrim($prefix.$url, '/');
     }
     
     /**
@@ -461,14 +480,37 @@ class CMF
      */
     public static function getStaticUrl($model)
     {
-        if (isset(\CMF::$static_urls[$model])) return \CMF::$static_urls[$model];
+        if (isset(static::$static_urls[$model])) return static::$static_urls[$model];
         
         $url = $model::select('url.url')
         ->leftJoin('item.url', 'url')
         ->setMaxResults(1)
         ->getQuery()->getSingleScalarResult();
         
-        return \CMF::$static_urls[$model] = $url;
+        return \CMF::$static_urls[$model] = static::link($url);
+    }
+    
+    /**
+     * Retrieves the url to a static model
+     * @param string $model The fully qualified class name of the static model
+     * @return string Url of the model
+     */
+    public static function getStaticLink($model, $titleField = "menu_title")
+    {
+        if (isset(static::$static_links[$model])) return static::$static_links[$model];
+        if (!property_exists($model, $titleField))
+            throw new \Exception("Error getting static link: The field '$titleField' does not exist in $model");
+        
+        $link = $model::select("item.$titleField, url.url")
+        ->leftJoin('item.url', 'url')
+        ->setMaxResults(1)
+        ->getQuery()->getArrayResult();
+        
+        if (count($link) === 0) return false;
+        
+        $link[0]['url'] = static::link($link[0]['url']);
+        
+        return \CMF::$static_links[$model] = $link[0];
     }
     
     /**
@@ -540,7 +582,7 @@ class CMF
         // Query the urls table if it's an ID
         if (is_numeric($output)) {
             $link = \CMF\Model\URL::select('item.url')->where('item.id = '.$output)->getQuery()->getArrayResult();
-            $output = (count($link) > 0) ? $link[0]['url'] : null;
+            $output = (count($link) > 0) ? static::link($link[0]['url']) : null;
         } elseif (empty($output)) {
             $output = null;
         } else {

@@ -31,7 +31,7 @@ class Language extends Base
     
     public function display()
     {
-        return __("languages.{$this->code}");
+        return \Lang::get("languages.{$this->code}");
     }
     
     public function validate($groups = null, $fields = null, $exclude_fields = null, $exclude_types = null)

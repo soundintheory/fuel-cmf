@@ -13,7 +13,7 @@ class Language extends Base {
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
         if (empty($value) || is_null($value) || strlen($value) === 0) return '<a href="'.$edit_link.'" class="item-link">(none)</a>';
-        return '<a href="'.$edit_link.'" class="item-link"><img src="/admin/assets/img/lang/'.$value.'.png" style="width:24px;height:24px;" />&nbsp; '.__("languages.$value").'</a>';
+        return '<a href="'.$edit_link.'" class="item-link"><img src="/admin/assets/img/lang/'.$value.'.png" style="width:24px;height:24px;" />&nbsp; '.\Lang::get("languages.$value").'</a>';
     }
     
     /** @inheritdoc */
