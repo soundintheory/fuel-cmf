@@ -74,7 +74,7 @@ return array (
         'smallint' => 'CMF\\Field\\Integer',
         'bigint' => 'CMF\\Field\\Integer',
         'boolean' => 'CMF\\Field\\Checkbox',
-        'decimal' => 'CMF\\Field\\Base',
+        'decimal' => 'CMF\\Field\\Decimal',
         'datetime' => 'CMF\\Field\\DateTime',
         'date' => 'CMF\\Field\\Date',
         'time' =>'CMF\\Field\\DateTime',
