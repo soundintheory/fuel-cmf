@@ -13,6 +13,10 @@ class Cmf
      */
     public function install()
     {
+        if (strtolower(\Cli::prompt('Install CMF now? WARNING: This will reset the contents of your app folder!', array('y','n'))) !== 'y') {
+            return;
+        }
+        
         // Site title etc
         Installer::initialSetup();
         

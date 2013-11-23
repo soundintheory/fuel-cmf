@@ -164,10 +164,11 @@ class CMF
     {
         if (static::$lang !== null) return static::$lang;
         
+        // Give up if we haven't enabled multi lingual
+        if (!(static::$lang_enabled = \Config::get('cmf.languages.enabled', false))) return static::$lang = \Lang::get_lang();
+        
         // First load our languages
         \Lang::load('languages', true);
-        
-        static::$lang_enabled = \Config::get('cmf.languages.enabled', false);
         
         // Get the language from the request
         $fallback = \Lang::get_lang();
