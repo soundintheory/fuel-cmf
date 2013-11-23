@@ -12,7 +12,7 @@ class Controller_Lang extends Controller_Base {
 		if (is_null($code)) return \Response::redirect($referrer);
 		
 		// Don't bother if it's not an active language
-		$languages = \CMF::languages();
+		$languages = \Admin::languages();
 		if (!isset($languages[$code]))  return \Response::redirect($referrer);
 		
 		// Got this far, set the session!

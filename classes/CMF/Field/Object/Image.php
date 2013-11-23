@@ -28,16 +28,16 @@ class Image extends File {
     }
     
     /** @inheritdoc */
-    public static function process($value, $settings, $model)
+    public static function prePocess($value, $settings, $model)
     {
-        if (!is_array($value)) return parent::process($value, $settings, $model);
+        if (!is_array($value)) return parent::prePocess($value, $settings, $model);
         
         $src = DOCROOT.\Arr::get($value, 'src', 'none');
-        if (!file_exists($src)) return parent::process($value, $settings, $model);
+        if (!file_exists($src)) return parent::prePocess($value, $settings, $model);
         
         $info = @getimagesize($src);
         
-        if ($info === false) return parent::process($value, $settings, $model);
+        if ($info === false) return parent::prePocess($value, $settings, $model);
         
         // Insert image sizes
         if (\Arr::get($value, 'width', 0) === 0) $value['width'] = $info[0];
@@ -217,7 +217,7 @@ class Image extends File {
             
         }
         
-        return parent::process($value, $settings, $model);
+        return parent::prePocess($value, $settings, $model);
     }
     
     public static function getCropUrl($image, $width, $height, $crop_id = 'main')

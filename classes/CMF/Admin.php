@@ -21,6 +21,8 @@ class Admin
 	
 	public static $current_class = '';
 	
+	public static $languages = null;
+	
 	/**
 	 * Maps table names to class names - populated once on first use for efficiency
 	 * @see Admin::getClassForTable()
@@ -65,6 +67,18 @@ class Admin
     	ClassMetadataInfo::ONE_TO_MANY => 'onetomany',
     	ClassMetadataInfo::MANY_TO_MANY => 'manytomany'
     );
+    
+    /**
+     * Gets a list of the active languages that have been configured
+     */
+    public static function languages()
+    {
+        if (static::$languages !== null) return static::$languages;
+        
+        return static::$languages = \CMF\Model\Language::select('item.code', 'item', 'item.code')
+        ->orderBy('item.pos', 'ASC')
+        ->getQuery()->getArrayResult();
+    }
 	
 	/**
 	 * Gets the model's fully qualified class name from the table name

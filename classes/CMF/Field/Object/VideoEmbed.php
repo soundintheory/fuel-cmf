@@ -61,7 +61,7 @@ class VideoEmbed extends Object {
     // <iframe src="http://player.vimeo.com/video/70642037" width="500" height="281" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
     
     /** @inheritdoc */
-    public static function process($value, $settings, $model)
+    public static function preProcess($value, $settings, $model)
     {
         if (isset($value) && is_array($value)) {
             
@@ -71,9 +71,9 @@ class VideoEmbed extends Object {
                 
                 // Try and get info
                 $url = \Arr::get($value, 'url', null);
-                if (!isset($url) || empty($url)) return parent::process($value, $settings, $model);
+                if (!isset($url) || empty($url)) return parent::preProcess($value, $settings, $model);
                 $info = static::getBasicVideoInfo($settings, $url);
-                if (is_null($info)) return parent::process($value, $settings, $model);
+                if (is_null($info)) return parent::preProcess($value, $settings, $model);
                 
                 // If stuff has changed...
                 $current_value = $model->get($settings['mapping']['fieldName']);
@@ -173,7 +173,7 @@ class VideoEmbed extends Object {
             
         }
         
-        return parent::process($value, $settings, $model);
+        return parent::preProcess($value, $settings, $model);
     }
     
     /* inheritdoc */
