@@ -14,13 +14,22 @@ use Doctrine\ORM\Mapping as ORM,
 class Language extends Base
 {
     protected static $_fields = array(
+        'visible' => array(
+            'visible' => true,
+            'title' => 'Active',
+            'description' => 'Whether this language is visible on the live website'
+        ),
         'code' => array(
             'title' => 'Language'
+        ),
+        'top_level_domain' => array(
+            'visible' => false
         )
     );
     
     protected static $_list_fields = array(
-        'code'
+        'code',
+        'visible'
     );
     
     protected static $_lang_enabled = false;
@@ -38,8 +47,8 @@ class Language extends Base
     {
         if (parent::validate($groups, $fields, $exclude_fields)) {
             
-            $qb = static::select('item.code')->where("item.code = '{$this->code}'");
-            if (isset($this->id)) $qb->where("item.id != {$this->id}");
+            $qb = static::select('item.id, item.code')->where("item.code = '{$this->code}'");
+            if (isset($this->id)) $qb->andWhere("item.id != {$this->id}");
             
             // Throw an error if there are other languages set to this
             if (count($qb->getQuery()->getArrayResult()) > 0) {

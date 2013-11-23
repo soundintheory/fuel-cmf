@@ -52,6 +52,7 @@ class Extension extends Twig_Extension
 			'language' => new Twig_Function_Function('CMF::lang'),
 			'default_language' => new Twig_Function_Function('CMF::defaultLang'),
 			'languages' => new Twig_Function_Function('CMF::languages'),
+			'all_languages' => new Twig_Function_Function('Admin::languages'),
 			'_' => new Twig_Function_Function('Lang::get')
 		);
 	}

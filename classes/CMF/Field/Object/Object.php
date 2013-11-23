@@ -17,7 +17,7 @@ class Object extends \CMF\Field\Base {
     );
     
     /** @inheritdoc */
-    public static function process($value, $settings, $model)
+    public static function preProcess($value, $settings, $model)
     {
         $settings = static::settings($settings);
         $current_value = $model->get($settings['mapping']['fieldName']);

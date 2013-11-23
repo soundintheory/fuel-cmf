@@ -19,6 +19,7 @@ class CMF
     
     public static $lang_enabled = false;
     public static $static_urls = array();
+    public static $static_urls_raw = array();
     public static $static_links = array();
     public static $module = '';
     public static $path = '';
@@ -242,6 +243,8 @@ class CMF
     public static function removeLangPrefix($url)
     {
         $prefix = '/'.static::lang();
+        
+        if ($url !== '/') $url = '/'.trim($url, '/');
         
         if ($url == $prefix) {
             return '/';
@@ -478,8 +481,9 @@ class CMF
      * @param string $model The fully qualified class name of the static model
      * @return string Url of the model
      */
-    public static function getStaticUrl($model)
+    public static function getStaticUrl($model, $lang = true)
     {
+        if ($lang === false && isset(static::$static_urls_raw[$model])) return static::$static_urls_raw[$model];
         if (isset(static::$static_urls[$model])) return static::$static_urls[$model];
         
         $url = $model::select('url.url')
@@ -487,6 +491,7 @@ class CMF
         ->setMaxResults(1)
         ->getQuery()->getSingleScalarResult();
         
+        if ($lang === false) return \CMF::$static_urls_raw[$model] = $url;
         return \CMF::$static_urls[$model] = static::link($url);
     }
     
