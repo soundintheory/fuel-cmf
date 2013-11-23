@@ -234,7 +234,7 @@ class URLListener implements EventSubscriber
             $url = $url_item->get('url');
             
             // Set the slug to the item's ID if empty
-            if (is_null($slug) || strlen($slug) === 0) {
+            if (is_null($slug)) {
                 $slug = $entity_id."";
                 $url = $prefix.$slug;
             }
