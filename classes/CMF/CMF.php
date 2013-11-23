@@ -231,6 +231,7 @@ class CMF
     public static function languages()
     {
         if (static::$languages !== null) return static::$languages;
+        if (!static::$lang_enabled) return static::$languages = array(\Lang::get_lang());
         
         return static::$languages = \CMF\Model\Language::select('item.code', 'item', 'item.code')
         ->orderBy('item.pos', 'ASC')

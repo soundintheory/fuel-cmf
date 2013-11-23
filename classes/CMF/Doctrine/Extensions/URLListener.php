@@ -126,8 +126,20 @@ class URLListener implements EventSubscriber
             // Check for duplicates, only if this is an already existing item
             if (!empty($entity_id) && !is_null($entity_id)) {
                 
+                // Set data from the entity if the prefix is null
+                if (is_null($prefix)) {
+                    $prefix = $entity->urlPrefix();
+                    $url = $prefix.$slug;
+                }
+                
+                // Set data from the entity if the slug is null
+                if (is_null($slug)) {
+                    $slug = $entity->urlSlug();
+                    $url = $prefix.$slug;
+                }
+                
                 // Set it to the item's ID if empty
-                if (is_null($slug) || strlen($slug) === 0) {
+                if (is_null($slug)) {
                     $slug = $entity_id."";
                     $url = $prefix.$slug;
                 }
@@ -232,6 +244,18 @@ class URLListener implements EventSubscriber
             $prefix = $url_item->get('prefix');
             $slug = $url_item->get('slug');
             $url = $url_item->get('url');
+            
+            // Set data from the entity if the prefix is null
+            if (is_null($prefix)) {
+                $prefix = $entity->urlPrefix();
+                $url = $prefix.$slug;
+            }
+            
+            // Set data from the entity if the slug is null
+            if (is_null($slug)) {
+                $slug = $entity->urlSlug();
+                $url = $prefix.$slug;
+            }
             
             // Set the slug to the item's ID if empty
             if (is_null($slug)) {
