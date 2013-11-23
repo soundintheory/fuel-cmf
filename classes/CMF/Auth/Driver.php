@@ -59,7 +59,12 @@ class Driver
             (!$this->user || $this->user->get('id') != $auth_token))
         {
             $this->user = null;
-            $user = $type::select('item')->where("item.id = $auth_token")->getQuery()->getResult();
+            
+            try {
+                $user = $type::select('item')->where("item.id = $auth_token")->getQuery()->getResult();
+            } catch (\Doctrine\DBAL\DBALException $e) {
+                throw new \Exception("There was a problem loading the CMF user. Try running 'php oil r cmf:sync', as there may be a necessary database upgrade.", 1);
+            }
             
             if (count($user) > 0 && !$user[0]->is_access_locked()) {
                 $this->set_user($user[0]);
