@@ -53,7 +53,9 @@ class Extension extends Twig_Extension
 			'default_language' => new Twig_Function_Function('CMF::defaultLang'),
 			'languages' => new Twig_Function_Function('CMF::languages'),
 			'all_languages' => new Twig_Function_Function('Admin::languages'),
-			'_' => new Twig_Function_Function('Lang::get')
+			'_' => new Twig_Function_Function('Lang::get'),
+			'session_set' => new Twig_Function_Function('Session::set'),
+			'session_get' => new Twig_Function_Function('Session::get')
 		);
 	}
 	
