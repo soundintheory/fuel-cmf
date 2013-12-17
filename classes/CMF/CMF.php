@@ -288,7 +288,7 @@ class CMF
 	    
 	    $url = \Input::uri();
         if (empty($url)) $url = '/';
-        
+         
 	    $model = static::getItemByUrl($url, $type);
         
 	    if (is_null($model)) {
@@ -297,7 +297,7 @@ class CMF
 	        $url = implode('/', array_slice($segments, 0, -1));
 	        static::$root = empty($url);
 	        static::$action = array_pop($segments);
-	        
+	   
 	        $model = static::getItemByUrl($url, $type);
 	        
 	    }

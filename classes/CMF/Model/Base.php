@@ -945,5 +945,12 @@ class Base extends \CMF\Doctrine\Model
     {
         return strval($this->id);
     }
+    /**
+     * Need this for duplicating items.
+     * @return array associative array of object vars
+     */
+    public function get_object_vars(){
+        return get_object_vars($this);
+    }
 	
 }

@@ -128,9 +128,10 @@ class Cache {
     	$template = new \CMF\Twig\TemplateInclude($env);
     	
     	foreach ($names as $name => $include) {
-    		
-    		$content = preg_replace('/<!-- nocache_'.$name.' .*<!-- endnocache_.* -->/sU', $template->renderInclude($include), $content);
-    		
+    		try{
+                $content = preg_replace('/<!-- nocache_'.$name.' .*<!-- endnocache_.* -->/sU', $template->renderInclude($include), $content);
+    		}catch(Exception $e){
+            }
     	}
     	
     	return $content;

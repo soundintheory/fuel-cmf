@@ -177,6 +177,7 @@ class Admin
 		
 		$field_mappings = $metadata->fieldMappings;
 		$association_mappings = $metadata->associationMappings;
+		
 		$field_list = array_keys(\Arr::merge($fields, $metadata->reflFields));
 		
 		foreach ($field_list as $key) {

@@ -36,6 +36,7 @@ return array(
 	// Standard item actions
 	'admin/(:segment)/create'            => array(array('GET', new Route('admin/item/create/$1')), array('POST', new Route('admin/item/save/$1'))),
 	'admin/(:segment)/(:num)/edit'       => array(array('GET', new Route('admin/item/edit/$1/$2')), array('POST', new Route('admin/item/save/$1/$2'))),
+	'admin/(:segment)/(:num)/duplicate'       => array(array('GET', new Route('admin/item/duplicate/$1/$2')), array('POST', new Route('admin/item/save/$1/$2'))),
 	'admin/(:segment)/(:num)/save'       => array(array('POST', new Route('admin/item/save/$1/$2'))),
 	'admin/(:segment)/(:num)/delete'     => 'admin/item/delete/$1/$2',
 	'admin/(:segment)/populate'          => array(array('POST', new Route('admin/item/populate/$1'))),

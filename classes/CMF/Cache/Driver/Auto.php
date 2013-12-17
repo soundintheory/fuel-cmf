@@ -15,6 +15,7 @@ class Auto extends Simple {
 		}
 		
 		$this->request = \Request::active();
+
 		$this->path = APPPATH.'cache/pages/'.\CMF\Cache::uriCacheKey($url).'.cache';
 		
 		if (file_exists($this->path)) {
@@ -83,7 +84,7 @@ class Auto extends Simple {
 		$this->request = \Request::active();
 		$view = $this->request->response->body;
 		$driver = $this;
-		
+
 		\Event::register('shutdown', function() use($driver) {
 			$driver->shutdown();
 		});

@@ -101,6 +101,87 @@ class Controller_Item extends Controller_Base {
 		$this->can_delete = \CMF\Auth::can('delete', $class_name) && !$class_name::_static();
 	    
 	}
+	/**
+	 * Given an ID, duplicates the form to edit an item.
+	 */
+	public function action_duplicate($table_name, $id = null)
+	{
+
+		ini_set('memory_limit', '100M');
+		set_time_limit(60);
+		// Find class name and metadata etc
+		$class_name = \Admin::getClassForTable($table_name);
+		if ($class_name === false) return $this->show404("Can't find that type!");
+		
+		$metadata = $class_name::metadata();
+		\Admin::$current_class = $this->current_class = $class_name;
+		
+		$this->plural = $class_name::plural();
+		$this->singular = $class_name::singular();
+		
+		// Load up the model with the Id
+    	$original_model = $class_name::find($id);
+
+	    
+	    if (is_null($original_model)) {
+	    	\Response::redirect(\Uri::base(false)."admin/$table_name", 'location');
+	    }
+
+	    $model = new $class_name();
+	   
+	   //get an associative array instead of an object. function is on base model to allow proteted/private vars.
+	   $model_to_copy = $original_model->get_object_vars();
+
+	   $metadata = $class_name::metadata();
+	   	
+	   //get assoc mappings and find any orphan removal items. Will we have an issue with child orphan removal items??	
+	   $association_mappings = $metadata->associationMappings;
+
+	   $orphan_removal_associations = array();
+	   foreach ($association_mappings as $key => $mapping) {
+	   	if($mapping['orphanRemoval']){
+	   		$orphan_removal_associations[] = $mapping['fieldName'];
+	   		unset($model_to_copy[$mapping['fieldName']]);
+	   	}
+	   }
+
+	  	//unset id etc. to prevent overwriting of old item.
+	   unset($model_to_copy['id']);
+	   unset($model_to_copy['created_at']);
+	   if(isset($model_to_copy['title'])){
+	   	$model_to_copy['title'] = $model_to_copy['title']." copy";
+	   }
+	   if(isset($model_to_copy['url'])){
+	   	unset($model_to_copy['url']);
+	   }
+		$model->populate($model_to_copy);
+		
+		$em = \D::manager();
+		//loop orphan removal associations and create new entities for them.
+		//add new assoc to new model so we duplicate these items too.
+		foreach ($orphan_removal_associations as $assoc) {
+			foreach ($original_model->$assoc as $key => $value) {
+				# code...
+				$new_value = clone $value;
+				$em->persist($new_value);
+				$model->add($assoc, $new_value);
+			}
+		}
+
+	   $can_edit = \CMF\Auth::can('edit', $model);
+		if (!$can_edit) {
+			return $this->show403("You're not allowed to edit this ".strtolower($class_name::singular())."!");
+		}
+		if ($model->validate(null, null, array('id', 'pos'))) {
+		//if we can edit, persist the data
+    	
+    	$em->persist($model);
+		$em->flush();
+
+			\Response::redirect(\Uri::base(false)."admin/$table_name/".$model->id."/edit", 'location');
+		}
+		return $this->show403("Problem saving the data!");
+	}
 	
 	/**
 	 * Either creates or updates a model depending on whether an ID is passed in.
