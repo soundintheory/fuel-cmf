@@ -109,11 +109,11 @@ class Cache {
     {
     	if (strpos($content, '<!-- nocache') === false) return array();
     	
-    	preg_match_all('/<!-- nocache_(.*) \'(.*)\' .*<!-- endnocache_.* -->/sU', $content, $hits);
-    	
+        preg_match_all('/<!-- nocache_(.*) \'(.*)\' -->/U', $content, $hits);
+        
         if(empty($hits[1]) && empty($hits[2]))
             return array();
-
+        
     	return array_combine($hits[1], $hits[2]);
     }
     
