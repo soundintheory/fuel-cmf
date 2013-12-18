@@ -49,7 +49,6 @@ class Cache {
         foreach ($files as $file) {
             $driver->addFile($file);
         }
-        
         // Try and get the cached content
         $content = $driver->get($uri);
         
@@ -111,6 +110,9 @@ class Cache {
     	
     	preg_match_all('/<!-- nocache_(.*) \'(.*)\' .*<!-- endnocache_.* -->/sU', $content, $hits);
     	
+        if(empty($hits[1]) && empty($hits[2]))
+            return array();
+
     	return array_combine($hits[1], $hits[2]);
     }
     
@@ -121,8 +123,8 @@ class Cache {
      */
     public static function addNoCacheAreas($names, $content)
     {
-    	if (count($names) === 0) return $content;
-    	
+    	if (count($names) === 0 || !$names) return $content;
+
     	// Set up the twig environment for rendering the non-cached parts
     	$env = \View_Twig::parser();
     	$template = new \CMF\Twig\TemplateInclude($env);
@@ -139,6 +141,7 @@ class Cache {
     
     public static function writeCacheFile($file, $content)
     {
+        
     	$dir = dirname($file);
     	if (!is_dir($dir)) {
     	    if (false === @mkdir($dir, 0777, true) && !is_dir($dir)) {

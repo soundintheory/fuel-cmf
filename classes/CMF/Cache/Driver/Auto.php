@@ -84,7 +84,7 @@ class Auto extends Simple {
 		$this->request = \Request::active();
 		$view = $this->request->response->body;
 		$driver = $this;
-
+		
 		\Event::register('shutdown', function() use($driver) {
 			$driver->shutdown();
 		});
@@ -253,7 +253,6 @@ class Auto extends Simple {
 				break;
 			}
 		}
-		
 		// serialize and write it to disk
 		\CMF\Cache::writeCacheFile($this->path, serialize($result));
 		
