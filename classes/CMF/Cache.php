@@ -4,6 +4,7 @@ namespace CMF;
 
 class Cache {
 	
+    protected static $modified = false;
 	protected static $active = false;
 	protected static $uriCacheKey = null;
 	protected static $started = false;
@@ -54,7 +55,7 @@ class Cache {
         
 		// Serve the cached content if found, or continue and add the finish listener
 		if (static::$active = ($content !== false)) {
-			$driver->serve($content);
+			$driver->serve($content, static::$modified);
 		} else {
 			\Event::register('request_finished', 'CMF\\Cache::finish');
 		}
@@ -124,20 +125,19 @@ class Cache {
     public static function addNoCacheAreas($names, $content)
     {
     	if (count($names) === 0 || !$names) return $content;
-
+        
+        static::$modified = true;
+        
     	// Set up the twig environment for rendering the non-cached parts
-    	$env = \View_Twig::parser();
+    	\View_Twig::initLoader();
+        $env = \View_Twig::parser();
+        
     	$template = new \CMF\Twig\TemplateInclude($env);
-    	$key = 1;
-    	foreach ($names as $name => $include) {
-            //file_put_contents(APPPATH."file".$key.".txt", print_r($include, true));
-            $key++;
-    		try{
-                $content = preg_replace('/<!-- nocache_'.$name.' .*<!-- endnocache_.* -->/sU', $template->renderInclude($include), $content);
-    		}catch(Exception $e){
-            }
-    	}
     	
+    	foreach ($names as $name => $include) {
+    		$content = preg_replace('/<!-- nocache_'.$name.' .*<!-- endnocache_'.$name.' -->/sU', $template->renderInclude($include), $content);
+    	}
+        
     	return $content;
     }
     

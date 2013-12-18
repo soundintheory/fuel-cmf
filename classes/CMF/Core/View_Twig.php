@@ -2,6 +2,8 @@
 
 namespace CMF\Core;
 
+use Twig_Loader_Filesystem;
+
 class View_Twig extends \Parser\View_Twig
 {
 	
@@ -12,6 +14,15 @@ class View_Twig extends \Parser\View_Twig
 	public static function loader()
 	{
 		return static::$_parser_loader;
+	}
+	
+	/**
+	 * Initialises the filesystem loader with the paths specified in config
+	 */
+	public static function initLoader()
+	{
+		$views_paths = \Config::get('parser.View_Twig.views_paths', array(APPPATH . 'views'));
+        static::$_parser_loader = new Twig_Loader_Filesystem($views_paths);
 	}
 	
 	/**

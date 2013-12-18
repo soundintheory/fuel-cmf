@@ -27,9 +27,9 @@ class Simple implements Driver {
 		file_put_contents($this->path, strval($response));
 	}
 	
-	public function serve($content)
+	public function serve($content, $modified = false)
 	{
-		$cache_last_modified = filemtime($this->path);
+		$cache_last_modified = $modified ? time() : filemtime($this->path);
 		$header_modified_since = strtotime(\Input::server('HTTP_IF_MODIFIED_SINCE', 0));
 		$status = 200;
 		
