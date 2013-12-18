@@ -128,8 +128,10 @@ class Cache {
     	// Set up the twig environment for rendering the non-cached parts
     	$env = \View_Twig::parser();
     	$template = new \CMF\Twig\TemplateInclude($env);
-    	
+    	$key = 1;
     	foreach ($names as $name => $include) {
+            //file_put_contents(APPPATH."file".$key.".txt", print_r($include, true));
+            $key++;
     		try{
                 $content = preg_replace('/<!-- nocache_'.$name.' .*<!-- endnocache_.* -->/sU', $template->renderInclude($include), $content);
     		}catch(Exception $e){
