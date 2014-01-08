@@ -46,74 +46,108 @@ class User extends Base
     public $confirm_password;
     
     /**
-     * Authenticates and allows a user to enter either their email address or
-     * their username into the username field.
+     * Returns a user based on a remember me token. Need to do some stuff here if the token is wrong and lock ther user TODO
      *
-     * @param string $username_or_email_or_id The username or email or id of the user to authenticate
-     * @param bool   $force             	  Whether to force an authentication, if this is
-     *                                  	  true, it will bypass checking whether the user
-     *                                  	  account is locked or confirmed.
-     *
+     * @param string $token Remember me token
      * @return \CMF\Model\User|null The user that matches the tokens or
      *                                 null if no user matches that condition.
      *
-     * @throws \CMF\Auth\Failure If the user needs to be confirmed
+     * 
      */
-    public static function authenticate($username_or_email_or_id, $force = false)
+    public static function find_by_remember_token($token = null)
     {
-        if (empty($username_or_email_or_id)) {
+        if (empty($token)) {
             return null;
         }
 
 		$em = \D::manager();
         $called_class = get_called_class();
 
-		if (is_int($username_or_email_or_id)) {
-            
-            $record = $called_class::select('item')
-            ->where("item.id = $username_or_email_or_id")
-            ->getQuery()->getResult();
-            
-			if (count($record) == 0) return null;
-            
-		} else {
-            
-	        $username_or_email = \DB::escape(\Str::lower($username_or_email_or_id));
-            $record = $called_class::select('item')
-            ->where("item.email = $username_or_email")
-            ->orWhere("item.username = $username_or_email")
-            ->getQuery()->getResult();
-            
-            if (count($record) == 0) return null;
-            
-		}
-		
+	
+        $token = \DB::escape($token);
+
+        $record = $called_class::select('item')
+        ->where("item.remember_token = $token")
+        ->getQuery()->getResult();
+        
+		if (count($record) == 0) return null;
+        		
 		$record = $record[0];
 		
         if ($record) {
-            if ($force) {
-                return $record;
-            }
-            
-            if ($record->is_confirmation_required()) {
-                throw new Failure('unconfirmed');
-            } elseif ($record->is_access_locked()) {
-                throw new Failure('locked');
-            }
-            
-            // Unlock the user if the lock is expired, no matter
-            // if the user can login or not (wrong password, etc)
-            if ($record->is_lock_expired()) {
-                // unlock but do not save, saving handled by Driver::complete_login()
-                $record->unlock_access(false);
-            }
-            
             return $record;
         }
 
         return null;
     }
+        /**
+         * Authenticates and allows a user to enter either their email address or
+         * their username into the username field.
+         *
+         * @param string $username_or_email_or_id The username or email or id of the user to authenticate
+         * @param bool   $force                   Whether to force an authentication, if this is
+         *                                        true, it will bypass checking whether the user
+         *                                        account is locked or confirmed.
+         *
+         * @return \CMF\Model\User|null The user that matches the tokens or
+         *                                 null if no user matches that condition.
+         *
+         * @throws \CMF\Auth\Failure If the user needs to be confirmed
+         */
+        public static function authenticate($username_or_email_or_id, $force = false)
+        {
+            if (empty($username_or_email_or_id)) {
+                return null;
+            }
 
+            $em = \D::manager();
+            $called_class = get_called_class();
+
+            if (is_int($username_or_email_or_id)) {
+                
+                $record = $called_class::select('item')
+                ->where("item.id = $username_or_email_or_id")
+                ->getQuery()->getResult();
+                
+                if (count($record) == 0) return null;
+                
+            } else {
+                
+                $username_or_email = \DB::escape(\Str::lower($username_or_email_or_id));
+                $record = $called_class::select('item')
+                ->where("item.email = $username_or_email")
+                ->orWhere("item.username = $username_or_email")
+                ->getQuery()->getResult();
+                
+                if (count($record) == 0) return null;
+                
+            }
+            
+            $record = $record[0];
+            
+            if ($record) {
+                if ($force) {
+                    return $record;
+                }
+                
+                if ($record->is_confirmation_required()) {
+                    throw new Failure('unconfirmed');
+                } elseif ($record->is_access_locked()) {
+                    throw new Failure('locked');
+                }
+                
+                // Unlock the user if the lock is expired, no matter
+                // if the user can login or not (wrong password, etc)
+                if ($record->is_lock_expired()) {
+                    // unlock but do not save, saving handled by Driver::complete_login()
+                    $record->unlock_access(false);
+                }
+                
+                return $record;
+            }
+
+            return null;
+        }
     /**
      * Creates an anonymous user. An anonymous user is basically an auto-generated
      * {@link \CMF\Model\User} account that is created behind the scenes and its

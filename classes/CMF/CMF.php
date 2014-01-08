@@ -287,8 +287,11 @@ class CMF
         if (isset(static::$model)) return static::$model;
 	    
 	    $url = \Input::uri();
+
         if (empty($url)) $url = '/';
-         
+        if (substr($url, 0, 1) != "/"){
+            $url = "/".$url;
+        }
 	    $model = static::getItemByUrl($url, $type);
         
 	    if (is_null($model)) {
