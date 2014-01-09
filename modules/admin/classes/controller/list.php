@@ -273,9 +273,8 @@ class Controller_List extends Controller_Base {
 			/* PAGINATION */
 
 			$count = count($qb->getQuery()->getScalarResult());
-
 			$config = array(
-			    'pagination_url' => 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PATH_INFO'],
+			    'pagination_url' => 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
 			    'total_items'    => $count,
 			    'per_page'       => $per_page,
 			    //'uri_segment'    => 1,
