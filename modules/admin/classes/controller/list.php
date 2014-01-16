@@ -365,7 +365,7 @@ class Controller_List extends Controller_Base {
 		// Actions
 		$this->actions = $class_name::actions();
 		
-		\Admin::$current_class = $this->current_class = $class_name;
+		\Admin::setCurrentClass($class_name);
 		$this->class_lang_enabled = $class_name::langEnabled();
 		$this->plural = $class_name::plural();
 		$this->excluded_ids = $excluded_ids;
@@ -657,7 +657,7 @@ class Controller_List extends Controller_Base {
 	 */
 	public function treeView($class_name)
 	{
-		\Admin::$current_class = $this->current_class = $class_name;
+		\Admin::setCurrentClass($class_name);
 		$metadata = $class_name::metadata();
 		
 		// Create static items

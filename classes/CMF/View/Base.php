@@ -53,6 +53,7 @@ class Base extends \ViewModel
     protected function processNodes(&$nodes, $uri, $level = 1)
     {
         $hasActive = false;
+        $uriLen = strlen($uri);
         
         foreach ($nodes as &$node)
         {
@@ -61,7 +62,8 @@ class Base extends \ViewModel
                 $node['active'] = $node['url'] == $uri;
             } else if ($node['url'] != '/') {
                 $check_url = $node['url'].'/';
-                $node['active'] = strpos($uri, $check_url) === 0;
+                $node['parent_active'] = strpos($uri, $check_url) === 0;
+                $node['active'] = $node['parent_active'] && strlen($check_url) === $uriLen;
             }
             
             if ($node['active']) $hasActive = true;

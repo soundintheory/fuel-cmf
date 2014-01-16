@@ -27,7 +27,7 @@ class Controller_Item extends Controller_Base {
 		}
 		
 		$metadata = $class_name::metadata();
-		\Admin::$current_class = $this->current_class = $class_name;
+		\Admin::setCurrentClass($class_name);
 		
 		// Superlock: don't let them create one!!
 		if ($this->superlock = $class_name::superlock()) {
@@ -66,7 +66,7 @@ class Controller_Item extends Controller_Base {
 		if ($class_name === false) return $this->show404("Can't find that type!");
 		
 		$metadata = $class_name::metadata();
-		\Admin::$current_class = $this->current_class = $class_name;
+		\Admin::setCurrentClass($class_name);
 		
 		$this->plural = $class_name::plural();
 		$this->singular = $class_name::singular();
@@ -114,7 +114,7 @@ class Controller_Item extends Controller_Base {
 		if ($class_name === false) return $this->show404("Can't find that type!");
 		
 		$metadata = $class_name::metadata();
-		\Admin::$current_class = $this->current_class = $class_name;
+		\Admin::setCurrentClass($class_name);
 		
 		$this->plural = $class_name::plural();
 		$this->singular = $class_name::singular();
@@ -201,7 +201,7 @@ class Controller_Item extends Controller_Base {
 		}
 		
 		$metadata = $class_name::metadata();
-		\Admin::$current_class = $this->current_class = $class_name;
+		\Admin::setCurrentClass($class_name);
 		$actioned = "saved";
 		
 		// Find the model, or create a new one if there's no ID
@@ -288,6 +288,7 @@ class Controller_Item extends Controller_Base {
 			return $this->show403("You're not allowed to delete ".strtolower($class_name::plural())."!");
 		}
 	    
+	    \Admin::setCurrentClass($class_name);
 	    $singular = $class_name::singular();
 	    $entity = $class_name::find($id);
 	    $error = null;
@@ -441,6 +442,8 @@ class Controller_Item extends Controller_Base {
 	{
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
+		\Admin::setCurrentClass($class_name);
+		
 		if ($class_name === false) {
 			return $this->customPageOr404(array($table_name, $action_id), "Can't find that type!");
 		}

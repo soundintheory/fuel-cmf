@@ -43,7 +43,7 @@ class Base extends \Controller
 	 * @access  public
 	 * @return  Response
 	 */
-	public function action_404()
+	public function action_catchall()
 	{
 	    // Will try to find the model based on the URL
 	    $model = $this->model = \CMF::currentModel();
@@ -121,7 +121,9 @@ class Base extends \Controller
         }
         
         try {
-            $viewModel = new \View_Base('view', false, $this->template);
+            $viewClass = ucfirst(\CMF::$module).'\\View_Base';
+            if (!class_exists($viewClass)) $viewClass = '\\View_Base';
+            $viewModel = new $viewClass('view', false, $this->template);
             $this->bindData($viewModel);
             return \Response::forge($viewModel, $this->status, $this->headers);
             
@@ -151,7 +153,7 @@ class Base extends \Controller
         
         // Still route through the CMF if it hasn't been touched
         if (!\CMF::$routed) {
-            return call_user_func_array(array($this, 'action_404'), $arguments);
+            return call_user_func_array(array($this, 'action_catchall'), $arguments);
         }
         
         // if not, we got ourselfs a genuine 404!

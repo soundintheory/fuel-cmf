@@ -82,4 +82,9 @@ class QueryLogger implements SQLLogger {
 	{
 		if ($this->logger) $this->logger->stopQuery();
 	}
+	
+	public function setLogger($logger)
+	{
+		$this->logger = $logger;
+	}
 }

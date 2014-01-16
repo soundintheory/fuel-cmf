@@ -116,7 +116,7 @@
 
 {% block breadcrumb %}
 
-<li><a href="/admin">Dashboard</a> <span class="divider">/</span></li>
+<li><a href="{{ base_url }}">{{ dashboard_title }}</a> <span class="divider">/</span></li>
 {% if not static %}<li><a href="/admin/{{ table_name }}">{{ plural }}</a> <span class="divider">/</span></li>{% endif %}
 <li class="active">{{ model.display() }}</li>
 

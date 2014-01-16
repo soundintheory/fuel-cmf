@@ -130,6 +130,43 @@ class CMF
         return static::$uri = $uri;
     }
     
+    public static function getOptions($model, $field = null)
+    {
+        if ($field !== null) {
+            $method = 'get'.\Inflector::camelize($field).'Options';
+            if (method_exists($model, $method)) return call_user_func($model.'::'.$method, null);
+        }
+        
+        return $model::options();
+    }
+    
+    /**
+     * Set as a URI filter when modules are being used and custom urls have been set for them
+     * @param  string $uri
+     * @return string
+     */
+    public static function module_url_filter($uri)
+    {
+        static::$uri = $uri;
+        $segments = explode('/', ltrim($uri, '/'));
+        $translate = \Config::get('cmf.module_urls.'.$segments[0], false);
+        if ($translate !== false) {
+            $segments[0] = static::$module = $translate;
+            return '/'.implode($segments, '/');
+        }
+        
+        return $uri;
+    }
+    
+    /**
+     * Gets a module's URL as defined in the cmf.module_urls setting
+     * @return string
+     */
+    public static function moduleUrl($module)
+    {
+        return array_search($module, \Config::get('cmf.module_urls', array()));
+    }
+    
     /**
      * For the router, to translate hyphens to underscores
      * @param  string $uri
@@ -286,12 +323,12 @@ class CMF
     {
         if (isset(static::$model)) return static::$model;
 	    
-	    $url = \Input::uri();
+	    $url = static::$uri;
         if (empty($url)) $url = '/';
          
 	    $model = static::getItemByUrl($url, $type);
         
-	    if (is_null($model)) {
+	    if ($model === null) {
 	        
 	        $segments = explode('/', $url);
 	        $url = implode('/', array_slice($segments, 0, -1));
@@ -328,20 +365,22 @@ class CMF
      */
     public static function getItemByUrl($url, $type = null)
     {
-        $qb = \CMF\Model\URL::select('item')->where("item.url = '$url'");
-        if (!is_null($type)) $qb->andWhere("item.type = '$type'");
-	    $url_item = $qb->getQuery()->getResult();
+        // Plain query for the urls table to avoid initialising Doctrine for 404s
+        $url_item = \DB::query("SELECT type, item_id FROM urls WHERE url = '$url'".($type !== null ? "AND type = '$type'" : ""))->execute();
         
 	    if (count($url_item) === 0 && $url == '/') {
             $url_item = static::settings()->start_page;
             if (is_null($url_item)) return null;
+            $item = $url_item->item();
         } else if (count($url_item) === 0) {
             return null;
         } else {
             $url_item = $url_item[0];
+            $type = $url_item['type'];
+            if (empty($type) || is_null($url_item['item_id'])) return null;
+            
+            $item = $type::select('item')->where('item.id = '.$url_item['item_id'])->getQuery()->getResult();
         }
-        
-	    $item = $url_item->item();
 	    
 	    if (is_array($item) && count($item) > 0) {
 	        $item = $item[0];
@@ -423,6 +462,11 @@ class CMF
         
     }
     
+    public static function currentModule($default = null)
+    {
+        return !empty(static::$module) ? static::$module : $default;
+    }
+    
     /**
      * Used in the 'behind the scenes' logic during a frontend request, this checks whether
      * there is a viewmodel associated with a particular template.
@@ -435,7 +479,7 @@ class CMF
 	    static::$path = strpos($template, '.') === false ? $template : substr($template, 0, -strlen(strrchr($template, '.')));
 		
 		// determine the viewmodel namespace and classname
-		static::$module = \Request::active() ? ucfirst(\Request::active()->module) : '';
+		if (empty(static::$module)) static::$module = \Request::active() ? ucfirst(\Request::active()->module) : '';
 		$viewmodel_class = static::$module.'\\View_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', static::$path)));
 		
 		return class_exists($viewmodel_class);
@@ -453,7 +497,7 @@ class CMF
 	    static::$path = strpos($template, '.') === false ? $template : substr($template, 0, -strlen(strrchr($template, '.')));
 		
 		// determine the viewmodel namespace and classname
-		static::$module = \Request::active() ? ucfirst(\Request::active()->module) : '';
+		if (empty(static::$module)) static::$module = \Request::active() ? ucfirst(\Request::active()->module) : '';
 		$controller_class = static::$module.'\\Controller_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', static::$path)));
 		
 		return class_exists($controller_class);

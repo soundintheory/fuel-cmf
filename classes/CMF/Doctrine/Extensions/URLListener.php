@@ -15,6 +15,14 @@ class URLListener implements EventSubscriber
 {
     protected $toFlush = array();
     protected $savedUrls = array();
+    protected $moduleUrls = null;
+    
+    protected function init()
+    {
+        if ($this->moduleUrls === null) {
+            $this->moduleUrls = array_flip(\Config::get('cmf.module_urls', array()));
+        }
+    }
     
     /**
      * Specifies the list of events to listen to
@@ -32,6 +40,8 @@ class URLListener implements EventSubscriber
     
     public function postPersist(LifecycleEventArgs $args)
     {
+        $this->init();
+        
         $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
         $entity = $args->getEntity();
@@ -41,6 +51,7 @@ class URLListener implements EventSubscriber
     
     public function postFlush(PostFlushEventArgs $args)
     {
+        $this->init();
         $em = $args->getEntityManager();
         
         if (count($this->toFlush) > 0) {
@@ -60,6 +71,7 @@ class URLListener implements EventSubscriber
     
     public function onFlush(OnFlushEventArgs $args)
     {
+        $this->init();
         $this->toFlush = array();
         
         $em = $args->getEntityManager();
@@ -87,6 +99,7 @@ class URLListener implements EventSubscriber
     protected function process(&$entity, &$em, &$uow)
     {
         $entity_class = get_class($entity);
+        $entity_namespace = trim(\CMF::slug(str_replace('\\', '/', \Inflector::get_namespace($entity_class))), '/');
     	$metadata = $em->getClassMetadata($entity_class);
     	$url_associations = $metadata->getAssociationsByTargetClass('CMF\\Model\\URL');
         
@@ -110,7 +123,7 @@ class URLListener implements EventSubscriber
             $url_item = $entity->get($url_field);
             if ($new_url = is_null($url_item)) $url_item = new \CMF\Model\URL();
             
-            $prefix = $entity->urlPrefix();
+            $prefix = $this->getPrefix($entity);
             $slug = '';
             
             if (isset($url_settings['keep_updated']) && !$url_settings['keep_updated']) {
@@ -119,7 +132,7 @@ class URLListener implements EventSubscriber
                 $slug = $entity->urlSlug();
             }
             
-            $url = $prefix.$slug;
+            $url = rtrim($prefix.$slug, '/');
             $current_url = $url_item->url;
             $entity_id = $entity->id;
             
@@ -128,7 +141,7 @@ class URLListener implements EventSubscriber
                 
                 // Set data from the entity if the prefix is null
                 if (is_null($prefix)) {
-                    $prefix = $entity->urlPrefix();
+                    $prefix = $this->getPrefix($entity);
                     $url = $prefix.$slug;
                 }
                 
@@ -247,7 +260,7 @@ class URLListener implements EventSubscriber
             
             // Set data from the entity if the prefix is null
             if (is_null($prefix)) {
-                $prefix = $entity->urlPrefix();
+                $prefix = $this->getPrefix($entity);
                 $url = $prefix.$slug;
             }
             
@@ -260,7 +273,7 @@ class URLListener implements EventSubscriber
             // Set the slug to the item's ID if empty
             if (is_null($slug)) {
                 $slug = $entity_id."";
-                $url = $prefix.$slug;
+                $url = rtrim($prefix.$slug, '/');
             }
             
             $slug_orig = $slug;
@@ -281,6 +294,25 @@ class URLListener implements EventSubscriber
             array_push($this->toFlush, $url_item);
             
         }
+    }
+    
+    /**
+     * Find the URL prefix for a given entity
+     * 
+     * @param  \CMF\Model\Base $entity
+     * @return string
+     */
+    protected function getPrefix($entity)
+    {
+        $entity_namespace = trim(\Inflector::underscore(str_replace('\\', '/', \Inflector::get_namespace(get_class($entity)))), '/');
+        $module = \Module::exists($entity_namespace);
+        
+        if ($module !== false && $entity_namespace != '') {
+            $module_prefix = \Arr::get($this->moduleUrls, $entity_namespace, $entity_namespace);
+            return "/$module_prefix".$entity->urlPrefix();
+        }
+        
+        return $entity->urlPrefix();
     }
     
 }
