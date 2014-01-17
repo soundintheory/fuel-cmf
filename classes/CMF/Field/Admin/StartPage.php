@@ -99,7 +99,8 @@ class StartPage extends \CMF\Field\Base {
             if (is_array($items) && count($items) > 0) {
                 
                 foreach ($items as $item)
-                {
+                {   
+                    if(isset($item->url))
                     $group[strval($item->url->id)] = $item->display();
                 }
                 $options[$name] = $group;

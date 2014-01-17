@@ -208,8 +208,11 @@ class Driver
             
             if ($remember === true) {
                 // Set token data
-                $user->remember_token = Auth::forge()->generate_token();
+                $remember_token = Auth::forge()->generate_token();
 
+                $user->set('remember_token', $remember_token);
+                \D::manager()->persist($user); 
+                \D::manager()->flush();
                 // Set the remember-me cookie
                 \Cookie::set('remember_token',
                              $user->remember_token,

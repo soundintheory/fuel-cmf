@@ -322,10 +322,12 @@ class CMF
     public static function currentModel($type = null)
     {
         if (isset(static::$model)) return static::$model;
-	    
-	    $url = static::$uri;
+        
+        $url = static::$uri;
+        
         if (empty($url)) $url = '/';
-         
+        else $url = '/'.trim($url, '/');
+	    
 	    $model = static::getItemByUrl($url, $type);
         
 	    if ($model === null) {
