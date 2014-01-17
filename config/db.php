@@ -39,7 +39,6 @@ return array(
 		 * that extend the 'Doctrine\DBAL\Types\Type' class
 		 */
 		'types' => array(
-			'binary' => array( 'class' => 'CMF\\Doctrine\\Types\\Binary', 'dbtype' => 'varbinary' ),
 			'richtext' => array( 'class' => 'Doctrine\\DBAL\\Types\\TextType' ),
 			'color' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'enum' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),

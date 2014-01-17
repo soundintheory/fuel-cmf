@@ -520,12 +520,13 @@ class Auth
      */
     public static function has_password(User $user, $submitted_password)
     {
-        $user_password = $user->get('encrypted_password');
-        if (empty($user_password) || empty($submitted_password)) {
+        $user_password = @stream_get_contents($user->get('encrypted_password'));
+        if (empty($user_password) || $user_password === false || empty($submitted_password)) {
             return false;
         }
 
         $hasher = new PasswordHash(8, false);
+        
         return $hasher->CheckPassword($submitted_password, $user_password);
     }
 
