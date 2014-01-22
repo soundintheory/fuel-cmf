@@ -130,11 +130,12 @@ class CMF
         return static::$uri = $uri;
     }
     
-    public static function getOptions($model, $field = null)
+    public static function getOptions($model, $field = null , $default = array())
     {
         if ($field !== null) {
             $method = 'get'.\Inflector::camelize($field).'Options';
             if (method_exists($model, $method)) return call_user_func($model.'::'.$method, null);
+            return $default;
         }
         
         return $model::options();
@@ -482,9 +483,16 @@ class CMF
 		
 		// determine the viewmodel namespace and classname
 		if (empty(static::$module)) static::$module = \Request::active() ? ucfirst(\Request::active()->module) : '';
-		$viewmodel_class = static::$module.'\\View_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', static::$path)));
+        
+        // Strip the first part of the path off for module templates
+        if (!empty(static::$module) && strpos(static::$path, static::$module) === 0) {
+            static::$path = str_replace(static::$module.'/', '', static::$path);
+        }
+        
+		$viewmodel_class = ucfirst(static::$module).'\\View_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', static::$path)));
 		
-		return class_exists($viewmodel_class);
+		if (class_exists($viewmodel_class)) return $viewmodel_class;
+        return false;
 	}
 	
 	/**

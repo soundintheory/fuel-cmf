@@ -39,8 +39,11 @@ class ObjectForm
 		if (!isset($this->settings['fields'])) return;
 		
 		$fields_types = \Config::get('cmf.fields_types');
-		$values_keys = array_keys($this->values);
-		$fields_keys = array_unique(array_merge(array_keys($this->settings['fields']), $values_keys));
+		$fields_keys = array_keys($this->settings['fields']);
+		
+		// Merge in the values in the DB if this is dynamic
+		if (@$this->settings['dynamic'] && !@$this->settings['tabular'])
+			$fields_keys = array_unique(array_merge($fields_keys, array_keys($this->values)));
 		
 		foreach ($fields_keys as $field_name) {
 			
@@ -121,6 +124,7 @@ class ObjectForm
         $has_errors = count($errors) > 0;
         $output = array();
 		
+		// This is a dynamic key/value object
 		if ($this->settings['dynamic'] === true && $this->settings['array'] !== true) {
 			
 			// Add the necessary JS
@@ -152,7 +156,76 @@ class ObjectForm
 			
 		}
 		
-		// Get each field's HTML
+		// This is an array of objects with a number of defined fields
+		if ($this->settings['dynamic'] === false && $this->settings['array'] === true) {
+			
+			// Add the necessary JS
+			$this->assets['js'][] = '/admin/assets/js/fields/collection/array-inline.js';
+			
+			// Create the info for the field template
+			$rows = array();
+			$cols = array_keys($this->settings['fields']);
+			$sortable = true;
+			$template = array();
+			
+			// Get each field's HTML
+			foreach ($this->settings['fields'] as $field_name => $field) {
+				if (isset($field['visible']) && $field['visible'] === false || 
+					isset($field['delete']) && $field['delete'] === true) continue;
+				$field_class = $field['field'];
+				$field_assets = $field_class::getAssets();
+				if (is_array($field_assets)) {
+					$this->assets = \Arr::merge($this->assets, $field_assets);
+				}
+				$field['label'] = false;
+				$field['mapping']['fieldName'] = '__TEMP__'.$this->settings['mapping']['fieldName'].'[__NUM__]['.$field['original_name'].']';
+				$field['field_type'] = $field_class::type($field);
+				$this->settings['fields'][$field_name] = $field;
+				
+				// Add the field to the template
+				$field_content = $field_class::displayForm(null, $field, $model);
+				
+				if (is_array($field_content)) {
+					$this->assets = \Arr::merge($this->assets, $field_content['assets']);
+					$template[$field_name] = $field_content['content'];
+				} else {
+					$template[$field_name] = $field_content;
+				}
+			}
+			
+			// Now we need fields for each row
+			foreach ($this->values as $num => $row) {
+				
+				$row_fields = array();
+				
+				// Not yet!
+				foreach ($row as $field_name => $value) {
+					
+					if (!isset($this->settings['fields'][$field_name])) continue;
+					
+					$field = $this->settings['fields'][$field_name];
+					$field_class = $field['field'];
+					$field['mapping']['fieldName'] = $this->settings['mapping']['fieldName'].'[__NUM__]['.$field['original_name'].']';
+					
+					$row_fields[$field_name] = $field_class::displayForm($value, $field, $model);
+				}
+				
+				$rows[] = $row_fields;
+				
+			}
+			
+			return \View::forge('admin/fields/collection/tabular-array.twig', array(
+				'form' => $this,
+				'template' => $template,
+				'rows' => $rows,
+				'cols' => $cols,
+				'settings' => $this->settings,
+				'sortable' => $sortable,
+			), false);
+			
+		}
+		
+		// This is a normal object containing a number of defined fields. Get each field's HTML
 		foreach ($this->settings['fields'] as $field_name => $field) {
 			if (isset($field['visible']) && $field['visible'] === false || 
 					isset($field['delete']) && $field['delete'] === true) continue;

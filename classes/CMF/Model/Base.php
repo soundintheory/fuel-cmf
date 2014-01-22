@@ -449,6 +449,15 @@ class Base extends \CMF\Doctrine\Model
     }
     
     /**
+     * Returns the name of the module the model belongs to. By default, this is the class namespace
+     * @return string
+     */
+    public static function getModule()
+    {
+        return trim(\Inflector::underscore(str_replace('\\', '/', \Inflector::get_namespace( get_called_class() ))), '/');
+    }
+    
+    /**
      * @see \CMF\Model\Base::$_singular
      * @return string The singular verbose name for the model (eg. Category)
      */

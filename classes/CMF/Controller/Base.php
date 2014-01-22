@@ -111,13 +111,10 @@ class Base extends \Controller
         if (is_null($this->template)) return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
         
         // Determine whether the ViewModel class exists...
-        if (\CMF::hasViewModel($this->template)) {
-            
-            $viewModel = \ViewModel::forge($this->template, 'view', false);
+        if ($viewClass = \CMF::hasViewModel($this->template)) {
+            $viewModel = new $viewClass('view', false, $this->template);
             $this->bindData($viewModel);
-            
             return \Response::forge($viewModel, $this->status, $this->headers);
-            
         }
         
         try {

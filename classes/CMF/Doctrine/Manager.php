@@ -145,6 +145,7 @@ class D extends \Fuel\Doctrine
 				default:
 					$cache = new $class();
 					$cache->setNamespace($namespace);
+					print('setting namespace '.$namespace);
 					break;
 			}
 			

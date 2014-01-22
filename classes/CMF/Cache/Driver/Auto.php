@@ -110,7 +110,7 @@ class Auto extends Simple {
 		}));
 		
 		$model_classes = array_filter(get_declared_classes(), function($class) {
-			return strpos($class, 'Model_') === 0;
+			return strpos($class, 'Model_') !== false;
 		});
 		
 		// Construct an allowed list of tables for the cache queries

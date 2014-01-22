@@ -47,7 +47,9 @@
 			
 			function addItem(type) {
 				
+				type = type.replace("\\", "\\\\");
 				var $item = $wrap.find('> .item-template[data-type="' + type + '"]').eq(0).clone();
+				console.log($item.length);
 				
 				$item.addClass('item collapsible').removeClass('item-template').each(initCollapsible).find('*[name], *[data-field-name]').each(function() {
 					

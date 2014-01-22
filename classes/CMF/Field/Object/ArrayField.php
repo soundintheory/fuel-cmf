@@ -14,6 +14,18 @@ class ArrayField extends Object {
         'fields' => array()
     );
     
+    /** @inheritdoc */
+    public static function preProcess($value, $settings, $model)
+    {
+        return $value;
+    }
+    
+    /** inheritdoc */
+    public static function type($settings = array())
+    {
+        return 'tabular-array';
+    }
+    
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
         try {
@@ -27,24 +39,19 @@ class ArrayField extends Object {
     {
         $settings = static::settings($settings);
         if ($settings['array'] !== true) {
-            $field_class = 'CMF\\Field\\Object';
+            $field_class = 'CMF\\Field\\Object\\Object';
             return $field_class::displayForm($value, $settings, $model);
         }
         
         if (is_null($value)) $value = array();
         
         if (\Arr::is_assoc($value)) $value = array($value);
-        $forms = array();
+        $form = new ObjectForm($settings, $value);
         $content = '';
         
-        foreach ($value as $i => $object) {
-            $form = new ObjectForm($settings, $object);
-            $content .= "\n".$form->getContent($model)."\n";
-        }
-        
         return array(
-            'content' => $content,
-            'assets' => array(),
+            'content' => $form->getContent($model),
+            'assets' => $form->assets,
             'widget' => $settings['widget']
         );
     }

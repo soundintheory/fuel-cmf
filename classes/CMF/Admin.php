@@ -303,6 +303,8 @@ class Admin
 			} else if (isset($item['model'])) {
 				
 				$class_name = $class_prefix.$item['model'];
+				if (!class_exists($class_name)) $class_name = $item['model'];
+				
 				if (!\CMF\Auth::can('view', $class_name)) continue;
 				
 				$metadata = $class_name::metadata();
@@ -342,7 +344,7 @@ class Admin
 	public static function setCurrentClass($class)
 	{
 		// See if we have a module...
-		$module = strtolower(rtrim(\Inflector::get_namespace($class), '\\'));
+		$module = $class::getModule();
 		
 		if (\Config::get("cmf.admin.modules.$module", false) !== false)
 			static::activateModule($module);
