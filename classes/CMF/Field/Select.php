@@ -9,8 +9,17 @@ class Select extends Base {
         'options' => array(),
         'allow_empty' => true,
         'use_key' => false,
-        'output' => 'value'
+        'output' => 'value',
+        'multiple' => false,
+        'select2' => false
     );
+    
+    public static function process($value, $settings, $model)
+    {
+        $settings = static::settings($settings);
+        if (@$settings['multiple'] && is_array($value)) return implode(',', $value);
+        return parent::process($value, $settings, $model);
+    }
     
     public static function getValue($value, $settings, $model)
     {
@@ -47,7 +56,7 @@ class Select extends Base {
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
-        $options = isset($settings['options']) ? $settings['options'] : array();
+        $options = \CMF::getOptions(get_class($model), $settings['mapping']['fieldName'], isset($settings['options']) ? $settings['options'] : array());
         
         if (!empty($options) && !\Arr::is_assoc($options) && $settings['use_key'] !== true) {
             $options = array_combine($options, $options);
@@ -61,12 +70,50 @@ class Select extends Base {
             }
         }
         
-        //if (is_numeric($value)) $value = trim(strval($value), ' ').' ';
-        
-        if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
+        if (@$settings['multiple']) {
+            
+            if (is_null($value) || empty($value)) {
+                if (@$settings['default'] == 'all' && is_array($options)) {
+                    $value = array_keys($options);
+                }
+            }
+            
+            if (!is_array($value)) $value = explode(',', $value);
+            $input_attributes['multiple'] = 'multiple';
+            
+        } else if (isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && 
             !(isset($settings['required']) && $settings['required']) &&
             $settings['allow_empty']) {
             $options = array( '' => '' ) + $options;
+        }
+        
+        // Transform the options into the right format
+        foreach ($options as $key => $option) {
+            if (is_array($option))
+                $options[$key] = \Arr::get($option, 'title', $key);
+        }
+        
+        // Select2?
+        if (is_array($settings['select2'])) {
+            
+            $settings['is_select2'] = true;
+            $input_attributes['class'] .= ' input-xxlarge select2';
+            $settings['select2']['placeholder'] = 'click to select an option';
+            
+            $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
+            $input = \Form::select($settings['mapping']['fieldName'], $value, $options, $input_attributes);
+            $content = $label.$input;
+            if (!(isset($settings['wrap']) && $settings['wrap'] === false)) $content = html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') ), $content);
+            
+            return array(
+                'content' => $content,
+                'widget' => @$settings['widget'],
+                'assets' => array(
+                    'css' => array('/admin/assets/select2/select2.css'),
+                    'js' => array('/admin/assets/select2/select2.min.js', '/admin/assets/js/fields/select2.js')
+                ),
+                'js_data' => $settings['select2']
+            );
         }
         
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));

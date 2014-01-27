@@ -369,8 +369,10 @@ abstract class Model
                     $item = $value[$i];
                     $item_target_class = $target_class;
                     
-                    if (is_numeric($item)) {
+                    if (is_numeric($item) || is_string($item)) {
+                        
                         $item = $target_class::find($item);
+                        
                     } else if (is_array($item)) {
                         if (array_key_exists('id', $item) && !empty($item['id'])) {
                             $new_item = $target_class::find($item['id']);
@@ -381,6 +383,8 @@ abstract class Model
                         $new_item->populate($item);
                         $item = $new_item;
                     }
+                    
+                    if (is_null($item)) continue;
                     
                     if (!$collection->contains($item)) {
                         $collection->add($item);

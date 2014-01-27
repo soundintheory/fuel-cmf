@@ -19,7 +19,7 @@ class Cache {
 		$controller = \Request::active()->controller_instance;
 		$nocache = \Input::param('nocache', \Session::get_flash('nocache', false, true));
 		$controller_nocache = (!is_null($controller) && method_exists($controller, 'cache') && $controller->cache() === false);
-		
+        
 		// Don't run if it's already started, if we have a POST or if the controller says not to
 		if ($nocache !== false || static::$started === true || strtolower(\Input::method()) == 'post' || $controller_nocache) return false;
 		
@@ -44,12 +44,13 @@ class Cache {
 		// Create the driver and try to get cached content from it
 		$driver = static::driver();
 		static::$started = true;
-		
+        
         // Add any extra files to check
         $files = \Arr::get($config, 'check_files', array());
         foreach ($files as $file) {
             $driver->addFile($file);
         }
+        
         // Try and get the cached content
         $content = $driver->get($uri);
         
@@ -68,7 +69,7 @@ class Cache {
 	{
 		// Don't re-run if it's already finished
 		if (static::$finished === true) return false;
-		
+        
 		static::$finished = true;
 		static::$driver->set(\Request::active()->response);
 		return false;

@@ -15,11 +15,13 @@
 				</a>
 				<a class="brand" href="/admin">{{ admin_title }}</a>
 				<div class="nav-collapse">
-					<!-- ul class="nav">
-						<li class="active"><a href="#">Home</a></li>
-						<li><a href="#about">About</a></li>
-						<li><a href="#contact">Contact</a></li>
-					</ul -->
+					{% if modules %}
+						<ul class="nav">
+							{% for module_id, module in modules %}
+							    <li class="{{ module_id == current_module ? 'active' : '' }}"><a href="/admin/{{ module_id }}">{{ module.title }}</a></li>
+							{% endfor %}
+						</ul>
+					{% endif %}
 					<!-- p class="navbar-text pull-right">Logged in as <a href="#">{{ user.username }}</a></p -->
 					<ul class="nav pull-right">
 	                    {% if lang_enabled %}

@@ -8,10 +8,17 @@ Autoloader::alias_to_namespace('CMF\\CMF');
 Autoloader::alias_to_namespace('CMF\\Admin');
 
 // Add in the 404 route which routes through the CMF
-\Router::add(array( '_404_' => 'base/404' ));
+\Router::add(array( '_404_' => 'base/catchall' ));
 
 // Load cmf config
 \Config::load('cmf', true);
+
+// Check if custom module urls have been set
+if (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), 'admin') === 0) {
+	\Config::set('security.uri_filter', array_merge( array('\Admin::module_url_filter'), \Config::get('security.uri_filter') ));
+} else if (\Config::get('cmf.module_urls', false) !== false) {
+	\Config::set('security.uri_filter', array_merge( array('\CMF::module_url_filter'), \Config::get('security.uri_filter') ));
+}
 
 // Load up the required packages
 Package::load(array('email', 'parser', 'sprockets'));

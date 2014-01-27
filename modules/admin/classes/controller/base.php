@@ -70,8 +70,13 @@ class Controller_Base extends \Controller {
             'super_user' => $user->super_user
         );
         
-        // HTML Title
+        // Some vital settings
         $this->admin_title = \Config::get("cmf.admin.title", array());
+        $this->base_url = \Admin::$base;
+        $this->modules = \Config::get('cmf.admin.modules', false);
+        $this->current_module = \Admin::$current_module;
+        $this->current_class = \Admin::$current_class;
+        $this->dashboard_title = \Config::get('cmf.admin.modules.'.\Admin::$current_module.'.title', 'Dashboard');
         
         $this->headers['X-XSS-Protection'] = 0;
         

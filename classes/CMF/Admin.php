@@ -19,9 +19,12 @@ use DoctrineFuel,
 class Admin
 {
 	
-	public static $current_class = '';
-	
+	public static $current_class = null;
+	public static $current_module = '_root_';
 	public static $languages = null;
+	public static $base = '/admin';
+	
+	protected static $sidebar_config_path = 'cmf.admin.sidebar';
 	
 	/**
 	 * Maps table names to class names - populated once on first use for efficiency
@@ -246,14 +249,43 @@ class Admin
 	}
 	
 	/**
+	 * Set as a URI filter when modules are being used
+	 * @param  string $uri
+	 * @return string
+	 */
+	public static function module_url_filter($uri)
+	{
+	    $segments = explode('/', ltrim($uri, '/'));
+	    if (count($segments) < 2) return $uri;
+	    $config = 'cmf.admin.modules.'.$segments[1].'.sidebar';
+	    $translate = \Config::get($config, false);
+	    
+	    if ($translate !== false) {
+	    	static::activateModule($segments[1]);
+	    	unset($segments[1]);
+	    	return  '/'.implode($segments, '/');
+	    }
+	    
+	    return $uri;
+	}
+	
+	public static function activateModule($module)
+	{
+		static::$base = '/admin/'.$module;
+		static::$current_module = $module;
+		static::$sidebar_config_path = "cmf.admin.modules.$module.sidebar";
+	}
+	
+	/**
 	 * Processes the config and generates data for the template to render the sidebar
 	 * @return array The sidebar config
 	 */
 	public static function getSidebarConfig()
 	{
-		$sidebar_config = \Config::get('cmf.admin.sidebar');
+		$sidebar_config = \Config::get(static::$sidebar_config_path, array());
 		$current_group = 0;
 		$output = array( array( 'heading' => false, 'items' => array() ) );
+		$class_prefix = static::$current_module != '_root_' ? ucfirst(static::$current_module).'\\' : '';
 		
 		// Check if the first item is a heading
 		if (isset($sidebar_config[0]['heading'])) {
@@ -270,7 +302,9 @@ class Admin
 				
 			} else if (isset($item['model'])) {
 				
-				$class_name = $item['model'];
+				$class_name = $class_prefix.$item['model'];
+				if (!class_exists($class_name)) $class_name = $item['model'];
+				
 				if (!\CMF\Auth::can('view', $class_name)) continue;
 				
 				$metadata = $class_name::metadata();
@@ -305,6 +339,17 @@ class Admin
 		
 		return $output;
 		
+	}
+	
+	public static function setCurrentClass($class)
+	{
+		// See if we have a module...
+		$module = $class::getModule();
+		
+		if (\Config::get("cmf.admin.modules.$module", false) !== false)
+			static::activateModule($module);
+		
+		static::$current_class = $class;
 	}
 	
 	/**

@@ -25,6 +25,14 @@ class Project
 	 */
 	public static function sync($name = 'default', $type = 'app', $run = false, $reset = false)
 	{
+		try {
+    	    set_time_limit(0);
+    	    ignore_user_abort(true);
+    	    ini_set('memory_limit', '256M');
+    	} catch (\Exception $e) {
+    	    // Nothing!
+    	}
+		
 		\Config::load("db", true, true);
 		$em = \D::manager();
 		$cache = $em->getConfiguration()->getMetadataCacheImpl();

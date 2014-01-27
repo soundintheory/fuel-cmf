@@ -23,12 +23,23 @@ class D extends \Fuel\Doctrine
 	/** @var \Symfony\Component\Validator\Validator */
 	protected static $_validator;
 	
+	/** @var \Doctrine\DBAL\Logging\SQLLogger */
+	protected static $_logger;
+	
 	/**
 	 * @inheritdoc
 	 */
 	public static function _init_manager($connection)
 	{
 		parent::_init_manager($connection);
+		
+		if (isset(static::$_logger)) {
+			$current_logger = static::$_managers[$connection]->getConnection()->getConfiguration()->getSQLLogger(static::$_logger);
+			if (!is_null($current_logger) && method_exists(static::$_logger, 'setLogger')) {
+				static::$_logger->setLogger($current_logger);
+			}
+			static::$_managers[$connection]->getConnection()->getConfiguration()->setSQLLogger(static::$_logger);
+		}
 		
 		if (empty($connection) || is_null($connection))
 			$connection = static::$settings['active'];
@@ -134,6 +145,7 @@ class D extends \Fuel\Doctrine
 				default:
 					$cache = new $class();
 					$cache->setNamespace($namespace);
+					print('setting namespace '.$namespace);
 					break;
 			}
 			
@@ -173,6 +185,26 @@ class D extends \Fuel\Doctrine
 	    	new ConstraintValidatorFactory(),
 	    	new DefaultTranslator()
 	    );
+	}
+	
+	/**
+	 * Set the logger to be used
+	 * @param \Doctrine\DBAL\Logging\SQLLogger $logger
+	 */
+	public static function setLogger($logger, $connection = 'default')
+	{
+		if (isset(static::$_managers[$connection])) {
+			
+			// Set the logger into the manager
+			$connection = static::$_managers[$connection]->getConfiguration();
+			$connection->setSQLLogger($logger);
+			
+		} else {
+			
+			// Prepare the logger for addition into the manager when it's created
+			static::$_logger = $logger;
+			
+		}
 	}
 	
 }

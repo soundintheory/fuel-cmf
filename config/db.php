@@ -39,7 +39,6 @@ return array(
 		 * that extend the 'Doctrine\DBAL\Types\Type' class
 		 */
 		'types' => array(
-			'binary' => array( 'class' => 'CMF\\Doctrine\\Types\\Binary', 'dbtype' => 'varbinary' ),
 			'richtext' => array( 'class' => 'Doctrine\\DBAL\\Types\\TextType' ),
 			'color' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'enum' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
@@ -52,7 +51,9 @@ return array(
 			'image' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 			'link' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 			'measurement' => array( 'class' => 'Doctrine\\DBAL\\Types\\FloatType' ),
-			'language' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' )
+			'language' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
+			'config' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
+			'array_config' => array( 'class' => 'Doctrine\\DBAL\\Types\\ArrayType' ),
 		),
 		
 		'ignore_tables' => array(

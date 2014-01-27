@@ -102,6 +102,8 @@ return array (
         'enum_decimal' => 'CMF\\Field\\Select',
         'measurement' => 'CMF\\Field\\Measurement',
         'language' => 'CMF\\Field\\Language',
+        'config' => 'CMF\\Field\\ConfigSelect',
+        'array_config' => 'CMF\\Field\\Object\\ArrayConfig',
         
         // Associations with specific tables can be mapped...
         'onetoone_urls' => 'CMF\\Field\\Relation\\URL',

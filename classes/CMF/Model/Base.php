@@ -313,8 +313,7 @@ class Base extends \CMF\Doctrine\Model
 	{
         $called_class = get_called_class();
         if ($called_class::$_template !== null) return $called_class::$_template;
-	    $called_class::$_template = str_replace(array("model_", "_"), array("", "/"), strtolower(\Inflector::denamespace(get_called_class()))).'.twig';
-        return $called_class::$_template;
+        return $called_class::$_template = strtolower(str_replace(array('Model_', '_', '\\'), array('', '/', '/'), $called_class)).'.twig';
 	}
     
     /**
@@ -447,6 +446,15 @@ class Base extends \CMF\Doctrine\Model
             // This will force there to be a changeset, even if it was only associations that were updated.
             $this->updated_at = new \Datetime();
         }
+    }
+    
+    /**
+     * Returns the name of the module the model belongs to. By default, this is the class namespace
+     * @return string
+     */
+    public static function getModule()
+    {
+        return trim(\Inflector::underscore(str_replace('\\', '/', \Inflector::get_namespace( get_called_class() ))), '/');
     }
     
     /**

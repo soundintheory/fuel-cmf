@@ -56,7 +56,12 @@ class Extension extends Twig_Extension
 			'_' => new Twig_Function_Function('Lang::get'),
 			'session_set' => new Twig_Function_Function('Session::set'),
 			'session_get' => new Twig_Function_Function('Session::get'),
-			'get_content' => new Twig_Function_Function('file_get_contents')
+			'get_content' => new Twig_Function_Function('file_get_contents'),
+			'module_url' => new Twig_Function_Function('CMF::moduleUrl'),
+			'current_module' => new Twig_Function_Function('CMF::currentModule'),
+			'get_options' => new Twig_Function_Function('CMF::getOptions'),
+			'get_options_select' => new Twig_Function_Method($this, 'getOptionsSelect')
+
 		);
 	}
 	
@@ -69,6 +74,14 @@ class Extension extends Twig_Extension
         	'slug' => new Twig_Filter_Function('CMF::slug'),
         	'rtrim' => new Twig_Filter_Function('rtrim')
         );
+    }
+    
+    public function getOptionsSelect($model, $field = null, $values = array(), $attributes = array())
+    {
+    	$options = \CMF::getOptions($model, $field);
+    	$field = \Arr::get($attributes, 'name', $field !== null ? $field : \Inflector::friendly_title($model));
+    	
+    	return \Form::select($field, $values, $options, $attributes);
     }
     
     /**

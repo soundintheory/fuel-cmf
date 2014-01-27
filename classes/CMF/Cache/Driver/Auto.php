@@ -72,9 +72,8 @@ class Auto extends Simple {
 	
 	protected function startListeners()
 	{
-		$connection = \D::manager()->getConnection()->getConfiguration();
-		$this->logger = new \CMF\Doctrine\QueryLogger($connection->getSQLLogger());
-		$connection->setSQLLogger($this->logger);
+		$this->logger = new \CMF\Doctrine\QueryLogger();
+		\D::setLogger($this->logger);
 	}
 	
 	public function set($response)
@@ -100,7 +99,7 @@ class Auto extends Simple {
 		
 		// Add the template files to be checked
 		$template_loader = \View_Twig::loader();
-		if (!is_null($template_loader)) {
+		if (!is_null($template_loader) && method_exists($template_loader, 'getFiles')) {
 			$templates = $template_loader->getFiles();
 			$this->files = array_unique(array_merge($this->files, $templates));
 		}
@@ -111,7 +110,7 @@ class Auto extends Simple {
 		}));
 		
 		$model_classes = array_filter(get_declared_classes(), function($class) {
-			return strpos($class, 'Model_') === 0;
+			return strpos($class, 'Model_') !== false;
 		});
 		
 		// Construct an allowed list of tables for the cache queries
