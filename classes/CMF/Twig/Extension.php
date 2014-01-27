@@ -55,7 +55,8 @@ class Extension extends Twig_Extension
 			'all_languages' => new Twig_Function_Function('Admin::languages'),
 			'_' => new Twig_Function_Function('Lang::get'),
 			'session_set' => new Twig_Function_Function('Session::set'),
-			'session_get' => new Twig_Function_Function('Session::get')
+			'session_get' => new Twig_Function_Function('Session::get'),
+			'get_content' => new Twig_Function_Function('file_get_contents')
 		);
 	}
 	
@@ -138,7 +139,6 @@ class Extension extends Twig_Extension
 	{
 		return \CMF\Model\Settings::instance()->get($name, $default);
 	}
-	
 	public function fieldListValue($value, $edit_link, $settings, $model)
 	{
 		$class_name = $settings['field'];
