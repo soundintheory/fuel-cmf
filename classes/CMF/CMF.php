@@ -324,8 +324,7 @@ class CMF
     {
         if (isset(static::$model)) return static::$model;
         
-        $url = static::$uri;
-        
+        $url = \Input::uri();
         if (empty($url)) $url = '/';
         else $url = '/'.trim($url, '/');
 	    
