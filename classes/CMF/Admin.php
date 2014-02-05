@@ -177,7 +177,53 @@ class Admin
 		$fields = $class_name::fields();
 		$fields_types = \Config::get('cmf.fields_types');
 		$metadata = $class_name::metadata();
-		
+		$alias = false;
+		$visibleFields = array();
+
+		// If we are trying to create an alias, we need to check for a URL field
+		if (\Input::param('alias', false) !== false) {
+
+			// Check for URL...
+			$urls = $metadata->getAssociationsByTargetClass('CMF\Model\URL');
+			if (count($urls) > 0) {
+
+				// Find the URL field and hide all others if found
+				foreach ($urls as $urlFieldName => $urlField) {
+					if ($urlField['orphanRemoval']) {
+
+						$visibleFields[] = $urlFieldName;
+						$fields[$urlFieldName]['before'] = null;
+						$fields[$urlFieldName]['after'] = null;
+
+						array_walk($fields, function(&$item, $key) use ($urlFieldName) {
+							$item['visible'] = ($key == $urlFieldName);
+							$item['template'] = null;
+						});
+
+						$title_fields = array('menu_title', 'title', 'name', 'label');
+						$title_field = null;
+						foreach ($title_fields as $title_field) {
+							if ($metadata->hasField($title_field)) {
+								$fields[$title_field]['visible'] = true;
+								$fields[$title_field]['before'] = $urlFieldName;
+								$fields[$title_field]['after'] = null;
+								$fields[$title_field]['template'] = null;
+								$visibleFields[] = $title_field;
+								break;
+							}
+						}
+
+						$alias = true;
+
+						break;
+
+					}
+				}
+
+			}
+
+		}
+
 		$field_mappings = $metadata->fieldMappings;
 		$association_mappings = $metadata->associationMappings;
 		
@@ -188,7 +234,7 @@ class Admin
 			$field = isset($fields[$key]) ? $fields[$key] : array();
 			
 			if ($field === true) {
-				$field = array();
+				$field = array( 'visible' => !$alias );
 			} else if ($field === false) {
 				$field = array( 'visible' => false );
 			}
@@ -203,6 +249,7 @@ class Admin
 				// It's an association.
 				$mapping = $association_mappings[$key];
 				$association_type = static::$association_types[$mapping['type']];
+				if ($alias && !in_array($key, $visibleFields)) $field['visible'] = false;
 				
 				// If there's a custom type defined based on the table name, use it
 				$special_mapping_type = $association_type.'_'.static::getTableForClass($mapping['targetEntity']);
@@ -244,7 +291,7 @@ class Admin
 			$fields[$key] = $field;
 			
 		}
-		
+
 		return static::$field_settings[$class_name] = $fields;
 	}
 	

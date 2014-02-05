@@ -1,19 +1,19 @@
 {% extends interface_template|default("admin/shared/interface.twig") %}
 
-{% block html_title %}{% if static %}{{ singular }}{% else %}New {{ singular }}{% endif %} : {{ admin_title }}{% endblock %}
+{% block html_title %}{% if static %}{{ form.singular }}{% else %}New {{ form.singular }}{% endif %} : {{ admin_title }}{% endblock %}
 
 {% block main_pane %}
     
     {% include 'admin/shared/alert.twig' %}
     
-    <form action="" method="post" class="item-form" enctype="multipart/form-data">
+    <form action="?{{ qs }}" method="post" class="item-form" enctype="multipart/form-data">
     
     <input type="hidden" name="_mode" value="{{ mode }}" />
     <input type="hidden" name="_cid" value="{{ cid }}" />
     
     <div class="inner">
 
-        <h2 class="main-heading"><i class="icon icon-{{ icon }}"></i>{% if static %}{{ singular }}{% else %} New {{ singular }}{% endif %}</h2>
+        <h2 class="main-heading"><i class="icon icon-{{ form.icon }}"></i>{% if static %}{{ form.singular }}{% else %} New {{ form.singular }}{% endif %}</h2>
         
         {% if form.content|length > 1 %}
         <ul class="nav nav-pills">
@@ -79,8 +79,8 @@
         </div>
 
         <div class="actions pull-right">
-            <button data-loading-text="Creating {{ singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> {{ static ? 'Save' : 'Create' }} {{ singular }}</button> 
-            {% if not static %}<button name="create_new" value="1" data-loading-text="Creating {{ singular }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> Create &amp; Add Another...</button>{% endif %}
+            <button data-loading-text="Creating {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> {{ static ? 'Save' : 'Create' }} {{ form.singular }}</button> 
+            {% if not static %}<button name="create_new" value="1" data-loading-text="Creating {{ form.singular }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> Create &amp; Add Another...</button>{% endif %}
         </div>
 
     </div></div>
@@ -93,20 +93,20 @@
 
 {% block breadcrumb %}
     <li><a href="{{ base_url }}">{{ dashboard_title }}</a> <span class="divider">/</span></li>
-    {% if not static %}<li><a href="/admin/{{ table_name }}/list">{{ plural }}</a> <span class="divider">/</span></li>{% endif %}
-    <li class="active">{{ singular }}</li>
+    {% if not static %}<li><a href="/admin/{{ table_name }}/list">{{ form.plural }}</a> <span class="divider">/</span></li>{% endif %}
+    <li class="active">{{ form.singular }}</li>
 {% endblock %}
 
 {% block admin_css %}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{{ css }}?v=5">
+        <link rel="stylesheet" type="text/css" href="{{ css }}{{ ('?' in css) ? '&' : '?' }}v=5">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}?v=5"></script>
+        <script type="text/javascript" src="{{ js }}{{ ('?' in js) ? '&' : '?' }}v=5"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

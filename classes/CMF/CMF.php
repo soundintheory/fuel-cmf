@@ -167,6 +167,15 @@ class CMF
     {
         return array_search($module, \Config::get('cmf.module_urls', array()));
     }
+
+    /**
+     * Gets a module's title as defined in the cmf.admin.modules setting
+     * @return string
+     */
+    public static function moduleTitle($module)
+    {
+        return \Config::get("cmf.admin.modules.$module.title", \Config::get("cmf.admin.title"));
+    }
     
     /**
      * For the router, to translate hyphens to underscores
@@ -369,8 +378,8 @@ class CMF
     public static function getItemByUrl($url, $type = null)
     {
         // Plain query for the urls table to avoid initialising Doctrine for 404s
-        $url_item = \DB::query("SELECT type, item_id FROM urls WHERE url = '$url'".($type !== null ? "AND type = '$type'" : ""))->execute();
-        
+        $url_item = \DB::query("SELECT type, item_id FROM urls WHERE url = '$url' AND alias_id IS NULL ".($type !== null ? "AND type = '$type'" : ""))->execute();
+
 	    if (count($url_item) === 0 && $url == '/') {
             $url_item = static::settings()->start_page;
             if (is_null($url_item)) return null;

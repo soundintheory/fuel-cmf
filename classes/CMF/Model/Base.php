@@ -838,6 +838,28 @@ class Base extends \CMF\Doctrine\Model
         if ($check_fields) return static::$_lang_enabled && count(\Admin::getTranslatable(get_called_class())) > 0;
         return static::$_lang_enabled;
     }
+
+    /**
+     * Checks whether the entity has a URL relation
+     */
+    public static function hasUrlField()
+    {
+        $called_class = get_called_class();
+        $metadata = $called_class::metadata();
+        $url_associations = $metadata->getAssociationsByTargetClass('CMF\\Model\\URL');
+
+        if (!empty($url_associations)) {
+            
+            foreach ($url_associations as $key => $association) {
+                if ($association['type'] == ClassMetadataInfo::ONE_TO_ONE && $association['orphanRemoval']) {
+                    return $key;
+                    break;
+                }
+            }
+        }
+
+        return false;
+    }
     
     /**
      * Populates the model's non-nullable fields so that a blank one can be saved
@@ -858,8 +880,10 @@ class Base extends \CMF\Doctrine\Model
         // Make sure any non nullable fields are filled in...
         foreach ($field_mappings as $field_name => $field_mapping) {
             
-            if (isset($this->$field_name) || $field_mapping['nullable'] === true || in_array($field_name, $ignore_fields)) continue;
+            $value = $this->$field_name;
             
+            if (!(is_null($value) || empty($value)) || $field_mapping['nullable'] === true || in_array($field_name, $ignore_fields)) continue;
+
             switch ($field_mapping['type']) {
                 case 'boolean':
                     $this->set($field_name, false);

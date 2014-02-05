@@ -13,13 +13,52 @@ class URL extends OneToOne {
 			)
 		);
     }
+
+    /** @inheritdoc */
+    public static function process($value, $settings, $model)
+    {
+        if ($value instanceof \CMF\Model\URL) {
+
+            $alias = $value->alias;
+            if ($alias instanceof \CMF\Model\URL) {
+
+                // Kick the alias to update, in case it hasn't been triggered
+                $alias->set('updated_at', new \DateTime());
+
+                // Populate any required fields on the model that are null, since they won't have been touched
+                $model->blank(array('menu_title'));
+            }
+
+        }
+
+        return $value;
+    }
     
     /** inheritdoc */
     public static function displayForm($value, &$settings, $model)
     {
         $include_label = isset($settings['label']) ? $settings['label'] : true;
-    	$target_class = $settings['mapping']['targetEntity'];
-    	if (is_null($value) || !$value instanceof $target_class) $value = new $target_class();
+        $target_class = $settings['mapping']['targetEntity'];
+        if (is_null($value) || !$value instanceof $target_class) $value = new $target_class();
+
+        // Show a simple alias form if the input var is set
+        if (\Input::param('alias', false) !== false) {
+
+            $alias = $value->alias;
+            $label = \Form::label(\Arr::get($settings, 'title', ucfirst($settings['mapping']['fieldName'])), $settings['mapping']['fieldName'].'[alias]', array( 'class' => 'item-label' ));
+            $options = \CMF\Field\Object\Link::getOptions($settings, $model);
+            $select = \Form::select($settings['mapping']['fieldName'].'[alias]', ($alias instanceof \CMF\Model\URL) ? $alias->id : null, $options, array( 'class' => 'input input-xlarge select2' ));
+
+            return array(
+                'content' => html_tag('div', array( 'class' => 'controls control-group field-type-url-alias' ), $label.$select),
+                'widget' => false,
+                'assets' => array(
+                    'css' => array('/admin/assets/select2/select2.css'),
+                    'js' => array('/admin/assets/select2/select2.min.js')
+                )
+            );
+
+        }
     	
     	$model_class = get_class($model);
     	$errors = $model->getErrorsForField($settings['mapping']['fieldName']);

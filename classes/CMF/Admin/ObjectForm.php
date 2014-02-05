@@ -255,7 +255,7 @@ class ObjectForm
 		}
 		
 		$attributes = $this->attributes = array( 'class' => 'field-type-object controls control-group'.($has_errors ? ' error' : '') );
-		
+
 		// If it isn't a widget, maybe it wants to be a sub group (wrapped in a grey box)...
 		if ($this->settings['widget'] !== true && $this->settings['sub_group'] === true) {
 			$title = $this->settings['title'].($has_errors ? ' - '.$errors[0] : '');

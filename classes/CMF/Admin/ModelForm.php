@@ -14,6 +14,9 @@ class ModelForm
 	public $table_name;
 	public $disable_groups = false;
 	public $disable_widgets = false;
+	public $icon = null;
+	public $plural = null;
+	public $singular = null;
 	
 	// For internal workings
 	protected $tabs;
@@ -34,6 +37,16 @@ class ModelForm
 		$this->disable_groups = $disable_groups;
 		$this->disable_widgets = $disable_widgets;
 		
+		if (\Input::param('alias', false) !== false) {
+			$this->icon = 'link';
+			$this->plural = 'Links';
+			$this->singular = 'Link';
+		} else {
+			$this->icon = $class_name::icon();
+			$this->plural = $class_name::plural();
+			$this->singular = $class_name::singular();
+		}
+
 		// Tabs, Groups, Fields
 		$this->tabs = $class_name::tabs();
 		$this->groups = $class_name::groups();

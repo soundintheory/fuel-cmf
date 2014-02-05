@@ -34,15 +34,9 @@ class Project
     	}
 		
 		\Config::load("db", true, true);
+
+		\D::$clear_cache = true;
 		$em = \D::manager();
-		$cache = $em->getConfiguration()->getMetadataCacheImpl();
-		
-		try {
-			// Make sure there is no metadata cache
-			$cache->deleteAll();
-		} catch(\Exception $e) {
-			// Sometimes the cache driver is set to an 'unclearable' one, but don't stress about it!
-		}
 		
 		$files = glob(APPPATH."migrations/*_*.php");
 		if ($reset) {

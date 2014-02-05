@@ -675,17 +675,16 @@ class Controller_List extends Controller_Base {
 		
 		$classes = array();
 		
-		if ($class_name::superclass() === false) {
-			$classes[$class_name] = array(
-				'plural' => $this->plural,
-				'singular' => $this->singular,
-				'icon' => $this->icon,
-				'table_name' => $metadata->table['name'],
-				'can_create' => $can_create && $can_edit,
-				'can_edit' => $can_edit,
-				'can_delete' => $can_delete
-			);
-		}
+		$classes[$class_name] = array(
+			'plural' => $this->plural,
+			'singular' => $this->singular,
+			'icon' => $this->icon,
+			'table_name' => $metadata->table['name'],
+			'can_create' => $can_create && $can_edit,
+			'can_edit' => $can_edit,
+			'can_delete' => $can_delete,
+			'superclass' => $class_name::superclass()
+		);
 		
 		foreach ($metadata->subClasses as $sub_class) {
 			
@@ -701,6 +700,7 @@ class Controller_List extends Controller_Base {
 				'can_create' => \CMF\Auth::can('create', $sub_class),
 				'can_edit' => \CMF\Auth::can('edit', $sub_class),
 				'can_delete' => \CMF\Auth::can('delete', $sub_class),
+				'superclass' => false
 			);
 			
 		}
@@ -712,7 +712,18 @@ class Controller_List extends Controller_Base {
 		$excluded_ids = array();
 		
 		$root_node = $class_name::getRootNode(true);
-		$tree = $this->processTreeNodes(\D::manager()->getRepository($class_name)->childrenHierarchy($root_node), $metadata, $ids);
+		$repo = \D::manager()->getRepository($class_name);
+		$qb = $repo->getNodesHierarchyQueryBuilder($root_node);
+
+		// If we have URLs, join them to the query
+		if ($class_name::hasUrlField()) {
+			$qb->addSelect('url, alias')->leftJoin('node.url', 'url')->leftJoin('url.alias', 'alias');
+		}
+
+		//$tree = $this->processTreeNodes(\D::manager()->getRepository($class_name)->childrenHierarchy($root_node), $metadata, $ids);
+		$tree = $this->processTreeNodes(
+			$repo->buildTree($qb->getQuery()->getArrayResult())
+		, $metadata, $ids);
 		
 		if (!$user->super_user) {
 			
@@ -761,6 +772,7 @@ class Controller_List extends Controller_Base {
 		$this->js['table_name'] = $metadata->table['name'];
 		$this->js['plural'] = $this->plural;
 		$this->js['singular'] = $this->singular;
+		$this->js['class_name'] = $class_name;
 		
 		// Permissions for JS
 		$this->js['can_create'] = $can_create && $can_edit;

@@ -84,7 +84,60 @@ class URLListener implements EventSubscriber
 		foreach ($uow->getScheduledEntityUpdates() AS $entity) {
 			$this->process($entity, $em, $uow);
 		}
+
+        // Process the aliases after the other stuff
+        foreach ($uow->getScheduledEntityInsertions() AS $entity) {
+            $metadata = $em->getClassMetadata(get_class($entity));
+
+            if ($metadata->name == 'CMF\\Model\\URL') {
+                $this->processUrlItem($entity, $em, $uow);
+            }
+        }
         
+        foreach ($uow->getScheduledEntityUpdates() AS $entity) {
+            $metadata = $em->getClassMetadata(get_class($entity));
+
+            if ($metadata->name == 'CMF\\Model\\URL') {
+                $this->processUrlItem($entity, $em, $uow);
+            }
+        }
+    }
+
+    protected function processUrlItem($entity, $em, $uow)
+    {
+        if ($entity->processed) return;
+
+        // First copy any settings if this item is an alias
+        $alias = $entity->alias;
+        if ($alias instanceof \CMF\Model\URL) {
+
+            $entity->set('url', $alias->url);
+            $entity->set('type', $alias->type);
+            $entity->set('prefix', $alias->prefix);
+            $entity->set('slug', $alias->slug);
+            $entity->set('item_id', $alias->item_id);
+
+            $metadata = $em->getClassMetadata('CMF\\Model\\URL');
+            $changeset = $uow->getEntityChangeSet($entity);
+            
+            if (!empty($changeset)) {
+                $uow->recomputeSingleEntityChangeSet($metadata, $entity);
+            } else {
+                $uow->computeChangeSet($metadata, $entity);
+            }
+
+        }
+
+        $entity->processed = true;
+
+        // Now check whether this item has aliases attached to it
+        $aliases = $entity->aliases;
+        if (!is_null($aliases) && !empty($aliases) && count($aliases) > 0) {
+            foreach ($aliases as $alias) {
+                $this->processUrlItem($alias, $em, $uow);
+            }
+        }
+
     }
     
     /**
@@ -101,6 +154,10 @@ class URLListener implements EventSubscriber
         $entity_class = get_class($entity);
         $entity_namespace = trim(\CMF::slug(str_replace('\\', '/', \Inflector::get_namespace($entity_class))), '/');
     	$metadata = $em->getClassMetadata($entity_class);
+
+        // Ignore URL entities themselves
+        if ($metadata->name == 'CMF\\Model\\URL') return;
+
     	$url_associations = $metadata->getAssociationsByTargetClass('CMF\\Model\\URL');
         
     	if (!empty($url_associations)) {
@@ -122,6 +179,12 @@ class URLListener implements EventSubscriber
             $url_settings = isset($settings[$url_field]) ? $settings[$url_field] : array();
             $url_item = $entity->get($url_field);
             if ($new_url = is_null($url_item)) $url_item = new \CMF\Model\URL();
+
+            // Don't run if this is an alias...
+            $alias = $url_item->alias;
+            if (!is_null($alias) && !empty($alias)) {
+                return;
+            }
             
             $prefix = $this->getPrefix($entity);
             $slug = '';
@@ -132,7 +195,8 @@ class URLListener implements EventSubscriber
                 $slug = $entity->urlSlug();
             }
             
-            $url = rtrim($prefix.$slug, '/');
+            $url = $prefix.$slug;
+            if ($url != '/') $url = rtrim($url, '/');
             $current_url = $url_item->url;
             $entity_id = $entity->id;
             
@@ -224,7 +288,7 @@ class URLListener implements EventSubscriber
             }
         }
         
-        if (\DB::query("SELECT url FROM urls WHERE url = '$url' AND item_id <> $item_id", \DB::SELECT)->execute()->count() > 0) {
+        if (\DB::query("SELECT url FROM urls WHERE url = '$url' AND item_id <> $item_id AND alias_id IS NULL", \DB::SELECT)->execute()->count() > 0) {
             $this->savedUrls[$url] = $item_id;
             return false;
         }
@@ -235,6 +299,7 @@ class URLListener implements EventSubscriber
     protected function processNew(&$entity, &$em, &$uow)
     {
         $metadata = $em->getClassMetadata(get_class($entity));
+
         $url_associations = $metadata->getAssociationsByTargetClass('CMF\\Model\\URL');
         
         if (!empty($url_associations)) {
@@ -257,6 +322,12 @@ class URLListener implements EventSubscriber
             $prefix = $url_item->get('prefix');
             $slug = $url_item->get('slug');
             $url = $url_item->get('url');
+
+            // Don't run if this is an alias...
+            $alias = $url_item->alias;
+            if (!is_null($alias) && !empty($alias)) {
+                return;
+            }
             
             // Set data from the entity if the prefix is null
             if (is_null($prefix)) {

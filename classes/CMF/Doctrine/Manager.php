@@ -25,6 +25,8 @@ class D extends \Fuel\Doctrine
 	
 	/** @var \Doctrine\DBAL\Logging\SQLLogger */
 	protected static $_logger;
+
+	public static $clear_cache = false;
 	
 	/**
 	 * @inheritdoc
@@ -147,6 +149,15 @@ class D extends \Fuel\Doctrine
 					$cache->setNamespace($namespace);
 					//print('setting namespace '.$namespace);
 					break;
+			}
+
+			if (\Input::param('clearcache', false) !== false || static::$clear_cache === true) {
+				try {
+					$cache->flushAll();
+					$cache->deleteAll();
+				} catch (\Exception $e) {
+					// Nothing
+				}
 			}
 			
 			return new $class();

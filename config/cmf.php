@@ -104,6 +104,8 @@ return array (
         'language' => 'CMF\\Field\\Language',
         'config' => 'CMF\\Field\\ConfigSelect',
         'array_config' => 'CMF\\Field\\Object\\ArrayConfig',
+        'latlng' => 'CMF\\Field\\Object\\GoogleMap',
+        'latlng_area' => 'CMF\\Field\\Object\\GoogleMap',
         
         // Associations with specific tables can be mapped...
         'onetoone_urls' => 'CMF\\Field\\Relation\\URL',

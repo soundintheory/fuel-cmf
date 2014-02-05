@@ -16,20 +16,20 @@
 
 {% import _self as this %}
 
-{% block html_title %}Edit {{ singular }} : {{ admin_title }}{% endblock %}
+{% block html_title %}Edit {{ form.singular }} : {{ admin_title }}{% endblock %}
 
 {% block main_pane %}
     
     {% include 'admin/shared/alert.twig' %}
     
-    <form action="" method="post" class="item-form" enctype="multipart/form-data">
+    <form action="?{{ qs }}" method="post" class="item-form" enctype="multipart/form-data">
     
     <input type="hidden" name="_mode" value="{{ mode }}" />
     <input type="hidden" name="_cid" value="{{ cid }}" />
     
     <div class="inner">
 
-        <h2 class="main-heading pull-left"><i class="icon icon-{{ icon }}"></i> Edit {{ singular }}</h2>
+        <h2 class="main-heading pull-left"><i class="icon icon-{{ form.icon }}"></i> Edit {{ form.singular }}</h2>
         <div class="item-actions-top pull-right">
             {% for action_id, action in actions if action.edit is not defined or action.edit != false %}
             {{ attribute(this, 'action_'~action.type, [action_id, action, model, table_name, 'list']) }}
@@ -102,9 +102,9 @@
     </div>
 
     <div class="actions pull-right">
-        <button data-loading-text="Saving {{ singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> Save</button>
+        <button data-loading-text="Saving {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> Save</button>
         {% if can_delete %}
-        <a href="delete{{ mode == 'inline' ? '?_mode=inline&_cid='~cid : '' }}" class="btn btn-large btn-danger btn-remove padleft" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i> Delete</a>
+        <a href="delete{{ mode == 'inline' ? '?_mode=inline&_cid='~cid : '' }}" class="btn btn-large btn-danger btn-remove padleft" data-singular="{{ form.singular }}"><i class="icon-remove icon-white"></i> Delete</a>
         {% endif %}
     </div>
 
@@ -117,21 +117,21 @@
 {% block breadcrumb %}
 
 <li><a href="{{ base_url }}">{{ dashboard_title }}</a> <span class="divider">/</span></li>
-{% if not static %}<li><a href="/admin/{{ table_name }}">{{ plural }}</a> <span class="divider">/</span></li>{% endif %}
+{% if not static %}<li><a href="/admin/{{ table_name }}">{{ form.plural }}</a> <span class="divider">/</span></li>{% endif %}
 <li class="active">{{ model.display() }}</li>
 
 {% endblock %}
 
 {% block admin_css %}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{{ css }}?v=6">
+        <link rel="stylesheet" type="text/css" href="{{ css }}{{ ('?' in css) ? '&' : '?' }}v=6">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}?v=6"></script>
+        <script type="text/javascript" src="{{ js }}{{ ('?' in js) ? '&' : '?' }}v=6"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

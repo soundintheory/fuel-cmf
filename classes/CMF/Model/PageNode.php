@@ -19,7 +19,8 @@ class PageNode extends Node
         'title' => array( 'group' => 'title', 'after' => 'visible' ),
         'html_title' => array( 'group' => 'meta', 'template' => '{{ title }}' ),
         'meta_desc' => array( 'title' => 'Meta description', 'after' => 'html_title', 'field' => 'CMF\\Field\\Textarea' ),
-        'content' => array( 'widget' => true )
+        'content' => array( 'widget' => true ),
+        'url_alias' => array( 'visible' => false )
     );
     
     protected static $_list_fields = array('title');
@@ -42,8 +43,8 @@ class PageNode extends Node
     public function blank($ignore_fields = null)
     {
         parent::blank($ignore_fields);
-        $this_class = get_class($this);
-        $this->menu_title = $this->html_title = $this->title;
+        if (!$this->menu_title) $this->menu_title = $this->title;
+        if (!$this->html_title) $this->html_title = $this->title;
     }
     
     /**

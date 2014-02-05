@@ -53,6 +53,8 @@ class URL extends Base
     {
         return \CMF::link(strval($this->url));
     }
+
+    public $processed = false;
     
     /**
      * @ORM\Column(type="integer", length=11, nullable=true)
@@ -60,7 +62,7 @@ class URL extends Base
     protected $item_id;
     
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      **/
     protected $url;
     
@@ -73,6 +75,17 @@ class URL extends Base
      * @ORM\Column(type="string", nullable=true)
      **/
     protected $prefix;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="URL", inversedBy="aliases")
+     * @ORM\JoinColumn(name="alias_id", referencedColumnName="id", onDelete="SET NULL")
+     */
+    protected $alias;
+
+    /**
+     * @ORM\OneToMany(targetEntity="URL", mappedBy="alias")
+     */
+    protected $aliases;
     
     /**
      * @ORM\Column(type="string"))

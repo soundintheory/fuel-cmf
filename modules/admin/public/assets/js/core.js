@@ -163,7 +163,8 @@ function initTree() {
 	id = el.attr('id'),
 	moveStartTime = 0,
 	attemptedMove = false,
-	permissions = data['item_permissions'];
+	permissions = data['item_permissions'],
+	baseClassData = data['classes'][data['class_name']];
 	
 	generateNewItemButton();
 
@@ -187,6 +188,12 @@ function initTree() {
 			node['delete'] = baseUrlId + '/delete';
 			node['visible'] = (node.visible === 1 || node.visible === true);
 			node['hidden'] = (typeof node.hidden != 'undefined' && (node.hidden === true || node.hidden === 1));
+
+			// If this item is an alias, append ?alias to the edit URL
+			if (node['url']['alias']) {
+				node['href'] += '?alias';
+				node['icon'] = 'link';
+			}
 			
 			if (node.hidden || !node.visible) { node.div.addClass('hidden-item'); }
 			if (!node.visible && node.children.length > 0) {
@@ -221,10 +228,14 @@ function initTree() {
 				for (var p in data['classes']) {
 					var subclassData = data['classes'][p],
 					baseUrl = '/admin/' + subclassData['table_name'];
-					if (subclassData['static'] || subclassData['can_create'] !== true || subclassData['can_edit'] !== true) { continue; }
+					if (subclassData['static'] || subclassData['can_create'] !== true || subclassData['can_edit'] !== true || subclassData['superclass']) { continue; }
 					childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create?parent=' + node.id + '"><i class="icon icon-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
 					childInfo.push({ 'edit':baseUrl + '/create?parent=' + node.id, 'icon':subclassData['icon'], 'singular':subclassData['singular'] });
 				}
+
+				// An alias type
+				childItems.push('<li><a tabindex="-1" href="/admin/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias"><i class="icon icon-link"></i> Link</a></li>');
+				childInfo.push({ 'edit':'/admin/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias', 'icon':baseClassData['icon'], 'singular':baseClassData['singular'] });
 				
 				if (childItems.length > 1) {
 					
@@ -347,12 +358,17 @@ function initTree() {
 		
 		for (var p in data['classes']) {
 			var subclassData = data['classes'][p],
+
 			baseUrl = '/admin/' + subclassData['table_name'];
-			if (subclassData['static'] || !subclassData['can_create'] || !subclassData['can_edit']) { continue; }
+			if (subclassData['static'] || !subclassData['can_create'] || !subclassData['can_edit'] || subclassData['superclass']) { continue; }
 			childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create"><i class="icon icon-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
 			childInfo.push({ 'edit':baseUrl + '/create', 'icon':subclassData['icon'], 'singular':subclassData['singular'] });
 		}
-		
+
+		// An alias type
+		childItems.push('<li><a tabindex="-1" href="/admin/' + baseClassData['table_name'] + '/create?alias"><i class="icon icon-link"></i> Link</a></li>');
+		childInfo.push({ 'edit':'/admin/' + baseClassData['table_name'] + '/create?alias', 'icon':baseClassData['icon'], 'singular':baseClassData['singular'] });
+
 		if (childItems.length > 1) {
 			//group all the items into a dropdown
 			buttonContent += '<div class="dropup pull-right">' + 

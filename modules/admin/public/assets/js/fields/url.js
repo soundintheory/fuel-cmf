@@ -48,6 +48,39 @@
 			}
 
 		});
+
+		$('.field-type-url-alias').each(function() {
+
+			var $el = $(this),
+			opts = {
+				alwaysShowPlaceholder: true,
+				placeholder: 'click to select a link...'
+			};
+
+			opts.matcher = function(term, text, option) {
+				
+				if (term === '') { return true; }
+				
+				text = text.toUpperCase();
+				term = term.toUpperCase();
+				var terms = term.split(' '),
+				matches = 0;
+				
+				for (var i = terms.length - 1; i >= 0; i--) {
+					if (text.indexOf(terms[i])>=0) {
+						matches++;
+					}
+				};
+				
+				return matches == terms.length;
+			}
+			
+			
+
+			$el.find('.select2').select2(opts);
+			$el.find('.select2').select2('container').find('.select2-choices, .select2-choice').addClass('input-xxlarge');
+
+		});
 		
 	}
 	

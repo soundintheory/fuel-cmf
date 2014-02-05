@@ -43,7 +43,7 @@ class ArrayField extends Object {
             return $field_class::displayForm($value, $settings, $model);
         }
         
-        if (is_null($value)) $value = array();
+        if (!is_array($value)) $value = array();
         
         if (\Arr::is_assoc($value)) $value = array($value);
         $form = new ObjectForm($settings, $value);

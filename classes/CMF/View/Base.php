@@ -30,10 +30,9 @@ class Base extends \ViewModel
         ->getQuery()->getArrayResult();
         
         $uri = \CMF::original_uri();
-        if ($uri != '/') $uri .= '/';
         $nodes = \D::manager()->getRepository($model)->buildTree($nodes, array());
         $this->processNodes($nodes, $uri, 1);
-        
+
         return $this->level1 = $nodes;
         
     }
@@ -50,6 +49,41 @@ class Base extends \ViewModel
         return array();
     }
 
+    protected function processNodes(&$nodes, $uri, $level = 1)
+    {
+        $hasActive = false;
+        
+        foreach ($nodes as &$node) {
+            
+            $node['active'] = $node['url'] == $uri;
+            $node['parent_active'] = false;
+
+            if (isset($node['__children']) && count($node['__children']) > 0) {
+
+                $newlevel = $level + 1;
+                $node['parent_active'] = $this->processNodes($node['__children'], $uri, $newlevel);
+                
+                if ($node['active'] || $node['parent_active']) {
+
+                    $levelid = "level$newlevel";
+                    $parent = $node;
+                    unset($parent['__children']);
+                    if ($node['parent_active'] && $node['active']) $node['active'] = false;
+                    $parent = array($parent);
+                    
+                    $this->$levelid = array_merge($parent, $node['__children']);
+                    
+                }
+            }
+
+            if ($node['parent_active'] || $node['active']) $node['parent_active'] = $hasActive = true;
+
+        }
+        
+        return $hasActive;
+    }
+
+/*
     protected function processNodes(&$nodes, $uri, $level = 1)
     {
         $hasActive = false;
@@ -88,6 +122,7 @@ class Base extends \ViewModel
         
         return $hasActive;
     }
+    */
     
     public function before()
     {

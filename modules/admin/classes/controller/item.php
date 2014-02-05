@@ -41,14 +41,12 @@ class Controller_Item extends Controller_Base {
 	    // Get stuff ready for the template
 	    $this->js['model'] = $class_name;
 	    $this->form = new ModelForm($metadata, $model);
-	    $this->plural = $class_name::plural();
-		$this->singular = $class_name::singular();
-		$this->icon = $class_name::icon();
 		$this->static = $class_name::_static();
 		$this->table_name = $metadata->table['name'];
 		$this->model = $model;
 		$this->template = 'admin/item/create.twig';
-		
+		$this->qs = \Uri::build_query_string(\Input::get());
+
 		// Permissions
 		$this->can_edit = $can_edit;
 		$this->can_create = \CMF\Auth::can('create', $class_name);
@@ -68,9 +66,6 @@ class Controller_Item extends Controller_Base {
 		$metadata = $class_name::metadata();
 		\Admin::setCurrentClass($class_name);
 		
-		$this->plural = $class_name::plural();
-		$this->singular = $class_name::singular();
-		
 		// Load up the model with the Id
 	    $model = $class_name::find($id);
 	    if (is_null($model)) {
@@ -85,7 +80,6 @@ class Controller_Item extends Controller_Base {
 	   	// Get stuff ready for the template
 	   	$this->actions = $class_name::actions();
 	   	$this->form = new ModelForm($metadata, $model);
-		$this->icon = $class_name::icon();
 		$this->static = $class_name::_static();
 		$this->table_name = $metadata->table['name'];
 		$this->model = $model;
@@ -94,6 +88,7 @@ class Controller_Item extends Controller_Base {
 		$this->js['table_name'] = $table_name;
 		$this->superlock = $class_name::superlock();
 		$this->template = 'admin/item/edit.twig';
+		$this->qs = \Uri::build_query_string(\Input::get());
 		
 		// Permissions
 		$this->can_edit = $can_edit;
@@ -116,8 +111,8 @@ class Controller_Item extends Controller_Base {
 		$metadata = $class_name::metadata();
 		\Admin::setCurrentClass($class_name);
 		
-		$this->plural = $class_name::plural();
-		$this->singular = $class_name::singular();
+		//$this->plural = $class_name::plural();
+		//$this->singular = $class_name::singular();
 		
 		// Load up the model with the Id
     	$original_model = $class_name::find($id);
@@ -167,6 +162,14 @@ class Controller_Item extends Controller_Base {
 		}
 		
 		$metadata = $class_name::metadata();
+		$plural = $class_name::plural();
+		$singular = $class_name::singular();
+
+		if (\Input::param('alias', false) !== false) {
+			$plural = 'Links';
+			$singular = 'Link';
+		}
+
 		\Admin::setCurrentClass($class_name);
 		$actioned = "saved";
 		
@@ -207,9 +210,13 @@ class Controller_Item extends Controller_Base {
 	        		break;
 	        	
 	        	default:
-	        		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => $class_name::singular()." $actioned successfully" ));
-	        		if($create_new) \Response::redirect(\Uri::base(false)."admin/$table_name/create", 'location');
-	        		\Response::redirect(\Uri::base(false)."admin/$table_name/".$model->get('id')."/edit", 'location');
+
+	        		$qs = \Uri::build_query_string(\Input::get());
+	        		if (strlen($qs) > 0) $qs = '?'.$qs;
+
+	        		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "$singular $actioned successfully" ));
+	        		if($create_new) \Response::redirect(\Uri::base(false)."admin/$table_name/create$qs", 'location');
+	        		\Response::redirect(\Uri::base(false)."admin/$table_name/".$model->get('id')."/edit$qs", 'location');
 	        		break;
 	        	
 	        }
@@ -219,9 +226,9 @@ class Controller_Item extends Controller_Base {
 	    // If it's come this far, we have a problem. Render out the form with the errors...
 	    $this->actions = $class_name::actions();
 	    $this->form = new ModelForm($metadata, $model);
-		$this->icon = $class_name::icon();
 		$this->table_name = $metadata->table['name'];
 		$this->model = $model;
+		$this->qs = \Uri::build_query_string(\Input::get());
 		$this->template = 'admin/item/edit.twig';
 		
 		// Permissions
@@ -258,6 +265,14 @@ class Controller_Item extends Controller_Base {
 	    $singular = $class_name::singular();
 	    $entity = $class_name::find($id);
 	    $error = null;
+
+	    $plural = $class_name::plural();
+	    $singular = $class_name::singular();
+
+	    if (\Input::param('alias', false) !== false) {
+	    	$plural = 'Links';
+	    	$singular = 'Link';
+	    }
 	    
 	    if (!is_null($entity)) {
 	        try {
