@@ -364,9 +364,10 @@ class User extends Base
      */
     public function generate_reset_password_token()
     {
-        if ($this->reset_password_token && $this->is_reset_password_period_valid()) {
-            return true;
-        }
+        // if ($this->reset_password_token && $this->is_reset_password_period_valid()) {
+        //     $this->reset_password_token = (string)$this->reset_password_token;
+        //     return true;
+        // }
 
         $this->reset_password_token   = Auth::forge()->generate_token();
         $this->reset_password_sent_at = new \Datetime();
