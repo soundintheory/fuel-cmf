@@ -8,7 +8,9 @@ class CKEditor extends Textarea {
         'input_attributes' => array(
             'class' => 'input-xxlarge'
         ),
-        'minHeight' => 300
+        'minHeight' => 300,
+        'stylesSet' => '/assets/js/editor.js',
+        'contentsCss' => '/assets/css/screen.scss'
     );
     
     public function get_type()
@@ -54,6 +56,20 @@ class CKEditor extends Textarea {
                 $links[$link_type] = $link;
             }
             $settings['links'] = $links;
+        }
+
+        if (isset($settings['stylesSet'])) {
+            if (file_exists(DOCROOT.ltrim($settings['stylesSet'], '/'))) {
+                $settings['stylesSet'] = 'default:'.\Uri::base(false).ltrim($settings['stylesSet'], '/');
+            } else {
+                unset($settings['stylesSet']);
+            }
+        }
+
+        if (isset($settings['contentsCss'])) {
+            if (!file_exists(DOCROOT.ltrim($settings['contentsCss'], '/'))) {
+                unset($settings['contentsCss']);
+            }
         }
         
         // Return only the field and label if no wrap is required

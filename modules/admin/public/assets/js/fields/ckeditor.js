@@ -61,6 +61,8 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
 			oembed_maxWidth: '560',
 			oembed_maxHeight: '315',
 			oembed_WrapperClass: 'embedded-content',
+			bodyClass: 'editor',
+			contentsCss: ['/admin/assets/ckeditor/contents.css'],
 			codemirror: {
 			    theme: 'default',
 			    lineNumbers: true,
@@ -85,9 +87,18 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
 			    showAutoCompleteButton: false
 			}
 		};
-		
+
+		if (typeof(settings['stylesSet']) != 'undefined') {
+			config.stylesSet = settings['stylesSet'];
+		}
+
+		if (typeof(settings['contentsCss']) != 'undefined') {
+			config.contentsCss.unshift(settings['contentsCss']);
+		}
+
+		console.log(config);
 		$input.ckeditor(config);
-		
+
 	}
 	
 })(jQuery);
