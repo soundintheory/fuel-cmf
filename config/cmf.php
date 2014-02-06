@@ -9,6 +9,29 @@ return array (
             'inline' => 'admin/shared/chromeless.twig'
         )
     ),
+
+    // Settings for the file manager
+    'finder' => array(
+
+        // Only supports LocalFileSystem for now
+        'driver' => 'LocalFileSystem',
+
+        // Upload path from public root
+        'path' => '/uploads/editor/',
+
+        // Root alias name
+        'alias' => 'uploads',
+
+        // File permissions
+        'attributes' => array(
+            array(
+                'pattern' => '/\/\./',
+                'read'    => false,
+                'write'   => false,
+                'hidden' => true
+            )
+        )           
+    ),
     
     'auth' => array(
         // Set the remember-me cookie lifetime, in seconds. The default

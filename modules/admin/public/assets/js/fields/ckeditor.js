@@ -63,6 +63,11 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
 			oembed_WrapperClass: 'embedded-content',
 			bodyClass: 'editor',
 			contentsCss: ['/admin/assets/ckeditor/contents.css'],
+			filebrowserBrowseUrl: '/admin/finder/browser?start=files',
+			filebrowserImageBrowseUrl: '/admin/finder/browser?start=images',
+			filebrowserWindowFeatures: 'location=no,menubar=no,toolbar=no,dependent=yes,minimizable=no,modal=yes,alwaysRaised=yes,resizable=no,scrollbars=no',
+			filebrowserWindowWidth: '60%',
+			filebrowserWindowHeight: 600,
 			codemirror: {
 			    theme: 'default',
 			    lineNumbers: true,
@@ -95,8 +100,7 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
 		if (typeof(settings['contentsCss']) != 'undefined') {
 			config.contentsCss.unshift(settings['contentsCss']);
 		}
-
-		console.log(config);
+		
 		$input.ckeditor(config);
 
 	}

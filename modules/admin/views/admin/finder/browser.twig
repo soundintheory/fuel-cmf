@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>elFinder 2.0</title>
+
+		<!-- jQuery and jQuery UI (REQUIRED) -->
+		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/smoothness/jquery-ui.css">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+
+		<!-- elFinder CSS (REQUIRED) -->
+		<link rel="stylesheet" type="text/css" href="/admin/assets/elfinder/css/elfinder.min.css">
+		<link rel="stylesheet" type="text/css" href="/admin/assets/elfinder/css/theme.css">
+
+		<style type="text/css">
+
+			html, body {
+				margin: 0; padding: 0;
+				overflow: hidden;
+			}
+
+			#outer {
+
+			}
+
+			#elfinder, .elfinder-toolbar {
+				border-top: none;
+			}
+
+			#elfinder, .elfinder-toolbar, .elfinder-statusbar {
+				border-radius: 0px;
+			}
+
+		</style>
+
+		<!-- elFinder JS (REQUIRED) -->
+		<script src="/admin/assets/elfinder/js/elfinder.min.js"></script>
+
+		<!-- elFinder initialization (REQUIRED) -->
+		<script type="text/javascript" charset="utf-8">
+
+			// Helper function to get parameters from the query string.
+			function getUrlParam(paramName) {
+				var reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i') ;
+				var match = window.location.search.match(reParam) ;
+				return (match && match.length > 1) ? match[1] : '';
+			}
+
+			$(document).ready(function() {
+
+				var $window = $(window),
+					$outer = $('#outer'),
+					funcNum = getUrlParam('CKEditorFuncNum'),
+					baseUri = '{{ base(false) }}';
+
+				$window.resize(onResize);
+
+				function onResize() {
+					$outer.width($window.width());
+					$outer.height($window.height());
+				}
+
+				var elf = $('#elfinder').elfinder({
+					url : '/admin/finder?start={{ start }}',
+					rememberLastDir: false,
+					width: '100%',
+					height: '100%',
+					getFileCallback : function(file) {
+						var path = file.url.replace(baseUri, '/');
+						window.opener.CKEDITOR.tools.callFunction(funcNum, path);
+						window.close();
+					},
+					resizable: true
+				}).elfinder('instance');
+
+				$('#elfinder').height('100%');
+				onResize();
+
+			});
+		</script>
+	</head>
+	<body>
+
+		<!-- Element where elFinder will be created (REQUIRED) -->
+		<div id="outer"><div id="elfinder"></div></div>
+
+	</body>
+</html>

@@ -10,6 +10,8 @@ return array(
 	'admin/redactor/(:any)'   => 'admin/redactor/$1',
 	'admin/assets/(:any)'     => 'admin/assets/index',
 	'admin/upload'            => 'admin/upload/index',
+	'admin/finder'            => 'admin/finder/index',
+	'admin/finder/(:any)'     => 'admin/finder/$1',
 	'admin/upload/video'      => 'admin/upload/video',
 	'admin/phpinfo'           => 'admin/base/phpinfo',
 	'admin/lang/set'          => 'admin/lang/set',
