@@ -31,7 +31,7 @@
 			
 			// Don't run on temporary fields...
 			if (name.indexOf('__TEMP__') >= 0) { return; }
-			
+
 			var opts = (typeof(field_settings[name]) != 'undefined') ? field_settings[name] : {},
 			can_edit = multiple && typeof(opts.target_table) != 'undefined' && !hasParent && opts['edit'] !== false,
 			$addBut = $('#' + cid + ' .btn-create');

@@ -107,6 +107,11 @@ class Base extends \CMF\Doctrine\Model
      * @var array
      */
     protected static $_actions = array();
+
+    /**
+     * The module for the entity, to override the default
+     */
+    protected static $_module = null;
     
     /**
      * If a field does not specify a group or is not configured to go before or after another 
@@ -454,7 +459,8 @@ class Base extends \CMF\Doctrine\Model
      */
     public static function getModule()
     {
-        return trim(\Inflector::underscore(str_replace('\\', '/', \Inflector::get_namespace( get_called_class() ))), '/');
+        if (static::$_module !== null) return static::$_module;
+        return static::$_module = trim(\Inflector::underscore(str_replace('\\', '/', \Inflector::get_namespace( get_called_class() ))), '/');
     }
     
     /**

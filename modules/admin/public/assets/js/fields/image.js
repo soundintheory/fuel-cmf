@@ -290,11 +290,21 @@
             //'</div>' + // .left-col (header)
             '<div class="right-col">';
             
-            // Add the crop options here as tabs, if there's more than one
+            var cropTabs = [];
             if (canCrop && cropSettings.length > 1) {
-                modalContent += '<ul class="crop-nav nav nav-pills">';
                 for (var i = 0; i < cropSettings.length; i++) {
                     var cropOption = cropSettings[i];
+                    if (typeof(cropOption['visible']) != undefined && cropOption['visible'] === false) { continue; }
+                    cropTabs.push(cropOption);
+                }
+            }
+
+            // Add the crop options here as tabs, if there's more than one
+            if (cropTabs.length > 1) {
+                modalContent += '<ul class="crop-nav nav nav-pills">';
+                for (var i = 0; i < cropTabs.length; i++) {
+                    var cropOption = cropTabs[i];
+                    if (typeof(cropOption['visible']) != undefined && cropOption['visible'] === false) { continue; }
                     modalContent += '<li><a href="#' + fieldId + '-crop-' + cropOption['id'] + '" data-cropid="' + cropOption['id'] + '">' + cropOption['title'] + '</a></li>';
                 }
                 modalContent += '</ul>' +
@@ -320,7 +330,7 @@
             modalContent += '</div>' + // .left-col
             */
            
-            modalContent += '<div class="right-col ' + (cropSettings.length > 1 ? 'tab-content' : '') + '">' +
+            modalContent += '<div class="right-col ' + (cropTabs.length > 1 ? 'tab-content' : '') + '">' +
             '</div>' + // .right-col
             '<div class="clear"></div>' +
             '</div>' + // .modal-body
@@ -338,7 +348,7 @@
             
             updateModal();
             
-            if (canCrop && cropSettings.length > 1) {
+            if (canCrop && cropTabs.length > 1) {
                 
                 $modal.find('.crop-nav a')
                 .click(function (e) {
@@ -374,10 +384,19 @@
             var rightCol = '';
             
             // Add the image(s) here
+            var cropTabs = [];
             if (canCrop) {
+
+                if (cropSettings.length > 1) {
+                    for (var i = 0; i < cropSettings.length; i++) {
+                        var cropOption = cropSettings[i];
+                        if (typeof(cropOption['visible']) != undefined && cropOption['visible'] === false) { continue; }
+                        cropTabs.push(cropOption);
+                    }
+                }
                 
-                for (var i = 0; i < cropSettings.length; i++) {
-                    var cropOption = cropSettings[i];
+                for (var i = 0; i < cropTabs.length; i++) {
+                    var cropOption = cropTabs[i];
                     cropOptions[cropOption['id']] = cropOption;
                     rightCol += '<div id="' + fieldId + '-crop-' + cropOption['id'] + '" data-cropid="'+cropOption['id']+'" class="img tab-pane"><div class="crop-canvas">';
                     rightCol += '<img src="/image/3/565/390/' + cValue['src'] + '" />';
@@ -490,7 +509,8 @@
                     resetCropArea();
                 }
                 
-                if (canCrop && cropSettings.length === 1) {
+                if (canCrop && cropTabs.length === 1) {
+
                     onTabShow();
                 }
                 

@@ -363,7 +363,6 @@ class Controller_List extends Controller_Base {
 		
 		// Actions
 		$this->actions = $class_name::actions();
-		
 		\Admin::setCurrentClass($class_name);
 		$this->class_lang_enabled = $class_name::langEnabled();
 		$this->plural = $class_name::plural();

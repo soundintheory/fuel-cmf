@@ -28,7 +28,7 @@ class ModelForm
 	protected $prepopulate;
 	protected $exclude;
 	
-	public function __construct($metadata, $model, $prefix = '', $prepopulate = array(), $exclude = array(), $disable_groups = false, $disable_widgets = false)
+	public function __construct($metadata, $model, $prefix = '', $prepopulate = array(), $exclude = array(), $disable_groups = false, $disable_widgets = false, $extra_settings = null)
 	{
 		$class_name = $metadata->name;
 		$this->table_name = $metadata->table['name'];
@@ -52,7 +52,13 @@ class ModelForm
 		$this->groups = $class_name::groups();
 		$this->default_tab = $class_name::defaultTab();
 		$this->default_group = $class_name::defaultGroup();
+
+		// Merge in extra field settings
 		$this->fields = \Admin::getFieldSettings($class_name);
+		if ($extra_settings !== null && is_array($extra_settings)) {
+			$this->fields = \Arr::merge($this->fields, $extra_settings);
+		}
+
 		$this->validator_meta = \D::validator()->getMetadataFactory()->getMetadataFor($class_name);
 		
 		// Merge any DB settings into the mix...

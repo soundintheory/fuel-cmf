@@ -281,6 +281,8 @@ class Image extends File {
     
     public static function getCropUrl($image, $width, $height, $crop_id = 'main')
     {
+        if (is_null($crop_id) || $crop_id === false) $crop_id = '_';
+        
         $crop = \Arr::get($image, "crop.$crop_id", false);
         $src = \Arr::get($image, 'src', false);
         if ($src === false) return null;

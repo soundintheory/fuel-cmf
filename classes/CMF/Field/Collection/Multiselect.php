@@ -101,7 +101,7 @@ class Multiselect extends \CMF\Field\Base {
             
         } else if (is_array($settings['select2'])) {
             
-            $settings['sortable'] = $target_class::sortable() && isset($settings['mapping']['orderBy']) && isset($settings['mapping']['orderBy']['pos']) && $settings['mapping']['orderBy']['pos'] == 'ASC';
+            $settings['sortable'] = $settings['select2']['sortable'] = $target_class::sortable() && isset($settings['mapping']['orderBy']) && isset($settings['mapping']['orderBy']['pos']) && $settings['mapping']['orderBy']['pos'] == 'ASC';
             $settings['is_select2'] = true;
             $settings['input_attributes']['class'] .= 'input-xxlarge select2';
             $content = strval(\View::forge('admin/fields/collection/multiselect.twig', array( 'settings' => $settings, 'options' => $options, 'values' => $values ), false));
