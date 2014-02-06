@@ -536,6 +536,98 @@
 	
 }
 
+/************************* CKEDITOR FIELD **********************/
+
+
+.widget-type-ckeditor {
+	
+	.widget-content {
+		padding: 0;
+	}
+	
+	textarea {
+		margin: 0 0 0 0;
+	}
+	
+	.cke {
+		border: none;
+	}
+	
+	.cke_inner, .cke_contents, .cke_wysiwyg_frame, .cke_editor_form_content, .cke_source {
+		.border-radius(0px, 0px, 4px, 4px);
+	}
+	
+	
+}
+
+.cke {
+	
+	.cke_top {
+		margin: 0; padding: 4px 0 0 4px;
+		background: #F4F4f4;
+	}
+	
+	.cke_toolgroup {
+		margin: 0; padding: 0;
+		background: none;
+		border: none;
+		.box-shadow(none);
+	}
+	
+	.cke_button {
+		padding: 6px;
+		border: none;
+		margin: 0 2px 0 0;
+	}
+	
+	.cke_toolbar_separator {
+		.box-shadow(none);
+		border-right: 1px solid #FFF;
+		margin-right: 5px;
+	}
+	
+	.cke_toolbar {
+		margin: 0; padding: 0 0 4px;
+	}
+	
+	.cke_toolbar_break {
+		clear: none;	
+	}
+	
+	.cke_combo_button {
+		margin: 0 3px 0 0;
+	}
+	
+	a.cke_button_off:hover,
+	a.cke_button_off:focus,
+	a.cke_button_off:active,
+	a.cke_button_disabled:hover,
+	a.cke_button_disabled:focus,
+	a.cke_button_disabled:active {
+		background: #dadada;
+	}
+	
+	.cke_source {
+		background: #FFF;
+		color: #000;
+		
+		word-wrap: normal;
+		white-space: normal;
+	}
+	
+	&.cke_browser_webkit {
+		
+		.cke_source {
+			padding: 20px;
+			-webkit-box-sizing: border-box;
+	   		-moz-box-sizing: border-box;
+	        box-sizing: border-box;
+		}
+		
+	}
+	
+}
+
 /************************* FILE FIELD **********************/
 
 

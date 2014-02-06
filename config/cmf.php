@@ -80,7 +80,7 @@ return array (
         'time' =>'CMF\\Field\\DateTime',
         'text' => 'CMF\\Field\\Textarea',
         'color' => 'CMF\\Field\\Color',
-        'richtext' => 'CMF\\Field\\Redactor',
+        'richtext' => 'CMF\\Field\\CKEditor',
         'object' => 'CMF\\Field\\Object\\Object',
         'array' => 'CMF\\Field\\Object\\ArrayField',
         'float' => 'CMF\\Field\\Base',
