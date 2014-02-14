@@ -55,7 +55,6 @@
     "extra": {
         "installer-name": "cmf",
         "installer-path": "fuel/packages/cmf",
-        "post-package-install": "CMF\\Composer\\Hooks::postInstall",
         "branch-alias": {
             "dev-master": "1.0.x-dev"
         }

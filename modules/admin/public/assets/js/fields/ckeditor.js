@@ -28,6 +28,8 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
 		id = $input.attr('id'),
 		name = $(this).attr('name'),
 		settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {};
+
+		if (name.indexOf('__TEMP__') > -1) { return; }
 		
 		var removePlugins = [
 			"about", "a11yhelp", "bidi", "colorbutton", "colordialog", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo", "language"

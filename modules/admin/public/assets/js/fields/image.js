@@ -297,6 +297,8 @@
                     if (typeof(cropOption['visible']) != undefined && cropOption['visible'] === false) { continue; }
                     cropTabs.push(cropOption);
                 }
+            } else if (canCrop && cropSettings.length === 1) {
+                cropTabs = [cropSettings[0]];
             }
 
             // Add the crop options here as tabs, if there's more than one
@@ -393,6 +395,8 @@
                         if (typeof(cropOption['visible']) != undefined && cropOption['visible'] === false) { continue; }
                         cropTabs.push(cropOption);
                     }
+                } else if (cropSettings.length === 1) {
+                    cropTabs = [cropSettings[0]];
                 }
                 
                 for (var i = 0; i < cropTabs.length; i++) {
