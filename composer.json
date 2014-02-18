@@ -26,7 +26,10 @@
         "soundintheory/php-sql-parser": "*",
         "hautelook/phpass": "0.3.*",
         "soundintheory/php-sql-parser": "1.*",
-        "helios-ag/fm-elfinder-php-connector": "1.1.*"
+        "helios-ag/fm-elfinder-php-connector": "1.1.*",
+        "doctrine/orm": "2.4.2",
+        "doctrine/collections": "1.2",
+        "doctrine/dbal": "2.4.2"
     },
     "suggest": {
         "tecnick.com/tcpdf": "If you need to do any custom (very exact) PDF generation",
