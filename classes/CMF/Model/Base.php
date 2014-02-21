@@ -303,6 +303,7 @@ class Base extends \CMF\Doctrine\Model
     {
         if (property_exists($this, 'url') && isset($this->url))
             return $this->url->get('url', '/');
+
         return $this->urlPrefix().$this->urlSlug();
     }
     
@@ -460,6 +461,7 @@ class Base extends \CMF\Doctrine\Model
     public static function getModule()
     {
         $called_class = get_called_class();
+        if ($called_class::$_module != null) return $called_class::$_module;
         return trim(\Inflector::underscore(str_replace('\\', '/', \Inflector::get_namespace($called_class))), '/');
     }
     

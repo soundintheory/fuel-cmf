@@ -153,6 +153,25 @@ class Node extends Base
     public function urlPrefix()
     {
         if (isset($this->parent)) {
+
+            if (property_exists($this, 'url')) {
+
+                $url = $this->url;
+                $parent_url = $this->parent->url;
+
+                if (!is_null($parent_url) && !is_null($url)) {
+
+                    $parent_alias = $parent_url->alias;
+                    if (!is_null($parent_alias)) {
+
+                        return $parent_alias->prefix;
+
+                    }
+
+                }
+
+            }
+
             $parent_url = $this->parent->getUrl();
             return $parent_url . (($parent_url == '/') ? '' : '/');
         }
