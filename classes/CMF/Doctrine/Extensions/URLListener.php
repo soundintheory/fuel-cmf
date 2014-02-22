@@ -236,9 +236,6 @@ class URLListener implements EventSubscriber
                 $this->savedUrls[$url] = $entity_id;
             }
             
-            // Skip this if the url hasn't changed
-            if (!$new_url && $current_url == $url) return;
-            
             $url_item->set('item_id', $entity->get('id'));
             $url_item->set('prefix', $prefix);
             $url_item->set('slug', $slug);
@@ -246,6 +243,9 @@ class URLListener implements EventSubscriber
             $url_item->set('type', $metadata->name);
             $entity->set($url_field, $url_item);
             $em->persist($url_item);
+
+            // Skip this if the url hasn't changed
+            if (!$new_url && $current_url == $url) return;
             
             $url_metadata = $em->getClassMetadata('CMF\\Model\\URL');
             $url_changeset = $uow->getEntityChangeSet($url_item);
