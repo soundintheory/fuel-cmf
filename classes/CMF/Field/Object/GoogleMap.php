@@ -14,6 +14,11 @@ class GoogleMap extends Object {
         'widget_icon' => 'globe',
         'sub_group' => true,
         'marker' => true,
+        'initial' => array(
+            'lat' => 54.44340598200656,
+            'lng' => -3.063812255859375,
+            'zoom' => 5
+        ),
         'fields' => array(
             'lat' => array( 'type' => 'float' ),
             'lng' => array( 'type' => 'float' ),

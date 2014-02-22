@@ -16,6 +16,7 @@
         var $wrap = $(this),
         fieldName = $wrap.attr('data-field-name'),
         settings = typeof(field_settings[fieldName]) != 'undefined' ? field_settings[fieldName] : {},
+        initial = settings.initial || { lat:-53, lng:0, zoom:3 }
         $map = $wrap.find('div.map'),
         $lat = $wrap.find('input.lat'),
         $lng = $wrap.find('input.lng'),
@@ -38,10 +39,10 @@
         {
             if (map !== null) { return; }
 
-            var myLatlng = new google.maps.LatLng($lat.val() || -53, $lng.val() || 0);
+            var myLatlng = new google.maps.LatLng(initial.lat, initial.lng);
             var mapOptions = {
                 scrollwheel: false,
-                zoom: parseInt($zoom.val() || 3),
+                zoom: parseInt(initial.zoom),
                 center: myLatlng
             };
             map = new google.maps.Map($map[0], mapOptions);
