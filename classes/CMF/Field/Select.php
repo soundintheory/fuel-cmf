@@ -116,6 +116,7 @@ class Select extends Base {
             );
         }
         
+        $options = array_map('strip_tags', $options);
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         $input = \Form::select($settings['mapping']['fieldName'], $value, $options, $input_attributes);
         

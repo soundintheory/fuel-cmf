@@ -77,7 +77,7 @@ class ManyToOne extends \CMF\Field\Base {
             
             $input_attributes['class'] .= 'input-xxlarge select2';
             $input = \Form::select($settings['mapping']['fieldName'], $id, $options, $input_attributes);
-            $settings['select2']['placeholder'] = 'click to select a '.strtolower($target_class::singular()) . '...';
+            $settings['select2']['placeholder'] = 'click to select '.strtolower($target_class::singular()) . '...';
             $settings['select2']['target_table'] = $target_table;
             
             // Permissions
