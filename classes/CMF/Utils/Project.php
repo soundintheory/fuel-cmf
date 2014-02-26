@@ -253,7 +253,12 @@ MIGRATION;
         $platform = $conn->getDatabasePlatform();
         $metadata = $em->getMetadataFactory()->getAllMetadata();
 		$result = array();
-		
+
+		// Polyfill for some DB types...
+		if (!$platform->hasDoctrineTypeMappingFor('enum')) {
+			$platform->registerDoctrineTypeMapping('enum', 'string');
+		}
+
         if (empty($metadata))
         {
             return array( 'error' => "\tNo mapping information to process." );
