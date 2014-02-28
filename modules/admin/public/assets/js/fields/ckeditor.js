@@ -27,83 +27,99 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
 		var $input = $(this),
 		id = $input.attr('id'),
 		name = $(this).attr('name'),
-		settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {};
+		settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {},
+		$tab = $input.parents('.tab-pane');
 
 		if (name.indexOf('__TEMP__') > -1) { return; }
-		
-		var removePlugins = [
-			"about", "a11yhelp", "bidi", "colorbutton", "colordialog", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo", "language"
-		];
-		
-		var extraPlugins = [
-			"autogrow", "codemirror", "oembed"
-		];
-		
-		var removeButtons = [
-			'Cut',
-			'Copy',
-			'Paste',
-			'Indent',
-			'Outdent'
-		];
-		
-		// REMOVED PLUGINS:
-		// "about", "a11yhelp", "bidi", "colorbutton", "colordialog", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo"
-			
-			
-		var config = {
-			skin: 'moonocolor',
-			removeButtons: removeButtons.join(','),
-			removePlugins: removePlugins.join(','),
-			extraPlugins: extraPlugins.join(','),
-			autoGrow: true,
-			autoGrow_onStartup: true,
-			floatSpaceDockedOffsetX: 20,
-			allowedContent: true,
-			oembed_maxWidth: '560',
-			oembed_maxHeight: '315',
-			oembed_WrapperClass: 'embedded-content',
-			bodyClass: 'editor',
-			contentsCss: ['/admin/assets/ckeditor/contents.css'],
-			filebrowserBrowseUrl: '/admin/finder/browser?start=files',
-			filebrowserImageBrowseUrl: '/admin/finder/browser?start=images',
-			filebrowserWindowFeatures: 'location=no,menubar=no,toolbar=no,dependent=yes,minimizable=no,modal=yes,alwaysRaised=yes,resizable=no,scrollbars=no',
-			filebrowserWindowWidth: '60%',
-			filebrowserWindowHeight: 600,
-			codemirror: {
-			    theme: 'default',
-			    lineNumbers: true,
-			    lineWrapping: true,
-			    matchBrackets: true,
-			    autoCloseTags: false,
-			    autoCloseBrackets: true,
-			    enableSearchTools: true,
-			    enableCodeFolding: false,
-			    enableCodeFormatting: true,
-			    autoFormatOnStart: false,
-			    autoFormatOnModeChange: true,
-			    autoFormatOnUncomment: true,
-			    highlightActiveLine: true,
-			    mode: 'htmlmixed',
-			    showSearchButton: false,
-			    showTrailingSpace: true,
-			    highlightMatches: true,
-			    showFormatButton: false,
-			    showCommentButton: false,
-			    showUncommentButton: false,
-			    showAutoCompleteButton: false
-			}
-		};
 
-		if (typeof(settings['stylesSet']) != 'undefined') {
-			config.stylesSet = settings['stylesSet'];
-		}
+		if ($tab.length > 0 && !$tab.is(':visible')) {
+            $('a[data-toggle="tab"][href="#'+$tab.attr('id')+'"]').on('shown', initialise);
+        } else {
+            initialise();
+        }
 
-		if (typeof(settings['contentsCss']) != 'undefined') {
-			config.contentsCss.unshift(settings['contentsCss']);
-		}
-		
-		$input.ckeditor(config);
+        function initialise() {
+
+        	var removePlugins = [
+        		"about", "a11yhelp", "bidi", "colorbutton", "colordialog", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo", "language"
+        	];
+        	
+        	var extraPlugins = [
+        		"autogrow", "codemirror", "oembed"
+        	];
+        	
+        	var removeButtons = [
+        		'Cut',
+        		'Copy',
+        		'Paste',
+        		'Indent',
+        		'Outdent'
+        	];
+        	
+        	// REMOVED PLUGINS:
+        	// "about", "a11yhelp", "bidi", "colorbutton", "colordialog", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo"
+        	
+        	var config = {
+        		skin: 'moonocolor',
+        		removeButtons: removeButtons.join(','),
+        		removePlugins: removePlugins.join(','),
+        		extraPlugins: extraPlugins.join(','),
+        		autoGrow: true,
+        		autoGrow_onStartup: true,
+        		floatSpaceDockedOffsetX: 20,
+        		allowedContent: true,
+        		oembed_maxWidth: '560',
+        		oembed_maxHeight: '315',
+        		oembed_WrapperClass: 'embedded-content',
+        		bodyClass: 'editor',
+        		contentsCss: ['/admin/assets/ckeditor/contents.css'],
+        		filebrowserBrowseUrl: '/admin/finder/browser?start=files',
+        		filebrowserImageBrowseUrl: '/admin/finder/browser?start=images',
+        		filebrowserWindowFeatures: 'location=no,menubar=no,toolbar=no,dependent=yes,minimizable=no,modal=yes,alwaysRaised=yes,resizable=no,scrollbars=no',
+        		filebrowserWindowWidth: '60%',
+        		filebrowserWindowHeight: 600,
+        		codemirror: {
+        		    theme: 'default',
+        		    lineNumbers: true,
+        		    lineWrapping: true,
+        		    matchBrackets: true,
+        		    autoCloseTags: false,
+        		    autoCloseBrackets: true,
+        		    enableSearchTools: true,
+        		    enableCodeFolding: false,
+        		    enableCodeFormatting: true,
+        		    autoFormatOnStart: false,
+        		    autoFormatOnModeChange: true,
+        		    autoFormatOnUncomment: true,
+        		    highlightActiveLine: true,
+        		    mode: 'htmlmixed',
+        		    showSearchButton: false,
+        		    showTrailingSpace: true,
+        		    highlightMatches: true,
+        		    showFormatButton: false,
+        		    showCommentButton: false,
+        		    showUncommentButton: false,
+        		    showAutoCompleteButton: false
+        		}
+        	};
+
+        	if (typeof(settings['buttons']) != 'undefined') {
+        		config['toolbar'] = [
+        		    { name: 'custombuttons', items: settings['buttons'] }
+        		];
+        	}
+
+        	if (typeof(settings['stylesSet']) != 'undefined') {
+        		config.stylesSet = settings['stylesSet'];
+        	}
+
+        	if (typeof(settings['contentsCss']) != 'undefined') {
+        		config.contentsCss.unshift(settings['contentsCss']);
+        	}
+        	
+        	$input.ckeditor(config);
+
+        }
 
 	}
 	

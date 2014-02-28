@@ -72,8 +72,16 @@ class Extension extends Twig_Extension
         	'item_links' => new Twig_Filter_Method($this, 'itemLinks'),
         	'placeholder' => new Twig_Filter_Method($this, 'placeholder'),
         	'slug' => new Twig_Filter_Function('CMF::slug'),
-        	'rtrim' => new Twig_Filter_Function('rtrim')
+        	'rtrim' => new Twig_Filter_Function('rtrim'),
+        	'delimiter' => new Twig_Filter_Method($this, 'delimiterFilter')
         );
+    }
+
+    public function delimiterFilter($value, $tag = 'b', $delimiter_start = '{', $delimiter_end = '}')
+    {
+    	if (strpos($value, $delimiter_start) === false) return $value;
+    	$pattern = '/'.preg_quote($delimiter_start).'(.*?)'.preg_quote($delimiter_end).'/sUi';
+    	return preg_replace($pattern, "<$tag>$1</$tag>", $value);
     }
     
     public function getOptionsSelect($model, $field = null, $values = array(), $attributes = array())

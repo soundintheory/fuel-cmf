@@ -575,8 +575,8 @@ function initItemForm() {
     	var latestFormData = getFormString($itemForm);
     	
     	if (initialFormData != null && latestFormData != initialFormData) {
-    		console.log(latestFormData.substr(0, 120));
-    		console.log(initialFormData.substr(0, 120));
+    		//console.log(latestFormData);
+    		//console.log(initialFormData);
     		var msg = "There are potentially unsaved changes to this item. You have two options:\n\n1) Stay and click the 'save' button.\n\n2) Continue and they may be lost.";
     		e.returnValue = msg;
     		return msg;
