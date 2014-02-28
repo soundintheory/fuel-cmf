@@ -7,6 +7,7 @@
 		$('.widget-type-stacked-inline > .widget-content').each(function() {
 			
 			var $wrap = $(this),
+			$body = $('body'),
 			$template = $wrap.find('> .item-template').eq(0),
 			$itemsWrap = $wrap.find('> .items').eq(0),
 			$items = $itemsWrap.find('> .item'),
@@ -195,7 +196,25 @@
 			}
 			
 			function initSorting() {
+
+				$itemsWrap.sortable({ helper:fixHelper, handle:'.handle' });
+
+				// Sort start
+				$itemsWrap.sortable('option', 'start', function (evt, ui) {
+					$body.addClass('sorting');
+				});
+
+				// Sort stop
+				$itemsWrap.sortable('option', 'stop', function(evt, ui) {
+					
+					$body.removeClass('sorting');
+					
+					updatePositions();
+					
+				});
 				
+				updatePositions();
+
 				/*
 				var $itemsWrapBody = $itemsWrap.find("tbody"),
 				$rows = $itemsWrapBody.find('tr'),

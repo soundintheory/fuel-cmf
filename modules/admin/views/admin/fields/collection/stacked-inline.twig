@@ -1,7 +1,7 @@
 <!-- We need to output different templates for any different types that can be added -->
 {% for template_type, template_content in templates %}
 <div class="item-template" data-type="{{ template_type }}">
-	<div class="item-title">
+	<div class="item-title handle">
 		<h3><i class="icon icon-{{ template_content.icon }}"></i> New {{ template_content.singular|lower }}</h3>
 	</div>
 	<div class="item-content">
@@ -19,10 +19,10 @@
 
 <!-- Output the item forms -->
 <input type="hidden" name="{{ settings.mapping.fieldName }}" value="" />
-<div class="items" data-field-name="{{ settings.mapping.fieldName }}">
+<div class="items{{ sortable ? ' sortable' : '' }}" data-field-name="{{ settings.mapping.fieldName }}">
 {% for row in rows %}
-<div class="item collapsible">
-	<div class="item-title">
+<div class="item collapsible closed">
+	<div class="item-title handle">
 		<h3><i class="icon icon-{{ row._icon_ }}"></i> {{ row._title_ }}</h3>
 	</div>
 	<div class="item-content">
