@@ -140,8 +140,9 @@ class Base {
         if (!(isset($settings['auto_update']) && !$settings['auto_update']) && 
             (isset($settings['template']) && !empty($settings['template']))) {
             
-            $post_data = \Input::post();
-            $context = \Arr::merge($model->toArray(), $post_data);
+            $post_data = $context = \Input::post();
+            if (!is_array($context)) $context = array();
+            $context['model'] = $model;
             
             $twig = \View_Twig::parser();
             $loader = \View_Twig::loader();

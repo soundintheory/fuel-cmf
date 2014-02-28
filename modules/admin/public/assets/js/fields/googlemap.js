@@ -39,12 +39,13 @@
         {
             if (map !== null) { return; }
 
-            var myLatlng = new google.maps.LatLng(initial.lat, initial.lng);
+            var myLatlng = new google.maps.LatLng($lat.val() || initial.lat, $lng.val() || initial.lng);
             var mapOptions = {
                 scrollwheel: false,
-                zoom: parseInt(initial.zoom),
+                zoom: parseInt($zoom.val() || initial.zoom),
                 center: myLatlng
             };
+            console.log(mapOptions);
             map = new google.maps.Map($map[0], mapOptions);
 
             // Listen for zoom change

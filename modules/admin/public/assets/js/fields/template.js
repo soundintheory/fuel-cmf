@@ -87,18 +87,19 @@
 			data = {},
 			valid = true,
 			template = twig({
-				data: settings['template']
+				data: settings['template'].replace(/{{ model\./g, '{{ ')
 			});
 			
 			initTokens();
-			
+
 			if (valid) {
 				templateFields.addListener(updateText);
 				templateFields.update();
-				onCheckboxChange();
 			} else {
-				$wrap.find('.auto-update-label').hide();
+				//$input.val('woo');
 			}
+
+			onCheckboxChange();
 			
 			function initTokens() {
 				
@@ -142,8 +143,9 @@
 					$input.removeAttr('readonly');
 				}
 				
-				updateText();
-				
+				if (valid) {
+					updateText();
+				}
 			}
 			
 			function updateText() {

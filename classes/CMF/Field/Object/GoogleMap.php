@@ -26,6 +26,54 @@ class GoogleMap extends Object {
             'search' => array( 'type' => 'string' )
         )
     );
+
+    /**
+     * Get a map image from the Google Maps static image API
+     */
+    public static function getMapImage($options, $force = false)
+    {
+        if ($is_single = \Arr::is_assoc($options)) {
+            $options = array($options);
+        }
+
+        // Set up the dir for storing
+        $dir = DOCROOT.'uploads/maps';
+        $dir_made = is_dir($dir) ? true : @mkdir($dir, 0775, true);
+        if (!$dir_made) throw new \Exception("The map upload directory could not be found or created!");
+
+        foreach ($options as $num => $settings) {
+
+            // Allow offset to be applied
+            $lat = \Arr::get($settings, 'lat', 54.443) + \Arr::get($settings, 'latOffset', 0);
+            $lng = \Arr::get($settings, 'lng', -3.063) + \Arr::get($settings, 'lngOffset', 0);
+
+            $width = \Arr::get($settings, 'width', 200);
+            $height = \Arr::get($settings, 'height', 200);
+            $scale = \Arr::get($settings, 'scale', 1);
+
+            // Build the API url
+            $url = 'http://maps.googleapis.com/maps/api/staticmap'
+            .'?center='.$lat.','.$lng
+            .'&zoom='.\Arr::get($settings, 'zoom', 11)
+            .'&size='.$width.'x'.$height
+            .'&scale='.$scale
+            .'&sensor=false';
+
+            // Download the image
+            $path = $dir.'/'.md5($url).'.png';
+            if (!file_exists($path) || $force) {
+                $img = file_get_contents($url);
+                @file_put_contents($path, $img);
+            }
+
+            // Set info back to the options
+            $options[$num]['src'] = str_replace(DOCROOT, '', $path);
+            $options[$num]['width'] = $width * $scale;
+            $options[$num]['height'] = $height * $scale;
+        }
+
+        return $is_single ? $options[0] : $options;
+    }
     
     /** @inheritdoc */
     public static function process($value, $settings, $model)

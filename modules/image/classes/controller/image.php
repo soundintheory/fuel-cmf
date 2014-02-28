@@ -225,11 +225,15 @@ class Controller_Image extends \Controller {
 		$h = intval($h);
 		//this isnt yet set to be passed in
 		$bgcolor = '#'.$this->param('bgcolor', 'fff');
+
+		if ($w === 0 || $h === 0) {
+			$this->mode = '1';
+		}
 		
 		// Init the image info with the filename format, and output if a cache has been produced
 		$output = $this->_init_image(4, $w.'x'.$h);
 		if (!is_null($output)) return $output;
-		
+
 		// Load the image and apply the filters
 		switch ($this->mode)
 		{
