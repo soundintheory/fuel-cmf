@@ -362,7 +362,7 @@ abstract class Model
                 $value = array_values($value);
                 $ids = array();
                 $collection = (!isset($this->$field)) ? new ArrayCollection() : $this->$field;
-                
+
                 $len = count($value);
                 for ($i=0; $i < $len; $i++) {
                     
@@ -377,7 +377,8 @@ abstract class Model
                         if (array_key_exists('id', $item) && !empty($item['id'])) {
                             $new_item = $target_class::find($item['id']);
                         } else {
-                            if (isset($item['__type__']) && is_subclass_of($item['__type__'], $target_class)) $item_target_class = $item['__type__'];
+                            $type = str_replace('\\\\', '\\', isset($item['__type__']) ? $item['__type__'] : $target_class);
+                            if (isset($item['__type__']) && is_subclass_of($type, $target_class)) $item_target_class = $type;
                             $new_item = new $item_target_class();
                         }
                         $new_item->populate($item);
