@@ -45,7 +45,7 @@
                 zoom: parseInt($zoom.val() || initial.zoom),
                 center: myLatlng
             };
-            console.log(mapOptions);
+            //console.log(mapOptions);
             map = new google.maps.Map($map[0], mapOptions);
 
             // Listen for zoom change
