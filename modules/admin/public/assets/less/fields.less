@@ -390,9 +390,8 @@
 	}
 	
 	.external-link {
-		display: none;
+		position: absolute; left: -999999px; top: 0px;
 		padding-left: 50px;
-		position: relative;
 		
 		.add-on {
 			position: absolute; top: 0px; left: 0px;
@@ -400,15 +399,23 @@
 			white-space: nowrap;
 		}
 	}
+
+	.internal-link {
+
+		.select2-container {
+			min-width: 300px;
+		}
+	}
 	
 	&.external {
 		
 		.external-link {
 			display: block;
+			position: relative; left: 0px; top: 0px;
 		}
 		
 		.internal-link {
-			display: none;
+			position: absolute; left: -999999px; top: 0px;
 		}
 		
 	}
@@ -1511,7 +1518,7 @@ select option {
 			top:0;
 		}
 		
-		select {
+		select, .select2-container {
 			width: 180px;
 		}
 		
@@ -1525,6 +1532,10 @@ select option {
 		
 		.external-link {
 			display: inline-block;
+
+			input {
+				width: 200px;
+			}
 		}
 	}
 	

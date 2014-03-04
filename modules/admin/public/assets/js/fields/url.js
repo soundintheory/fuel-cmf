@@ -74,8 +74,6 @@
 				
 				return matches == terms.length;
 			}
-			
-			
 
 			$el.find('.select2').select2(opts);
 			$el.find('.select2').select2('container').find('.select2-choices, .select2-choice').addClass('input-xxlarge');

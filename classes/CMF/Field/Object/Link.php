@@ -38,7 +38,7 @@ class Link extends Object {
         $required = isset($settings['required']) ? $settings['required'] : false;
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
-        $input_attributes = array( 'class' => 'input-xxlarge' );
+        $input_attributes = array( 'class' => 'input input-xxlarge' );
         $attributes = array( 'class' => 'field-type-link controls control-group'.($has_errors ? ' error' : '') );
         $href_name = $settings['mapping']['fieldName'].'[href]';
         $value['href'] = isset($value['href']) ? $value['href'] : null;
@@ -53,18 +53,18 @@ class Link extends Object {
             $attributes['class'] .= ' external';
         }
         
-        // INTERNAL DROPDOWN CONTENT
-        $options = static::getOptions($settings, $model);
-        $href_value_int = ($external_value) ? '' : $value['href'];
-        $input = \Form::select($href_name, $href_value_int, $options, $input_attributes);
-        $int_content = html_tag('div', array( 'class' => 'internal-link' ), $input);
-        
         // EXTERNAL INPUT CONTENT
         $href_value_ext = ($external_value) ? $value['href'] : '';
         $ext_input = \Form::input($href_name, $href_value_ext, $input_attributes);
         $addon = html_tag('span', array( 'class' => 'add-on' ), 'http://');
         $ext_content = html_tag('div', array( 'class' => 'external-link input-prepend' ), $addon.$ext_input);
-        
+
+        // INTERNAL DROPDOWN CONTENT
+        $options = static::getOptions($settings, $model);
+        $href_value_int = ($external_value) ? '' : $value['href'];
+        $input = \Form::select($href_name, $href_value_int, $options, $input_attributes);
+        $int_content = html_tag('div', array( 'class' => 'internal-link' ), $input);
+
         return html_tag('div', $attributes, $label.$int_content.$ext_content);
     }
 
@@ -321,7 +321,11 @@ class Link extends Object {
     {
         return array(
             'js' => array(
+                '/admin/assets/select2/select2.min.js',
                 '/admin/assets/js/fields/link.js'
+            ),
+            'css' => array(
+                '/admin/assets/select2/select2.css'
             )
         );
     }
