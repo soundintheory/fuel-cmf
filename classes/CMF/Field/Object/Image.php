@@ -291,6 +291,25 @@ class Image extends File {
         if ($crop === false) {
             return "/image/2/$width/$height/".$src;
         }
+
+        if (($cw = intval($crop['width'])) && ($ch = intval($crop['height'])) && $width > 0 && $height > 0) {
+            $cr = $cw / $ch;
+            $rr = $width / $height;
+
+            if ($cr != $rr) {
+
+                $nh = round($cw / $rr);
+                if ($nh > $ch) {
+                    $nw = round($ch * $rr);
+                    $crop['width'] = $nw;
+                    $crop['x'] += round(($cw - $nw) / 2);
+                } else {
+                    $crop['height'] = $nh;
+                    $crop['y'] += round(($ch - $nh) / 2);
+                }
+
+            }
+        }
         
         return "/image/".
         $crop['x']."/".
