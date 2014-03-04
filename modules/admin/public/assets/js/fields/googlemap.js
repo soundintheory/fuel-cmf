@@ -25,7 +25,8 @@
         $searchButton = $wrap.find('.search-form button').on('click', updateSearch),
         $tab = $map.parents('.tab-pane'),
         map = null,
-        geocoder = new google.maps.Geocoder();
+        geocoder = new google.maps.Geocoder(),
+        marker = null;
 
         if ($lat.attr('name').indexOf('__TEMP__') > -1) { return; }
 
@@ -60,7 +61,7 @@
 
             if (settings.marker) {
 
-                var marker = new google.maps.Marker({
+                marker = new google.maps.Marker({
                     position: myLatlng,
                     map: map,
                     draggable: true
@@ -113,7 +114,7 @@
                     
                     map.panTo(results[0].geometry.location);
                     
-                    if (settings.marker) {
+                    if (settings.marker && marker != null) {
                         marker.setPosition(results[0].geometry.location);
                     } else {
                         // Nothing
