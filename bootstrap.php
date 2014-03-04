@@ -29,6 +29,7 @@ Autoloader::add_classes(array(
     'CMF\\Core\\View_Twig'  => __DIR__.'/classes/CMF/Core/View_Twig.php',
     'CMF\\Core\\Image_Driver'  => __DIR__.'/classes/CMF/Core/Image_Driver.php',
     'CMF\\Core\\Lang'  => __DIR__.'/classes/CMF/Core/Lang.php',
+    'CMF\\Core\\Error'  => __DIR__.'/classes/CMF/Core/Error.php',
 ));
 
 // Sort out the language
