@@ -21,7 +21,7 @@
 <input type="hidden" name="{{ settings.mapping.fieldName }}" value="" />
 <div class="items{{ sortable ? ' sortable' : '' }}" data-field-name="{{ settings.mapping.fieldName }}">
 {% for row in rows %}
-<div class="item collapsible closed">
+<div class="item collapsible draggable closed">
 	<div class="item-title handle">
 		<h3><i class="icon icon-{{ row._icon_ }}"></i> {{ row._title_ }}</h3>
 	</div>

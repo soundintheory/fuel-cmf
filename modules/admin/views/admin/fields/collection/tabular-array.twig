@@ -21,7 +21,7 @@
 			</td>
 		</tr>
 		{% for row in rows %}
-		<tr class="item">
+		<tr class="item draggable">
 			{% if sortable %}<td class="handle first"><i class="icon-move"></i></td>{% endif %}
 			{% for field_name, field in row %}
 			<td class="col-type-{{ settings.fields[field_name].field_type }}{{ not sortable and loop.index == 1 ? ' first' : '' }}">{{ field }}</td>

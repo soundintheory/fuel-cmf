@@ -52,7 +52,7 @@
 				var $item = $wrap.find('> .item-template[data-type="' + type + '"]').eq(0).clone();
 				//console.log($item.length);
 				
-				$item.addClass('item collapsible').removeClass('item-template').each(initCollapsible).find('*[name], *[data-field-name]').each(function() {
+				$item.addClass('item collapsible'+(sortable ? ' draggable' : '')).removeClass('item-template').each(initCollapsible).find('*[name], *[data-field-name]').each(function() {
 					
 					var $el = $(this),
 					origName = $el.attr('name'),
@@ -201,14 +201,16 @@
 
 				// Sort start
 				$itemsWrap.sortable('option', 'start', function (evt, ui) {
+
+					ui.item.trigger('cmf.dragstart');
 					$body.addClass('sorting');
 				});
 
 				// Sort stop
 				$itemsWrap.sortable('option', 'stop', function(evt, ui) {
 					
+					ui.item.trigger('cmf.dragstop');
 					$body.removeClass('sorting');
-					
 					updatePositions();
 					
 				});

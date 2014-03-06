@@ -28,9 +28,20 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
 		id = $input.attr('id'),
 		name = $(this).attr('name'),
 		settings = typeof(field_settings[name]) != 'undefined' ? field_settings[name] : {},
-		$tab = $input.parents('.tab-pane');
+		$tab = $input.parents('.tab-pane'),
+        initialised = false,
+        editor = null;
 
 		if (name.indexOf('__TEMP__') > -1) { return; }
+
+        if ($input.parents('.draggable').length > 0) {
+            $input.parents('.draggable').on('cmf.dragstart', function() {
+                destroyEditor();
+            }).on('cmf.dragstop', function() {
+                destroyEditor();
+                initialise();
+            });
+        }
 
 		if ($tab.length > 0 && !$tab.is(':visible')) {
             $('a[data-toggle="tab"][href="#'+$tab.attr('id')+'"]').on('shown', initialise);
@@ -38,7 +49,18 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
             initialise();
         }
 
+        function destroyEditor() {
+
+            if (editor === null) return;
+
+            editor.destroy()
+            editor = null;
+            initialised = false;
+        }
+
         function initialise() {
+
+            if (initialised) return;
 
         	var removePlugins = [
         		"about", "a11yhelp", "bidi", "colorbutton", "colordialog", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo", "language"
@@ -117,7 +139,9 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
         		config.contentsCss.unshift(settings['contentsCss']);
         	}
         	
-        	$input.ckeditor(config);
+        	editor = $input.ckeditor(config).ckeditorGet();
+
+            initialised = true;
 
         }
 

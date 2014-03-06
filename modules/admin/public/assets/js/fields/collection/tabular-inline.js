@@ -35,7 +35,7 @@
 				
 				var $item = $template.clone();
 				
-				$item.addClass('item').removeClass('item-template').find('*[name], *[data-field-name]').each(function() {
+				$item.addClass('item'+(sortable ? ' draggable' : '')).removeClass('item-template').find('*[name], *[data-field-name]').each(function() {
 					
 					var $el = $(this),
 					origName = $el.attr('name'),
@@ -153,11 +153,13 @@
 				$tableBody.sortable({ helper:fixHelper, handle:'.handle' });
 				$tableBody.sortable('option', 'start', function (evt, ui) {
 					
+					ui.item.trigger('cmf.dragstart');
 					$body.addClass('sorting');
 					
 				});
 				$tableBody.sortable('option', 'stop', function(evt, ui) {
 					
+					ui.item.trigger('cmf.dragstop');
 					$body.removeClass('sorting');
 					
 					var id = ui.item.find('input.item-id').val(),
