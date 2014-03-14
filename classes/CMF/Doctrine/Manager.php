@@ -135,6 +135,7 @@ class D extends \Fuel\Doctrine
 			if (!array_key_exists($type, static::$cache_drivers))
 				throw new DoctrineException('Invalid Doctrine2 cache driver: ' . $type);
 
+			$cache = false;
 			$class = '\\Doctrine\\Common\\Cache\\' . static::$cache_drivers[$type];
 			$namespace = \Arr::get($connection_settings, 'cache_namespace', basename(realpath(APPPATH.'..'.DS.'../')));
 			
@@ -147,7 +148,6 @@ class D extends \Fuel\Doctrine
 				default:
 					$cache = new $class();
 					$cache->setNamespace($namespace);
-					//print('setting namespace '.$namespace);
 					break;
 			}
 
@@ -160,7 +160,7 @@ class D extends \Fuel\Doctrine
 				}
 			}
 			
-			return new $class();
+			return $cache;
 		}
 		
 		return false;
