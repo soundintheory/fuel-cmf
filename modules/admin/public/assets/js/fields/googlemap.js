@@ -114,11 +114,21 @@
                     
                     map.panTo(results[0].geometry.location);
                     
+                    if (settings.marker)  {
+                        var cZoom = map.getZoom() || 0;
+                        if (cZoom < 12) {
+                            map.setZoom(12);
+                        }
+                    }
+                    
                     if (settings.marker && marker != null) {
                         marker.setPosition(results[0].geometry.location);
                     } else {
                         // Nothing
                     }
+
+                    google.maps.event.trigger(map, 'click', { latLng:results[0].geometry.location });
+                    google.maps.event.trigger(map, 'zoom_changed');
                     
                 } else {
                     // console.log('Geocode was not successful for the following reason: ' + status);
