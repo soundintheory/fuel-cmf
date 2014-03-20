@@ -44,16 +44,22 @@ class GoogleMap extends Object {
         foreach ($options as $num => $settings) {
 
             // Allow offset to be applied
-            $lat = \Arr::get($settings, 'lat', 54.443) + \Arr::get($settings, 'latOffset', 0);
-            $lng = \Arr::get($settings, 'lng', -3.063) + \Arr::get($settings, 'lngOffset', 0);
+            $olat = \Arr::get($settings, 'lat', 54.443);
+            $olng = \Arr::get($settings, 'lng', -3.063);
+
+            $lat = $olat + \Arr::get($settings, 'latOffset', 0);
+            $lng = $olng + \Arr::get($settings, 'lngOffset', 0);
 
             $width = \Arr::get($settings, 'width', 200);
             $height = \Arr::get($settings, 'height', 200);
             $scale = \Arr::get($settings, 'scale', 1);
+            $marker = \Arr::get($settings, 'marker', false);
+            $markerColor = \Arr::get($settings, 'markerColor', 'red');
 
             // Build the API url
             $url = 'http://maps.googleapis.com/maps/api/staticmap'
             .'?center='.$lat.','.$lng
+            .($marker ? '&markers=color:'.$markerColor.'|'.$olat.','.$olng : '')
             .'&zoom='.\Arr::get($settings, 'zoom', 11)
             .'&size='.$width.'x'.$height
             .'&scale='.$scale
