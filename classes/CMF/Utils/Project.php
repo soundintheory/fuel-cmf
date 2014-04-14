@@ -273,11 +273,6 @@ MIGRATION;
 		
 		// Check if languages are enabled
 		$languages = \Config::get('cmf.languages.enabled', false);
-		if (!$languages) {
-			$ignored_tables[] = 'languages';
-			$ignored_tables[] = 'lang';
-			$ignored_tables[] = 'ext_translations';
-		}
 		
 		// Construct an array of wildcard-checking lambda functions
 		$wildcard_checks = array();
@@ -330,7 +325,7 @@ MIGRATION;
         $down = static::buildCodeFromSql($fromSchema->getMigrateFromSql($toSchema, $platform));
         
         // TODO: Create a more generic way of implementing data fixtures for each class
-        if ($languages && ($toSchema->hasTable('languages') && !$fromSchema->hasTable('languages'))) {
+        if ($toSchema->hasTable('languages') && !$fromSchema->hasTable('languages')) {
         	
         	$up .= "\n\t\t// Creating the first language";
         	$up .= "\n\t\t\$lang = new \CMF\Model\Language();";
