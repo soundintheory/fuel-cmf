@@ -162,7 +162,8 @@ class Extension extends Twig_Extension
 	}
 	public function fieldListValue($value, $edit_link, $settings, $model)
 	{
-		$class_name = $settings['field'];
+		$class_name = @$settings['field'];
+		if (!$class_name) $class_name = 'CMF\\Field\\Text';
 		return $class_name::displayList($value, $edit_link, $settings, $model);
 	}
 	

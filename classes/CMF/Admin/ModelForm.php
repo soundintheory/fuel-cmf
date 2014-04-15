@@ -31,11 +31,13 @@ class ModelForm
 	public function __construct($metadata, $model, $prefix = '', $prepopulate = array(), $exclude = array(), $disable_groups = false, $disable_widgets = false, $extra_settings = null)
 	{
 		$class_name = $metadata->name;
+		$model_id = $model->id;
 		$this->table_name = $metadata->table['name'];
 		$this->prepopulate = \Arr::merge(\Input::get(), $prepopulate);
 		$this->exclude = $exclude;
 		$this->disable_groups = $disable_groups;
 		$this->disable_widgets = $disable_widgets;
+		$this->title = ($model_id && method_exists($model, 'getFormTitle')) ? $model->getFormTitle() : $class_name::singular();
 		
 		if (\Input::param('alias', false) !== false) {
 			$this->icon = 'link';

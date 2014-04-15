@@ -7,13 +7,19 @@ namespace CMF\Doctrine\Extensions;
  */
 class Loggable extends Extension
 {
+	protected static $listener = null;
 	
 	/** @override */
 	public static function init($em, $reader)
 	{
-		$listener = new \Gedmo\Loggable\LoggableListener();
-		$listener->setAnnotationReader($reader);
-		$em->getEventManager()->addEventSubscriber($listener);
+		static::$listener = new \Gedmo\Loggable\LoggableListener();
+		static::$listener->setAnnotationReader($reader);
+		$em->getEventManager()->addEventSubscriber(static::$listener);
+	}
+
+	public static function setUsername($name)
+	{
+		static::$listener->setUsername($name);
 	}
 	
 }

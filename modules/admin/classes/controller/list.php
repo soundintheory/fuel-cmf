@@ -85,6 +85,12 @@ class Controller_List extends Controller_Base {
 		
 		// Start the query builder...
 		$qb = $class_name::select('item', 'item', 'item.id');
+
+		// Retrieve any custom joins from config on the model
+		$manual_joins = $class_name::joins();
+		foreach ($manual_joins as $join_alias => $manual_join) {
+			$qb->leftJoin($manual_join, $join_alias)->addSelect($join_alias);
+		}
 		
 		// Add any joins to the query builder (prevents the query buildup that comes from accessing lazily loaded associations)
 		foreach ($list_fields as $num => $field) {
@@ -102,6 +108,7 @@ class Controller_List extends Controller_Base {
 					$target_fields = \Admin::getFieldSettings($target_class);
 					
 					foreach ($target_fields as $target_field => $target_field_settings) {
+						$target_field_settings['title'] = $target_class::singular().' '.$target_field_settings['title'];
 						$fields[$field_name.'.'.$target_field] = $target_field_settings;
 					}
 				}
@@ -113,7 +120,34 @@ class Controller_List extends Controller_Base {
 			// This could be a method on the model
 			if (!isset($fields[$field])) {
 				
-				if (method_exists($class_name, $field_name)) {
+				if (array_key_exists($field_name, $manual_joins)) {
+
+					$join_heading = \Inflector::humanize(\Inflector::underscore($field_name));
+					$parts = explode(".", $field);
+
+					if (count($parts) == 2) {
+						$field_colons = implode(':', $parts);
+
+						if (isset($order[$field_colons])) {
+			                $dir = strtolower($order[$field_colons]);
+			                $rev = ($dir == 'asc') ? 'desc' : 'asc';
+			                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
+			                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
+			                $join_heading = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_colons=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$join_heading.' '.$verbose ), $join_heading.' '.$arrows);
+			            } else {
+			                $join_heading = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_colons=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$join_heading.' ascending' ), $join_heading);
+			            }
+					}
+
+					$columns[] = array(
+						'num' => $num,
+						'type' => 'join',
+						'join' => $parts[0],
+						'name' => count($parts) > 1 ? $parts[1] : 'display',
+						'heading' => $join_heading
+					);
+
+				} else if (method_exists($class_name, $field_name)) {
 					
 					$column = array(
 						'num' => $num,
@@ -138,14 +172,14 @@ class Controller_List extends Controller_Base {
 		            $columns[] = $column; 
 		            				
 				}
-				
+
 				continue;
 			}
 			
-			if ($metadata->isSingleValuedAssociation($field_name) && !in_array($field_name, $joins)) {
+			if ($metadata->isSingleValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists($field_name, $manual_joins)) {
 				$qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
 				$joins[] = $field_name;
-			} else if ($metadata->isCollectionValuedAssociation($field_name) && !in_array($field_name, $joins)) {
+			} else if ($metadata->isCollectionValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists($field_name, $manual_joins)) {
 				$qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
 				$joins[] = $field_name;
 			}
@@ -178,6 +212,38 @@ class Controller_List extends Controller_Base {
             $columns[] = $column;
 			
 		}
+
+		// Add dropdown list filters
+		$filter_by = $class_name::list_filters();
+		if (is_array($filter_by) && count($filter_by) > 0) {
+
+			$filters = array();
+
+			foreach ($filter_by as $filter_field) {
+
+				if ($metadata->hasAssociation($filter_field)) {
+
+					$filter_class = $metadata->getAssociationTargetClass($filter_field);
+					$filter_name = \Arr::get($fields, "$filter_field.title", '');
+					$filters[$filter_field] = array(
+						'label' => 'Show '.strtolower($filter_name).':',
+						'options' => array( '' => 'All' ) + $filter_class::options()
+					);
+
+					if (!in_array($filter_field, $joins) && !array_key_exists($filter_field, $manual_joins)) {
+						$qb->leftJoin('item.'.$filter_field, $filter_field)->addSelect($filter_field);
+						$joins[] = $filter_field;
+					}
+
+					$filter_val = \Input::get($filter_field);
+					if (!empty($filter_val)) {
+						$qb->andWhere("$filter_field = ".$filter_val);
+					}
+				}
+			}
+
+			$this->filters = $filters;
+		}
 		
 		// Add list filters
 		foreach ($list_filters as $num => $filter) {
@@ -188,6 +254,7 @@ class Controller_List extends Controller_Base {
 				$qb->andWhere($filter_str);
 			}
 		}
+
 		if(!empty($query_fields) && count($query_fields) > 0){
 			//if query string then search the fields provided
 			$this->searchable = true;
@@ -259,7 +326,9 @@ class Controller_List extends Controller_Base {
 		    		$assoc_field = array_shift($parts);
 		    	}
 		    	
-		        if ($metadata->hasAssociation($field_name)) {
+		        if (array_key_exists($field_name, $manual_joins)) {
+		        	$qb->addOrderBy("$field_name.$assoc_field", $direction);
+		        } else if ($metadata->hasAssociation($field_name)) {
 		            $assoc_class = $metadata->getAssociationTargetClass($field_name);
 		            if (!property_exists($assoc_class, $assoc_field)) $assoc_field = property_exists($assoc_class, 'title') ? 'title' : 'id';
 		            $qb->addOrderBy("$field_name.$assoc_field", $direction);
