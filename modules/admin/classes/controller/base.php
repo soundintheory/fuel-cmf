@@ -42,6 +42,8 @@ class Controller_Base extends \Controller {
         
         // A unique ID that can be passed through
         $this->cid = \Input::param('_cid', 'none');
+        $this->current_lang = \Lang::get_lang();
+        $this->fallback_lang = \Lang::$fallback;
 		
 	}
 	

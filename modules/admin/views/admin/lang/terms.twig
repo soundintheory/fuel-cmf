@@ -1,4 +1,4 @@
-    {% extends interface_template|default("admin/shared/interface.twig") %}
+{% extends interface_template|default("admin/shared/interface.twig") %}
 
 {% block html_title %}Edit {{ singular }} : {{ admin_title }}{% endblock %}
 
@@ -6,7 +6,88 @@
     
     {% include 'admin/shared/alert.twig' %}
     
-    <p>Lang stuff!!</p>
+    <table class="table table-striped table-bordered selectable table-hover{{ sortable ? ' sortable' : '' }}">
+        
+        <thead>
+            <tr>
+                <th><img src="/admin/assets/img/lang/{{ lang_lft }}.png" class="lang-flag" /></th>
+                <th><img src="/admin/assets/img/lang/{{ lang_rgt }}.png" class="lang-flag" /></th>
+            </tr>
+        </thead>
+        
+        <tbody>
+
+            <tr>
+                <td>
+                    Something
+                </td>
+                <td>
+                    <input type="text" name="terms[0][]" value="Something" />
+                </td>
+            </tr>
+            <!-- 
+            {% for row in rows if row.id not in excluded_ids %}
+            
+            {% if class_lang_enabled %}
+            {% set has_translations = lang_enabled and row._translated|length > 0 %}
+            {% set has_all_translations = lang_enabled and row.hasAllTranslations() %}
+            <tr data-id="{{ row.id }}"{% if sortable %} data-sort-group="{{ row.sortGroupId() }}"{% endif %} class="{% if not has_translations %}no-translations{% elseif not has_all_translations %}incomplete-translations{% endif %}">
+            {% else %}
+            <tr data-id="{{ row.id }}"{% if sortable %} data-sort-group="{{ row.sortGroupId() }}"{% endif %}>
+            {% endif %}
+                {% set editable = can_edit and (item_permissions[row.id]|length == 0 or 'edit' in item_permissions[row.id]) %}
+                {% set deletable = can_delete and (item_permissions[row.id]|length == 0 or 'delete' in item_permissions[row.id]) %}
+                {% set edit_link = "/admin/"~table_name~"/"~row.get('id')~"/edit" %}
+                 {% set duplicate_link = "/admin/"~table_name~"/"~row.get('id')~"/duplicate" %}
+                {% for column in columns %}
+                    {% if column.type == 'handle' %}
+                    <td class="handle"><div><i class="icon-move"></i></div></td>
+                    {% elseif column.type == 'method' %}
+                    <td class="col-type-{{ column.type }}"><a href="{{ editable ? edit_link : '' }}">{{ row.get(column.name) }}</a></td>
+                    {% elseif column.type == 'lang' %}
+                    <td class="col-type-{{ column.type }}">
+                        {% if not has_translations %}
+                        <img class="lang-flag default" src="/admin/assets/img/lang/{{ default_language() }}.png" />
+                        {% elseif not has_all_translations %}
+                        <img class="lang-flag" src="/admin/assets/img/lang/{{ default_language() }}.png" />
+                        <img class="lang-flag" src="/admin/assets/img/lang/{{ language() }}.png" />
+                        {% else %}
+                        <img class="lang-flag" src="/admin/assets/img/lang/{{ language() }}.png" />
+                        {% endif %}
+                    </td>
+                    {% else %}
+                    <td class="col-type-{{ column.type }}">{{ field_list_value(row.get(column.name), editable ? edit_link : false, fields[column.name], row)|default('(empty)') }}</td>
+                    {% endif %}
+                {% endfor %}
+                <td class="actions"><span>
+                    {% for action_id, action in actions if action.list is not defined or action.list != false %}
+                    {{ attribute(this, 'action_'~action.type, [action_id, action, row, table_name, 'list']) }}
+                    {% endfor %}
+                    {% if can_create %}<a class="btn btn-small btn-icon" href="{{ duplicate_link }}" rel="tooltip" title="Duplicate"><i class="icon-copy"></i></a>{% endif %} 
+                    {% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a>{% endif %} 
+                    {% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i></a>{% endif %}
+                </span></td>
+                
+            </tr>
+            {% else %}
+            <tr>
+                <td class="no-items" colspan="{{ columns|length + 1 }}">
+                    
+                    {% if tabs|length > 1 and current_tab != default_tab %}
+                    <p>No {{ plural|lower }} were found.</p>
+                    {% else %}
+                    <p>There are no {{ plural|lower }} added yet.</p>
+                    {% if can_create %}
+                    <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
+                    {% endif %}
+                    {% endif %}
+                    
+                </td>
+            </tr>
+            {% endfor %}
+            -->
+        </tbody>
+    </table>
 
 {% endblock %}
 
@@ -33,4 +114,14 @@
         var field_settings = {{ form.js_field_settings|json_encode }};
         var field_values = {};
     </script>
+{% endblock %}
+
+{% block bottom %}
+<div id="controls-fixed-bot"><div class="inner">
+
+    <div class="actions pull-right">
+        <button data-loading-text="Saving Phrases..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> Save Phrases</button>
+    </div>
+
+</div></div>
 {% endblock %}

@@ -22,6 +22,7 @@ class Language extends Base {
         // No point in ever showing this field if lang isn't enabled
         if (!\CMF::$lang_enabled) return '';
         
+        \Lang::load('languages', true, 'en', true, true);
         $settings = static::settings($settings);
         $include_label = isset($settings['label']) ? $settings['label'] : true;
         $required = isset($settings['required']) ? $settings['required'] : false;
