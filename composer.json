@@ -32,6 +32,7 @@
         "doctrine/dbal": "dev-master as 2.4.2"
     },
     "suggest": {
+        "phpoffice/phpexcel": "To allow the import of .xls or .xlsx spreadsheets",
         "tecnick.com/tcpdf": "If you need to do any custom (very exact) PDF generation",
         "dompdf/dompdf": "If you need to quickly generate PDFs from HTML & CSS",
         "php-ffmpeg/php-ffmpeg": "Enables the video field. Requires installation of ffmpeg",

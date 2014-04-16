@@ -61,7 +61,8 @@
 	</div>
 
 	<div id="frame">
-	
+
+	{% block frame_top %}{% endblock %}
 	<div id="outer">
 		
 		<div id="sidebar">
@@ -86,6 +87,7 @@
 	</div> <!-- #outer -->
 	
 	{% block bottom %}{% endblock %}
+	{% block frame_bottom %}{% endblock %}
 	
 	</div><!-- #frame -->
 	
