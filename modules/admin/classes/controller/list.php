@@ -450,6 +450,7 @@ class Controller_List extends Controller_Base {
 		$this->tabs = $list_tabs;
 		
 		// Permissions
+		$this->can_import = method_exists($class_name, 'action_import');
 		$this->can_create = $can_create && $can_edit;
 		$this->can_edit = $can_edit;
 		$this->can_delete = $can_delete;
