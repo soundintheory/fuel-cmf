@@ -4,7 +4,7 @@ namespace CMF\Core;
 
 class Lang extends \Fuel\Core\Lang
 {
-	protected static $to_save = 0;
+	protected static $to_save = array();
 	protected static $loaded = array();
 	
 	public static function get($line, array $params = array(), $default = null, $language = null)
@@ -12,6 +12,7 @@ class Lang extends \Fuel\Core\Lang
 		if (!\CMF::$lang_enabled) return parent::get($line, $params, $default, $language);
 
 		($language === null) and $language = static::get_lang();
+
 		$pos = strpos($line, '.');
 		$group = 'common';
 		if ($pos === false) {
@@ -24,12 +25,14 @@ class Lang extends \Fuel\Core\Lang
 
 		// Try and load from the DB...
 		if (!in_array($group, static::$loaded)) {
-			static::load("$group.db", $group, $language, false, true);
+			static::load("$group.db", $group, $language, true, true);
+			static::$loaded[] = $group;
 		}
 
 		$output = \Arr::get(static::$lines, "$language.$line");
 		if ($output == null) {
-			static::$to_save++;
+			var_dump("nothing for $language.$line");
+			if (!in_array($group, static::$to_save)) static::$to_save[] = $group;
 			static::set($line, $default);
 			static::set($line, $default, null, static::$fallback[0]);
 			$output = $default;
@@ -40,22 +43,38 @@ class Lang extends \Fuel\Core\Lang
 
 	public static function shutdown()
 	{
-		if (static::$to_save !== 0) {
+		if (count(static::$to_save) > 0) {
 
-			foreach (static::$lines as $lang => $groups) {
+			$groups = static::$to_save;
+			$output = array();
 
-				foreach ($groups as $group => $lines) {
+			foreach ($groups as $group) {
 
-					// Save the lines back to the DB
-					static::save("$group.db", $group, $lang);
+				$lft_db = static::load("$group.db", $group, \CMF::lang(), true, true);
+				$rgt_db = static::load("$group.db", $group, static::$fallback[0], true, true);
+				$lft = \Arr::get(static::$lines, \CMF::lang().'.'.$group, array());
+				$rgt = \Arr::get(static::$lines, static::$fallback[0].'.'.$group, array());
+				$lft = \Arr::merge($lft_db, $lft);
+				$rgt = \Arr::merge($rgt_db, $rgt);
 
-					// Also take this opportunity to save the lines to the fallback language
-					static::save("$group.db", $group, static::$fallback[0]);
+				foreach ($rgt as $key => $phrase) {
+					if (!isset($lft[$key])) {
+						$lft[$key] = $phrase;
+					}
 				}
-				
+
+				foreach ($lft as $key => $phrase) {
+					if (!isset($rgt[$key])) {
+						$rgt[$key] = $phrase;
+					}
+				}
+
+				static::save("$group.db", $lft, \CMF::lang());
+				static::save("$group.db", $rgt, static::$fallback[0]);
 			}
 
-			//var_dump('WHHHAAAAT?');
+			exit();
+
 		}
 	}
 	

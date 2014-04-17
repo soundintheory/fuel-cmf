@@ -25,30 +25,42 @@ class Controller_Lang extends Controller_Base {
 	/**
 	 * An editor view for the fuel lang entries
 	 */
-	public function action_terms()
+	public function get_terms()
 	{
-		//var_dump(\Lang::$lines); exit();
-
 		$this->template = 'admin/lang/terms.twig';
 
 		// Determine what's in the left and right cols
 		$this->lang_lft = \Arr::get(\Lang::$fallback, '0', 'en');
 		$this->lang_rgt = \CMF::lang();
 
-		// Find out all out the different groups
-		$groups = \DB::query("SELECT DISTINCT identifier FROM lang")->execute()->as_array();
-		$groups = \Arr::pluck($groups, 'identifier');
+		// Get the common group
+		$result_lft = \Lang::load("common.db", 'common', $this->lang_lft, true, true);
+		$result_rgt = \Lang::load("common.db", 'common', $this->lang_rgt, true, true);
 
-		foreach ($groups as $group) {
+		$this->result_lft = $result_lft;
+		$this->result_rgt = $result_rgt;
+		$this->lines = \Arr::get(\Lang::$lines, \Lang::$fallback[0], array());
+	}
 
-			// Load in both the languages
-			$result_lft = \Lang::load("$group.db", $group, $this->lang_lft, false, true);
-			$result_rgt = \Lang::load("$group.db", $group, $this->lang_rgt, false, true);
+	/**
+	 * An editor view for the fuel lang entries
+	 */
+	public function post_terms()
+	{
+		$terms = \Input::post('terms', array());
 
+		try {
+			foreach ($terms as $lang => $phrases) {
+				\Lang::save('common.db', $phrases, $lang);
+			}
+		} catch (\Exception $e) {
+			// Nothing
 		}
 
-		$this->lines = \Arr::get(\Lang::$lines, \Lang::$fallback[0], array());
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => 'Translated Phrases successfully saved!' ));
 
+		$referrer = \Input::referrer('/admin');
+		return \Response::redirect($referrer);
 	}
 	
 }

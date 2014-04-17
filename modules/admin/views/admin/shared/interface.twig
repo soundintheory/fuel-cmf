@@ -31,6 +31,7 @@
 	                            {% for lang in all_languages() %}
 	                                <li><a href="/admin/lang/set/{{ lang.code }}"><img src="/admin/assets/img/lang/{{ lang.code }}.png" class="lang-flag" /> {{ _('languages.'~lang.code, [], null) }}</a></li>
 	                            {% endfor %}
+	                            <li><a href="/admin/lang/terms"><i class="icon icon-comment"></i> Edit Common Terms...</a></li>
 	                            <li><a href="/admin/languages"><i class="icon icon-globe"></i> Edit Languages...</a></li>
 	                        </ul>
 	                    </li>

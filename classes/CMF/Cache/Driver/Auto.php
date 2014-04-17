@@ -217,7 +217,6 @@ class Auto extends Simple {
 				$num++;
 				
 			}
-			
 		}
 		
 		if (!empty($sql)) {
@@ -242,7 +241,7 @@ class Auto extends Simple {
 		$result['content'] = strval($this->request->response);
 		$result['nocache'] = \CMF\Cache::getNoCacheAreas($result['content']);
 		$result['logs_made'] = \CMF\Log::$logs_made;
-		$result['content-type'] = 'text/html';
+		$result['content-type'] = 'text/html; charset=utf-8';
 		
 		// Store the content type header if it's set
 		$headers = headers_list();
