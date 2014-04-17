@@ -31,7 +31,6 @@ class Lang extends \Fuel\Core\Lang
 
 		$output = \Arr::get(static::$lines, "$language.$line");
 		if ($output == null) {
-			var_dump("nothing for $language.$line");
 			if (!in_array($group, static::$to_save)) static::$to_save[] = $group;
 			static::set($line, $default);
 			static::set($line, $default, null, static::$fallback[0]);
