@@ -801,16 +801,6 @@ class Base extends \Doctrine\Fuel\Model
         return $called_class::$instances[$called_class];
     }
     
-    /**
-     * Called when Fuel's autoloader discovers the model class
-     * 
-     * @return void
-     */
-    public static function _init()
-    {
-        if (!empty($_FILES)) \Upload::prepare();
-    }
-    
     public function settings($name = null, $value = null)
     {
         if ($name !== null) {

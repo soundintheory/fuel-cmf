@@ -24,7 +24,6 @@ Autoloader::add_classes(array(
     // PHPass
     'PasswordHash' => __DIR__.'/vendor/phpass/PasswordHash.php',
     // Overriding core classes
-    'CMF\\Core\\Upload'  => __DIR__.'/classes/Core/Upload.php',
     'CMF\\Core\\View_Twig'  => __DIR__.'/classes/Core/View_Twig.php',
     'Twig_Loader_Filesystem'  => __DIR__.'/classes/Twig/Twig_Loader_Filesystem.php',
     'Doctrine\\ORM\\Mapping\\Column'  => __DIR__.'/classes/Doctrine/Mapping/Column.php',
