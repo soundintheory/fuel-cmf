@@ -617,7 +617,10 @@ function getFormString($form) {
 	
 	var output = '';
 	for (var i = 0; i < formData.length; i++) {
-		output += formData[i].name + '=' + formData[i].value + '&';
+		if ($('[name="'+formData[i].name+'"]').hasClass('ckeditor-cmf')) {
+			formData[i].value = $("<div/>").html(strtolower(formData[i].value)).text();
+		}
+		output += formData[i].name + '=' + $.trim(formData[i].value) + '&';
 	}
 	return output;
 	
