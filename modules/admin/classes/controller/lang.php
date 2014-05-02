@@ -25,10 +25,42 @@ class Controller_Lang extends Controller_Base {
 	/**
 	 * An editor view for the fuel lang entries
 	 */
-	public function action_terms()
+	public function get_terms()
 	{
 		$this->template = 'admin/lang/terms.twig';
-		
+
+		// Determine what's in the left and right cols
+		$this->lang_lft = \Arr::get(\Lang::$fallback, '0', 'en');
+		$this->lang_rgt = \CMF::lang();
+
+		// Get the common group
+		$result_lft = \Lang::load("common.db", 'common', $this->lang_lft, true, true);
+		$result_rgt = \Lang::load("common.db", 'common', $this->lang_rgt, true, true);
+
+		$this->result_lft = $result_lft;
+		$this->result_rgt = $result_rgt;
+		$this->lines = \Arr::get(\Lang::$lines, \Lang::$fallback[0], array());
+	}
+
+	/**
+	 * An editor view for the fuel lang entries
+	 */
+	public function post_terms()
+	{
+		$terms = \Input::post('terms', array());
+
+		try {
+			foreach ($terms as $lang => $phrases) {
+				\Lang::save('common.db', $phrases, $lang);
+			}
+		} catch (\Exception $e) {
+			// Nothing
+		}
+
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => 'Translated Phrases successfully saved!' ));
+
+		$referrer = \Input::referrer('/admin');
+		return \Response::redirect($referrer);
 	}
 	
 }

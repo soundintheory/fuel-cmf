@@ -243,13 +243,16 @@ class CMF
         if (\Fuel::$profiling) {
             \Profiler::console('Language is '.$iso);
         }
+
+        // Add shutdown event to catch unsaved translation strings
+        \Event::register('shutdown', 'Lang::shutdown');
         
         // Set the lang vars
         static::$lang_default = $fallback;
         static::$lang = $iso;
         
         // Redirect to default language if this one isn't configured
-        if (!array_key_exists($iso, static::languages())) {
+        if (!array_key_exists($iso, static::languages()) && array_key_exists($fallback, static::languages())) {
             \Response::redirect(static::link(\Input::uri(), $fallback));
         }
         
@@ -280,10 +283,14 @@ class CMF
         if (static::$languages !== null) return static::$languages;
         if (!static::$lang_enabled) return static::$languages = array(\Lang::get_lang());
         
-        return static::$languages = \CMF\Model\Language::select('item.code', 'item', 'item.code')
-        ->orderBy('item.pos', 'ASC')
-        ->where('item.visible = true')
-        ->getQuery()->getArrayResult();
+        try {
+            return static::$languages = \CMF\Model\Language::select('item.code', 'item', 'item.code')
+            ->orderBy('item.pos', 'ASC')
+            ->where('item.visible = true')
+            ->getQuery()->getArrayResult();
+        } catch (\Exception $e) {
+            return array(\Lang::get_lang());
+        }
     }
     
     /**

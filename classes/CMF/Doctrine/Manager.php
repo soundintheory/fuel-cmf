@@ -11,7 +11,8 @@ use Doctrine\DBAL\Types\Type,
 	Symfony\Component\Validator\DefaultTranslator,
 	Symfony\Component\Validator\Mapping\ClassMetadataFactory as ValidatorMetadataFactory,
     Symfony\Component\Validator\Mapping\Loader\AnnotationLoader as ValidatorAnnotationLoader,
-    Symfony\Component\Validator\ConstraintValidatorFactory;
+    Symfony\Component\Validator\ConstraintValidatorFactory,
+    Doctrine\DBAL\Event\Listeners\MysqlSessionInit;
 
 class DoctrineException extends \FuelException {}
 
@@ -60,6 +61,9 @@ class D extends \Fuel\Doctrine
 		$evm = $em->getEventManager();
 		$reader = $em->getConfiguration()->getMetadataDriverImpl()->getDefaultDriver()->getReader();
 		$extensions = \Arr::get(static::$settings, 'doctrine2.extensions', array());
+
+		// Ensure UTF-8 support
+		$em->getEventManager()->addEventSubscriber(new MysqlSessionInit("utf8", "utf8_unicode_ci"));
 		
 		foreach ($extensions as $extension_class) {
 			if (!is_subclass_of($extension_class, 'CMF\\Doctrine\\Extensions\\Extension'))

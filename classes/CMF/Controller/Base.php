@@ -15,7 +15,7 @@ class Base extends \Controller
     public $data = array();
     public $template = null;
     public $status = 200;
-    public $headers = array();
+    public $headers = array( 'Content-Type' => 'text/html; charset=utf-8' );
     public $model = null;
     
     public function action_index()

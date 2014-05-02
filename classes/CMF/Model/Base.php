@@ -77,6 +77,11 @@ class Base extends \CMF\Doctrine\Model
         'settings' => array( 'visible' => false ),
         'pos' => array( 'visible' => false )
     );
+
+    /**
+     * Associations to join automatically when rendering the list
+     */
+    protected static $_joins = array();
     
     /**
      * Fields to search on this model when performing full text searches.
@@ -167,6 +172,13 @@ class Base extends \CMF\Doctrine\Model
      * @var string
      */
     protected static $_query_fields = array();
+
+    /**
+     * List of associations to filter by on the list page
+     * @see \CMF\Model\Base::list_filters()
+     * @var string
+     */
+    protected static $_list_filters = array();
     
     /**
      * Whether the model is pagination in the admin interface. Uses the $_per_page property.
@@ -543,6 +555,16 @@ class Base extends \CMF\Doctrine\Model
         $called_class = get_called_class();
         return $called_class::$_query_fields;
     }
+
+    /**
+     * @see \CMF\Model\Base::$_list_filters
+     * @return array
+     */
+    public static function list_filters()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_list_filters;
+    }
     
     /**
      * @see \CMF\Model\Base::$_pagination
@@ -631,6 +653,16 @@ class Base extends \CMF\Doctrine\Model
     {
         $called_class = get_called_class();
         return $called_class::$_search;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_joins
+     * @return array
+     */
+    public static function joins()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_joins;
     }
     
     /**

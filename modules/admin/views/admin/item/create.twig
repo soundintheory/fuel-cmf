@@ -99,14 +99,14 @@
 
 {% block admin_css %}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{{ css }}{{ ('?' in css) ? '&' : '?' }}v=12">
+        <link rel="stylesheet" type="text/css" href="{{ css }}{{ ('?' in css) ? '&' : '?' }}v=14">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}{{ ('?' in js) ? '&' : '?' }}v=12"></script>
+        <script type="text/javascript" src="{{ js }}{{ ('?' in js) ? '&' : '?' }}v=14"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

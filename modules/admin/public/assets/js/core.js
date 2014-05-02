@@ -6,6 +6,7 @@ $(document).ready(function() {
 	if ($('.permissions-list').length > 0) { initPermissionsList(); }
 	if ($('#item-tree').length > 0) { initTree(); }
 	if ($('input.datepicker').length > 0 || $('input.datetimepicker').length > 0) { initDatePickers(); }
+	if ($('.fileinput-button').length > 0) { $('.fileinput-button').bootstrapFileInput(); }
 	
 });
 
@@ -402,6 +403,12 @@ function initItemList() {
 		});
 		
 	});
+
+	if ($('.list-filter-select').length > 0) {
+		$('.list-filter-select').on('change', function() {
+			$form = $(this).parents('form.list-filter-form').submit();
+		});
+	}
 	
 	var $table = $('.item-list .table');
 	
@@ -505,29 +512,40 @@ function initItemForm() {
 		    return false;
 	    });
 	});
-	
-	$('.field-type-date').each(function() {
-		
-		$(this).find('input').datepicker({
-	        dateFormat: "dd/mm/yy",
-	        changeMonth: true,
-	        changeYear: true,
-	        yearRange: "c-20:c+20"
-	    });
-		
+
+	// When a new form is added, run it again!
+	$(window).bind('cmf.newform', function(e, data) {
+		data.wrap.each(dateTimePickers);
 	});
-	
-	$('.field-type-datetime').each(function() {
+
+	function dateTimePickers() {
+
+		$(this).find('.field-type-date').each(function() {
+			
+			$(this).find('input').not('[name*="__TEMP__"]').datepicker({
+		        dateFormat: "dd/mm/yy",
+		        changeMonth: true,
+		        changeYear: true,
+		        yearRange: "c-20:c+20"
+		    });
+			
+		});
 		
-		$(this).find('input').datetimepicker({
-	        dateFormat: "dd/mm/yy",
-	        timeFormat: "hh:mm",
-	        changeMonth: true,
-	        changeYear: true,
-	        yearRange: "c-20:c+20"
-	    });
-		
-	});
+		$(this).find('.field-type-datetime').each(function() {
+			
+			$(this).find('input').not('[name*="__TEMP__"]').datetimepicker({
+		        dateFormat: "dd/mm/yy",
+		        timeFormat: "hh:mm",
+		        changeMonth: true,
+		        changeYear: true,
+		        yearRange: "c-20:c+20"
+		    });
+			
+		});
+
+	}
+
+	$('body').each(dateTimePickers);
 	
 	/*
 	$('.datetimepicker input[type="text"]').datetimepicker({
@@ -599,7 +617,10 @@ function getFormString($form) {
 	
 	var output = '';
 	for (var i = 0; i < formData.length; i++) {
-		output += formData[i].name + '=' + formData[i].value + '&';
+		if ($('[name="'+formData[i].name+'"]').hasClass('ckeditor-cmf')) {
+			formData[i].value = $("<div/>").html(strtolower(formData[i].value)).text();
+		}
+		output += formData[i].name + '=' + $.trim(formData[i].value) + '&';
 	}
 	return output;
 	

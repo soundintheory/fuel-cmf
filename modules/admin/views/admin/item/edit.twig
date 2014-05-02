@@ -29,7 +29,7 @@
     
     <div class="inner">
 
-        <h2 class="main-heading pull-left"><i class="icon icon-{{ form.icon }}"></i> Edit {{ form.singular }}</h2>
+        <h2 class="main-heading pull-left"><i class="icon icon-{{ form.icon }}"></i> Edit {{ form.title }}</h2>
         <div class="item-actions-top pull-right">
             {% for action_id, action in actions if action.edit is not defined or action.edit != false %}
             {{ attribute(this, 'action_'~action.type, [action_id, action, model, table_name, 'list']) }}
@@ -53,7 +53,7 @@
             
             <div class="tab-pane {{ loop.index == 1 ? 'active' : '' }}" id="tab-{{ tab.slug }}">
                 
-                {% for group in tab.groups %}
+                {% for group in tab.groups if (group.visible is not defined or group.visible != false) %}
                     
                     <div class="row-fluid">
                     <div class="widget{{ (group.collapsible and tab.groups|length > 1) ? ' collapsible' : '' }}{{ (group.closed and tab.groups|length > 1) ? ' closed' : '' }} span12 {{ group.class }}">
@@ -124,14 +124,14 @@
 
 {% block admin_css %}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{{ css }}{{ ('?' in css) ? '&' : '?' }}v=12">
+        <link rel="stylesheet" type="text/css" href="{{ css }}{{ ('?' in css) ? '&' : '?' }}v=14">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}{{ ('?' in js) ? '&' : '?' }}v=12"></script>
+        <script type="text/javascript" src="{{ js }}{{ ('?' in js) ? '&' : '?' }}v=14"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

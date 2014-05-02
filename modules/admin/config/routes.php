@@ -15,7 +15,7 @@ return array(
 	'admin/upload/video'      => 'admin/upload/video',
 	'admin/phpinfo'           => 'admin/base/phpinfo',
 	'admin/lang/set'          => 'admin/lang/set',
-	'admin/lang/snippets'     => 'admin/lang/snippets',
+	'admin/lang/terms'     	  => 'admin/lang/terms',
 	
 	// Auth actions
 	'admin/login'             => array(array('GET', new Route('admin/auth/login')), array('POST', new Route('admin/auth/perform_login'))),
@@ -26,6 +26,7 @@ return array(
 	// Routes for actions with models... these are quite dynamic so make sure they stay at the bottom!
 	'admin/(:segment)'                          => 'admin/list/index/$1',
 	'admin/(:segment)/saveall'                  => 'admin/list/saveall/$1',
+	'admin/(:segment)/import'                   => 'admin/import/index/$1',
 	'admin/(:segment)/permissions'              => 'admin/list/permissions/$1',
 	'admin/(:segment)/options'                  => 'admin/list/options/$1',
 	'admin/(:segment)/permissions/(:num)'       => 'admin/list/permissions/$1/$2',

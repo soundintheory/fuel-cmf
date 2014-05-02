@@ -1,20 +1,46 @@
-    {% extends interface_template|default("admin/shared/interface.twig") %}
+{% extends interface_template|default("admin/shared/interface.twig") %}
 
-{% block html_title %}Edit {{ singular }} : {{ admin_title }}{% endblock %}
+{% block html_title %}Edit language strings : {{ admin_title }}{% endblock %}
+{% block frame_top %}<form action="" method="post">{% endblock %}
+{% block frame_bottom %}</form>{% endblock %}
 
 {% block main_pane %}
     
     {% include 'admin/shared/alert.twig' %}
     
-    <p>Lang stuff!!</p>
+    <table class="table table-striped table-bordered selectable table-hover{{ sortable ? ' sortable' : '' }}">
+        
+        <thead>
+            <tr>
+                <th><img src="/admin/assets/img/lang/{{ lang_lft }}.png" class="lang-flag" /></th>
+                <th><img src="/admin/assets/img/lang/{{ lang_rgt }}.png" class="lang-flag" /></th>
+            </tr>
+        </thead>
+        
+        <tbody>
+
+            {% for key, row in result_lft %}
+            <tr>
+                <td>
+                    {{ row }}
+                    <input type="hidden" name="terms[{{ lang_lft }}][{{ key }}]" value="{{ row }}" />
+                </td>
+                <td>
+                    <input type="text" name="terms[{{ lang_rgt }}][{{ key }}]" value="{{ result_rgt[key] }}" />
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
 
 {% endblock %}
 
 {% block breadcrumb %}
 
 <li><a href="{{ base_url }}">{{ dashboard_title }}</a> <span class="divider">/</span></li>
-<li><a href="{{ base_url }}/languages">{{ plural }}</a> <span class="divider">/</span></li>
-<li class="active">{{ model.display() }}</li>
+<li><a href="{{ base_url }}/languages">languages</a> <span class="divider">/</span></li>
+<li class="active">terms</li>
 
 {% endblock %}
 
@@ -33,4 +59,14 @@
         var field_settings = {{ form.js_field_settings|json_encode }};
         var field_values = {};
     </script>
+{% endblock %}
+
+{% block bottom %}
+<div id="controls-fixed-bot"><div class="inner">
+
+    <div class="actions pull-right">
+        <button data-loading-text="Saving Phrases..." class="btn btn-large btn-primary submit-item" autocomplete="off" type="submit"><i class="icon-ok icon-white"></i> Save Phrases</button>
+    </div>
+
+</div></div>
 {% endblock %}
