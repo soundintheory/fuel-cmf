@@ -279,7 +279,7 @@ class Image extends File {
         return parent::preProcess($value, $settings, $model);
     }
     
-    public static function getCropUrl($image, $width, $height, $crop_id = 'main')
+    public static function getCropUrl($image, $width, $height, $crop_id = 'main', $crop_mode = 2)
     {
         if (!is_array($image)) return "/image/2/$width/$height/placeholder.png";
         if (is_null($crop_id) || $crop_id === false) $crop_id = '_';
@@ -289,7 +289,7 @@ class Image extends File {
         if ($src === false) return null;
         
         if ($crop === false) {
-            return "/image/2/$width/$height/".$src;
+            return "/image/$crop_mode/$width/$height/".$src;
         }
 
         if (($cw = intval($crop['width'])) && ($ch = intval($crop['height'])) && $width > 0 && $height > 0) {
