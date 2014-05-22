@@ -106,16 +106,19 @@ class Node extends Base
         $cache_id = md5($called_class.serialize($filters).serialize($orderBy).$limit.$offset);
         if (isset($called_class::$_options[$cache_id])) return $called_class::$_options[$cache_id];
         
+        $metadata = $called_class::metadata();
+        $is_root = ($metadata->name == $metadata->rootEntityName);
+
         $results = $called_class::select('item')->leftJoin('item.children', 'children')
         ->addSelect('children')
-        ->where("item.lvl = 1")
-        ->orderBy('item.root, item.lft', 'ASC')
-        ->getQuery()->getResult();
+        ->orderBy('item.root, item.lft', 'ASC');
+        if ($is_root) $results->where('item.lvl = 1');
+        $results = $results->getQuery()->getResult();
         
-        return $called_class::$_options[$cache_id] = static::buildTreeOptions($results);
+        return $called_class::$_options[$cache_id] = static::buildTreeOptions($results, $is_root);
     }
     
-    protected static function buildTreeOptions($tree)
+    protected static function buildTreeOptions($tree, $indent = true)
     {
         $options = array();
         
@@ -123,7 +126,7 @@ class Node extends Base
             
             $thumbnail = $model->thumbnail();
             $display = $model->display();
-            $options[strval($model->id)] = str_repeat(' &#8594;&nbsp; ', $model->lvl-1).' '.($thumbnail !== false ? $thumbnail.' ' : '').(!empty($display) ? $display : '-');
+            $options[strval($model->id)] = ($indent === true ? str_repeat(' &#8594;&nbsp; ', $model->lvl-1) : '').' '.($thumbnail !== false ? $thumbnail.' ' : '').(!empty($display) ? $display : '-');
             
             if (isset($model->children) && $model->children instanceof \Doctrine\Common\Collections\Collection) {
                 
