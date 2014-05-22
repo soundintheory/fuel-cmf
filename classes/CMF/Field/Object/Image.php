@@ -286,7 +286,7 @@ class Image extends File {
         
         $crop = \Arr::get($image, "crop.$crop_id", false);
         $src = \Arr::get($image, 'src', false);
-        if ($src === false) return null;
+        if (!$src) return null;
         
         if ($crop === false) {
             return "/image/$crop_mode/$width/$height/".$src;
