@@ -186,7 +186,7 @@ class ObjectForm
 				$field_content = $field_class::displayForm(null, $field, $model);
 				
 				if (is_array($field_content)) {
-					$this->assets = \Arr::merge($this->assets, $field_content['assets']);
+					$this->assets = \Arr::merge($this->assets, @$field_content['assets'] ? $field_content['assets'] : array());
 					$template[$field_name] = $field_content['content'];
 				} else {
 					$template[$field_name] = $field_content;
