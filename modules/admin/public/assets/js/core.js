@@ -7,6 +7,7 @@ $(document).ready(function() {
 	if ($('#item-tree').length > 0) { initTree(); }
 	if ($('input.datepicker').length > 0 || $('input.datetimepicker').length > 0) { initDatePickers(); }
 	if ($('.fileinput-button').length > 0) { $('.fileinput-button').bootstrapFileInput(); }
+	initCopyFields();
 	
 });
 
@@ -100,6 +101,14 @@ function saveData(table, id, _data) {
 		
 	}
 	
+}
+
+function initCopyFields() {
+
+	$('body').on('click', '.click-copy-field', function() {
+		$(this).select();
+	});
+
 }
 
 function initCollapsibleWidgets() {
