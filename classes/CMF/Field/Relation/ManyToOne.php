@@ -11,6 +11,7 @@ class ManyToOne extends \CMF\Field\Base {
         'create' => true,
         'edit' => true,
         'allow_empty' => true,
+        'filters' => array(),
         'input_attributes' => array(
             'class' => ''
         )
@@ -47,7 +48,7 @@ class ManyToOne extends \CMF\Field\Base {
         $target_prop = ($settings['mapping']['isOwningSide'] === true) ? $settings['mapping']['inversedBy'] : $settings['mapping']['mappedBy'];
         if (empty($target_prop) || is_null($model->id)) $target_prop = false;
         $add_link = '/admin/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
-    	$options = $target_class::options(array(), array(), null, null, null, is_array($settings['select2']));
+    	$options = $target_class::options(\Arr::get($settings, 'filters', array()), array(), null, null, null, is_array($settings['select2']));
         $has_controls = $settings['create'] !== false;
         
         if ($settings['allow_empty']) {
