@@ -1,4 +1,4 @@
-{% extends "admin/shared/interface.twig" %}
+{% extends interface_template|default("admin/shared/interface.twig") %}
 
 {% macro action_link(action_id, action, model, table, context) %}
     {{ include(template_from_string(action.content|default("
