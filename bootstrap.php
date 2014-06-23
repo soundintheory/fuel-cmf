@@ -31,6 +31,7 @@ Autoloader::add_classes(array(
     'CMF\\Core\\Lang'  => __DIR__.'/classes/CMF/Core/Lang.php',
     'CMF\\Core\\Format'  => __DIR__.'/classes/CMF/Core/Format.php',
     'CMF\\Core\\Error'  => __DIR__.'/classes/CMF/Core/Error.php',
+    'CMF\\Core\\HttpException'  => __DIR__.'/classes/CMF/Core/HttpException.php'
 ));
 
 // Sort out the language
