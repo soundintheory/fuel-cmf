@@ -27,7 +27,7 @@
         "hautelook/phpass": "0.3.*",
         "soundintheory/php-sql-parser": "1.*",
         "helios-ag/fm-elfinder-php-connector": "1.1.*",
-        "doctrine/orm": "2.4.3",
+        "doctrine/orm": "2.4.4",
         "doctrine/collections": "1.2",
         "doctrine/dbal": "dev-master as 2.4.2"
     },
