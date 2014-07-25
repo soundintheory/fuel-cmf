@@ -86,7 +86,7 @@
             ];
 
             var extraPlugins = [
-                "autogrow", "codemirror", "oembed"
+                "autogrow", "codemirror"
             ];
 
             var removeButtons = [
@@ -109,9 +109,9 @@
                 autoGrow_onStartup: true,
                 floatSpaceDockedOffsetX: 20,
                 allowedContent: true,
-                oembed_maxWidth: '560',
-                oembed_maxHeight: '315',
-                oembed_WrapperClass: 'embedded-content',
+//                oembed_maxWidth: '560',
+//                oembed_maxHeight: '315',
+//                oembed_WrapperClass: 'embedded-content',
                 bodyClass: 'editor',
                 contentsCss: ['/admin/assets/ckeditor/contents.css'],
                 filebrowserBrowseUrl: '/admin/finder/browser?start=files',
