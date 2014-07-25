@@ -2,41 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9d6faa7f-b38a-4233-9c1c-bf525f0d02b0" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/css/codemirror.min.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/js/beautify.min.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/js/codemirror.addons.min.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/js/codemirror.addons.search.min.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/js/codemirror.min.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/js/codemirror.mode.htmlmixed.min.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/js/codemirror.mode.javascript.min.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/js/codemirror.mode.php.min.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/3024-day.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/3024-night.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/ambiance-mobile.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/ambiance.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/base16-dark.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/base16-light.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/blackboard.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/cobalt.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/eclipse.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/elegant.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/erlang-dark.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/lesser-dark.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/mbo.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/midnight.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/monokai.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/neat.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/night.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/paraiso-dark.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/paraiso-light.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/rubyblue.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/solarized.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/the-matrix.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/tomorrow-night-eighties.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/twilight.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/vibrant-ink.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/xq-dark.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/codemirror/theme/xq-light.css" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/colordialog/dialogs/colordialog.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/div/dialogs/div.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/fakeobjects/images/spacer.gif" afterPath="" />
@@ -55,7 +20,6 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/iframe/dialogs/iframe.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/iframe/images/placeholder.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/liststyle/dialogs/liststyle.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/oembed/libs/jquery.oembed.min.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/pagebreak/images/pagebreak.gif" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/preview/preview.html" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/showblocks/images/block_address.png" afterPath="" />
@@ -167,7 +131,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/wsc/dialogs/ciframe.html" afterPath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/wsc/dialogs/ciframe.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/ckeditor.js" afterPath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/ckeditor.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/admin/public/assets/js/fields/ckeditor.js" afterPath="$PROJECT_DIR$/modules/admin/public/assets/js/fields/ckeditor.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/config.js" afterPath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/config.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/contents.css" afterPath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/contents.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/a11yhelp/dialogs/lang/cs.js" afterPath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/a11yhelp/dialogs/lang/cs.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/specialchar/dialogs/lang/cs.js" afterPath="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/plugins/specialchar/dialogs/lang/cs.js" />
@@ -300,11 +263,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ckeditor.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ckeditor.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/modules/admin/public/assets/js/fields/ckeditor.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1207" max-vertical-offset="2958">
-              <caret line="168" column="11" selection-start-line="168" selection-start-column="11" selection-end-line="168" selection-end-column="11" />
+            <state vertical-scroll-proportion="0.86099756" vertical-offset="1106" max-vertical-offset="3383">
+              <caret line="103" column="28" selection-start-line="103" selection-start-column="28" selection-end-line="103" selection-end-column="28" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -312,11 +275,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/modules/admin/public/assets/ckeditor/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.1529027" vertical-offset="0" max-vertical-offset="1223">
-              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="36" selection-end-column="61" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="748">
+              <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -335,9 +298,9 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/modules/admin/public/assets/js/fields/ckeditor.js" />
         <option value="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/ckeditor.js" />
         <option value="$PROJECT_DIR$/modules/admin/public/assets/ckeditor/config.js" />
+        <option value="$PROJECT_DIR$/modules/admin/public/assets/js/fields/ckeditor.js" />
       </list>
     </option>
   </component>
@@ -506,6 +469,40 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fields" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="assets" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="ckeditor" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -528,7 +525,133 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="assets" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ckeditor" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="skins" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="moono" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="assets" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ckeditor" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="plugins" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="classes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="classes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="classes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CMF" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fuel-cmf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="classes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CMF" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Controller" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -621,13 +744,19 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/modules/admin/public/assets/js/fields/ckeditor.js">
+    <entry file="file://$PROJECT_DIR$/classes/CMF/Controller/Base.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1207" max-vertical-offset="3383">
-          <caret line="168" column="11" selection-start-line="168" selection-start-column="11" selection-end-line="168" selection-end-column="11" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.79532164" vertical-offset="170" max-vertical-offset="3230">
+          <caret line="66" column="12" selection-start-line="66" selection-start-column="12" selection-end-line="66" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composer.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.63909775" vertical-offset="0" max-vertical-offset="1224">
+          <caret line="45" column="31" selection-start-line="45" selection-start-column="31" selection-end-line="45" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -635,52 +764,25 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="92599">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="[...]" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="[...]" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{&quot;requires&quot;: &quot;dialog&quot;...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{&quot;requires&quot;: &quot;clipboard&quot;...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1405433392000" expanded="true" signature="-1:-1" placeholder="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/modules/admin/public/assets/ckeditor/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1529027" vertical-offset="0" max-vertical-offset="1223">
-          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="36" selection-end-column="61" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="748">
+          <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/admin/public/assets/js/fields/ckeditor.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.86099756" vertical-offset="1106" max-vertical-offset="3383">
+          <caret line="103" column="28" selection-start-line="103" selection-start-column="28" selection-end-line="103" selection-end-column="28" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

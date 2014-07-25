@@ -101,7 +101,7 @@
             // "about", "a11yhelp", "bidi", "colorbutton", "colordialog", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo"
 
             var config = {
-                skin: 'moonocolor',
+                skin: 'moono',
                 removeButtons: removeButtons.join(','),
                 removePlugins: removePlugins.join(','),
                 extraPlugins: extraPlugins.join(','),
