@@ -85,6 +85,7 @@ class Controller_Assets extends \Controller {
 	 */
 	public function serveFile($path, $mime = null)
 	{
+        if(!is_file($path)) return false;
 	    $file_last_modified = filemtime($path);
 		$header_modified_since = strtotime(\Input::server('HTTP_IF_MODIFIED_SINCE', 0));
 		ob_clean();
