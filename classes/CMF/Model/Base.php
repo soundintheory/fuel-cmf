@@ -610,9 +610,10 @@ class Base extends \CMF\Doctrine\Model
      * @see \CMF\Model\Base::$_sort_process
      * @return array
      */
-    public static function sortProcess()
+    public static function sortProcess($value = null)
     {
         $called_class = get_called_class();
+        if ($value !== null) $called_class::$_sort_process = $value;
         return $called_class::$_sort_process;
     }
     

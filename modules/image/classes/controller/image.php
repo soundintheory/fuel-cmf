@@ -153,7 +153,7 @@ class Controller_Image extends \Controller {
 		$output = $this->_init_image(4, $grid."_".$w."x".$h);
 		if (!is_null($output)) return $output;
 		
-		$bgcolor = '#'.$this->param('bgcolor', 'fff');
+		$bgcolor = '#'.\Input::param('bgcolor', 'fff');
 		//var_dump($this->path);
 		//exit;
 		$image_size = getimagesize($this->path);
@@ -224,7 +224,7 @@ class Controller_Image extends \Controller {
 		$w = intval($w);
 		$h = intval($h);
 		//this isnt yet set to be passed in
-		$bgcolor = '#'.$this->param('bgcolor', 'fff');
+		$bgcolor = '#'.\Input::param('bgcolor', 'fff');
 
 		if ($w === 0 || $h === 0) {
 			$this->mode = '1';
@@ -257,7 +257,7 @@ class Controller_Image extends \Controller {
 		        
 		    break;
 		    case 'pr':
-		        
+		    	
 		        \Image::load($this->path)
 		        ->config('bgcolor', $bgcolor)
         		->resize($w, $h, true, true)
