@@ -39,6 +39,23 @@
 
             }
         });
+        function hideCkeditor(ckeditor){
+            var parent = ckeditor.parent();
+            var showMe = $('<a>', {'href':'#', 'text':'Show Editor'});
+            parent.hide();
+            showMe.on('click', function(e){
+                e.preventDefault();
+                parent.show();
+                showMe.remove();
+            });
+            parent.after(showMe);
+
+
+        }
+        $('table .ckeditor-cmf').each(function(){
+            hideCkeditor($(this));
+        });
+
     });
 
     function initItem() {
