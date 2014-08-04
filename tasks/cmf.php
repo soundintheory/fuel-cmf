@@ -7,7 +7,14 @@ use CMF\Utils\Installer,
 
 class Cmf
 {
-    
+    /**
+     * Runs the CMF permissions kick
+     */
+    public function updatePermissions(){
+        // Kick the permissions and get the active classes
+        \CMF\Auth::create_permissions();
+    }
+
     /**
      * Runs the CMF installer
      */
