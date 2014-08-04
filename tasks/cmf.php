@@ -8,10 +8,15 @@ use CMF\Utils\Installer,
 class Cmf
 {
     /**
-     * Runs the CMF permissions kick
+     * Shortcut for deployment, do stuff yeah
      */
-    public function updatePermissions(){
+    public function deploy(){
+        // Run previous Migrations
+        \Cli::write("\tRunning previous migrations...", 'green');
+        Migrate::latest('default', 'app');
+
         // Kick the permissions and get the active classes
+        \Cli::write("\tUpdating Permissions...", 'green');
         \CMF\Auth::create_permissions();
     }
 
