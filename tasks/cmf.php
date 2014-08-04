@@ -13,7 +13,7 @@ class Cmf
     public function deploy(){
         // Run previous Migrations
         \Cli::write("\tRunning previous migrations...", 'green');
-        Migrate::latest('default', 'app');
+        \Migrate::latest('default', 'app');
 
         // Kick the permissions and get the active classes
         \Cli::write("\tUpdating Permissions...", 'green');
