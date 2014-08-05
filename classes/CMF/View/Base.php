@@ -11,7 +11,7 @@ class Base extends \ViewModel
         // Maybe set the template...
         $template = $this->template();
         if ($template !== null) $view = $template;
-        
+
         parent::__construct($method, $auto_filter, $view);
     }
     
@@ -144,6 +144,8 @@ class Base extends \ViewModel
         $this->uri = empty($uri) ? '/' : $uri;
         $this->view = $this;
         $this->settings = $this->getSettings();
+        //set environment as variable
+        $this->env = Fuel::$env;
     }
     
     public function template()
