@@ -145,7 +145,7 @@ class Base extends \ViewModel
         $this->view = $this;
         $this->settings = $this->getSettings();
         //set environment as variable
-        $this->env = Fuel::$env;
+        $this->env = \Fuel::$env;
     }
     
     public function template()
