@@ -34,6 +34,9 @@ class Controller_Item extends Controller_Base {
 			$default_redirect = \Uri::base(false)."admin/$table_name";
 			\Response::redirect($default_redirect, 'location');
 		}
+
+		$root_class = $metadata->rootEntityName;
+		$root_metadata = $root_class::metadata();
 	    
 	    // Create a fresh model
 	    $model = new $class_name();
@@ -43,6 +46,8 @@ class Controller_Item extends Controller_Base {
 	    $this->form = new ModelForm($metadata, $model);
 		$this->static = $class_name::_static();
 		$this->table_name = $metadata->table['name'];
+		$this->root_table_name = $root_metadata->table['name'];
+		$this->root_plural = $root_class::plural();
 		$this->model = $model;
 		$this->template = 'admin/item/create.twig';
 		$this->qs = \Uri::build_query_string(\Input::get());
@@ -76,12 +81,17 @@ class Controller_Item extends Controller_Base {
 		if (!$can_edit) {
 			return $this->show403("You're not allowed to edit this ".strtolower($class_name::singular())."!");
 		}
+
+		$root_class = $metadata->rootEntityName;
+		$root_metadata = $root_class::metadata();
 	    
 	   	// Get stuff ready for the template
 	   	$this->actions = $class_name::actions();
 	   	$this->form = new ModelForm($metadata, $model);
 		$this->static = $class_name::_static();
 		$this->table_name = $metadata->table['name'];
+		$this->root_table_name = $root_metadata->table['name'];
+		$this->root_plural = $root_class::plural();
 		$this->model = $model;
 		$this->js['model'] = $class_name;
 		$this->js['item_id'] = $model->id;
