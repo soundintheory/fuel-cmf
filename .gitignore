@@ -2,3 +2,4 @@
 /fuel
 *.cache
 .idea/workspace.xml
+.idea/fuel-cmf.iml
