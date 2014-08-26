@@ -1,4 +1,4 @@
-{% extends "admin/shared/interface.twig" %}
+{% extends interface_template|default("admin/shared/interface.twig") %}
 
 {% block html_title %}CMF Item Edit Page{% endblock %}
 {% block main_class %}controls-bot{% endblock %}

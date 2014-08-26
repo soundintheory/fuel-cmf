@@ -129,13 +129,23 @@
             
             $srcInput.appendTo($el).val(val);
             if (val == null || val == undefined || val == '') {
+
                 setStatus('No file selected...');
                 $el.removeClass('populated');
+                if ($wrap.find('.click-copy-field').length > 0) {
+                    $wrap.find('.click-copy-field').addClass('hide');
+                }
+
             } else {
+
                 var pathParts = val.split('/'),
                 displayName = pathParts[pathParts.length-1];
                 $filePreview.html('<a href="/' + val + '" target="_blank">' + fileNameFormat(displayName) + '</a>');
                 $el.addClass('populated');
+                if ($wrap.find('.click-copy-field').length > 0) {
+                    $wrap.find('.click-copy-field').removeClass('hide').val($wrap.find('.click-copy-field').attr('data-base')+val);
+                }
+
             }
             
             if (save === true && isFunction(saveData)) {

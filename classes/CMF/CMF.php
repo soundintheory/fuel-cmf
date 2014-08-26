@@ -504,7 +504,7 @@ class CMF
             static::$path = str_replace(static::$module.'/', '', static::$path);
         }
         
-		$viewmodel_class = ucfirst(static::$module).'\\View_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', static::$path)));
+		$viewmodel_class = ucfirst(static::$module).'\\View_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', str_replace('-', '', static::$path) )));
 		
 		if (class_exists($viewmodel_class)) return $viewmodel_class;
         return false;

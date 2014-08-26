@@ -615,6 +615,16 @@ abstract class Model
         
         return $this->array_data = $output;
     }
+
+    public function getClass()
+    {
+        $class = get_class($this);
+        if (strpos($class, 'Proxy') !== false) {
+            $class = get_parent_class($this);
+        }
+
+        return $class;
+    }
     
     /**
      * Magic methods for getProperty(), setProperty(), addAssociation(), removeAssociation()

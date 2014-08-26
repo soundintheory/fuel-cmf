@@ -76,7 +76,7 @@ class Link extends Object {
         
         $options = array();
         $target_class = 'CMF\\Model\\URL';
-        $filters = array();
+        $filters = \Arr::get($settings, 'filters', array());
         $tree_types = array();
 
         $types = $target_class::select('item.type')->distinct()->orderBy('item.type', 'ASC');
@@ -140,6 +140,7 @@ class Link extends Object {
                     foreach ($filters as $filter)
                     {
                         $query = $query->andWhere('item.'.$filter);
+                        var_dump('WHERE item.'.$filter);
                     }
                 }
                 

@@ -1,4 +1,4 @@
-{% extends "admin/shared/interface.twig" %}
+{% extends interface_template|default("admin/shared/interface.twig") %}
 
 {% macro action_link(action_id, action, model, table, context) %}
     {{ include(template_from_string(action.content|default("
@@ -110,7 +110,7 @@
                         {% endif %}
                             {% set editable = can_edit and (item_permissions[row.id]|length == 0 or 'edit' in item_permissions[row.id]) %}
                             {% set deletable = can_delete and (item_permissions[row.id]|length == 0 or 'delete' in item_permissions[row.id]) %}
-                            {% set edit_link = "/admin/"~table_name~"/"~row.get('id')~"/edit" %}
+                            {% set edit_link = "/admin/"~row.metadata().table.name~"/"~row.get('id')~"/edit" %}
                              {% set duplicate_link = "/admin/"~table_name~"/"~row.get('id')~"/duplicate" %}
                             {% for column in columns %}
                                 {% if column.type == 'handle' %}
@@ -138,7 +138,6 @@
                                 {% for action_id, action in actions if action.list is not defined or action.list != false %}
                                 {{ attribute(this, 'action_'~action.type, [action_id, action, row, table_name, 'list']) }}
                                 {% endfor %}
-                                {% if can_create %}<a class="btn btn-small btn-icon" href="{{ duplicate_link }}" rel="tooltip" title="Duplicate"><i class="icon-copy"></i></a>{% endif %} 
                                 {% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a>{% endif %} 
                                 {% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i></a>{% endif %}
                             </span></td>

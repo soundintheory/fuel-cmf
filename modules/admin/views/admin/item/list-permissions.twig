@@ -1,4 +1,4 @@
-{% extends "admin/shared/interface.twig" %}
+{% extends interface_template|default("admin/shared/interface.twig") %}
 
 {% block html_title %}{{ singular }} permissions : {{ admin_title }}{% endblock %}
 
