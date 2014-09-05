@@ -12,7 +12,8 @@ class DateTime extends Date {
     
     public static function process($value, $settings, $model)
     {
-        if (!($value instanceof \DateTime)) $value = \DateTime::createFromFormat('d/m/Y H:i', $value);
+        $settings = static::settings($settings);
+        if (!($value instanceof \DateTime)) $value = \DateTime::createFromFormat(\Arr::get($settings, 'format', 'd/m/Y H:i'), $value);
         if ($value === false) $value = new \DateTime();
         return $value;
     }
