@@ -10,7 +10,7 @@ class CKEditor extends Textarea {
         ),
         'minHeight' => 300,
         'stylesSet' => '/assets/js/editor.js',
-        'contentsCss' => '/assets/css/screen.scss'
+        'contentsCss' => '/assets/css/screen.min.css'
     );
     
     public function get_type()
