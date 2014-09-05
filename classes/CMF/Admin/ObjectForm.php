@@ -186,7 +186,17 @@ class ObjectForm
 				$field_content = $field_class::displayForm(null, $field, $model);
 				
 				if (is_array($field_content)) {
-					$this->assets = \Arr::merge($this->assets, $field_content['assets']);
+					$this->assets = \Arr::merge($this->assets, @$field_content['assets'] ? $field_content['assets'] : array());
+
+					if (isset($field_content['js_data'])) {
+						$merge = isset($field_content['merge_data']) && $field_content['merge_data'] === true;
+						if ($merge === true) {
+							$this->js_field_settings = array_merge($this->js_field_settings, $field_content['js_data']);
+						} else {
+							$this->js_field_settings[$field['mapping']['fieldName']] = $field_content['js_data'];
+						}
+					}
+
 					$template[$field_name] = $field_content['content'];
 				} else {
 					$template[$field_name] = $field_content;
@@ -205,9 +215,28 @@ class ObjectForm
 					
 					$field = $this->settings['fields'][$field_name];
 					$field_class = $field['field'];
-					$field['mapping']['fieldName'] = $this->settings['mapping']['fieldName'].'[__NUM__]['.$field['original_name'].']';
+					$field['mapping']['fieldName'] = '__TEMP__'.$this->settings['mapping']['fieldName'].'[__NUM__]['.$field['original_name'].']';
+
+					// Add the field to the template
+					$field_content = $field_class::displayForm($value, $field, $model);
 					
-					$row_fields[$field_name] = $field_class::displayForm($value, $field, $model);
+					if (is_array($field_content)) {
+						$this->assets = \Arr::merge($this->assets, @$field_content['assets'] ? $field_content['assets'] : array());
+
+						if (isset($field_content['js_data'])) {
+							$merge = isset($field_content['merge_data']) && $field_content['merge_data'] === true;
+							if ($merge === true) {
+								$this->js_field_settings = array_merge($this->js_field_settings, $field_content['js_data']);
+							} else {
+								$this->js_field_settings[$field['mapping']['fieldName']] = $field_content['js_data'];
+							}
+						}
+
+						$row_fields[$field_name] = $field_content['content'];
+
+					} else {
+						$row_fields[$field_name] = $field_content;
+					}
 				}
 				
 				$rows[] = $row_fields;

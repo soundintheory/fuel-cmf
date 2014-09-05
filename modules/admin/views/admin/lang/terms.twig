@@ -45,6 +45,7 @@
 {% endblock %}
 
 {% block admin_css %}
+    {{ parent() }}
     {% for css in form.assets.css %}
         <link rel="stylesheet" type="text/css" href="{{ css }}">
     {% endfor %}

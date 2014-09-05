@@ -117,12 +117,13 @@
 {% block breadcrumb %}
 
 <li><a href="{{ base_url }}">{{ dashboard_title }}</a> <span class="divider">/</span></li>
-{% if not static %}<li><a href="/admin/{{ table_name }}">{{ form.plural }}</a> <span class="divider">/</span></li>{% endif %}
+<li><a href="/admin/{{ root_table_name }}">{{ root_plural }}</a> <span class="divider">/</span></li>
 <li class="active">{{ model.display() }}</li>
 
 {% endblock %}
 
 {% block admin_css %}
+    {{ parent() }}
     {% for css in form.assets.css %}
         <link rel="stylesheet" type="text/css" href="{{ css }}{{ ('?' in css) ? '&' : '?' }}v=14">
     {% endfor %}

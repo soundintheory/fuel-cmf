@@ -44,7 +44,7 @@ class Extension extends Twig_Extension
 			'str_repeat' => new Twig_Function_Function('str_repeat'),
 			'phpinfo' => new Twig_Function_Function('phpinfo'),
 			'basename' => new Twig_Function_Function('basename'),
-			'uri' => new Twig_Function_Function('Input::uri'),
+			'uri' => new Twig_Function_Method($this, 'uri'),
 			'base' => new Twig_Function_Function('Uri::base'),
 			'crop_url' => new Twig_Function_Function('CMF\\Field\\Object\\Image::getCropUrl'),
 			'link' => new Twig_Function_Function('CMF::link'),
@@ -63,6 +63,11 @@ class Extension extends Twig_Extension
 			'get_options_select' => new Twig_Function_Method($this, 'getOptionsSelect')
 
 		);
+	}
+
+	public function uri()
+	{
+		return '/'.trim(\Input::uri(), '/');
 	}
 	
 	public function getFilters()

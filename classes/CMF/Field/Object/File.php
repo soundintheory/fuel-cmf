@@ -12,6 +12,7 @@ class File extends Object {
         'widget' => false,
         'widget_icon' => 'file',
         'sub_group' => true,
+        'show_url' => false,
         'fields' => array(
             'src' => array( 'title' => 'File', 'type' => 'string' ),
             'last_modified' => array( 'type' => 'string' )
