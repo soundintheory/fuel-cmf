@@ -20,9 +20,11 @@ class Base extends \ViewModel
         return $this->_view;
     }
     
-    protected function pageTree($model = 'Model_Page_Base', $label = null, $active_url = null)
+    protected function pageTree($model = 'Model_Page_Base', $label = null, $active_url = null, $extra_fields = null)
     {
-        $nodes = $model::select('page.id, page.title, page.menu_title, page.lvl, page.lft, page.rgt, url.url, url.slug', 'page')
+        $extra_fields_str = (!is_null($extra_fields) ? ', page.'.implode(', page.', $extra_fields) : '');
+
+        $nodes = $model::select('page.id, page.title, page.menu_title, page.lvl, page.lft, page.rgt'.$extra_fields_str.', url.url, url.slug', 'page')
         ->leftJoin('page.url', 'url')
         ->where('page.lvl > 0')
         ->andWhere('page.visible = true')
