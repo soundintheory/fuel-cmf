@@ -71,8 +71,8 @@ class Base extends \CMF\Doctrine\Model
      */
     protected static $_fields = array(
     	'id' => array( 'visible' => false ),
-    	'created_at' => array( 'readonly' => true, 'visible' => false ),
-    	'updated_at' => array( 'readonly' => true, 'visible' => false ),
+    	'created_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
+    	'updated_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
         'visible' => array( 'visible' => false ),
         'settings' => array( 'visible' => false ),
         'pos' => array( 'visible' => false )

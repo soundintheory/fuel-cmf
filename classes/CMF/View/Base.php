@@ -47,7 +47,8 @@ class Base extends \ViewModel
         
     }
     
-    protected function getSettings(){
+    protected function getSettings()
+    {
         $settings = \Model_Settings::select('item')
         ->setMaxResults(1)
         ->getQuery()->getResult();
@@ -75,7 +76,7 @@ class Base extends \ViewModel
                 
                 if ($node['active'] || $node['parent_active']) {
 
-                    $levelid = $label ? $label.'_level'.$level : 'level'.$level;
+                    $levelid = $label ? $label.'_level'.$newlevel : 'level'.$newlevel;
                     $parent = $node;
                     unset($parent['__children']);
                     if ($node['parent_active'] && $node['active']) $node['active'] = false;
