@@ -331,7 +331,11 @@ abstract class Model
                 } else if (is_numeric($value)) {
                     $association = $target_class::find($value);
                 } else if (is_array($value)) {
-                    $association = (isset($this->$field) && $this->$field instanceof $target_class) ? $this->$field : new $target_class();
+                    if (($aid = \Arr::get($value, 'id')) && is_numeric($aid)) {
+                        $association = $target_class::find($aid);
+                    } else {
+                        $association = (isset($this->$field) && $this->$field instanceof $target_class) ? $this->$field : new $target_class();
+                    }
                 } else {
                     $this->$field = $association = null;
                     return;
@@ -591,10 +595,10 @@ abstract class Model
             $value = $this->$field_name;
             switch ($field['type']) {
                 case 'date':
-                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format('d/m/Y H:i:s') : strval($value);
+                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format('d/m/Y') : strval($value);
                     
                 case 'datetime':
-                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format('d M Y') : strval($value);
+                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format('d/m/Y H:i') : strval($value);
                     break;
                 
                 case 'object':
