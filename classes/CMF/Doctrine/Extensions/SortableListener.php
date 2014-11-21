@@ -65,7 +65,7 @@ class SortableListener implements EventSubscriber
         
         if (!$changed) return;
         
-        $new_pos = intval($changeset['pos'][1]);
+        $new_pos = array_key_exists('pos', $changeset) ? intval($changeset['pos'][1]) : $entity->pos;
         $group_value = ($has_group) ? $entity->get($group_by) : '__ungrouped__';
         if ($has_group) $group_value = $entity->sortGroupId($group_value);
         
