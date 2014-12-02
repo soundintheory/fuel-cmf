@@ -127,7 +127,6 @@
             } else {
                 $file.remove();
             }
-            
         }
         
         function uploadHandler(evt, id, fileName) {
@@ -232,7 +231,7 @@
 			updatePositions();
 			
 			// So all the various plugins can run their magic on relevant inputs...
-			$(window).trigger('cmf.newform', { 'wrap':$itemWrap, 'data':newFormData });
+			$wrap.trigger('cmf.newform', { 'wrap':$itemWrap, 'data':newFormData });
 			
 		}
 		
@@ -261,13 +260,16 @@
 			
 			// Check if it's visible to start with
 			if ($visibleInput.length > 0) { updateVisible(); }
+
+			// Store the form in the element's data
+			$self.data('form', $form);
 			
 			// Opens the modal with the item's form inside
 			function onEditClick() {
 				
 				if (formInitted === false) {
 					// So all the various plugins can run their magic on relevant inputs...
-					$(window).trigger('cmf.newform', { 'wrap':$form });
+					$wrap.trigger('cmf.newform', { 'wrap':$form });
 					formInitted = true;
 					
 				}
@@ -289,13 +291,14 @@
 				} else {
 					$self.addClass('visible-false');
 				}
+				$wrap.trigger('cmf.updateform');
 			}
 			
 			function showHide() {
 				
 				if (formInitted === false) {
 					// So all the various plugins can run their magic on relevant inputs...
-					$(window).trigger('cmf.newform', { 'wrap':$form });
+					$wrap.trigger('cmf.newform', { 'wrap':$form });
 					formInitted = true;
 					
 				}
@@ -331,6 +334,7 @@
 			
 			$selectedItems.remove();
 			updateSelected();
+			$wrap.trigger('cmf.removeform');
 			return false;
 			
 		}
@@ -427,7 +431,8 @@
 				}
 				
 			});
-			
+
+			$wrap.trigger('cmf.updateform');
 		}
 		
 		function initSorting() {

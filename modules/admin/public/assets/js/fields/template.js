@@ -36,14 +36,18 @@
 			
 			self.data = {};
 			
-			self.addField = function(fieldName, dotNotation) {
+			self.addField = function(fieldName, dotNotation, defaultValue) {
 				if (typeof(fields[fieldName]) != 'undefined') { return true; }
 				var field = $('input[name="' + fieldName + '"], textarea[name="' + fieldName + '"]')
 				.attr('data-dot-notation', dotNotation);
 				
-				jQuery.obj(dotNotation, 'null', true, self.data);
-				
-				if (field.length === 0) { return false; }
+				if (field.length === 0) {
+					//jQuery.obj(dotNotation, (defaultValue === null ? '{'+dotNotation+'}' : defaultValue), true, self.data);
+					return false;
+				}
+
+				jQuery.obj(dotNotation, '{'+dotNotation+'}', true, self.data);
+
 				field.change(onFieldChange).keyup(onFieldChange);
 				fields[fieldName] = field;
 				
@@ -58,17 +62,18 @@
 			
 			function onFieldChange() {
 				var dotNotation = $(this).attr('data-dot-notation'),
-				value = $(this).val();
+				value = $(this).val(),
+				fieldName = $(this).attr('name');
 				jQuery.obj(dotNotation, value, true, self.data);
 				for (var i = 0; i < listeners.length; i++) {
-					if (typeof(listeners[i]) == 'function') {
-						listeners[i]();
+					if (typeof(listeners[i].func) == 'function' && listeners[i].fieldName != fieldName) {
+						listeners[i].func();
 					}
 				}
 			}
 			
-			self.addListener = function(func) {
-				listeners.push(func);
+			self.addListener = function(func, fieldName) {
+				listeners.push({ func:func, fieldName:fieldName });
 			}
 			
 		}
@@ -93,7 +98,7 @@
 			initTokens();
 
 			if (valid) {
-				templateFields.addListener(updateText);
+				templateFields.addListener(updateText, fieldName);
 				templateFields.update();
 			} else {
 				//$input.val('woo');
@@ -109,7 +114,8 @@
 					if (cToken.type == 'output') {
 						
 						var inputName = '',
-						dotNotation = '';
+						dotNotation = '',
+						defaultValue = null;
 						
 						for (var j = 0; j < cToken.stack.length; j++) {
 							
@@ -119,13 +125,17 @@
 							} else if (cToken.stack[j].type == 'Twig.expression.type.key.period') {
 								inputName += '[' + cToken.stack[j].key + ']';
 								dotNotation += '.' + cToken.stack[j].key;
+							} else if (cToken.stack[j].type == 'Twig.expression.type.filter' && cToken.stack[j].value == 'default') {
+								if (cToken.stack[j].params && cToken.stack[j].params.length > 1) {
+									defaultValue = cToken.stack[j].params[1].value;
+								}
 							}
 							
 						}
 						
-						if (!templateFields.addField(inputName, dotNotation)) {
-							valid = false;
-							break;
+						if (!templateFields.addField(inputName, dotNotation, defaultValue)) {
+							//valid = false;
+							//break;
 						}
 						
 					}
