@@ -51,6 +51,7 @@ class Controller_List extends Controller_Base {
 		$pagination = $class_name::pagination();
 		$per_page = $class_name::per_page();
 		$sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
+		$sort_process = $class_name::sortProcess();
 		
 		$excluded_ids = array();
 		$fields = \Admin::getFieldSettings($class_name);
@@ -457,6 +458,7 @@ class Controller_List extends Controller_Base {
 		$this->sortable = $sortable && $can_edit;
 		$this->sort_group = $sort_group;
 		$this->tabs = $list_tabs;
+		$this->sort_process = $sort_process;
 		
 		// Permissions
 		$this->can_import = method_exists($class_name, 'action_import');
