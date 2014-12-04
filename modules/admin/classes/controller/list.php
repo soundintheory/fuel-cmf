@@ -51,6 +51,7 @@ class Controller_List extends Controller_Base {
 		$pagination = $class_name::pagination();
 		$per_page = $class_name::per_page();
 		$sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
+		$sort_process = $class_name::sortProcess();
 		
 		$excluded_ids = array();
 		$fields = \Admin::getFieldSettings($class_name);
@@ -225,9 +226,18 @@ class Controller_List extends Controller_Base {
 
 					$filter_class = $metadata->getAssociationTargetClass($filter_field);
 					$filter_name = \Arr::get($fields, "$filter_field.title", '');
+					$filter_options = $filter_class::options();
+					$filter_val = \Input::get($filter_field);
+
+					if ($filter_field != $sort_group) {
+						$filter_options = array( '' => 'All' ) + $filter_options;
+					} else if (!$filter_val) {
+						$filter_val = key($filter_options);
+					}
+
 					$filters[$filter_field] = array(
 						'label' => 'Show '.strtolower($filter_name).':',
-						'options' => array( '' => 'All' ) + $filter_class::options()
+						'options' => $filter_options
 					);
 
 					if (!in_array($filter_field, $joins) && !array_key_exists($filter_field, $manual_joins)) {
@@ -235,7 +245,7 @@ class Controller_List extends Controller_Base {
 						$joins[] = $filter_field;
 					}
 
-					$filter_val = \Input::get($filter_field);
+					
 					if (!empty($filter_val)) {
 						$qb->andWhere("$filter_field = ".$filter_val);
 					}
@@ -448,6 +458,7 @@ class Controller_List extends Controller_Base {
 		$this->sortable = $sortable && $can_edit;
 		$this->sort_group = $sort_group;
 		$this->tabs = $list_tabs;
+		$this->sort_process = $sort_process;
 		
 		// Permissions
 		$this->can_import = method_exists($class_name, 'action_import');
