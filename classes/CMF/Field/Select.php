@@ -56,7 +56,7 @@ class Select extends Base {
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
-        $options = \CMF::getOptions(get_class($model), $settings['mapping']['fieldName'], isset($settings['options']) ? $settings['options'] : array());
+        $options = \CMF::getOptions(get_class($model), $settings['mapping']['columnName'], isset($settings['options']) ? $settings['options'] : array());
         
         if (!empty($options) && !\Arr::is_assoc($options) && $settings['use_key'] !== true) {
             $options = array_combine($options, $options);

@@ -67,7 +67,7 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
         	];
         	
         	var extraPlugins = [
-        		"autogrow", "codemirror", "oembed"
+        		"autogrow", "codemirror", "oembed", "templates"
         	];
         	
         	var removeButtons = [
@@ -100,6 +100,7 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
         		filebrowserWindowFeatures: 'location=no,menubar=no,toolbar=no,dependent=yes,minimizable=no,modal=yes,alwaysRaised=yes,resizable=no,scrollbars=no',
         		filebrowserWindowWidth: '60%',
         		filebrowserWindowHeight: 600,
+                baseFloatZIndex: 10040,
         		codemirror: {
         		    theme: 'default',
         		    lineNumbers: true,
@@ -138,6 +139,12 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
         	if (typeof(settings['contentsCss']) != 'undefined') {
         		config.contentsCss.unshift(settings['contentsCss']);
         	}
+
+            if (typeof(settings['templatesFiles']) != 'undefined' && settings['templatesFiles']) {
+                config.templates = 'default';
+                config.templates_files = settings['templatesFiles'];
+                config.templates_replaceContent = false;
+            }
         	
         	editor = $input.ckeditor(config).ckeditorGet();
 
