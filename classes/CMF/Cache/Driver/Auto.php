@@ -161,9 +161,8 @@ class Auto extends Simple {
 			}
 			
 			$subqueries[] = 'q'.$num;
-			$sql .= ($num > 0 ? ',' : '').' (SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'IFNULL(MAX('.implode('.updated_at),0), IFNULL(MAX(', $aliases).'.updated_at),0)'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
+			$sql .= ($num > 0 ? ',' : '').' (SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'COALESCE(MAX('.implode('.updated_at),\'1000-01-01\'), COALESCE(MAX(', $aliases).'.updated_at),\'1000-01-01\')'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
 			$num++;
-			
 		}
 		
 		if (count($this->queries) > 0) {
@@ -213,9 +212,8 @@ class Auto extends Simple {
 				}
 				
 				$subqueries[] = 'q'.$num;
-				$sql .= ($num > 0 ? ',' : '').' (SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'IFNULL(MAX('.implode('.'.$field.'),0), IFNULL(MAX(', $aliases).'.'.$field.'),0)'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
+				$sql .= ($num > 0 ? ',' : '').' (SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'COALESCE(MAX('.implode('.'.$field.'),\'1000-01-01\'), COALESCE(MAX(', $aliases).'.'.$field.'),\'1000-01-01\')'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
 				$num++;
-				
 			}
 		}
 		
