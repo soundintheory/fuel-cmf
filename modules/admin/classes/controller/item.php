@@ -192,6 +192,7 @@ class Controller_Item extends Controller_Base {
 			$actioned = "created";
 		}
 		$create_new = \Input::post('create_new');
+		
 		// Populate the model with posted data
 		$model->populate(\Input::post());
 		
@@ -201,6 +202,15 @@ class Controller_Item extends Controller_Base {
 	    	$em = \D::manager();
 	    	$em->persist($model);
 	        $em->flush();
+
+	        if (!$exists && $model->_has_processing_errors) {
+
+	        	// Try populating the model again if we've had errors - they could be to do with unit of work
+	        	$model->populate(\Input::post());
+        		$em->persist($model);
+        	    $em->flush();
+
+	        }
 	        
 	        // Do something depending on what mode we're in...
 	        switch (\Input::param('_mode', 'default')) {
