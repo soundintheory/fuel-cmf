@@ -28,6 +28,7 @@
 			
 			$items.find('.btn-remove').click(removeButtonHandler);
 			
+			initList();
 			if (sortable) { initSorting(); }
 			update();
 			
@@ -134,7 +135,6 @@
 				$items.each(function(i) {
 					
 					var $el = $(this),
-					$pos = $el.find('input[data-field-name="pos"]').val(i+''),
 					id = $el.find('input.item-id').val();
 					
 					$el.find('*[name], *[data-original-name]').each(function() {
@@ -160,7 +160,7 @@
 				var $tableBody = $table.find("> tbody"),
 				$rows = $tableBody.find('> tr.item'),
 				$body = $('body'),
-				tableName = settings['target_table'],
+				tableName = settings['tinitSortingarget_table'],
 				saveAll = settings['save_all'];
 				
 				$tableBody.sortable({ helper:fixHelper, handle:'.handle' });
@@ -178,6 +178,61 @@
 				
 				updatePositions()
 				
+			}
+
+			function initList() {
+
+				$items = $table.find('> tbody > tr.item');
+				
+				$items.each(function(i) {
+					
+					var $el = $(this),
+					id = $el.find('input.item-id').val();
+
+					$el.find('[data-field-name]').each(function() {
+
+						var $el = $(this),
+							fieldName = $el.attr('data-field-name'),
+							newFieldName = fieldName.replace('__TEMP__', '').replace('__NUM__', i);
+
+						if (typeof(field_settings[newFieldName]) == 'undefined' && typeof(field_settings[fieldName]) != 'undefined') {
+							field_settings[newFieldName] = field_settings[fieldName];
+						}
+
+						$el.attr('data-field-name', newFieldName);
+
+					});
+
+					$el.find('[id]').each(function() {
+						var $el = $(this);
+						$el.attr('id', $el.attr('id').replace('__TEMP__', '').replace('__NUM__', i));
+					});
+					
+					$el.find('*[name], *[data-original-name]').each(function() {
+						
+						var $el = $(this),
+							elName = $el.attr('name'),
+							origName = $el.attr('data-original-name');
+						
+						if (typeof(origName) == 'undefined') {
+							origName = elName.replace('__TEMP__', '');
+							$el.attr('data-original-name', origName);
+						}
+
+						var newName = origName.replace('__NUM__', i);
+
+						if (typeof(field_settings[newName]) == 'undefined' && typeof(field_settings[elName]) != 'undefined') {
+							field_settings[newName] = field_settings[elName];
+						}
+						
+						$el.attr('name', newName);
+						
+					});
+
+					$(window).trigger('cmf.newform', { 'wrap':$el });
+					
+				});
+
 			}
 			
 			function onListSaved(result) {

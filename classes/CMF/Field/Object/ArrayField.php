@@ -52,7 +52,9 @@ class ArrayField extends Object {
         return array(
             'content' => $form->getContent($model),
             'assets' => $form->assets,
-            'widget' => $settings['widget']
+            'widget' => $settings['widget'],
+            'merge_data' => true,
+            'js_data' => $form->js_field_settings
         );
     }
     

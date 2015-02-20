@@ -71,8 +71,8 @@ class Base extends \CMF\Doctrine\Model
      */
     protected static $_fields = array(
     	'id' => array( 'visible' => false ),
-    	'created_at' => array( 'readonly' => true, 'visible' => false ),
-    	'updated_at' => array( 'readonly' => true, 'visible' => false ),
+    	'created_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
+    	'updated_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
         'visible' => array( 'visible' => false ),
         'settings' => array( 'visible' => false ),
         'pos' => array( 'visible' => false )
@@ -333,6 +333,8 @@ class Base extends \CMF\Doctrine\Model
         if ($called_class::$_template !== null) return $called_class::$_template;
         return $called_class::$_template = strtolower(str_replace(array('Model_', '_', '\\'), array('', '/', '/'), $called_class)).'.twig';
 	}
+
+    public $_has_processing_errors = false;
     
     /**
      * Passes all values through the process() method on any configured fields 
@@ -343,6 +345,8 @@ class Base extends \CMF\Doctrine\Model
      */
     public function populate($data, $overwrite=true)
     {
+        $this->_has_processing_errors = false;
+
         if (is_array($data)) {
             $overwrite = \Arr::get($data, '__overwrite__', $overwrite);
         }
@@ -358,8 +362,11 @@ class Base extends \CMF\Doctrine\Model
             
             $field_class = $field['field'];
             if (!isset($data[$field_name]) || !is_callable($field_class.'::preProcess')) continue;
-            $data[$field_name] = $field_class::preProcess($data[$field_name], $field, $this);
-            
+            try {
+                $data[$field_name] = $field_class::preProcess($data[$field_name], $field, $this);
+            } catch (\Exception $e) {
+                $this->_has_processing_errors = true;
+            }
         }
         
         parent::populate($data, $overwrite);
@@ -369,12 +376,18 @@ class Base extends \CMF\Doctrine\Model
             
             $field_class = $field['field'];
             if (!isset($data[$field_name]) && $field_class::$always_process !== true) continue;
-            $this->$field_name = $field_class::process($this->$field_name, $field, $this);
-            
+            try {
+                $this->$field_name = $field_class::process($this->$field_name, $field, $this);
+            } catch (\Exception $e) {
+                $this->_has_processing_errors = true;
+            }
         }
         
-        $this->postPopulate();
-        
+        try {
+            $this->postPopulate();
+        } catch (\Exception $e) {
+            $this->_has_processing_errors = true;
+        }
     }
     
     /**
@@ -610,9 +623,10 @@ class Base extends \CMF\Doctrine\Model
      * @see \CMF\Model\Base::$_sort_process
      * @return array
      */
-    public static function sortProcess()
+    public static function sortProcess($value = null)
     {
         $called_class = get_called_class();
+        if ($value !== null) $called_class::$_sort_process = $value;
         return $called_class::$_sort_process;
     }
     
