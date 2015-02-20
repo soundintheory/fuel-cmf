@@ -19,7 +19,16 @@ class Page extends Base
         'title' => array( 'group' => 'title', 'after' => 'visible' ),
         'html_title' => array( 'group' => 'meta', 'template' => '{{ model.title }}' ),
         'meta_desc' => array( 'title' => 'Meta description', 'after' => 'html_title', 'field' => 'CMF\\Field\\Textarea' ),
-        'content' => array( 'widget' => true )
+        'content' => array( 'widget' => true ),
+    	'extra_meta' => array('fields' => array(
+    								'og:title'=>array('type'=>'string'),
+    								'og:site_name'=>array('type'=>'string'),
+					    			'og:url'=>array('type'=>'string'),
+					    			'og:description'=>array('type'=>'text'),
+					    			'og:image'=>array('type'=>'image'),
+    									),
+    							'dynamic'=>true
+    					)
     );
     
     protected static $_list_fields = array('title');
@@ -70,11 +79,15 @@ class Page extends Base
     /**
      * @ORM\Column(type="string", nullable=true))
      **/
-    protected $meta_desc;
-	
+    protected $meta_desc;	
+    
 	/**
      * @ORM\Column(type="richtext", nullable=true))
      **/
     protected $content;
-	
+    
+    /**
+     * @ORM\Column(type="object", nullable=true))
+     **/
+    protected $extra_meta = array();
 }
