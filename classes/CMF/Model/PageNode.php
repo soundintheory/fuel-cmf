@@ -26,7 +26,7 @@ class PageNode extends Node
     				'og:site_name'=>array('type'=>'string'),
     				'og:url'=>array('type'=>'string'),
     				'og:description'=>array('type'=>'text'),
-    				'og:image'=>array('type'=>'image'),
+    				'og:image'=>array('type'=>'string'),
     		),
     				'dynamic'=>true,
     		)
