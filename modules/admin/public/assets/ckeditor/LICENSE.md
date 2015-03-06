@@ -2,7 +2,7 @@ Software License Agreement
 ==========================
 
 CKEditor - The text editor for Internet - http://ckeditor.com
-Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
 
 Licensed under the terms of any of the following licenses at your
 choice:
@@ -35,6 +35,16 @@ CKSource engineers and consists of CKSource-owned intellectual
 property. In some specific instances, CKEditor will incorporate work
 done by developers outside of CKSource with their express permission.
 
+(Ignore this line: %REMOVE_START%)
+
+Software available at our repository and developer version only:
+
+JavaScript Lint: At _dev/_thirdparty/jsl can be found the executable
+files of JavaScript Lint, which are licensed under the terms of the
+Mozilla Public License Version 1.1 (http://www.mozilla.org/MPL/).
+JavaScript Lint is Copyright (c) 2006 Matthias Miller.
+
+(Ignore this line: %REMOVE_END%)
 Trademarks
 ----------
 
