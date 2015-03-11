@@ -20,15 +20,30 @@ class PageNode extends Node
         'html_title' => array( 'group' => 'meta', 'template' => '{{ model.title }}' ),
         'meta_desc' => array( 'title' => 'Meta description', 'after' => 'html_title', 'field' => 'CMF\\Field\\Textarea' ),
         'content' => array( 'widget' => true ),
-        'url_alias' => array( 'visible' => false )
+        'url_alias' => array( 'visible' => false ),
+    	'extra_meta' => array('fields' => array(
+    				'og:title'=>array('type'=>'string'),
+    				'og:site_name'=>array('type'=>'string'),
+    				'og:url'=>array('type'=>'string'),
+    				'og:description'=>array('type'=>'text'),
+    				'og:image'=>array('type'=>'string'),
+    		),
+    				'dynamic'=>true,
+    		)
     );
     
     protected static $_list_fields = array('title');
     
     protected static $_groups = array(
         'title' => array( 'title' => 'Title & URL', 'icon' => 'tag' ),
-        'meta' => array( 'title' => 'Meta Data (SEO)', 'icon' => 'globe' ),
+        'meta' => array( 'title' => 'Meta Data (SEO)', 'icon' => 'globe' ,'tab'=>'meta'),
+    	'field_extra_meta' => array ('tab'=>'meta'),
         'main' => array( 'title' => 'Info' )
+    );
+    
+    protected static $_tabs = array(
+    		'main' => 'Main',
+    		'meta'	=> 'Meta Data (SEO)'
     );
     
     protected static $_default_group = 'main';
@@ -84,5 +99,10 @@ class PageNode extends Node
      * @ORM\OrderBy({"lft" = "ASC"})
      */
     protected $children;
+    
+    /**
+     * @ORM\Column(type="object", nullable=true))
+     **/
+    protected $extra_meta = array();
 	
 }

@@ -10,7 +10,8 @@ class CKEditor extends Textarea {
         ),
         'minHeight' => 300,
         'stylesSet' => '/assets/js/editor.js',
-        'contentsCss' => '/assets/css/screen.min.css'
+        'contentsCss' => '/assets/css/screen.min.css',
+        'templatesFiles' => false
     );
     
     public function get_type()
@@ -90,7 +91,7 @@ class CKEditor extends Textarea {
         // Return the normal field
         return array(
             'assets' => array(),
-            'content' => html_tag('div', array( 'class' => 'controls control-group '.($has_errors ? ' error' : '') ), $label.$input),
+            'content' => html_tag('div', array( 'class' => 'control-group '.($has_errors ? ' error' : '') ), $label.$input),
             'widget' => false,
             'js_data' => $settings
         );

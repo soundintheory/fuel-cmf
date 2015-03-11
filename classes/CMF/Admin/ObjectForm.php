@@ -144,7 +144,7 @@ class ObjectForm
 				$field_content = $field_class::displayForm(isset($this->values[$field_name]) ? $this->values[$field_name] : null, $field, $model);
 				
 				if (is_array($field_content)) {
-					$this->assets = \Arr::merge($this->assets, $field_content['assets']);
+					$this->assets = \Arr::merge($this->assets, \Arr::get($field_content,'assets',array()));
 					$output[] = $this->settings['fields'][$field_name]['content'] = $field_content['content'];
 				} else {
 					$output[] = $this->settings['fields'][$field_name]['content'] = $field_content;

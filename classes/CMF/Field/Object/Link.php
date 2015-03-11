@@ -19,6 +19,10 @@ class Link extends Object {
         )
     );
     
+    public static function getDefaults(){
+        return self::$defaults;
+    }
+
     /** inheritdoc */
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
@@ -273,6 +277,91 @@ class Link extends Object {
         return $allow_empty ? array( '' => '' ) + $options : $options;
     }
     
+
+    public static function getOptionsStatic(&$settings, $model)
+    {
+        $allow_empty = isset($settings['mapping']['nullable']) && $settings['mapping']['nullable'] && !(isset($settings['required']) && $settings['required']);
+        
+        if (static::$options !== null && is_array(static::$options)) return $allow_empty ? array( '' => '' ) + static::$options : static::$options;
+        
+        $options = array();
+        $target_class = 'CMF\\Model\\URL';
+        $filters = array();
+        $tree_types = array();
+        $types = $target_class::select('item.type')->distinct()->orderBy('item.type', 'ASC')->getQuery()->getScalarResult();
+        
+        foreach ($types as $type)
+        {
+            $type = $type['type'];
+            if (!class_exists($type)) continue;
+            
+            $metadata = $type::metadata();
+            $root_class = $metadata->rootEntityName;
+            if (isset($root_class)) {
+                $type = $root_class;
+            }
+            
+            $name = $type::plural();
+            if (isset($options[$name])) continue;
+            
+            $group = \Arr::get($options, $name, array());
+            $repository = \D::manager()->getRepository($type);
+            $prop = property_exists('menu_title', $type) ? 'menu_title' : 'title';
+            
+            if (($repository instanceof \Gedmo\Tree\Entity\Repository\NestedTreeRepository) && !in_array($name, $tree_types))
+            {
+                $tree_types[] = $name;
+                
+                // Put in the tree data...
+                $query = $type::select('item, url')
+                ->leftJoin('item.url', 'url')
+                ->where('item.lvl > 0');
+                
+                if (count($filters) > 0) {
+                    foreach ($filters as $filter)
+                    {
+                        $query = $query->andWhere('item.'.$filter);
+                    }
+                }
+                
+                $tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery()->getArrayResult();
+                $tree = $repository->buildTree($tree, array());
+                $options[$name] = static::buildTreeOptionsStatic($tree, $prop, array());
+                continue;
+            }
+            
+            $items = $type::select("item.id, item.$prop, url.url, url.id url_id")->leftJoin('item.url', 'url')->orderBy("item.$prop", "ASC")->getQuery()->getArrayResult();
+            
+            if (is_array($items) && count($items) > 0) {
+                
+                foreach ($items as $item)
+                {
+                    $group[strval($item[$prop])] = $item['url'];
+                }
+                $options[$name] = $group;
+                
+            }
+            
+        }
+        
+        foreach($options as $group_name => &$group_value)
+        {
+            if (is_array($group_value) && !in_array($group_name, $tree_types))
+            {
+                uasort($group_value, function($a, $b) {
+                    return strcmp(strtolower($a), strtolower($b));
+                });
+            }
+        }
+        
+        uksort($options, function($a, $b) {
+            return strcmp(strtolower($a), strtolower($b));
+        });
+        
+        static::$options = $options;
+        return $allow_empty ? array( '' => '' ) + $options : $options;
+    }
+
     protected static function buildTreeOptions(&$tree, $prop, $options = array( null => '---' ), $prefix = '')
     {
         foreach ($tree as &$node)
@@ -285,6 +374,20 @@ class Link extends Object {
         return $options;
     }
     
+     protected static function buildTreeOptionsStatic(&$tree, $prop, $options = array( null => '---' ), $prefix = '')
+    {
+        foreach ($tree as &$node)
+        {
+            $tmpkey = $prefix.str_repeat(' >', $node['lvl']-1).' '.$node[$prop];
+            $tmpval = strval(\Arr::get($node, 'url.url', '-1'));
+            $options[$tmpkey] =  $tmpval ;
+            if (isset($node['__children']) && count($node['__children']) > 0) {
+                $options = static::buildTreeOptions($node['__children'], $prop, $options, $node[$prop]);
+            }
+        }
+        return $options;
+    }
+
     public static function processLink($data)
     {
         // Get the link attribute

@@ -2,6 +2,10 @@
 
 return array(
 	
+	//action to export internal link as json
+	'admin/json_link'	=>	'admin/base/all_links',
+	'admin/json_link/(:any)'	=>	'admin/base/all_links/$1',
+
 	'admin'                   => 'admin/dashboard/index',
 	'admin/demo/(:any)'       => 'admin/demo/index/$1',
 	'admin/actions/(:any)'    => 'admin/actions/$1',

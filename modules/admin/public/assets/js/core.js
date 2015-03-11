@@ -436,31 +436,54 @@ function initItemList() {
 		});
 		
 		$tableBody.sortable('option', 'stop', function(evt, ui) {
-			
-			$body.removeClass('sorting');
-			
-			var group = ui.item.attr('data-sort-group'),
-			pos = parseInt(ui.item.index()),
-			id = ui.item.attr('data-id');
-			
-			if (group != undefined && group != '__ungrouped__' && group.length > 0) {
-				$tableBody.find('tr[data-sort-group="' + group + '"]').each(function(i) {
-					if ($(this).attr('data-id') == id) {
-						pos = i;
-						return false;
-					}
+
+			if ($table.hasClass('sort-process')) {
+
+				$body.removeClass('sorting');
+				
+				var group = ui.item.attr('data-sort-group'),
+				pos = parseInt(ui.item.index()),
+				id = ui.item.attr('data-id');
+				
+				if (group != undefined && group != '__ungrouped__' && group.length > 0) {
+					$tableBody.find('tr[data-sort-group="' + group + '"]').each(function(i) {
+						if ($(this).attr('data-id') == id) {
+							pos = i;
+							return false;
+						}
+					});
+				}
+				
+				var cRequest = $.ajax({
+					'url': '/admin/' + data['table_name'] + '/' + id + '/populate',
+					'data': { 'pos':pos },
+					'dataType': 'json',
+					'async': true,
+					'type': 'POST',
+					'success': onListSaved,
+					'cache': false
 				});
+
+			} else {
+
+				var positions = {};
+
+				$table.find('tr').each(function(i, el) {
+					var cid = $(el).attr('data-id');
+					positions[cid] = { pos:i+1 };
+				});
+
+				var cRequest = $.ajax({
+					'url': '/admin/' + data['table_name'] + '/populate',
+					'data': positions,
+					'dataType': 'json',
+					'async': true,
+					'type': 'POST',
+					'success': onListSaved,
+					'cache': false
+				});
+
 			}
-			
-			var cRequest = $.ajax({
-				'url': '/admin/' + data['table_name'] + '/' + id + '/populate',
-				'data': { 'pos':pos },
-				'dataType': 'json',
-				'async': true,
-				'type': 'POST',
-				'success': onListSaved,
-				'cache': false
-			});
 			
 		});
 		

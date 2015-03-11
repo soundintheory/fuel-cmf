@@ -189,5 +189,26 @@ class Controller_Base extends \Controller {
     {
         $this->data[$key] = $value;
     }
+
+    public function action_all_links($key=null){
+
+        $defaults = \CMF\Field\Object\Link::getDefaults();
+
+        $options = \CMF\Field\Object\Link::getOptionsStatic($defaults,null);
+
+        if(!$key){
+            $output = array();
+            foreach (array_keys($options) as $key ) {
+                $output[] = $key;
+            } 
+        }else{
+            foreach ($options[$key] as $key=>$value ) {
+                $output[$key] = $value;
+            } 
+        }
+        $output = json_encode ($output);
+        echo $output;
+        exit();
+    }
 	
 }

@@ -38,7 +38,7 @@ class CMF
     public static function slug($input, $lowercase = true)
     {
         $input = str_replace(array(".", ",", "'", '"'), "", $input);
-        return \Inflector::friendly_title($input, '-', $lowercase, true);
+        return \Inflector::friendly_title($input, '-', $lowercase);
     }
     
     public static function fieldId($input)

@@ -35,7 +35,7 @@
 
 			function updateCopy() {
 
-				if (!copy) { return; }
+				if (!copy || !$copy.length) { return; }
 				
 				var val = '', slug = '';
 				for (var i = 0; i < $copy.length; i++) {
