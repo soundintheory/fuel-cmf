@@ -524,12 +524,12 @@ class CMF
 		// determine the viewmodel namespace and classname
 		if (empty(static::$module)) static::$module = \Request::active() ? ucfirst(\Request::active()->module) : '';
 
-        // Strip the first part of the path off for module templates
-        if (!empty(static::$module) && strpos(static::$path, static::$module) === 0) {
-            static::$path = str_replace(static::$module.'/', '', static::$path);
-        }
+		// Strip the first part of the path off for module templates
+		if (!empty(static::$module) && strpos(static::$path, static::$module) === 0) {
+			static::$path = str_replace(static::$module.'/', '', static::$path);
+		}
 
-		$controller_class = ucfirst(static::$module).'\\Controller_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', str_replace('-', '', static::$path) )));
+		$controller_class = ucfirst(static::$module).'\\Controller_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', static::$path)));
 		
 		return class_exists($controller_class);
 	}
