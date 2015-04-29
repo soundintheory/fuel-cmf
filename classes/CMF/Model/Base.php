@@ -6,7 +6,8 @@ use Doctrine\ORM\Mapping as ORM,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\DBAL\LockMode,
 	Gedmo\Mapping\Annotation as Gedmo,
-	CMF\Model\URL;
+	CMF\Model\URL,
+    Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\MappedSuperclass
@@ -995,6 +996,37 @@ class Base extends \CMF\Doctrine\Model
             }
         }
         return $called_class::$instances[$called_class];
+    }
+
+    /**
+     * Will restore the item if it was soft deleted, and make sure that
+     * all related items are also restored
+     */
+    public function recover()
+    {
+        $metadata = $this->_metadata();
+        $associations = $metadata->getAssociationMappings();
+
+        foreach ($associations as $field => $association)
+        {
+            if ($metadata->isCollectionValuedAssociation($field)) {
+
+                if (!(is_array($this->$field) || $this->$field instanceof Collection)) {
+                    continue;
+                }
+
+                foreach ($this->$field as $entity) {
+                    $entity->set('deleted_at', null);
+                }
+
+            } else if ($this->$field instanceof \CMF\Model\Base) {
+
+                $this->$field->set('deleted_at', null);
+            }
+            
+        }
+
+        $this->set('deleted_at', null);
     }
     
     public function settings($name = null, $value = null)
