@@ -22,7 +22,7 @@ class Base extends \Controller
     {
         // Nothing
     }
-    
+
     public function before()
     {
         

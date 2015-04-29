@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM,
 /**
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
+ * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  **/
 class Base extends \CMF\Doctrine\Model
 {
@@ -22,17 +23,22 @@ class Base extends \CMF\Doctrine\Model
     
     /**
      * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      * @var datetime
      **/
     protected $created_at;
 
     /**
      * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      * @var datetime
      **/
     protected $updated_at;
+
+    /**
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    protected $deleted_at;
     
     /**
      * @ORM\Column(type="object", nullable=true)
@@ -73,6 +79,7 @@ class Base extends \CMF\Doctrine\Model
     	'id' => array( 'visible' => false ),
     	'created_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
     	'updated_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
+        'deleted_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
         'visible' => array( 'visible' => false ),
         'settings' => array( 'visible' => false ),
         'pos' => array( 'visible' => false )

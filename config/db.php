@@ -31,7 +31,7 @@ return array(
 			'CMF\\Doctrine\\Extensions\\Sortable',
 			//'CMF\\Doctrine\\Extensions\\Translatable',
 			//'CMF\\Doctrine\\Extensions\\Loggable',
-			//'CMF\\Doctrine\\Extensions\\SoftDeletable'
+			'CMF\\Doctrine\\Extensions\\SoftDeletable'
 		),
 		
 		/**

@@ -728,6 +728,31 @@ class Controller_List extends Controller_Base {
 	    \Session::set("$table_name.list.order", \Input::get());
 	    \Response::redirect(\Input::referrer());
 	}
+
+	public function action_recover($table_name)
+	{
+
+		$class_name = \Admin::getClassForTable($table_name);
+	    $metadata = $class_name::metadata();
+	    $em = \D::manager();
+
+        $id = \Input::post('recover_id', false);
+        $model = $class_name::find($id);
+        if($model){
+        	$model->set('deleted_at',null);
+
+	        try {
+		    	$em->persist($model);
+		    	$em->flush();
+		    } catch (\Exception $e) {
+		    	
+		    }
+		}
+
+		\Session::set("$table_name.list.order", array('deleted_at'=>'desc'));
+
+		\Response::redirect(\Input::referrer());
+	}
 	
 	/**
 	 * Gets called from action_index() when a model is found to extend CMF\Model|Node

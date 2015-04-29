@@ -21,7 +21,6 @@ class Controller_Base extends \Controller {
     }
 	
 	public function before() {
-		
 		if (!\CMF\Auth::check(null, 'view', 'admin_site')) {
             \Response::redirect(\Uri::base(false)."admin/login?next=".\Uri::string(), 'location');
         }
@@ -44,7 +43,11 @@ class Controller_Base extends \Controller {
         $this->cid = \Input::param('_cid', 'none');
         $this->current_lang = \Lang::get_lang();
         $this->fallback_lang = \Lang::$fallback;
-		
+
+        if(\Session::get('recovery_mode')) {
+            \D::manager()->getFilters()->disable('soft-deleteable');
+            $this->recovery_mode = true;  
+        }
 	}
 	
 	public function after($response)

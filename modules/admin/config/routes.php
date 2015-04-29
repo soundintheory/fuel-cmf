@@ -21,6 +21,10 @@ return array(
 	'admin/lang/set'          => 'admin/lang/set',
 	'admin/lang/terms'     	  => 'admin/lang/terms',
 	
+	//Bin Actions
+
+	'admin/bin/recovery_mode' => 'admin/bin/recoverymode',
+
 	// Auth actions
 	'admin/login'             => array(array('GET', new Route('admin/auth/login')), array('POST', new Route('admin/auth/perform_login'))),
 	'admin/logout'            => 'admin/auth/logout',
@@ -36,6 +40,7 @@ return array(
 	'admin/(:segment)/permissions/(:num)'       => 'admin/list/permissions/$1/$2',
 	'admin/(:segment)/permissions/(:num)/save'  => 'admin/list/save_permissions/$1/$2',
 	'admin/(:segment)/list/order'               => 'admin/list/order/$1',
+	'admin/(:segment)/recover'               	=> 'admin/list/recover/$1',
 	'admin/(:segment)/(:num)/populate'          => array(array('POST', new Route('admin/item/populate/$1/$2'))),
 	'admin/(:segment)/(:num)/updatetree'        => array(array('POST', new Route('admin/list/updatetree/$1/$2'))),
 	'admin/(:segment)/updatetree'               => array(array('POST', new Route('admin/list/updatetree/$1/$2'))),

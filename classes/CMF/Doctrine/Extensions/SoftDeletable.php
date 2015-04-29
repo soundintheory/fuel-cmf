@@ -15,6 +15,8 @@ class SoftDeletable extends Extension
 		$listener->setAnnotationReader($reader);
 		$em->getEventManager()->addEventSubscriber($listener);
 		$em->getConfiguration()->addFilter('soft-deleteable', 'Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter');
+
+		$em->getFilters()->enable('soft-deleteable');
 	}
 	
 }
