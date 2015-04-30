@@ -13,13 +13,5 @@
 			{% endfor %}
 		</ul>
 	    {% endfor %}
-	    
-	    <ul class="nav nav-tabs nav-stacked">
-	    {% if not recovery_mode %}
-	    	<li class="recovery_mode_form"><form method="post" action="/admin/bin/recovery_mode"><input type="submit" class="btn btn-danger" name="recovery_mode" value="Start Recovery Mode" /></form></li>
-	    {% else %}
-	    	<li class="not_recovery_mode_form"><form method="post" action="/admin/bin/recovery_mode"><input type="submit" class="btn btn-success" name="stop_recovery_mode" value="Stop Recovery Mode" /></form></li>
-		{% endif %}
-		</ul>
 	</div><!--/.sidebar-inner -->
 </div><!--/.well -->

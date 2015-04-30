@@ -733,7 +733,6 @@ class Controller_List extends Controller_Base {
 	{
 
 		$class_name = \Admin::getClassForTable($table_name);
-	    $metadata = $class_name::metadata();
 	    $em = \D::manager();
 
         $id = \Input::post('recover_id', false);
@@ -752,6 +751,32 @@ class Controller_List extends Controller_Base {
 		\Session::set("$table_name.list.order", array('deleted_at'=>'desc'));
 
 		\Response::redirect(\Input::referrer());
+	}
+
+	public function action_setrecoverymode($table_name)
+	{
+		if(\Session::get('recovery_mode')) {
+			$recoverArray = \Session::get('recovery_mode');
+			$recoverArray[$table_name] = true;
+		}else{
+			$recoverArray = array($table_name => true);
+		}
+
+        \Session::set('recovery_mode',$recoverArray);
+  		
+  		\Response::redirect(\Input::referrer());
+
+	}
+
+	public function action_stoprecoverymode($table_name)
+	{
+		$recoverArray = \Session::get('recovery_mode');
+		$recoverArray[$table_name] = false;
+		
+        \Session::set('recovery_mode',$recoverArray);
+  		
+  		\Response::redirect(\Input::referrer());
+
 	}
 	
 	/**
