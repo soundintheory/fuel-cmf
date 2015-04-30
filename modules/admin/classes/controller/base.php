@@ -43,18 +43,6 @@ class Controller_Base extends \Controller {
         $this->cid = \Input::param('_cid', 'none');
         $this->current_lang = \Lang::get_lang();
         $this->fallback_lang = \Lang::$fallback;
-
-
-        if(\Session::get('recovery_mode')) {
-            $filter = \D::manager()->getFilters()->enable('soft-deleteable');
-            foreach (\Session::get('recovery_mode') as $key => $value) {
-                if($value){
-                    $filter->disableForEntity(\Admin::getClassForTable($key));
-                }
-            }
-            
-            $this->recovery_mode = \Session::get('recovery_mode');  
-        }
 	}
 	
 	public function after($response)

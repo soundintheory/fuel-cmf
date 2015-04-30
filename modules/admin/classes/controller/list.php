@@ -735,6 +735,8 @@ class Controller_List extends Controller_Base {
 	    $em = \D::manager();
 
         $id = \Input::post('recover_id', false);
+        $filter = \D::manager()->getFilters()->disable('soft-deleteable');
+
         $model = $class_name::find($id);
         if($model){
         	$model->recover();
@@ -746,35 +748,26 @@ class Controller_List extends Controller_Base {
 		    	
 		    }
 		}
-
-		\Session::set("$table_name.list.order", array('deleted_at'=>'desc'));
 		\Response::redirect(\Input::referrer());
 	}
 
 	public function action_setrecoverymode($table_name)
-	{
-		if(\Session::get('recovery_mode')) {
-			$recoverArray = \Session::get('recovery_mode');
-			$recoverArray[$table_name] = true;
-		}else{
-			$recoverArray = array($table_name => true);
-		}
+	{	
+		$class_name = \Admin::getClassForTable($table_name);
+		$filter = \D::manager()->getFilters()->disable('soft-deleteable');
 
-        \Session::set('recovery_mode',$recoverArray);
-  		
-  		\Response::redirect(\Input::referrer());
+  		$rows = $class_name::select('item')
+			    ->where("item.deleted_at is not null")
+			    ->addOrderBy("item.deleted_at", 'DESC')
+			    ->getQuery()
+			    ->getResult();
 
-	}
-
-	public function action_stoprecoverymode($table_name)
-	{
-		$recoverArray = \Session::get('recovery_mode');
-		$recoverArray[$table_name] = false;
-		
-        \Session::set('recovery_mode',$recoverArray);
-  		
-  		\Response::redirect(\Input::referrer());
-
+  		$this->template = 'admin/item/list-recovery.twig';
+  		$this->icon = $class_name::icon();
+		$this->rows = $rows;
+		$this->plural = $class_name::plural();
+		$this->singular = $class_name::singular();
+		$this->table_name = $table_name;
 	}
 	
 	/**

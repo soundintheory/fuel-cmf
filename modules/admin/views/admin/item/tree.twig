@@ -10,6 +10,7 @@
         <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }}</h2>
         <div class="actions-top-right">
             {% if can_manage %}
+            <a href="/admin/{{ table_name }}/recovery" class="btn btn-success" title="Start Recovery Mode"><i class="icon icon-trash"></i></a>
             <a href="/admin/{{ table_name }}/permissions" class="btn btn-medium btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="icon icon-lock"></i></a>
             {% endif %}
         </div>

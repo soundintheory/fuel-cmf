@@ -1006,11 +1006,9 @@ class Base extends \CMF\Doctrine\Model
     {
         $metadata = $this->_metadata();
         $associations = $metadata->getAssociationMappings();
-
         foreach ($associations as $field => $association)
         {
             if ($metadata->isCollectionValuedAssociation($field)) {
-
                 if (!(is_array($this->$field) || $this->$field instanceof Collection)) {
                     continue;
                 }
@@ -1020,7 +1018,7 @@ class Base extends \CMF\Doctrine\Model
                 }
 
             } else if ($this->$field instanceof \CMF\Model\Base) {
-
+                //breaks here;
                 $this->$field->set('deleted_at', null);
             }
             
