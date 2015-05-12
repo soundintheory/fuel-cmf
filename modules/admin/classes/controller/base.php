@@ -117,6 +117,10 @@ class Controller_Base extends \Controller {
         if ($action == null) $action = 'index';
         $controller = 'Controller_Admin_'.ucfirst($main);
         $action = str_replace('-', '_', $action);
+
+        if (\Admin::$current_module) {
+            $controller = ucfirst(\Admin::$current_module).'\\'.$controller;
+        }
         
         // Return normal 404 if we can't find the controller class
         if (!class_exists($controller)) return $this->show404($msg);
@@ -126,6 +130,9 @@ class Controller_Base extends \Controller {
         $request = \Request::active();
         $controller_instance = new $controller($request);
         $controller_instance->template = 'admin/'.$main.'.twig';
+        if (\Admin::$current_module) {
+            $controller_instance->template = \Admin::$current_module.'/'.$controller_instance->template;
+        }
         
         // Return normal 404 if we can't find the action method
         if (!$class->hasMethod($method."_".$action)) {

@@ -366,7 +366,10 @@ MIGRATION;
         $code = array();
         foreach ($sql as $query)
         {
-			$code[] = "\t\t\\DB::query(\"$query\")->execute();".PHP_EOL;
+        	$line = "\t\t\\DB::query(\"$query\")->execute();".PHP_EOL;
+        	if (!in_array($line, $code)) {
+        		$code[] = $line;
+        	}
         }
         return implode("\n", $code);
     }
