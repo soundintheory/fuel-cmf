@@ -26,7 +26,7 @@
     <div class="inner">
         
         {% set has_filters = searchable or (filters and filters|length > 0) %}
-        <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }} ({{ rows|length }})</h2>
+        <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }} <small>{% if not pagination %}({{ rows|length }}){% elseif page_count > 1 %}(page {{ current_page }} of {{ page_count }}){% endif %}</small></h2>
         {% if has_filters %}<form action="" method="get" class="list-filter-form">{% endif %}
         {% if searchable %}
             <div class="search list-filter-wrap">
@@ -36,26 +36,30 @@
                 </div>
             </div>
         {% endif %}
+        {% set filters_set = false %}
         {% if filters and filters|length > 0 %}
             {% for filter_field, list_filter in filters %}
-                <div class="form-filter list-filter-wrap form-horizontal">   
+                <div class="form-filter list-filter-wrap form-horizontal">
+                    {% if form_val(filter_field) is not empty %}
+                        {% set filters_set = true %}
+                    {% endif %}
                     <label>{{ list_filter.label }}</label> {{ form_select(filter_field, form_val(filter_field), list_filter.options, { 'class':'select2 list-filter-select' }) }}
                 </div>
             {% endfor %}
         {% endif %}
         {% if has_filters %}</form>{% endif %}
-        {% if query is not empty %}
+        {% if (query is not empty) or filters_set %}
             <div class="list-filter-reset">
                 <form class="pull-left" action="" method="get">
                     <input type="hidden" class="input-medium search-query" value="">
                     {% if filters and filters|length > 0 %}
                         {% for filter_field, list_filter in filters %}
-                            <input type="hidden" name="{{ filter_field }}" value="{{ form_val(filter_field) }}" />
+                            <input type="hidden" name="{{ filter_field }}" value="" />
                         {% endfor %}
                     {% endif %}
-                    <button type="submit" class="btn btn-mini">Reset</button>
+                    <button type="submit" class="btn btn-mini">Reset filters</button>
                 </form>
-                <p>&nbsp; Search results for "{{query}}".</p>
+                {% if (query is not empty) %}<p>&nbsp; Search results for "{{query}}".</p>{% endif %}
             </div>
         {% endif %}
         <div class="clearfix"></div>

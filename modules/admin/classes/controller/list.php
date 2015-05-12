@@ -3,6 +3,7 @@
 namespace Admin;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class Controller_List extends Controller_Base {
 	
@@ -271,14 +272,14 @@ class Controller_List extends Controller_Base {
 			$query = \Input::get('query');
 			$this->query = $query;
 			if($query){
-				$query_str = "";
-				foreach ($query_fields as $num => $field) {
-					$query_str .= "item.".$field." LIKE '%".$query."%'";
-					if($num != (count($query_fields) -1)){
-						$query_str .= " OR ";
+				$query_parts = array_map('trim', explode(' ', $query));
+				$query_str = array();
+				foreach ($query_fields as $field) {
+					foreach ($query_parts as $query_part) {
+						$query_str[] = "item.".$field." LIKE '%".$query_part."%'";	
 					}
 				}
-				$qb->andWhere($query_str);
+				$qb->andWhere(implode(' OR ', $query_str));
 			}
 		}
 		
@@ -376,13 +377,22 @@ class Controller_List extends Controller_Base {
 			$qb->setMaxResults($pagination->per_page);
 			$qb->setFirstResult($pagination->offset);
 			$this->pagination = $pagination->render();
+			$this->per_page = $per_page;
+			$this->page_count = ceil($count / $per_page);
+			$this->total_items = $count;
+			$this->current_page = \Input::param('p', 1);
+			$rows = new Paginator($qb, true);
+			$ids = array();
+			foreach ($rows as $prow) {
+				$ids[] = $prow->id;
+			}
+			reset($ids);
 		}
 		else{
 			$this->pagination = null;
+			$rows = $qb->getQuery()->getResult();
+			$ids = array_keys($rows);
 		}
-		// Get the results and prepare data for the template
-		$rows = $qb->getQuery()->getResult();
-		$ids = array_keys($rows);
 		
 	    // Another pass at the ordering for methods
 	    /*

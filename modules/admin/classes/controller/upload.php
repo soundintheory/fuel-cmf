@@ -35,7 +35,7 @@ class Controller_Upload extends Controller_Base {
         }
         
         // Get the size limit as defined by PHP
-        $this->sizeLimit = $this->toBytes(ini_get('upload_max_filesize'));
+        $this->sizeLimit = min($this->toBytes(ini_get('upload_max_filesize')), $this->toBytes(ini_get('post_max_size')));
         
         // If you want to use resume feature for uploader, specify the folder to save parts.
         $this->chunksFolder = APPPATH.'tmp/chunks';
@@ -88,7 +88,7 @@ class Controller_Upload extends Controller_Base {
         \Package::load(array('log'));
         
         // Get the size limit as defined by PHP
-        $this->sizeLimit = $this->toBytes(ini_get('upload_max_filesize'));
+        $this->sizeLimit = min($this->toBytes(ini_get('upload_max_filesize')), $this->toBytes(ini_get('post_max_size')));
         
         // If you want to use resume feature for uploader, specify the folder to save parts.
         $this->chunksFolder = APPPATH.'tmp/chunks';

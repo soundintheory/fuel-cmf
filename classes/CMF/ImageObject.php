@@ -48,6 +48,8 @@ class ImageObject
 	protected function _init_image($append, $output_ext = null)
 	{
 		if (!is_null($output_ext)) $this->pathinfo['extension'] = $output_ext;
+		if (empty($this->pathinfo['extension'])) $this->pathinfo['extension'] = 'jpg';
+		
 		$path_cache = APPPATH.'cache/image/'.dirname($this->pathinfo['path_relative']).'/';
 		$this->mime_type = \Arr::get($this->mime_types, strtolower($this->pathinfo['extension']), 'text/html');
 		
@@ -59,7 +61,7 @@ class ImageObject
 		$resized_last_modified = 0;
 		
 		// Serve the placeholder if it doesn't exist
-		if (!file_exists($this->pathinfo['path'])) {
+		if (!is_file($this->pathinfo['path'])) {
 		    $this->pathinfo['extension'] = 'jpg';
 			$this->pathinfo['path'] = PKGPATH.'cmf/modules/image/assets/placeholder.jpg';
 			$this->pathinfo['filename'] = 'placeholder.jpg';
@@ -69,7 +71,7 @@ class ImageObject
 		}
 		
 		// The resized file exists. Check the date against the source and return the resized path if it can be cached
-		if (file_exists($this->resized)) {
+		if (is_file($this->resized)) {
 		    $path_last_modified = filemtime($this->pathinfo['path']);
 		    $resized_last_modified = $this->last_mod = filemtime($this->resized);
 		    

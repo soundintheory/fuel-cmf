@@ -68,7 +68,7 @@ class CKEditor extends Textarea {
         }
 
         if (isset($settings['contentsCss'])) {
-            if (!file_exists(DOCROOT.ltrim($settings['contentsCss'], '/'))) {
+            if (strpos($settings['contentsCss'], '.php') === false && !file_exists(DOCROOT.ltrim($settings['contentsCss'], '/'))) {
                 unset($settings['contentsCss']);
             }
         }
