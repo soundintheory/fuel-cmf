@@ -118,7 +118,7 @@ class Controller_Base extends \Controller {
         $controller = 'Controller_Admin_'.ucfirst($main);
         $action = str_replace('-', '_', $action);
 
-        if (\Admin::$current_module) {
+        if (\Admin::$current_module && \Admin::$current_module != '_root_') {
             $controller = ucfirst(\Admin::$current_module).'\\'.$controller;
         }
         
@@ -130,7 +130,7 @@ class Controller_Base extends \Controller {
         $request = \Request::active();
         $controller_instance = new $controller($request);
         $controller_instance->template = 'admin/'.$main.'.twig';
-        if (\Admin::$current_module) {
+        if (\Admin::$current_module && \Admin::$current_module != '_root_') {
             $controller_instance->template = \Admin::$current_module.'/'.$controller_instance->template;
         }
         
