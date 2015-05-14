@@ -14,7 +14,8 @@ class Measurement extends Select {
         'step' => 1,
         'extra_values' => array(),
         'allow_empty' => true,
-        'rounding' => 0.5
+        'rounding' => 0.5,
+        'select2' => false
     );
     
     public static $conversions = array(
