@@ -376,15 +376,17 @@ class URLListener implements EventSubscriber
     protected function getPrefix($entity)
     {
         $entity_class = get_class($entity);
+        $metadata = $entity_class::metadata();
+        $entity_class = $metadata->name;
+
         $entity_namespace = $entity_class::getModule();
         $module = \Module::exists($entity_namespace);
         $prefix = $entity->urlPrefix();
         
-        if ($module !== false && $entity_namespace != '') {
-            
+        if ($module !== false && $entity_namespace != '')
+        {
             $module_prefix = \Arr::get($this->moduleUrls, $entity_namespace, $entity_namespace);
             if (strpos($prefix, '/'.$module_prefix) === 0) return $prefix;
-            
             return "/$module_prefix".$prefix;
         }
         
