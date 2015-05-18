@@ -62,6 +62,9 @@ class D extends \Fuel\Doctrine
 		$reader = $em->getConfiguration()->getMetadataDriverImpl()->getDefaultDriver()->getReader();
 		$extensions = \Arr::get(static::$settings, 'doctrine2.extensions', array());
 
+		// Add custom DQL functions
+		$em->getConfiguration()->addCustomStringFunction('TYPE', 'CMF\\Doctrine\\Functions\\TypeFunction');
+
 		// Ensure UTF-8 support
 		$em->getEventManager()->addEventSubscriber(new MysqlSessionInit("utf8", "utf8_unicode_ci"));
 		

@@ -24,7 +24,7 @@ class Base extends \ViewModel
     {
         $extra_fields_str = (!is_null($extra_fields) ? ', page.'.implode(', page.', $extra_fields) : '');
 
-        $nodes = $model::select('page.id, page.title, page.menu_title, page.lvl, page.lft, page.rgt'.$extra_fields_str.', url.url, url.slug', 'page')
+        $nodes = $model::select('page.id, page.title, page.menu_title, page.lvl, page.lft, page.rgt, TYPE(page) AS type'.$extra_fields_str.', url.url, url.slug', 'page')
         ->leftJoin('page.url', 'url')
         ->where('page.lvl > 0')
         ->andWhere('page.visible = true')
@@ -68,6 +68,7 @@ class Base extends \ViewModel
             
             $node['active'] = $node['url'] == $uri;
             $node['parent_active'] = false;
+            $node['type'] = \Inflector::classify($node['type']);
 
             if (isset($node['__children']) && count($node['__children']) > 0) {
 

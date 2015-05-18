@@ -993,12 +993,16 @@ class Base extends \CMF\Doctrine\Model
     public function settings($name = null, $value = null)
     {
         if ($name !== null) {
-            $settings = (isset($this->settings)) ? $this->settings : array();
-            \Arr::set($settings, $name, $value);
-            $this->settings = $settings;
+            $settings = is_array($this->settings) ? $this->settings : array();
+            if ($value !== null) {
+                \Arr::set($settings, $name, $value);
+                $this->settings = $settings;
+            } else {
+                return \Arr::get($settings, $name);
+            }
         }
         
-        if (isset($this->settings)) {
+        if (is_array($this->settings)) {
             return $this->settings;
         }
         return $this->settings = array();
