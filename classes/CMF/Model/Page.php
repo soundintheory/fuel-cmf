@@ -27,7 +27,7 @@ class Page extends Base
 					    			'og:description'=>array('type'=>'text'),
 					    			'og:image'=>array('type'=>'string'),
     									),
-    							'dynamic'=>true
+    							'dynamic'=>true, 'group' => 'meta','widget'=>false
     					)
     );
     
