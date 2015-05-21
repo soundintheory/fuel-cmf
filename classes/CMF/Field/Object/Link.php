@@ -69,7 +69,7 @@ class Link extends Object {
         $input = \Form::select($href_name, $href_value_int, $options, $input_attributes);
         $int_content = html_tag('div', array( 'class' => 'internal-link' ), $input);
 
-        return html_tag('div', $attributes, $label.$int_content.$ext_content);
+        return html_tag('div', $attributes, $label.$int_content.$ext_content).html_tag('div', array(), '');
     }
 
     public static function getOptions(&$settings, $model, $html = false)

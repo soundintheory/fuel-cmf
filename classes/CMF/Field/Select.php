@@ -106,7 +106,7 @@ class Select extends Base {
             if (!(isset($settings['wrap']) && $settings['wrap'] === false)) $content = html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') ), $content);
             
             return array(
-                'content' => $content,
+                'content' => $content.html_tag('div', array(), ''),
                 'widget' => @$settings['widget'],
                 'assets' => array(
                     'css' => array('/admin/assets/select2/select2.css'),
