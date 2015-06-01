@@ -250,6 +250,16 @@ class CMF
 		// Set the lang vars
 		static::$lang_default = $fallback;
 		static::$lang = $iso;
+
+		// Set locale if necessary
+		if (is_array($locale_map = \Config::get('locale_map')) && $new_locale = \Arr::get($locale_map, $iso)) {
+			$result = setlocale(LC_TIME, $new_locale);
+			if ($result !== false) {
+				\Fuel::$locale = $result;
+				\Config::set('locale', $result);
+				\Locale::setDefault($result);
+			}
+		}
 		
 		// Redirect to default language if this one isn't configured
 		if (!array_key_exists($iso, static::languages()) && array_key_exists($fallback, static::languages())) {
