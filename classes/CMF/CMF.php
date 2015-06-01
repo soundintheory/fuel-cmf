@@ -35,10 +35,10 @@ class CMF
 	 * @param string $input The string to transform
 	 * @return string The URL friendly slug
 	 */
-	public static function slug($input, $lowercase = true)
+	public static function slug($input, $lowercase = true, $allow_non_ascii = false)
 	{
 		$input = str_replace(array(".", ",", "'", '"'), "", $input);
-		return \Inflector::friendly_title($input, '-', $lowercase);
+		return \Inflector::friendly_title($input, '-', $lowercase, $allow_non_ascii);
 	}
 	
 	public static function fieldId($input)
@@ -82,7 +82,7 @@ class CMF
 			// Fall back to parsing the REQUEST URI
 			if (isset($_SERVER['REQUEST_URI']))
 			{
-				$uri = $_SERVER['REQUEST_URI'];
+				$uri = urldecode($_SERVER['REQUEST_URI']);
 			}
 			else
 			{

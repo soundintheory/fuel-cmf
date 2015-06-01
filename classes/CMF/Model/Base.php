@@ -295,7 +295,7 @@ class Base extends \CMF\Doctrine\Model
             return $self->$prop;
         }, $class_name::$_slug_fields);
         
-        return \CMF::slug(implode(' ', $values));
+        return \CMF::slug(implode(' ', $values), true, true);
     }
     
     /**
