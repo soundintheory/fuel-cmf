@@ -115,11 +115,15 @@ class Select extends Base {
                 'js_data' => $settings['select2']
             );
         }
+
+        if (!is_string($value)) {
+            $value = $value.' ';
+        }
         
         $options = array_map('strip_tags', $options);
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
-        $input = \Form::select($settings['mapping']['fieldName'], $value, $options, $input_attributes);
-        
+        $input = \Form::select($settings['mapping']['fieldName'], strval($value), $options, $input_attributes);
+
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
         
         return html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') ), $label.$input);
