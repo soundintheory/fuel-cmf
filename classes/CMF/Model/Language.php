@@ -65,7 +65,13 @@ class Language extends Base
      * @ORM\Column(type="language")
      **/
     protected $code;
-    
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\CMF\Model\Language")
+     */
+    protected $update_from;
+
+
     /**
      * @ORM\Column(type="string", nullable=true)
      **/
