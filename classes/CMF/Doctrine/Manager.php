@@ -21,6 +21,16 @@ class DoctrineException extends \FuelException {}
  */
 class D extends \Fuel\Doctrine
 {
+	protected static $cache_drivers = array(
+		'array'=>'ArrayCache',
+		'apc'=>'ApcCache',
+		'xcache'=>'XcacheCache',
+		'wincache'=>'WinCache',
+		'zend'=>'ZendDataCache',
+		'file'=>'FilesystemCache',
+		'filesystem'=>'FilesystemCache'
+	);
+
 	/** @var \Symfony\Component\Validator\Validator */
 	protected static $_validator;
 	
@@ -149,6 +159,7 @@ class D extends \Fuel\Doctrine
 			switch ($type) {
 				case 'file':
 				case 'phpfile':
+				case 'filesystem':
 					$cache = new $class(APPPATH.'cache/doctrine2');
 					break;
 					

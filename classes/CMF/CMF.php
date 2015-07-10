@@ -257,7 +257,9 @@ class CMF
 			if ($result !== false) {
 				\Fuel::$locale = $result;
 				\Config::set('locale', $result);
-				\Locale::setDefault($result);
+				if (class_exists('Locale')) {
+					\Locale::setDefault($result);
+				}
 			}
 		}
 		

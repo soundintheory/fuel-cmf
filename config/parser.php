@@ -14,7 +14,6 @@ return array(
 		),
 		'extensions' => array(
 			'Twig_Extensions_Extension_Text',
-			'Twig_Extensions_Extension_Intl',
 			'Twig_Extension_StringLoader',
 			'CMF\\Twig\\Extension',
 			'CMF\\Twig\\Cache',
