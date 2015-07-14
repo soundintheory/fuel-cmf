@@ -240,7 +240,7 @@ class CMF
 		// Get the language from the request
 		if (!$iso) {
 			$iso = \Arr::get(explode('/', static::original_uri()), 1, \Lang::get_lang())."";
-			if (\Lang::get("languages.$iso") === null) $iso = \Lang::get_lang();
+            if (\Lang::get("languages.$iso", array(), 'notfound') == 'notfound') $iso = \Lang::get_lang();
 		}
 		
 		// Set the languages into Fuel for future reference
@@ -282,7 +282,7 @@ class CMF
 				}
 			}
 		}
-		
+
 		// Redirect to default language if this one isn't configured
 		if (!array_key_exists($iso, static::languages()) && array_key_exists($fallback, static::languages())) {
 			\Response::redirect(static::link(\Input::uri(), $fallback));
