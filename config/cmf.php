@@ -145,6 +145,17 @@ return array (
     
     'languages' => array(
         'enabled' => false,
+        'use_tld' => false,
+        'google_translate' => array(
+            'api_key' => null,
+            'base_url' => 'https://www.googleapis.com/language/translate/v2'
+        ),
+        'exclude_auto_translate' => array(
+            'CMF\\Model\\User',
+            'CMF\\Model\\Log',
+            'CMF\\Model\\Language',
+            'CMF\\Model\\Permission'
+        ),
         'translatable_fields' => array(
             'string',
             'text',

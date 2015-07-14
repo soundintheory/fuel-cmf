@@ -42,7 +42,7 @@ class Textarea extends Base
         }
         
         // Build the label
-        $label = (!$include_label) ? '' : \Form::label($label_text.($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
+        $label = (!$include_label) ? '' : html_tag('label', array( 'class' => 'item-label', 'for' => $settings['mapping']['fieldName'] ), $label_text.($has_errors ? ' - '.$errors[0] : ''));
         
         if (isset($settings['prepend'])) {
             $input = html_tag('div', array( 'class' => 'input-prepend' ), html_tag('span', array( 'class' => 'add-on' ), $settings['prepend']).$input);

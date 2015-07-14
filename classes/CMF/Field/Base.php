@@ -66,7 +66,7 @@ class Base {
         $label_text = $settings['title'].($required ? ' *' : '');
         
         // Translation?
-        if (\CMF::$lang_enabled && !\CMF::langIsDefault() && $model->isTranslatable($settings['mapping']['columnName'])) {
+        if (\CMF::$lang_enabled && !\CMF::langIsDefault() && isset($settings['mapping']['columnName']) &&  $model->isTranslatable($settings['mapping']['columnName'])) {
             
             // If there is no translation
             if (!$model->hasTranslation($settings['mapping']['columnName'])) {
@@ -78,12 +78,15 @@ class Base {
             }
             
         }
+
+        // Description?
+        $description = isset($settings['description']) ? '<span class="help-block">'.$settings['description'].'</span>' : '';
         
         // Build the input
         $input = '<input type="text" name="'.$settings['mapping']['fieldName'].'" '.array_to_attr($input_attributes).' value="'.\Security::htmlentities(strval($value), ENT_QUOTES).'" />';
         
         // Build the label
-        $label = (!$include_label) ? '' : \Form::label($label_text.($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
+        $label = (!$include_label) ? '' : html_tag('label', array( 'class' => 'item-label', 'for' => $settings['mapping']['fieldName'] ), $label_text.($has_errors ? ' - '.$errors[0] : ''));
         
         // Prepend or append things...
         if (isset($settings['prepend'])) {
@@ -106,7 +109,7 @@ class Base {
             $label .= $auto_update;
             
             return array(
-                'content' => html_tag('div', $attributes, $label.$input).'<div class="clear"><!-- --></div>',
+                'content' => html_tag('div', $attributes, $label.$description.$input).'<div class="clear"><!-- --></div>',
                 'widget' => false,
                 'assets' => array( 'js' => array('/admin/assets/js/twig.min.js', '/admin/assets/js/fields/template.js') ),
                 'js_data' => $settings
@@ -114,7 +117,7 @@ class Base {
             
         }
         
-        return html_tag('div', $attributes, $label.$input);
+        return html_tag('div', $attributes, $label.$description.$input);
     }
     
     /**

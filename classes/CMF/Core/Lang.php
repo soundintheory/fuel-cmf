@@ -6,6 +6,20 @@ class Lang extends \Fuel\Core\Lang
 {
 	protected static $to_save = array();
 	protected static $loaded = array();
+
+	public static $listener = null;
+
+	public static function save($file, $lang, $language = null)
+	{
+		$output = parent::save($file, $lang, $language);
+
+		// Fire save event
+		if (static::$listener !== null) {
+			static::$listener->onSaveTerms($file, $lang, $language);
+		}
+
+		return $output;
+	}
 	
 	public static function get($line, array $params = array(), $default = null, $language = null)
 	{

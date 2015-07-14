@@ -217,11 +217,31 @@ class CMF
 		
 		// First load our languages
 		\Lang::load('languages', true);
+
+		// Get the language from cookies
+		$iso = \Cookie::get('default_language');
+		$fallback = \Lang::get_lang();
+
+		// Get the language from URL
+		if (!$iso) {
+			$languages = static::languages();
+			$host = strtolower(\Input::server('HTTP_HOST', ''));
+			foreach ($languages as $language) {
+				if ($tld = \Arr::get($language, 'top_level_domain')) {
+					$parts = array_filter(array_map(function($part) { return strtolower(trim($part)); }, explode(',', $tld)));
+					if (in_array($host, $parts)) {
+						$iso = $language['code'];
+						break;
+					}
+				}
+			}
+		}
 		
 		// Get the language from the request
-		$fallback = \Lang::get_lang();
-		$iso = \Arr::get(explode('/', static::original_uri()), 1, \Lang::get_lang())."";
-		if (strlen($iso) !== 2 || \Lang::get("languages.$iso") === null) $iso = \Lang::get_lang();        
+		if (!$iso) {
+			$iso = \Arr::get(explode('/', static::original_uri()), 1, \Lang::get_lang())."";
+			if (\Lang::get("languages.$iso") === null) $iso = \Lang::get_lang();
+		}
 		
 		// Set the languages into Fuel for future reference
 		\Config::set('language_fallback', $fallback);
@@ -296,7 +316,7 @@ class CMF
 		if (!static::$lang_enabled) return static::$languages = array(\Lang::get_lang());
 		
 		try {
-			return static::$languages = \CMF\Model\Language::select('item.code', 'item', 'item.code')
+			return static::$languages = \CMF\Model\Language::select('item.id, item.code, item.top_level_domain', 'item', 'item.code')
 			->orderBy('item.pos', 'ASC')
 			->where('item.visible = true')
 			->getQuery()->getArrayResult();
@@ -324,16 +344,17 @@ class CMF
 	}
 	
 	/**
-	 * Transforms a URL to make sure it includes the correct lang prefix
+	 * Transforms a URL to make sure it includes the correct lang prefix (unless top level domains are being used)
 	 */
 	public static function link($url = null, $lang = null)
 	{
 		if ($url === null) $url = \Input::uri();
 		if (!static::$lang_enabled) return $url;
-		
+
+		$use_tld = \Config::get('cmf.languages.use_tld', false);
 		$url = $url == '/' || $url == '' ? '/' : rtrim($url, '/');
 		$lang = $lang === null ? static::lang() : $lang;
-		$prefix = '/'.$lang;
+		$prefix = $use_tld ? '/' : '/'.$lang;
 		
 		if ($lang == static::$lang_default ||
 			substr($url, 0, 1) != '/' ||

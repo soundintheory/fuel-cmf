@@ -57,6 +57,9 @@ class Select extends Base {
         $has_errors = count($errors) > 0;
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
         $options = \CMF::getOptions(get_class($model), $settings['mapping']['columnName'], isset($settings['options']) ? $settings['options'] : array());
+
+        // Description?
+        $description = isset($settings['description']) ? '<span class="help-block">'.$settings['description'].'</span>' : '';
         
         if (!empty($options) && !\Arr::is_assoc($options) && $settings['use_key'] !== true) {
             $options = array_combine($options, $options);
@@ -102,7 +105,7 @@ class Select extends Base {
             
             $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
             $input = \Form::select($settings['mapping']['fieldName'], $value, $options, $input_attributes);
-            $content = $label.$input;
+            $content = $label.$description.$input;
             if (!(isset($settings['wrap']) && $settings['wrap'] === false)) $content = html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') ), $content);
             
             return array(
@@ -126,7 +129,7 @@ class Select extends Base {
 
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
         
-        return html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') ), $label.$input);
+        return html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') ), $label.$description.$input);
     }
     
     /** @inheritdoc */

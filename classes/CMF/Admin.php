@@ -78,7 +78,8 @@ class Admin
     {
         if (static::$languages !== null) return static::$languages;
         
-        return static::$languages = \CMF\Model\Language::select('item.code', 'item', 'item.code')
+        return static::$languages = \CMF\Model\Language::select('item.id, item.code, item.top_level_domain, update_from.code AS update_from_code', 'item', 'item.code')
+        ->leftJoin('item.update_from', 'update_from')
         ->orderBy('item.pos', 'ASC')
         ->getQuery()->getArrayResult();
     }
@@ -122,11 +123,21 @@ class Admin
 		static::$tables_to_classes = array();
 		static::$classes_to_tables = array();
 		static::$active_classes = array();
+
+		// Populate translatable fields
+		$translateListener = \CMF\Doctrine\Extensions\Translatable::getListener();
 		
 		// Loop through all Doctrine's class names, get metadata for each and populate the maps
 		foreach ($driver->getAllClassNames() as $class_name)
 		{
 		    $metadata = $em->getClassMetadata($class_name);
+
+		    if ($translateListener !== null) {
+		    	$tConfig = $translateListener->getConfiguration($em, $class_name);
+		    	if (is_array($tConfig) && isset($tConfig['fields']) && is_array($tConfig['fields'])) {
+		    		static::$translatable[$class_name] = $tConfig['fields'];
+		    	}
+		    }
 		    
 		    if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE) {
 		    	static::$tables_to_classes[$metadata->table['name']] = $metadata->rootEntityName;

@@ -50,6 +50,9 @@ class ManyToOne extends \CMF\Field\Base {
         $add_link = '/admin/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
     	$options = $target_class::options(\Arr::get($settings, 'filters', array()), array(), null, null, null, is_array($settings['select2']));
         $has_controls = $settings['create'] !== false;
+
+        // Description?
+        $description = isset($settings['description']) ? '<span class="help-block">'.$settings['description'].'</span>' : '';
         
         if ($settings['allow_empty']) {
             $options = array( '' => '' ) + $options;
@@ -90,7 +93,7 @@ class ManyToOne extends \CMF\Field\Base {
             }
             
             return array(
-                'content' => html_tag('div', array( 'class' => 'controls control-group'.($has_controls ? ' field-with-controls' : '').($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input.$controls_top).'<div class="clear"><!-- --></div>',
+                'content' => html_tag('div', array( 'class' => 'controls control-group'.($has_controls ? ' field-with-controls' : '').($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$description.$input.$controls_top).'<div class="clear"><!-- --></div>',
                 'widget' => false,
                 'assets' => array(
                     'css' => array('/admin/assets/select2/select2.css'),
@@ -105,7 +108,7 @@ class ManyToOne extends \CMF\Field\Base {
         
         $input = \Form::select($settings['mapping']['fieldName'], $id, $options, $input_attributes);
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
-        return html_tag('div', array( 'class' => 'controls control-group'.($has_controls ? ' field-with-controls' : '').($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$input.$controls_top).'<div class="clear"><!-- --></div>';
+        return html_tag('div', array( 'class' => 'controls control-group'.($has_controls ? ' field-with-controls' : '').($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$description.$input.$controls_top).'<div class="clear"><!-- --></div>';
     }
     
     /** inheritdoc */

@@ -83,15 +83,21 @@ class Annotation extends AbstractAnnotationDriver
             else if ($isCmf && $className::langEnabled(false)) {
                 
                 $field = $property->getName();
-                if (!$meta->hasField($field)) continue;
-                
-                $allowed = \Config::get('cmf.languages.translatable_fields', array());
-                $fieldMapping = $meta->getFieldMapping($field);
-                if (!in_array($fieldMapping['type'], $allowed) || in_array($field, $className::excludeTranslations())) continue;
-                
-                $config['fields'][] = $field;
-                \Admin::addTranslatable($className, $field);
-                
+                if ($meta->hasField($field)) {
+                    
+                    $allowed = \Config::get('cmf.languages.translatable_fields', array());
+                    $fieldMapping = $meta->getFieldMapping($field);
+                    
+                    if (in_array($fieldMapping['type'], $allowed) && !in_array($field, $className::excludeTranslations())) {
+                        $config['fields'][] = $field;
+                        \Admin::addTranslatable($className, $field);
+
+                        if (isset($translatable->fallback)) {
+                            $config['fallback'][$field] = $translatable->fallback;
+                        }
+                    }
+
+                }
             }
             // END CMF EDIT
             

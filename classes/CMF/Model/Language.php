@@ -23,12 +23,19 @@ class Language extends Base
             'title' => 'Language'
         ),
         'top_level_domain' => array(
-            'visible' => false
+            'visible' => true,
+            'description' => 'The domain(s) that this language is the default language for. Can be multiple domains separated by commas'
+        ),
+        'update_from' => array(
+            'title' => 'Auto Translate From',
+            'description' => 'If this is set, this language will be auto translated from the selected language via the Google Translate API',
+            'create' => false
         )
     );
     
     protected static $_list_fields = array(
         'code',
+        'top_level_domain',
         'visible'
     );
     
@@ -70,7 +77,6 @@ class Language extends Base
      * @ORM\ManyToOne(targetEntity="\CMF\Model\Language")
      */
     protected $update_from;
-
 
     /**
      * @ORM\Column(type="string", nullable=true)

@@ -12,8 +12,8 @@ class Translator extends Extension
     public static function init($em, $reader)
     {
         $listener = new \CMF\Doctrine\Extensions\TranslatorListener();
-
         $em->getEventManager()->addEventSubscriber($listener);
+        \Lang::$listener = $listener;
     }
 
 }
