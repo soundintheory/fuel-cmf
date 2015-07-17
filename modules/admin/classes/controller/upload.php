@@ -209,7 +209,7 @@ class Controller_Upload extends Controller_Base {
             return array('error'=>"Server error. Increase post_max_size and upload_max_filesize to ".$size);
         }
 
-        if (!is_writable($uploadDirectory) || !is_executable($uploadDirectory)){
+        if (!is_writable($uploadDirectory)){
             return array('error' => "Server error. Uploads directory isn't writable or executable.");
         }
 
