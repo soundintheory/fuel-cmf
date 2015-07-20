@@ -58,7 +58,8 @@ class Base extends \CMF\Doctrine\Model
     public $_translated = array();
     
     protected static $_exclude_translations = array();
-    
+    protected static $_exclude_autotranslations = array();
+
     protected static $_lang_enabled = true;
     
     /**
@@ -873,6 +874,15 @@ class Base extends \CMF\Doctrine\Model
     {
         $called_class = get_called_class();
         return $called_class::$_exclude_translations;
+    }
+
+    /**
+     * Returns a list of fields excluded from auto translation
+     */
+    public static function excludeAutoTranslations()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_exclude_autotranslations;
     }
     
     /**

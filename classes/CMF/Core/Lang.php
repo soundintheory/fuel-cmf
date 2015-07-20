@@ -38,17 +38,24 @@ class Lang extends \Fuel\Core\Lang
 		}
 
 		// Try and load from the DB...
-		if (!in_array($group, static::$loaded)) {
+		if (!in_array($group.'_'.$language, static::$loaded)) {
 			static::load("$group.db", $group, $language, true, true);
-			static::$loaded[] = $group;
+			static::$loaded[] = $group.'_'.$language;
 		}
 
 		$output = \Arr::get(static::$lines, "$language.$line");
-		if ($output == null) {
+		if ($output == null)
+		{
+			// First try and get from the fallback...
+			$output = \Arr::get(static::$lines, static::$fallback[0].".$line");
+
 			if (!in_array($group, static::$to_save)) static::$to_save[] = $group;
 			static::set($line, $default);
 			static::set($line, $default, null, static::$fallback[0]);
-			$output = $default;
+
+			if ($output == null) {
+				$output = $default;
+			}
 		}
 
 		return ($output != null) ? \Str::tr(\Fuel::value($output), $params) : $default;
