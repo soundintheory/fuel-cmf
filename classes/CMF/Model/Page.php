@@ -35,8 +35,14 @@ class Page extends Base
     
     protected static $_groups = array(
         'title' => array( 'title' => 'Title & URLS', 'icon' => 'tag' ),
-        'meta' => array( 'title' => 'Meta Data (SEO)', 'icon' => 'globe' ),
+        'meta' => array( 'title' => 'Meta Data (SEO)', 'icon' => 'globe' ,'tab'=>'meta'),
+        'field_extra_meta' => array ('tab'=>'meta'),
         'main' => array( 'title' => 'Info' )
+    );
+
+    protected static $_tabs = array(
+        'main' => 'Main',
+        'meta'	=> 'Meta Data (SEO)'
     );
     
     protected static $_default_group = 'main';
