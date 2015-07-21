@@ -320,16 +320,19 @@ class TranslatorListener implements EventSubscriber
     }
 
     /**
-     * Get the translatable fields which have changed for an entity
+     * Get the auto translatable fields which have changed for an entity
      */
     protected function getChangeset($entity)
     {
+        $entity_class = $entity->metadata()->name;
         $changeset = \D::manager()->getUnitOfWork()->getEntityChangeSet($entity);
-        $translatableFields = \CMF\Admin::getTranslatable($entity->metadata()->name);
+        $translatableFields = \CMF\Admin::getTranslatable($entity_class);
+        $excludedFields = $entity_class::excludeAutoTranslations();
+        
         if (is_array($changeset)) $changeset = array_keys($changeset);
         else $changeset = array();
 
-        return array_values(array_intersect($translatableFields, $changeset));
+        return array_diff(array_values(array_intersect($translatableFields, $changeset)), $excludedFields);
     }
 
     /**
