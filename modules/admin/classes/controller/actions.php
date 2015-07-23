@@ -289,14 +289,24 @@ class Controller_Actions extends Controller_Base {
         // Get driver and get all class names
         $driver = \D::manager()->getConfiguration()->getMetadataDriverImpl();
         $this->classNames = $driver->getAllClassNames();
-        foreach ($this->classNames as $aClass) {
-            if (is_subclass_of($aClass,'\\CMF\\Model\\Base')) {
-                $aClass::saveall();
+
+        foreach ($this->classNames as $class) {
+            if (is_subclass_of($class,'\\CMF\\Model\\Base')) {
+            	
+            	$metadata = $class::metadata();
+
+            	// Don't process super classes!
+            	if ($class::superclass() || $metadata->isMappedSuperclass) {
+            	    continue;
+            	}
+
+                $class::saveAll();
+                \D::manager()->clear();
                 sleep(1);
             }
         }
 
-		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "Everything was saved" ));
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "Everything was saved!" ));
 		\Response::redirect_back();
 	}
 	

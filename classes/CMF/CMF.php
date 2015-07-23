@@ -225,10 +225,10 @@ class CMF
 		// Get the language from URL
 		if (!$iso) {
 			$languages = static::languages();
-			$host = strtolower(\Input::server('HTTP_HOST', ''));
+			$host = preg_replace("/^www\./i", '', strtolower(\Input::server('HTTP_HOST', '')));
 			foreach ($languages as $language) {
 				if ($tld = \Arr::get($language, 'top_level_domain')) {
-					$parts = array_filter(array_map(function($part) { return strtolower(trim($part)); }, explode(',', $tld)));
+					$parts = array_filter(array_map(function($part) { return preg_replace("/^www\./i", '', strtolower(trim($part))); }, explode(',', $tld)));
 					if (in_array($host, $parts)) {
 						$iso = $language['code'];
 						break;
@@ -246,6 +246,7 @@ class CMF
 		// Set the languages into Fuel for future reference
 		\Config::set('language_fallback', $fallback);
 		\Config::set('language', $iso);
+		\CMF\Doctrine\Extensions\Translatable::setLang($iso);
 		
 		// Load the languages back in, now we might have a translation for them
 		if ($fallback != $iso) {
@@ -316,12 +317,15 @@ class CMF
 		if (!static::$lang_enabled) return static::$languages = array(\Lang::get_lang());
 		
 		try {
-			return static::$languages = \CMF\Model\Language::select('item.id, item.code, item.top_level_domain', 'item', 'item.code')
-			->orderBy('item.pos', 'ASC')
-			->where('item.visible = true')
-			->getQuery()->getArrayResult();
+			return \DB::query("SELECT id, code, top_level_domain FROM languages WHERE visible = 1 ORDER BY pos ASC")->execute()->as_array();
 		} catch (\Exception $e) {
-			return array(\Lang::get_lang());
+			return array(
+				array(
+					'id' => 0,
+					'code' => \Lang::get_lang(),
+					'top_level_domain' => ''
+				)
+			);
 		}
 	}
 	
@@ -696,7 +700,15 @@ class CMF
 		
 		// Query the urls table if it's an ID
 		if (is_numeric($output)) {
-			$link = \CMF\Model\URL::select('item.url')->where('item.id = '.$output)->getQuery()->getArrayResult();
+			$link = \CMF\Model\URL::select('item.url')->where('item.id = '.$output)->getQuery();
+			// Set the query hint if multi lingual!
+			if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+			    $link->setHint(
+			        \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+			        'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+			    );
+			}
+			$link = $link->getArrayResult();
 			$output = (count($link) > 0) ? static::link($link[0]['url']) : null;
 		} elseif (empty($output)) {
 			$output = null;

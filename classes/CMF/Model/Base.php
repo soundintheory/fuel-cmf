@@ -786,16 +786,34 @@ class Base extends \CMF\Doctrine\Model
             $qb->leftJoin('item.'.$field, $field)->addSelect($field);
         }
         
+        $sql = $qb->getQuery()->getSQL();
         $items = $qb->getQuery()->getResult();
         
         foreach ($items as $num => $item) {
             $item->updated_at = new \Datetime();
             $item->populate(array());
             \D::manager()->persist($item);
+
+            // Persist associations!
+            foreach ($metadata->associationMappings as $field => $mapping)
+            {
+                $collection = $metadata->isCollectionValuedAssociation($field);
+                $cascadePersist = \Arr::get($mapping, 'isCascadePersist', false);
+                $value = $item->get($field);
+
+                if (!$cascadePersist && $value) {
+                    if ($collection && count($value)) {
+                        foreach ($value as $relation) {
+                            \D::manager()->persist($relation);
+                        }
+                    } else if (!$collection) {
+                        \D::manager()->persist($value);
+                    }
+                }
+            }
         }
-        
+
         \D::manager()->flush();
-        
     }
     
     /**

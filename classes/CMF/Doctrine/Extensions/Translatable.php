@@ -32,13 +32,20 @@ class Translatable extends Extension
 	
 	public static function setLang($code)
 	{
-		static::$listener->setTranslatableLocale($code);
-		static::$listener->setTranslationFallback(true);
+		if (!is_null(static::$listener)) {
+			static::$listener->setTranslatableLocale($code);
+			static::$listener->setTranslationFallback(true);
+		}
 	}
 
 	public static function getListener()
 	{
 		return static::$listener;
+	}
+
+	public static function enabled()
+	{
+		return !is_null(static::$listener);
 	}
 	
 }

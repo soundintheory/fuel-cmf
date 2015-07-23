@@ -209,7 +209,7 @@ class TranslatorListener implements EventSubscriber
 
             \D::manager()->persist($entity);
             \D::manager()->flush($entity);
-            
+
         } else {
             // An error response has been returned
             logger('error', 'An error was returned from the translate API: '.print_r($responseDecoded, true));
@@ -223,7 +223,7 @@ class TranslatorListener implements EventSubscriber
      */
     private function translateString($string, $from, $to)
     {
-        if (strlen($string) > 25000) return null;
+        if (strlen(trim(strip_tags($string))) > 10000) return null;
 
         $apiKey = \Config::get('cmf.languages.google_translate.api_key');
         if (!$apiKey) return null;

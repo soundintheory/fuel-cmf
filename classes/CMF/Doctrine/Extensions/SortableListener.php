@@ -33,11 +33,9 @@ class SortableListener implements EventSubscriber
         $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
         
-        /*
         foreach ($uow->getScheduledEntityInsertions() AS $entity) {
-            $this->process($entity, $em, $uow);
+            $this->processNew($entity, $em, $uow);
         }
-        */
         
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
             if (!property_exists($entity, 'pos')) continue;
@@ -45,11 +43,32 @@ class SortableListener implements EventSubscriber
         }
         
         $this->processRelocations($em, $uow);
+    }
+
+    protected function processNew($entity, $em, $uow)
+    {
+        if (!($entity instanceof \CMF\Model\Base)) return;
+        $class = get_class($entity);
         
+        $process_enabled = $class::sortProcess();
+        if ($process_enabled !== true) return;
+        if (!$class::sortable()) return;
+
+        // Don't try and calculate pos if one has already been explicitly given!
+        if ($entity->pos != -1) return;
+
+        // Find the max position from the entity's table and add one
+        $max_pos = \Arr::get($class::select('MAX(item.pos) AS pos')->getQuery()->getArrayResult(), '0.pos', 0) ?: 0;
+        $new_pos = $max_pos + 1;
+        
+        $metadata = $em->getClassMetadata($class);
+        $entity->set('pos', $new_pos);
+        $uow->recomputeSingleEntityChangeSet($metadata, $entity);
     }
     
     protected function processUpdate($entity, $em, $uow)
     {
+        if (!($entity instanceof \CMF\Model\Base)) return;
         $class = get_class($entity);
         
         $process_enabled = $class::sortProcess();

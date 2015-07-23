@@ -810,9 +810,19 @@ class Controller_List extends Controller_Base {
 			$qb->addSelect('url, alias')->leftJoin('node.url', 'url')->leftJoin('url.alias', 'alias');
 		}
 
+		$q = $qb->getQuery();
+
+		// Set the query hint if multi lingual!
+		if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+		    $q->setHint(
+		        \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+		        'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+		    );
+		}
+
 		//$tree = $this->processTreeNodes(\D::manager()->getRepository($class_name)->childrenHierarchy($root_node), $metadata, $ids);
 		$tree = $this->processTreeNodes(
-			$repo->buildTree($qb->getQuery()->getArrayResult())
+			$repo->buildTree($q->getArrayResult())
 		, $metadata, $ids);
 		
 		if (!$user->super_user) {

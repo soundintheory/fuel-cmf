@@ -78,10 +78,20 @@ class Admin
     {
         if (static::$languages !== null) return static::$languages;
         
-        return static::$languages = \CMF\Model\Language::select('item.id, item.code, item.top_level_domain, update_from.code AS update_from_code', 'item', 'item.code')
+        $languages = \CMF\Model\Language::select('item.id, item.code, item.top_level_domain, update_from.code AS update_from_code', 'item', 'item.code')
         ->leftJoin('item.update_from', 'update_from')
         ->orderBy('item.pos', 'ASC')
-        ->getQuery()->getArrayResult();
+        ->getQuery();
+
+        // Set the query hint if multi lingual!
+        if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+            $languages->setHint(
+                \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+            );
+        }
+
+        return static::$languages = $languages->getArrayResult();
     }
 	
 	/**

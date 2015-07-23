@@ -19,7 +19,7 @@ class Base extends \ViewModel
     {
         return $this->_view;
     }
-    
+
     protected function pageTree($model = 'Model_Page_Base', $label = null, $active_url = null, $extra_fields = null)
     {
         $extra_fields_str = (!is_null($extra_fields) ? ', page.'.implode(', page.', $extra_fields) : '');
@@ -29,8 +29,17 @@ class Base extends \ViewModel
         ->where('page.lvl > 0')
         ->andWhere('page.visible = true')
         ->orderBy('page.root, page.lft', 'ASC')
-        ->getQuery()->getArrayResult();
+        ->getQuery();
 
+        // Set the query hint if multi lingual!
+        if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+            $nodes->setHint(
+                \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+            );
+        }
+
+        $nodes = $nodes->getArrayResult();
         $root_label = $label ? $label.'_level1' : 'level1';
         $crumbs_label = $label ? $label.'_crumbs' : 'crumbs';
         

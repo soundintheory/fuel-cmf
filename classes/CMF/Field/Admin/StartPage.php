@@ -88,7 +88,15 @@ class StartPage extends \CMF\Field\Base {
 				    }
 				}
 				
-				$tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery()->getArrayResult();
+				$tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery();
+                // Set the query hint if multi lingual!
+                if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+                    $tree->setHint(
+                        \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                        'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+                    );
+                }
+                $tree = $tree->getArrayResult();
 				$tree = $repository->buildTree($tree, array());
 				$options[$name] = static::buildTreeOptions($tree, $prop, array());
 				continue;

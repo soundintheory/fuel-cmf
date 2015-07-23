@@ -144,11 +144,18 @@ class Link extends Object {
                     foreach ($filters as $filter)
                     {
                         $query = $query->andWhere('item.'.$filter);
-                        var_dump('WHERE item.'.$filter);
                     }
                 }
                 
-                $tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery()->getArrayResult();
+                $tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery();
+                // Set the query hint if multi lingual!
+                if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+                    $tree->setHint(
+                        \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                        'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+                    );
+                }
+                $tree = $tree->getArrayResult();
                 $tree = $repository->buildTree($tree, array());
                 $options[$name] = static::buildTreeOptions($tree, $prop, array());
 
@@ -159,7 +166,17 @@ class Link extends Object {
             ->where('url.alias is NULL')
             ->leftJoin('item.url', 'url')
             ->leftJoin('url.alias', 'alias')
-            ->orderBy("item.$prop", "ASC")->getQuery()->getArrayResult();
+            ->orderBy("item.$prop", "ASC")->getQuery();
+            
+            // Set the query hint if multi lingual!
+            if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+                $items->setHint(
+                    \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                    'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+                );
+            }
+
+            $items = $items->getArrayResult();
 
             if (is_array($items) && count($items) > 0) {
                 
@@ -238,14 +255,32 @@ class Link extends Object {
 				    }
 				}
 				
-				$tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery()->getArrayResult();
+				$tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery();
+
+                // Set the query hint if multi lingual!
+                if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+                    $tree->setHint(
+                        \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                        'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+                    );
+                }
+                $tree = $tree->getArrayResult();
 				$tree = $repository->buildTree($tree, array());
 				$options[$name] = static::buildTreeOptions($tree, $prop, array());
 				
 				continue;
             }
             
-            $items = $type::select("item.id, item.$prop, url.url, url.id url_id")->leftJoin('item.url', 'url')->orderBy("item.$prop", "ASC")->getQuery()->getArrayResult();
+            $items = $type::select("item.id, item.$prop, url.url, url.id url_id")->leftJoin('item.url', 'url')->orderBy("item.$prop", "ASC")->getQuery();
+            
+            // Set the query hint if multi lingual!
+            if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+                $items->setHint(
+                    \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                    'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+                );
+            }
+            $items = $items->getArrayResult();
             
             if (is_array($items) && count($items) > 0) {
                 
@@ -324,13 +359,31 @@ class Link extends Object {
                     }
                 }
                 
-                $tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery()->getArrayResult();
+                $tree = $query->orderBy('item.root, item.lft', 'ASC')->getQuery();
+
+                // Set the query hint if multi lingual!
+                if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+                    $tree->setHint(
+                        \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                        'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+                    );
+                }
+                $tree = $tree->getArrayResult();
                 $tree = $repository->buildTree($tree, array());
                 $options[$name] = static::buildTreeOptionsStatic($tree, $prop, array());
                 continue;
             }
             
-            $items = $type::select("item.id, item.$prop, url.url, url.id url_id")->leftJoin('item.url', 'url')->orderBy("item.$prop", "ASC")->getQuery()->getArrayResult();
+            $items = $type::select("item.id, item.$prop, url.url, url.id url_id")->leftJoin('item.url', 'url')->orderBy("item.$prop", "ASC")->getQuery();
+
+            // Set the query hint if multi lingual!
+            if (\CMF\Doctrine\Extensions\Translatable::enabled()) {
+                $items->setHint(
+                    \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                    'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+                );
+            }
+            $items = $items->getArrayResult();
             
             if (is_array($items) && count($items) > 0) {
                 
