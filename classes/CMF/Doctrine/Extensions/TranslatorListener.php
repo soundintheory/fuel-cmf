@@ -325,12 +325,18 @@ class TranslatorListener implements EventSubscriber
     protected function getChangeset($entity)
     {
         $entity_class = $entity->metadata()->name;
-        $changeset = \D::manager()->getUnitOfWork()->getEntityChangeSet($entity);
         $translatableFields = \CMF\Admin::getTranslatable($entity_class);
         $excludedFields = $entity_class::excludeAutoTranslations();
         
-        if (is_array($changeset)) $changeset = array_keys($changeset);
-        else $changeset = array();
+        if (\Input::param('force_translate', false) !== false) {
+
+            return array_values(array_diff(array_values($translatableFields), $excludedFields));
+
+        } else {
+            $changeset = \D::manager()->getUnitOfWork()->getEntityChangeSet($entity);
+            if (is_array($changeset)) $changeset = array_keys($changeset);
+            else $changeset = array();
+        }
 
         return array_diff(array_values(array_intersect($translatableFields, $changeset)), $excludedFields);
     }
