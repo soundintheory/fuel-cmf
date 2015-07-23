@@ -193,20 +193,28 @@ class TranslatorListener implements EventSubscriber
 
         // Decode the response and set each field back to the entity
         $responseDecoded = json_decode($response, true);
-        foreach($used_fields as $pos => $field) {
-            $entity->set($field , $responseDecoded['data']['translations'][$pos]['translatedText']);
-        }
-
-        // Now translate the big fields
-        foreach ($big_fields as $field => $big_value) {
-            $translated = $this->translateString($big_value, $from, $to);
-            if ($translated) {
-                $entity->set($field, $translated);
+        if (isset($responseDecoded['data'])) {
+            
+            foreach($used_fields as $pos => $field) {
+                $entity->set($field , $responseDecoded['data']['translations'][$pos]['translatedText']);
             }
-        }
 
-        \D::manager()->persist($entity);
-        \D::manager()->flush($entity);
+            // Now translate the big fields
+            foreach ($big_fields as $field => $big_value) {
+                $translated = $this->translateString($big_value, $from, $to);
+                if ($translated) {
+                    $entity->set($field, $translated);
+                }
+            }
+
+            \D::manager()->persist($entity);
+            \D::manager()->flush($entity);
+            
+        } else {
+            // An error response has been returned
+            logger('error', 'An error was returned from the translate API: '.print_r($responseDecoded, true));
+        }
+        
         usleep(500000);
     }
 
@@ -244,11 +252,15 @@ class TranslatorListener implements EventSubscriber
 
         // Decode the response and set each field back to the entity
         $responseDecoded = json_decode($response, true);
-
-        try {
-            return $responseDecoded['data']['translations'][0]['translatedText'];
-        } catch (\Exception $e) {
-            // Nothing
+        if (isset($responseDecoded['data'])) {
+            try {
+                return $responseDecoded['data']['translations'][0]['translatedText'];
+            } catch (\Exception $e) {
+                // Nothing
+            }
+        } else {
+            // An error response has been returned
+            logger('error', 'An error was returned from the translate API: '.print_r($responseDecoded, true));
         }
 
         return null;
@@ -291,14 +303,19 @@ class TranslatorListener implements EventSubscriber
         // Decode the response and set each field back to the entity
         $responseDecoded = json_decode($response, true);
         $result = null;
-        try {
+        if (isset($responseDecoded['data'])) {
+            try {
 
-            $translated = \Arr::pluck($responseDecoded['data']['translations'], 'translatedText');
-            if (count($translated) === count($array)) {
-                $result = array_combine(array_keys($array), array_values($translated));
+                $translated = \Arr::pluck($responseDecoded['data']['translations'], 'translatedText');
+                if (count($translated) === count($array)) {
+                    $result = array_combine(array_keys($array), array_values($translated));
+                }
+            } catch (\Exception $e) {
+                // Nothing
             }
-        } catch (\Exception $e) {
-            // Nothing
+        } else {
+            // An error response has been returned
+            logger('error', 'An error was returned from the translate API: '.print_r($responseDecoded, true));
         }
 
         return $result;
@@ -327,7 +344,7 @@ class TranslatorListener implements EventSubscriber
         $entity_class = $entity->metadata()->name;
         $translatableFields = \CMF\Admin::getTranslatable($entity_class);
         $excludedFields = $entity_class::excludeAutoTranslations();
-        
+
         if (\Input::param('force_translate', false) !== false) {
 
             return array_values(array_diff(array_values($translatableFields), $excludedFields));
