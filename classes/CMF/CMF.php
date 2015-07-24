@@ -364,7 +364,7 @@ class CMF
 			substr($url, 0, 1) != '/' ||
 			(strlen($url) > 3 && strpos($url, $prefix.'/') === 0)) return $url;
 		
-		return $url == $prefix ? $url : rtrim($prefix.$url, '/');
+		return $url == $prefix ? $url : '/'.trim($prefix.$url, '/');
 	}
 	
 	/**
