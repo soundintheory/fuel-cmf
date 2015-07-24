@@ -13,7 +13,7 @@
     
     <div class="inner">
 
-        <h2 class="main-heading"><i class="icon icon-{{ form.icon }}"></i>{% if static %}{{ form.singular }}{% else %} New {{ form.singular }}{% endif %}</h2>
+        <h2 class="main-heading"><i class="fa fa-{{ form.icon }}"></i>{% if static %}{{ form.singular }}{% else %} New {{ form.singular }}{% endif %}</h2>
         
         {% if form.content|length > 1 %}
         <ul class="nav nav-pills">
@@ -37,7 +37,7 @@
                     <div class="widget{{ (group.collapsible and tab.groups|length > 1) ? ' collapsible' : '' }}{{ (group.closed and tab.groups|length > 1) ? ' closed' : '' }} span12 {{ group.class }}">
                         
                         <div class="widget-title">
-                            <h3><i class="icon icon-{{ group.icon }}"></i> {{ group.title }}</h3>
+                            <h3><i class="fa fa-{{ group.icon }}"></i> {{ group.title }}</h3>
                         </div>
                         <div class="widget-content">
                             
@@ -79,8 +79,8 @@
         </div>
 
         <div class="actions pull-right">
-            <button data-loading-text="Creating {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> {{ static ? 'Save' : 'Create' }} {{ form.singular }}</button> 
-            {% if not static %}<button name="create_new" value="1" data-loading-text="Creating {{ form.singular }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> Create &amp; Add Another...</button>{% endif %}
+            <button data-loading-text="Creating {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> {{ static ? 'Save' : 'Create' }} {{ form.singular }}</button>
+            {% if not static %}<button name="create_new" value="1" data-loading-text="Creating {{ form.singular }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> Create &amp; Add Another...</button>{% endif %}
         </div>
 
     </div></div>

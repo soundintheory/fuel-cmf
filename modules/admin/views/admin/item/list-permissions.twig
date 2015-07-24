@@ -9,9 +9,9 @@
     <div class="inner">
         
         {% set list_name = is_tree ? 'tree' : 'list' %}
-        <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ singular }} permissions for {{ pluralize(role_name) }}</h2>
+        <h2 class="main-heading"><i class="fa fa-{{ icon }}"></i> {{ singular }} permissions for {{ pluralize(role_name) }}</h2>
         <div class="actions-top-right">
-            <a href="/admin/{{ table_name }}" class="btn btn-medium btn-inverse btn-permissions" title="{{ singular }} {{ list_name }}"><i class="icon icon-{{ is_tree ? 'sitemap' : 'list' }}"></i> &nbsp;{{ list_name }}</a>
+            <a href="/admin/{{ table_name }}" class="btn btn-medium btn-inverse btn-permissions" title="{{ singular }} {{ list_name }}"><i class="fa fa-{{ is_tree ? 'sitemap' : 'list' }}"></i> &nbsp;{{ list_name }}</a>
         </div>
         <div class="clear"></div>
         

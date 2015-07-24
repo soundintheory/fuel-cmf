@@ -115,11 +115,11 @@
 				openIcon = 'chevron-down',
 				closedIcon = 'chevron-right',
 				titleBar = el.find('> .item-title').click(toggle),
-				icon = $('<i class="toggle-arrow icon icon-' + openIcon + '"></i>').appendTo(titleBar);
+				icon = $('<i class="toggle-arrow fa fa-' + openIcon + '"></i>').appendTo(titleBar);
 				
 				if (el.hasClass('closed')) {
 					showing = false;
-					icon.removeClass('icon-' + openIcon).addClass('icon-' + closedIcon);
+					icon.removeClass('fa-' + openIcon).addClass('fa-' + closedIcon);
 				}
 				
 				function toggle() {
@@ -133,13 +133,13 @@
 				
 				function show() {
 					el.removeClass('closed');
-					icon.removeClass('icon-' + closedIcon).addClass('icon-' + openIcon);
+					icon.removeClass('fa-' + closedIcon).addClass('fa-' + openIcon);
 					showing = true;
 				}
 				
 				function hide() {
 					el.addClass('closed');
-					icon.removeClass('icon-' + openIcon).addClass('icon-' + closedIcon);
+					icon.removeClass('fa-' + openIcon).addClass('fa-' + closedIcon);
 					showing = false;
 				}
 				

@@ -166,7 +166,7 @@
                                 <table width="100%" border="0">\
                                     <tr>\
                                         <td style="width:14px;">\
-                                            <i class="icon-search"></i>\
+                                            <i class="fa fa-search"></i>\
                                         </td>\
                                         <td>\
                                             <div style="padding-left:10px;">\

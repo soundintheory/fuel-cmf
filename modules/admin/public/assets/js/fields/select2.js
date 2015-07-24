@@ -74,7 +74,7 @@
 				
 				if (can_edit) {
 					
-					var $editLink = $('<a class="edit-link" href="/admin/' + opts.target_table + '/' + object.id + '/edit?_mode=inline&_cid=' + cid + '"><span>' + object.text + '</span> <i class="icon icon-pencil"></i></a>')
+					var $editLink = $('<a class="edit-link" href="/admin/' + opts.target_table + '/' + object.id + '/edit?_mode=inline&_cid=' + cid + '"><span>' + object.text + '</span> <i class="fa fa-pencil"></i></a>')
 					.appendTo(container)
 					.fancybox(fancyBoxOpts)
 					.click(function(evt) {

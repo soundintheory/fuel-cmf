@@ -289,7 +289,7 @@ class ObjectForm
 		if ($this->settings['widget'] !== true && $this->settings['sub_group'] === true) {
 			$title = $this->settings['title'].($has_errors ? ' - '.$errors[0] : '');
 			if (isset($this->settings['widget_icon']) && !empty($this->settings['widget_icon']))
-				$title = '<i class="icon icon-'.$this->settings['widget_icon'].'"></i> '.$title;
+				$title = '<i class="fa fa-'.$this->settings['widget_icon'].'"></i> '.$title;
 			
 			$this->title = $title;
 			$heading = html_tag('h5', array(), $title);

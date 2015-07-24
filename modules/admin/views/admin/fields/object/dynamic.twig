@@ -18,7 +18,7 @@
 				<input placeholder="Type value..." data-name="{{ fieldName }}[values][]" value="" class="input-xxlarge" type="text" />
 			</div>
 		</td>
-		<td class="object-actions"><span><a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a></span></td>
+		<td class="object-actions"><span><a href="#" class="btn btn-small btn-remove"><i class="fa fa-remove"></i></a></span></td>
 	</tr>
 {% for field in form.settings.fields %}
 	<tr class="object-item">
@@ -34,14 +34,14 @@
 			{{ field.content }}
 		</td>
 		<td class="object-actions">
-			{% if field.dynamic %}<span><a href="#" class="btn btn-small btn-remove"><i class="icon icon-remove"></i></a></span>{% endif %}
+			{% if field.dynamic %}<span><a href="#" class="btn btn-small btn-remove"><i class="fa fa-remove"></i></a></span>{% endif %}
 		</td>
 	</tr>
 {% endfor %}
 	<tr class="last">
 		<td colspan="3">
 			<div class="actions">
-				<a href="#" class="btn {{ (form.settings.widget == false) ? 'btn-small' : 'btn-medium' }} btn-add"><i class="icon icon-plus"></i> Add entry</a>
+				<a href="#" class="btn {{ (form.settings.widget == false) ? 'btn-small' : 'btn-medium' }} btn-add"><i class="fa fa-plus"></i> Add entry</a>
 			</div>
 		</td>
 	</tr>

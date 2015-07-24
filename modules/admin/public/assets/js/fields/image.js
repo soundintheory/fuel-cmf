@@ -56,7 +56,7 @@
                 paramsInBody: false
             },
             text: {
-                uploadButton: '<i class="icon-upload-alt icon-white"></i> Upload',
+                uploadButton: '<i class="fa fa-upload-alt icon-white"></i> Upload',
                 formatProgress: " - {percent}% of {total_size}",
             },
             template:
@@ -75,8 +75,8 @@
                 '<span class="qq-upload-spinner"></span>' +
                 '<span class="qq-upload-finished"></span>' +
                 '<div class="file-controls">' +
-                '<span class="qq-upload-cancel btn btn-small btn-cancel" title="{cancelButtonText}"><i class="icon-remove qq-upload-cancel"></i></span>' +
-                '<!-- span class="qq-upload-retry btn btn-small" title="{retryButtonText}"><i class="icon-repeat icon-white qq-upload-retry"></i></span -->' +
+                '<span class="qq-upload-cancel btn btn-small btn-cancel" title="{cancelButtonText}"><i class="fa fa-remove qq-upload-cancel"></i></span>' +
+                '<!-- span class="qq-upload-retry btn btn-small" title="{retryButtonText}"><i class="fa fa-repeat icon-white qq-upload-retry"></i></span -->' +
                 '</div>' +
                 '<span class="qq-upload-status-text">{statusText}</span>' +
                 '<div class="clear"><!-- --></div></div>',
@@ -116,7 +116,7 @@
         
         // Set up some stuff for our uploading functionality
         var $topRow = $el.find('.top-row'),
-        $clearBut = $('<span class="btn btn-small btn-clear"><i class="icon-remove"></i></span>').appendTo($topRow).click(clear),
+        $clearBut = $('<span class="btn btn-small btn-clear"><i class="fa fa-remove"></i></span>').appendTo($topRow).click(clear),
         $filePreview = $el.find('.file-preview');
         
         // This will show / hide any stuff appropriately if there is a value
@@ -205,7 +205,7 @@
                 thumbW = (cropMode === 1) ? 0 : settings['thumb_size']['width'];
                 
                 var img = '<img style="height:'+settings['thumb_size']['height']+'px;" src="/image/' + cropMode + '/' + thumbW + '/' + settings['thumb_size']['height'] + '/' + val['src'] + '" />';
-                var icon = '<span class="hover-icon"><i class="icon icon-cog"></i></span>';
+                var icon = '<span class="hover-icon"><i class="fa fa-cog"></i></span>';
                 
                 $filePreview.html('<div></div>');
                 $el.addClass('populated');
@@ -338,7 +338,7 @@
             '</div>' + // .modal-body
             '<div class="modal-footer">' +
             '<div class="footer-left clearfix"></div>' +
-            '<button class="btn btn-primary save-image" data-dismiss="modal"><i class="icon icon-ok"></i> &nbsp;Done</button>' +
+            '<button class="btn btn-primary save-image" data-dismiss="modal"><i class="fa fa-ok"></i> &nbsp;Done</button>' +
             '</div>' +
             '</div>';
             
@@ -437,7 +437,7 @@
                 cropHeight = parseInt(cropOption.height),
                 aspectRatio = (isSet(cropWidth) && isSet(cropHeight)) ? cropWidth / cropHeight : 0,
                 $zoomSlider = null,
-                $resetBut = $('<span class="btn btn-warning btn-reset"><i class="icon-refresh"></i> Reset Crop</span>').on('click', resetCropArea),
+                $resetBut = $('<span class="btn btn-warning btn-reset"><i class="fa fa-refresh"></i> Reset Crop</span>').on('click', resetCropArea),
                 jcrop_api = null,
                 jcropSettings = {
                     onChange: updateCoords,

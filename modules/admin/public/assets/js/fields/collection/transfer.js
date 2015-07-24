@@ -10,29 +10,29 @@
                     <div class="selector-available">\
                         <h2>Available</h2>\
                         <div class="selector-filter">\
-                            <i class="icon-search"></i>\
+                            <i class="fa fa-search"></i>\
                             <input type="text" class="filter-input" placeholder="Type to filter..." />\
                         </div>\
                         <select multiple="multiple" class="filtered remaining">\
                         </select>\
-                        <a href="#" class="selector-chooseall">Choose all&nbsp; <i class="icon icon-caret-right"></i></a>\
+                        <a href="#" class="selector-chooseall">Choose all&nbsp; <i class="fa fa-caret-right"></i></a>\
                     </div>\
                 </td>\
                 <td>\
                     <div class="selector-chooser">\
-                        <a href="#" class="selector-add"><i class="icon icon-circle-arrow-right"></i></a>\
-                        <a href="#" class="selector-remove"><i class="icon icon-circle-arrow-left"></i></a>\
+                        <a href="#" class="selector-add"><i class="fa fa-circle-arrow-right"></i></a>\
+                        <a href="#" class="selector-remove"><i class="fa fa-circle-arrow-left"></i></a>\
                     </div>\
                 </td>\
                 <td width="50%">\
                     <div class="selector-chosen">\
                         <h2>Chosen</h2>\
                         <div class="selector-filter right">\
-                            <span>Select then click <i class="icon icon-circle-arrow-right action-arrow"></i></span>\
+                            <span>Select then click <i class="fa fa-circle-arrow-right action-arrow"></i></span>\
                         </div>\
                         <select multiple="multiple" class="filtered target">\
                         </select>\
-                        <a href="#" class="selector-clearall"><i class="icon icon-caret-left"></i>&nbsp; Clear all</a>\
+                        <a href="#" class="selector-clearall"><i class="fa fa-caret-left"></i>&nbsp; Clear all</a>\
                     </div>\
                 </td>\
             </tr>\

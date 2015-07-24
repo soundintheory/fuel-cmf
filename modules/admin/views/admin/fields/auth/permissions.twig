@@ -17,7 +17,7 @@
 			{% endif %}
 			{% for resource_id, resource in resource_group.classes %}
 			<tr class="item-row" data-item-id="{{ resource_id }}">
-			    <td class="item-label"><i class="item-icon icon-{{ resource.icon }}"></i> {{ resource.title }}</td>
+			    <td class="item-label"><i class="item-icon fa fa-{{ resource.icon }}"></i> {{ resource.title }}</td>
 			    {% for action in actions %}
 			    <td class="item-action">{% if action in resource.actions %}
 			    	<input type="hidden" name="{{ settings.mapping.fieldName }}[{{ resource_id }}][{{ action }}]" value="0" />

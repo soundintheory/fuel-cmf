@@ -7,10 +7,10 @@
     {% include 'admin/shared/alert.twig' %}
     
     <div class="inner">
-        <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }}</h2>
+        <h2 class="main-heading"><i class="fa fa-{{ icon }}"></i> {{ plural }}</h2>
         <div class="actions-top-right">
             {% if can_manage %}
-            <a href="/admin/{{ table_name }}/permissions" class="btn btn-medium btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="icon icon-lock"></i></a>
+            <a href="/admin/{{ table_name }}/permissions" class="btn btn-medium btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="fa fa-lock"></i></a>
             {% endif %}
         </div>
         <div class="clear"></div>
@@ -25,7 +25,7 @@
             
             <p>There are no {{ plural|lower }} added yet.</p>
             {% if can_create %}
-            <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
+            <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="fa fa-plus icon-white"></i> Add {{ singular }}...</a>
             {% endif %}
         
         </div>
@@ -46,7 +46,7 @@
         
         {% if can_create %}
         <!-- <div class="actions pull-right">
-            <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="icon-plus icon-white"></i> Add New {{ singular }}...</a>
+            <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="fa fa-plus icon-white"></i> Add New {{ singular }}...</a>
         </div> -->
         {% endif %}
         

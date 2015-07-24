@@ -120,11 +120,11 @@ function initCollapsibleWidgets() {
 		openIcon = 'chevron-down',
 		closedIcon = 'chevron-right',
 		titleBar = el.find('.widget-title').click(toggle),
-		icon = $('<i class="toggle-arrow icon icon-' + openIcon + '"></i>').appendTo(titleBar);
+		icon = $('<i class="toggle-arrow fa fa-' + openIcon + '"></i>').appendTo(titleBar);
 		
 		if (el.hasClass('closed')) {
 			showing = false;
-			icon.removeClass('icon-' + openIcon).addClass('icon-' + closedIcon);
+			icon.removeClass('fa-' + openIcon).addClass('fa-' + closedIcon);
 		}
 		
 		function toggle() {
@@ -138,13 +138,13 @@ function initCollapsibleWidgets() {
 		
 		function show() {
 			el.removeClass('closed');
-			icon.removeClass('icon-' + closedIcon).addClass('icon-' + openIcon);
+			icon.removeClass('fa-' + closedIcon).addClass('fa-' + openIcon);
 			showing = true;
 		}
 		
 		function hide() {
 			el.addClass('closed');
-			icon.removeClass('icon-' + openIcon).addClass('icon-' + closedIcon);
+			icon.removeClass('fa-' + openIcon).addClass('fa-' + closedIcon);
 			showing = false;
 		}
 		
@@ -215,20 +215,20 @@ function initTree() {
 			
 			// Add the icon
 			if (!$li.hasClass('jqtree-folder')) {
-				node.title.prepend('<span class="icon-wrap"><span class="icon-' + node.icon + '"></span></span>');
+				node.title.prepend('<span class="fa fa-wrap"><span class="fa fa-' + node.icon + '"></span></span>');
 			}
 			
 			var can_edit_item = !(typeof(permissions[node.id]) != 'undefined' && permissions[node.id].length > 0 && $.inArray('edit', permissions[node.id]) == -1);
 			var can_edit = node['can_edit'] = classData['can_edit'] && can_edit_item;
 			
 			if (can_edit) {
-				node.title.append(' <span class="edit-icon icon-pencil"></span>');
+				node.title.append(' <span class="edit-icon fa fa-pencil"></span>');
 			} else {
-				node.title.append(' <span class="edit-icon icon-lock"></span>');
+				node.title.append(' <span class="edit-icon fa fa-lock"></span>');
 			}
 			
 			var actionsContent = '<div class="actions pull-right">';
-			//actionsContent += '<a href="#" class="show-hide ' + (node.visible ? 'visible' : '') + '"><i class="icon icon-eye-open"></i></a>';
+			//actionsContent += '<a href="#" class="show-hide ' + (node.visible ? 'visible' : '') + '"><i class="fa fa-eye-open"></i></a>';
 			
 			var childItems = [];
 			var childInfo = [];
@@ -239,17 +239,17 @@ function initTree() {
 					var subclassData = data['classes'][p],
 					baseUrl = '/admin/' + subclassData['table_name'];
 					if (subclassData['static'] || subclassData['can_create'] !== true || subclassData['can_edit'] !== true || subclassData['superclass']) { continue; }
-					childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create?parent=' + node.id + '"><i class="icon icon-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
+					childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create?parent=' + node.id + '"><i class="fa fa-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
 					childInfo.push({ 'edit':baseUrl + '/create?parent=' + node.id, 'icon':subclassData['icon'], 'singular':subclassData['singular'] });
 				}
 
 				// An alias type
-				childItems.push('<li><a tabindex="-1" href="/admin/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias"><i class="icon icon-link"></i> Link</a></li>');
+				childItems.push('<li><a tabindex="-1" href="/admin/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias"><i class="fa fa-link"></i> Link</a></li>');
 				childInfo.push({ 'edit':'/admin/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias', 'icon':baseClassData['icon'], 'singular':baseClassData['singular'] });
 				
 				if (childItems.length > 1) {
 					
-					actionsContent += '<a class="btn btn-small btn-icon dropdown-toggle" data-toggle="dropdown" href="#" title="Add Child..."><i class="icon icon-plus"></i></a>' + 
+					actionsContent += '<a class="btn btn-small btn-icon dropdown-toggle" data-toggle="dropdown" href="#" title="Add Child..."><i class="fa fa-plus"></i></a>' +
 					'<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' + 
 					'<li class="nav-header">Add a child...</li>' + 
 					childItems.join('') + 
@@ -257,7 +257,7 @@ function initTree() {
 					
 				} else if (childItems.length == 1) {
 					
-					actionsContent += '<a class="btn btn-small btn-icon" href="' + childInfo[0]['edit'] + '" rel="tooltip" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="icon icon-plus"></i></a>';
+					actionsContent += '<a class="btn btn-small btn-icon" href="' + childInfo[0]['edit'] + '" rel="tooltip" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="fa fa-plus"></i></a>';
 					
 				}
 				
@@ -267,7 +267,7 @@ function initTree() {
 			var can_delete = node['can_delete'] = classData['can_delete'] && can_delete_item;
 			
 			if (!(typeof(classData.static) != 'undefined' && classData.static == true) && can_delete) {
-				actionsContent += '<a class="btn btn-small btn-icon btn-danger btn-remove" rel="tooltip" title="Delete" href="' + node['delete'] + '" data-singular="' + classData['singular'] + '"><i class="icon icon-remove"></i></a>';
+				actionsContent += '<a class="btn btn-small btn-icon btn-danger btn-remove" rel="tooltip" title="Delete" href="' + node['delete'] + '" data-singular="' + classData['singular'] + '"><i class="fa fa-remove"></i></a>';
 			}
 			
 			actionsContent += '</div>';
@@ -371,18 +371,18 @@ function initTree() {
 
 			baseUrl = '/admin/' + subclassData['table_name'];
 			if (subclassData['static'] || !subclassData['can_create'] || !subclassData['can_edit'] || subclassData['superclass']) { continue; }
-			childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create"><i class="icon icon-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
+			childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create"><i class="fa fa-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
 			childInfo.push({ 'edit':baseUrl + '/create', 'icon':subclassData['icon'], 'singular':subclassData['singular'] });
 		}
 
 		// An alias type
-		childItems.push('<li><a tabindex="-1" href="/admin/' + baseClassData['table_name'] + '/create?alias"><i class="icon icon-link"></i> Link</a></li>');
+		childItems.push('<li><a tabindex="-1" href="/admin/' + baseClassData['table_name'] + '/create?alias"><i class="fa fa-link"></i> Link</a></li>');
 		childInfo.push({ 'edit':'/admin/' + baseClassData['table_name'] + '/create?alias', 'icon':baseClassData['icon'], 'singular':baseClassData['singular'] });
 
 		if (childItems.length > 1) {
 			//group all the items into a dropdown
 			buttonContent += '<div class="dropup pull-right">' + 
-			'<button class="btn btn-large btn-primary dropdown-toggle"><i class="icon icon-plus icon-white"></i>  Add New ' + data.singular + ' <span class="caret"></span></button>' +
+			'<button class="btn btn-large btn-primary dropdown-toggle"><i class="fa fa-plus"></i>  Add New ' + data.singular + ' <span class="caret"></span></button>' +
 			'<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' + 
 			'<li class="nav-header">Choose a type...</li>' + 
 			childItems.join('') + 
@@ -390,7 +390,7 @@ function initTree() {
 			
 		} else if (childItems.length == 1) {
 			//if there is only one item, make the button here
-			buttonContent += '<a class="btn btn-large btn-primary" href="' + childInfo[0]['edit'] + '" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="icon icon-plus icon-white"></i> Add New ' + childInfo[0]['singular'] + '</a>';
+			buttonContent += '<a class="btn btn-large btn-primary" href="' + childInfo[0]['edit'] + '" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="fa fa-plus"></i> Add New ' + childInfo[0]['singular'] + '</a>';
 		}
 		
 		// Add the actions

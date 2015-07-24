@@ -1,6 +1,6 @@
 <div class="controls control-group field-type-gallery-inline" data-field-name="{{ settings.mapping.fieldName }}">
 <div class="gallery-inner">
-<label class="item-label"><i class="icon icon-{{ icon }}"></i> &nbsp;{{ settings.title }}</label>
+<label class="item-label"><i class="fa fa-{{ icon }}"></i> &nbsp;{{ settings.title }}</label>
 
 <!-- We need to output different templates for any different types that can be added -->
 {% for template_type, template_content in templates %}
@@ -38,7 +38,7 @@
 
 <div class="gallery-controls">
 	<span class="selected-actions">
-		<span class="btn btn-small btn-remove-selected"><i class="icon icon-remove icon-danger"></i> &nbsp;Remove...</span>&nbsp;
+		<span class="btn btn-small btn-remove-selected"><i class="fa fa-remove icon-danger"></i> &nbsp;Remove...</span>&nbsp;
 	</span>
 	<span class="actions">
 		<label class="checkbox btn btn-small btn-checkbox"><input type="checkbox" class="gallery-show-hidden" checked="checked" /> Show hidden</label>&nbsp;

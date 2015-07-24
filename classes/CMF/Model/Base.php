@@ -249,7 +249,7 @@ class Base extends \CMF\Doctrine\Model
      * @see CMF\Model\Base::icon()
      * @var string
      */
-    protected static $_icon = 'file';
+    protected static $_icon = 'file-o';
     
     /**
      * Tells the system which fields to use when generating the model's slug

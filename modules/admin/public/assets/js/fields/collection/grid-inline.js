@@ -29,7 +29,7 @@
 			// Item form will be inserted here
 			'</div>' +
 			'<div class="modal-footer">' +
-				'<button class="btn btn-primary btn-close" data-dismiss="modal"><i class="icon icon-ok"></i> Done</button>' +
+				'<button class="btn btn-primary btn-close" data-dismiss="modal"><i class="fa fa-ok"></i> Done</button>' +
 			'</div>' +
 		'</div>',
 		$body = $('body'),
@@ -56,13 +56,13 @@
                 paramsInBody: false
             },
             text: {
-                uploadButton: '<i class="icon-upload-alt icon-white"></i> Upload',
+                uploadButton: '<i class="fa fa-upload-alt icon-white"></i> Upload',
                 formatProgress: "{percent}%",
             },
             template:
             	'<div class="qq-upload-list"></div>' +
             	'<div class="gallery-item qq-uploader">' +
-            		'<span href="#" class="img action qq-upload-button"><i class="icon-plus"></i> &nbsp;Add...</span>' +
+            		'<span href="#" class="img action qq-upload-button"><i class="fa fa-plus"></i> &nbsp;Add...</span>' +
 				'</div>' +
                 '<pre class="qq-upload-drop-area"><span>{dragZoneText}</span></pre>' +
                 '<span class="qq-drop-processing" style="display:none;"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>',
@@ -73,7 +73,7 @@
 	            		'<div class="progress-overlay"><span class="qq-upload-file"></span><span class="qq-upload-size"></span></div>' +
 	            		'<span class="qq-upload-spinner"></span>' +
 	            		'<span class="qq-upload-finished">Yah</span>' +
-	            		'<span class="qq-upload-cancel btn btn-small btn-cancel" title="{cancelButtonText}"><i class="icon-remove qq-upload-cancel"></i></span>' +
+	            		'<span class="qq-upload-cancel btn btn-small btn-cancel" title="{cancelButtonText}"><i class="fa fa-remove qq-upload-cancel"></i></span>' +
 	            		'<span class="qq-upload-status-text">{statusText}</span>' +
             		'</div>' +
             	'</div>',
@@ -257,9 +257,9 @@
 			var $self = $(this),
 			$img = $self.find('.gallery-thumb'),
 			$overlay = $('<span class="gallery-overlay"></span>').insertAfter($img),
-			$editLink = $('<span class="edit-link"><i class="icon icon-cog"></i> Edit</span>').insertAfter($img).click(onEditClick),
+			$editLink = $('<span class="edit-link"><i class="fa fa-cog"></i> Edit</span>').insertAfter($img).click(onEditClick),
 			$handle = $('<span class="handle"></span>').insertAfter($img)
-			$showHide = $('<span class="showhide-link"><i class="icon icon-eye-open"></i><i class="icon icon-eye-close"></i></span>').insertAfter($editLink).click(showHide),
+			$showHide = $('<span class="showhide-link"><i class="fa fa-eye-open"></i><i class="fa fa-eye-close"></i></span>').insertAfter($editLink).click(showHide),
 			$checkbox = $self.find('> .gallery-label input[type="checkbox"]').change(updateSelected),
 			$posField = $self.find('> input[data-field-name="pos"]'),
 			$visibleInput = $self.find('.item-form > div > label > input[type="checkbox"][name$="[visible]"]').eq(0).change(updateVisible);

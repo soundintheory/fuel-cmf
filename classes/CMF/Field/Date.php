@@ -43,7 +43,7 @@ class Date extends Base {
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-large' );
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         $input = \Form::input($settings['mapping']['fieldName'], $value->format($settings['format']), $input_attributes);
-        $input = $input = html_tag('div', array( 'class' => 'input-prepend' ), html_tag('span', array( 'class' => 'add-on' ), '<i class="icon-calendar"></i>').$input);
+        $input = $input = html_tag('div', array( 'class' => 'input-prepend' ), html_tag('span', array( 'class' => 'add-on' ), '<i class="fa fa-calendar"></i>').$input);
         
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
         

@@ -63,7 +63,7 @@ class ManyToOne extends \CMF\Field\Base {
         $input_attributes = $settings['input_attributes'];
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
         
-        $add_link = html_tag('a', array( 'href' => $add_link, 'class' => 'btn btn-mini btn-create' ), '<i class="icon icon-plus"></i> &nbsp;create '.strtolower($target_class::singular()));
+        $add_link = html_tag('a', array( 'href' => $add_link, 'class' => 'btn btn-mini btn-create' ), '<i class="fa fa-plus"></i> &nbsp;create '.strtolower($target_class::singular()));
         
         // Permissions
         $settings['can_edit'] = \CMF\Auth::can('edit', $target_class);

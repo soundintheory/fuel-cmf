@@ -3,14 +3,14 @@
 {% macro action_link(action_id, action, model, table, context) %}
     {{ include(template_from_string(action.content|default("
     <a class=\"btn {{ action.class|default('btn-info') }}\" href=\"{{ include(template_from_string(action.href)) }}\">
-        <i class=\"icon icon-{{ action.icon|default('cog') }}\"></i>&nbsp; {{ action.title }}
+        <i class=\"fa fa-{{ action.icon|default('cog') }}\"></i>&nbsp; {{ action.title }}
     </a>"))) }}
 {% endmacro %}
 
 {% macro action_method(action_id, action, model, table, context) %}
     {{ include(template_from_string(action.content|default("
     <a class=\"btn {{ action.class|default('btn-info') }}\" href=\"/admin/{{ table }}/{{ model.id }}/{{ action_id }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
-        <i class=\"icon icon-{{ action.icon|default('cog') }}\"></i>
+        <i class=\"fa fa-{{ action.icon|default('cog') }}\"></i>
     </a>"))) }}
 {% endmacro %}
 
@@ -29,7 +29,7 @@
     
     <div class="inner">
 
-        <h2 class="main-heading pull-left"><i class="icon icon-{{ form.icon }}"></i> Edit {{ form.title }}</h2>
+        <h2 class="main-heading pull-left"><i class="fa fa-{{ form.icon }}"></i> Edit {{ form.title }}</h2>
         <div class="item-actions-top pull-right">
             {% for action_id, action in actions if action.edit is not defined or action.edit != false %}
             {{ attribute(this, 'action_'~action.type, [action_id, action, model, table_name, 'list']) }}
@@ -59,7 +59,7 @@
                     <div class="widget{{ (group.collapsible and tab.groups|length > 1) ? ' collapsible' : '' }}{{ (group.closed and tab.groups|length > 1) ? ' closed' : '' }} span12 {{ group.class }}">
                         
                         <div class="widget-title">
-                            <h3><i class="icon icon-{{ group.icon }}"></i> {{ group.title }}</h3>
+                            <h3><i class="fa fa-{{ group.icon }}"></i> {{ group.title }}</h3>
                         </div>
                         <div class="widget-content">
                             
@@ -102,9 +102,9 @@
     </div>
 
     <div class="actions pull-right">
-        <button data-loading-text="Saving {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="icon-ok icon-white"></i> Save</button>
+        <button data-loading-text="Saving {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> Save</button>
         {% if can_delete %}
-        <a href="delete{{ mode == 'inline' ? '?_mode=inline&_cid='~cid : '' }}" class="btn btn-large btn-danger btn-remove padleft" data-singular="{{ form.singular }}"><i class="icon-remove icon-white"></i> Delete</a>
+        <a href="delete{{ mode == 'inline' ? '?_mode=inline&_cid='~cid : '' }}" class="btn btn-large btn-danger btn-remove padleft" data-singular="{{ form.singular }}"><i class="fa fa-remove icon-white"></i> Delete</a>
         {% endif %}
     </div>
 

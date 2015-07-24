@@ -32,7 +32,7 @@
                 paramsInBody: false
             },
             text: {
-                uploadButton: '<i class="icon-upload-alt icon-white"></i> Upload',
+                uploadButton: '<i class="fa fa-upload-alt icon-white"></i> Upload',
                 formatProgress: " - {percent}% of {total_size}",
             },
             template:
@@ -51,8 +51,8 @@
                 '<span class="qq-upload-spinner"></span>' +
                 '<span class="qq-upload-finished"></span>' +
                 '<div class="file-controls">' +
-                '<span class="qq-upload-cancel btn btn-small btn-cancel" title="{cancelButtonText}"><i class="icon-remove qq-upload-cancel"></i></span>' +
-                '<!-- span class="qq-upload-retry btn btn-small" title="{retryButtonText}"><i class="icon-repeat icon-white qq-upload-retry"></i></span -->' +
+                '<span class="qq-upload-cancel btn btn-small btn-cancel" title="{cancelButtonText}"><i class="fa fa-remove qq-upload-cancel"></i></span>' +
+                '<!-- span class="qq-upload-retry btn btn-small" title="{retryButtonText}"><i class="fa fa-repeat icon-white qq-upload-retry"></i></span -->' +
                 '</div>' +
                 '<span class="qq-upload-status-text">{statusText}</span>' +
                 '<div class="clear"><!-- --></div></div>',
@@ -71,7 +71,7 @@
         .on('complete', completeHandler);
         
         var $topRow = $el.find('.top-row'),
-        $clearBut = $('<span class="btn btn-small btn-clear"><i class="icon-remove"></i></span>').appendTo($topRow).click(clear),
+        $clearBut = $('<span class="btn btn-small btn-clear"><i class="fa fa-remove"></i></span>').appendTo($topRow).click(clear),
         $filePreview = $el.find('.file-preview');
         
         // This will show / hide any stuff appropriately if there is a value

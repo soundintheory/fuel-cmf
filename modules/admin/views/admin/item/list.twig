@@ -3,7 +3,7 @@
 {% macro action_link(action_id, action, model, table, context) %}
     {{ include(template_from_string(action.content|default("
     <a class=\"btn btn-small btn-icon {{ action.class|default('btn-info') }}\" href=\"{{ include(template_from_string(action.href)) }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
-        <i class=\"icon icon-{{ action.icon|default('cog') }}\"></i>
+        <i class=\"fa fa-{{ action.icon|default('cog') }}\"></i>
     </a>
     "))) }}
 {% endmacro %}
@@ -11,7 +11,7 @@
 {% macro action_method(action_id, action, model, table, context) %}
     {{ include(template_from_string(action.content|default("
     <a class=\"btn btn-small btn-icon {{ action.class|default('btn-info') }}\" href=\"/admin/{{ table }}/{{ model.id }}/{{ action_id }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
-        <i class=\"icon icon-{{ action.icon|default('cog') }}\"></i>
+        <i class=\"fa fa-{{ action.icon|default('cog') }}\"></i>
     </a>"))) }}
 {% endmacro %}
 
@@ -26,7 +26,7 @@
     <div class="inner">
         
         {% set has_filters = searchable or (filters and filters|length > 0) %}
-        <h2 class="main-heading"><i class="icon-{{ icon }}"></i> {{ plural }} <small>{% if not pagination %}({{ rows|length }}){% elseif page_count > 1 %}(page {{ current_page }} of {{ page_count }}){% endif %}</small></h2>
+        <h2 class="main-heading"><i class="fa fa-{{ icon }}"></i> {{ plural }} <small>{% if not pagination %}({{ rows|length }}){% elseif page_count > 1 %}(page {{ current_page }} of {{ page_count }}){% endif %}</small></h2>
         {% if has_filters %}<form action="" method="get" class="list-filter-form">{% endif %}
         {% if searchable %}
             <div class="search list-filter-wrap">
@@ -77,8 +77,8 @@
         {% endif %}
         <div class="actions-top-right">
             {% if can_manage %}
-            {% if can_import %}<a href="/admin/{{ table_name }}/import" class="btn btn-success btn-permissions" title="Import data"><i class="icon icon-circle-arrow-right"></i> Import...</a>{% endif %}
-            <a href="/admin/{{ table_name }}/permissions" class="btn btn-icon btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="icon icon-lock"></i></a>
+            {% if can_import %}<a href="/admin/{{ table_name }}/import" class="btn btn-success btn-permissions" title="Import data"><i class="fa fa-circle-arrow-right"></i> Import...</a>{% endif %}
+            <a href="/admin/{{ table_name }}/permissions" class="btn btn-icon btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="fa fa-lock"></i></a>
             {% endif %}
         </div>
         <div class="clear"></div>
@@ -118,7 +118,7 @@
                              {% set duplicate_link = "/admin/"~table_name~"/"~row.get('id')~"/duplicate" %}
                             {% for column in columns %}
                                 {% if column.type == 'handle' %}
-                                <td class="handle"><div><i class="icon-move"></i></div></td>
+                                <td class="handle"><div><i class="fa fa-arrows"></i></div></td>
                                 {% elseif column.type == 'method' %}
                                 <td class="col-type-{{ column.type }}"><a href="{{ editable ? edit_link : '' }}" class="item-link">{{ row.get(column.name) }}</a></td>
                                 {% elseif column.type == 'join' %}
@@ -142,8 +142,8 @@
                                 {% for action_id, action in actions if action.list is not defined or action.list != false %}
                                 {{ attribute(this, 'action_'~action.type, [action_id, action, row, table_name, 'list']) }}
                                 {% endfor %}
-                                {% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="icon-pencil"></i></a>{% endif %} 
-                                {% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="icon-remove icon-white"></i></a>{% endif %}
+                                {% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="fa fa-pencil"></i></a>{% endif %}
+                                {% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="fa fa-remove icon-white"></i></a>{% endif %}
                             </span></td>
                             
                         </tr>
@@ -156,7 +156,7 @@
                                 {% else %}
                                 <p>There are no {{ plural|lower }} added yet.</p>
                                 {% if can_create %}
-                                <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="icon-plus icon-white"></i> Add {{ singular }}...</a>
+                                <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="fa fa-plus icon-white"></i> Add {{ singular }}...</a>
                                 {% endif %}
                                 {% endif %}
                                 
@@ -193,7 +193,7 @@
                 <li><a href="#">&raquo;</a></li>
             </ul>
             <ul>
-                <li><a href="#"><i class="icon-list"></i> View all</a></li>
+                <li><a href="#"><i class="fa fa-list"></i> View all</a></li>
             </ul>
             <div class="clear"></div>
         </div -->
@@ -204,7 +204,7 @@
         
         {% if can_create %}
         <div class="actions pull-right">
-            <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="icon-plus icon-white"></i> Add New {{ singular }}...</a>
+            <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="fa fa-plus icon-white"></i> Add New {{ singular }}...</a>
         </div>
         {% endif %}
         
