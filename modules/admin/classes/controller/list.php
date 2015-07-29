@@ -738,6 +738,41 @@ class Controller_List extends Controller_Base {
 	    \Session::set("$table_name.list.order", \Input::get());
 	    \Response::redirect(\Input::referrer());
 	}
+
+	public function action_recover_tree($table_name)
+	{
+		$class_name = \Admin::getClassForTable($table_name);
+		if ($class_name === false) {
+			return $this->customPageOr404(array($table_name, $tab_id), "Can't find that type!");
+		}
+		
+		$msg = 'The tree was recovered';
+		$msg_class = 'alert-success';
+
+		try {
+			$repo = \D::manager()->getRepository($class_name);
+			$repo->recover();
+			\D::manager()->flush();
+			\D::manager()->clear();
+
+			$root_node = $class_name::getRootNode(true);
+			$repo = \D::manager()->getRepository($class_name);
+			$qb = $repo->getNodesHierarchyQueryBuilder($root_node);
+			$tree_errors = $repo->verify();
+
+			if ($tree_errors !== true) {
+				$msg = 'Recovery was unsuccessful - you may need to manually check it or empty the database table and start again';
+				$msg_class = 'alert-danger';
+			}
+
+		} catch (\Exception $e) {
+			$msg = 'There was an error recovering the tree: '.$e->getMessage();
+			$msg_class = 'alert-danger';
+		}
+
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => $msg_class ), 'msg' => $msg ));
+		\Response::redirect(\Input::referrer());
+	}
 	
 	/**
 	 * Gets called from action_index() when a model is found to extend CMF\Model|Node
@@ -804,6 +839,8 @@ class Controller_List extends Controller_Base {
 		$root_node = $class_name::getRootNode(true);
 		$repo = \D::manager()->getRepository($class_name);
 		$qb = $repo->getNodesHierarchyQueryBuilder($root_node);
+		$this->tree_errors = null;
+		$this->tree_is_valid = true;
 
 		// If we have URLs, join them to the query
 		if ($class_name::hasUrlField()) {
@@ -850,6 +887,9 @@ class Controller_List extends Controller_Base {
 		    
 			$tree = $this->filterTreeNodes($tree, $excluded_ids);
 			
+		} else {
+			$this->tree_errors = $repo->verify();
+			$this->tree_is_valid = ($this->tree_errors === true);
 		}
 		
 		// Add more context for the template

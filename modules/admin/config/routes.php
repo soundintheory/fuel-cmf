@@ -33,6 +33,7 @@ return array(
 	'admin/(:segment)/import'                   => 'admin/import/index/$1',
 	'admin/(:segment)/permissions'              => 'admin/list/permissions/$1',
 	'admin/(:segment)/options'                  => 'admin/list/options/$1',
+	'admin/(:segment)/recover-tree'             => 'admin/list/recover_tree/$1',
 	'admin/(:segment)/permissions/(:num)'       => 'admin/list/permissions/$1/$2',
 	'admin/(:segment)/permissions/(:num)/save'  => 'admin/list/save_permissions/$1/$2',
 	'admin/(:segment)/list/order'               => 'admin/list/order/$1',

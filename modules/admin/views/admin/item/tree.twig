@@ -3,7 +3,13 @@
 {% block html_title %}{{ singular }} Tree : {{ admin_title }}{% endblock %}
 
 {% block main_pane %}
-    
+
+    {% if (not tree_is_valid) and user.super_user %}
+        <div id="main-alert" class="alert warning">
+            <button class="close" data-dismiss="alert">×</button>
+            <p><strong>Warning!</strong> This tree appears to be corrupted. Click the button below to attempt a recovery: <br /><br /><a href="/admin/{{ table_name }}/recover-tree" class="btn btn-warning">Recover Tree</a></p>
+        </div>
+    {% endif %}
     {% include 'admin/shared/alert.twig' %}
     
     <div class="inner">
