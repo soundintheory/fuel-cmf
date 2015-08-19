@@ -56,7 +56,7 @@ class Multiselect extends \CMF\Field\Base {
         $settings = static::settings($settings);
         $target_class = $settings['mapping']['targetEntity'];
         $target_table = \CMF\Admin::getTableForClass($target_class);
-        $options = $target_class::options();
+        $options = $target_class::options(\Arr::get($settings, 'filters', array()), array(), null, null, null, is_array($settings['select2']));
         $settings['required'] = isset($settings['required']) ? $settings['required'] : false;
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
