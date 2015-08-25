@@ -205,15 +205,14 @@ class Controller_Base extends \Controller {
 
         if(!$key){
             $output = array();
-            foreach (array_keys($options) as $key ) {
-                $output[] = $key;
-            } 
+            foreach (array_keys($options) as $key2 ) {
+                $output[] = $key2;
+            }
+            $output = json_encode ($output);
         }else{
-            foreach ($options[$key] as $key=>$value ) {
-                $output[$key] = $value;
-            } 
+            $output = json_encode ($options[$key]);
         }
-        $output = json_encode ($output);
+
         echo $output;
         exit();
     }

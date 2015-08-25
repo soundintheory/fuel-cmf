@@ -579,11 +579,9 @@
 					break;
 				case 'internal':
 
-					var protocol = ( data.internal && data.internal.protocol !== undefined ) ? data.internal.protocol : 'http://';
-
 					var	url = ( data.internal && CKEDITOR.tools.trim( data.internal.int_url ) ) || '';
 					
-					set[ 'data-cke-saved-href' ] = ( url.indexOf( '/' ) === 0 ) ? url : protocol + url;
+					set[ 'data-cke-saved-href' ] = url;
 					break;
 				case 'anchor':
 					var name = ( data.anchor && data.anchor.name ),

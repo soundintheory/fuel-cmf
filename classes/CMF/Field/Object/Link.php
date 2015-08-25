@@ -435,7 +435,7 @@ class Link extends Object {
             $tmpval = strval(\Arr::get($node, 'url.url', '-1'));
             $options[$tmpkey] =  $tmpval ;
             if (isset($node['__children']) && count($node['__children']) > 0) {
-                $options = static::buildTreeOptions($node['__children'], $prop, $options, $node[$prop]);
+                $options = static::buildTreeOptionsStatic($node['__children'], $prop, $options, $node[$prop]);
             }
         }
         return $options;

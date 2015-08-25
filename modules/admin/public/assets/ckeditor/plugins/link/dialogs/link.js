@@ -249,26 +249,6 @@
 						type: 'hbox',
 						widths: [ '25%', '75%' ],
 						children: [ {
-							id: 'protocol',
-							type: 'select',
-							label: commonLang.protocol,
-							'default': 'http://',
-							items: [
-								// Force 'ltr' for protocol names in BIDI. (#5433)
-								[ 'http://\u200E', 'http://' ],
-								[ 'https://\u200E', 'https://' ]
-							],
-							setup: function( data ) {
-								if ( data.internal )
-									this.setValue( data.internal.protocol || '' );
-							},
-							commit: function( data ) {
-								if ( !data.internal )
-									data.internal = {};
-
-								data.internal.protocol = this.getValue();
-							}
-						},{
 							type: 'select',
 							id: 'page_select',
 							label: 'Select a Type',
@@ -298,8 +278,10 @@
 								var first_level;
 								var elem = dialog.getContentElement( 'info', 'int_url' );
 								if(generic_page){
-									$.get("/admin/json_link/"+generic_page, function(data){ 
+									$.get("/admin/json_link/"+generic_page, function(data){
+										console.log(data);
 									  first_level = JSON.parse(data);
+
 									  var render;
 									  for (var i in first_level) { 
 										    render += '<option value="'+first_level[i]+'">'+i+'</option>';
