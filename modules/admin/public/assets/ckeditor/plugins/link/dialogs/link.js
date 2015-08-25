@@ -256,6 +256,7 @@
 							'default': 'Pages',
 							items: generic_pages,
 							onShow: function(){
+
 								var dialog = this.getDialog();
 								var elem = dialog.getContentElement( 'info', 'int_url' );
 								$('#'+elem.domId + ' select').html('');
@@ -293,7 +294,7 @@
 									$('#'+elem.domId + ' select').html('');
 									$('#'+elem.domId).css('display','none');
 								}
-							},
+							}
 						},{
 							type: 'select',
 							id: 'int_url',
@@ -303,13 +304,6 @@
 							items: [
 							],
 
-							setup: function( data ) {
-								this.allowOnChange = false;
-								if ( data.internal )
-									this.setValue( data.internal.int_url );
-								this.allowOnChange = true;
-
-							},
 							commit: function( data ) {
 								// IE will not trigger the onChange event if the mouse has been used
 								// to carry all the operations #4724

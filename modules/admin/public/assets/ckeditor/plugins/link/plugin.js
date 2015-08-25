@@ -481,6 +481,12 @@
 					subjectMatch && ( email.subject = decodeURIComponent( subjectMatch[ 1 ] ) );
 					bodyMatch && ( email.body = decodeURIComponent( bodyMatch[ 1 ] ) );
 				}
+				else if ( href && href.charAt(0) == "/") {
+					urlMatch = href.match( urlRegex );
+					retval.type = 'internal';
+					retval.internal = {};
+					retval.internal.int_url = urlMatch[ 2 ];
+				}
 				// urlRegex matches empty strings, so need to check for href as well.
 				else if ( href && ( urlMatch = href.match( urlRegex ) ) ) {
 					retval.type = 'url';
