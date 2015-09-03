@@ -174,6 +174,14 @@ class Controller_Item extends Controller_Base {
 		$metadata = $class_name::metadata();
 		$plural = $class_name::plural();
 		$singular = $class_name::singular();
+		$list_page_segment = $metadata->table['name'];
+
+		if ($metadata->name != $metadata->rootEntityName)
+		{
+			$rootClass = $metadata->rootEntityName;
+			$rootMeta = $rootClass::metadata();
+			$list_page_segment = $rootMeta->table['name'];
+		}
 
 		if (\Input::param('alias', false) !== false) {
 			$plural = 'Links';
@@ -191,7 +199,8 @@ class Controller_Item extends Controller_Base {
 			$model = new $class_name();
 			$actioned = "created";
 		}
-		$create_new = \Input::post('create_new');
+		$create_new = (\Input::post('create_new', false) !== false);
+		$save_and_close = (\Input::post('saveAndClose', false) !== false);
 		
 		// Populate the model with posted data
 		$model->populate(\Input::post());
@@ -235,7 +244,13 @@ class Controller_Item extends Controller_Base {
 	        		if (strlen($qs) > 0) $qs = '?'.$qs;
 
 	        		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "$singular $actioned successfully" ));
-	        		if($create_new) \Response::redirect(\Uri::base(false)."admin/$table_name/create$qs", 'location');
+
+	        		if ($create_new)
+	        			\Response::redirect(\Uri::base(false)."admin/$table_name/create$qs", 'location');
+
+	        		if ($save_and_close)
+	        			\Response::redirect(\Uri::base(false)."admin/$list_page_segment".$qs, 'location');
+
 	        		\Response::redirect(\Uri::base(false)."admin/$table_name/".$model->get('id')."/edit$qs", 'location');
 	        		break;
 	        	

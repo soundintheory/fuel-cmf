@@ -102,7 +102,8 @@
     </div>
 
     <div class="actions pull-right">
-        <button data-loading-text="Saving {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> Save</button>
+        <button name="saveAndClose" value="true" data-loading-text="Saving {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> Save &amp; Close</button>
+        <button data-loading-text="Saving {{ form.singular }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> Save</button>
         {% if can_delete %}
         <a href="delete{{ mode == 'inline' ? '?_mode=inline&_cid='~cid : '' }}" class="btn btn-large btn-danger btn-remove padleft" data-singular="{{ form.singular }}"><i class="fa fa-remove icon-white"></i> Delete</a>
         {% endif %}
