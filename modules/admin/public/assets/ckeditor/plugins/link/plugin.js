@@ -431,7 +431,7 @@
 				emailProtection = editor.config.emailProtection,
 				javascriptMatch, emailMatch, anchorMatch, urlMatch,
 				retval = {};
-
+			var datatype = element.getAttribute( 'datatype' );
 			if ( ( javascriptMatch = href.match( javascriptProtocolRegex ) ) ) {
 				if ( emailProtection == 'encode' ) {
 					href = href.replace( encodedEmailLinkRegex, function( match, protectedAddress, rest ) {
@@ -481,7 +481,7 @@
 					subjectMatch && ( email.subject = decodeURIComponent( subjectMatch[ 1 ] ) );
 					bodyMatch && ( email.body = decodeURIComponent( bodyMatch[ 1 ] ) );
 				}
-				else if ( href && href.charAt(0) == "/") {
+				else if ( datatype == "internal") {
 					urlMatch = href.match( urlRegex );
 					retval.type = 'internal';
 					retval.internal = {};
@@ -581,6 +581,7 @@
 						url = ( data.url && CKEDITOR.tools.trim( data.url.url ) ) || '';
 
 					set[ 'data-cke-saved-href' ] = ( url.indexOf( '/' ) === 0 ) ? url : protocol + url;
+					set[ 'data-cke-saved-datatype' ] = 'url';
 
 					break;
 				case 'internal':
@@ -588,19 +589,21 @@
 					var	url = ( data.internal && CKEDITOR.tools.trim( data.internal.int_url ) ) || '';
 					
 					set[ 'data-cke-saved-href' ] = url;
+					set[ 'data-cke-saved-datatype' ] = 'internal';
 					break;
 				case 'anchor':
 					var name = ( data.anchor && data.anchor.name ),
 						id = ( data.anchor && data.anchor.id );
 
 					set[ 'data-cke-saved-href' ] = '#' + ( name || id || '' );
+					set[ 'data-cke-saved-datatype' ] = 'anchor';
 
 					break;
 				case 'email':
 					var email = data.email,
 						address = email.address,
 						linkHref;
-
+					set[ 'data-cke-saved-datatype' ] = 'email';
 					switch ( emailProtection ) {
 						case '':
 						case 'encode':
@@ -688,13 +691,16 @@
 			if ( set[ 'data-cke-saved-href' ] )
 				set.href = set[ 'data-cke-saved-href' ];
 
+			if ( set[ 'data-cke-saved-datatype' ] )
+				set.datatype = set[ 'data-cke-saved-datatype' ];
+
 			var removed = CKEDITOR.tools.extend( {
 				target: 1,
 				onclick: 1,
 				'data-cke-pa-onclick': 1,
 				'data-cke-saved-name': 1
 			}, advAttrNames );
-
+			console.log(set);
 			// Remove all attributes which are not currently set.
 			for ( var s in set )
 				delete removed[ s ];
