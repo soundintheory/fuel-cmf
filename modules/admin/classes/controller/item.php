@@ -56,7 +56,8 @@ class Controller_Item extends Controller_Base {
 		$this->can_edit = $can_edit;
 		$this->can_create = \CMF\Auth::can('create', $class_name);
 		$this->can_delete = \CMF\Auth::can('delete', $class_name) && !$class_name::_static();
-	    
+
+		$this->description = $class_name::description();
 	}
 	
 	/**
@@ -104,7 +105,8 @@ class Controller_Item extends Controller_Base {
 		$this->can_edit = $can_edit;
 		$this->can_create = \CMF\Auth::can('create', $class_name);
 		$this->can_delete = \CMF\Auth::can('delete', $class_name) && !$class_name::_static();
-	    
+
+		$this->description = $class_name::description();
 	}
 	/**
 	 * Given an ID, duplicates the form to edit an item.

@@ -52,7 +52,7 @@
             {% for tab in form.content %}
             
             <div class="tab-pane {{ loop.index == 1 ? 'active' : '' }}" id="tab-{{ tab.slug }}">
-                
+                {% if loop.first %}{% include 'admin/shared/description.twig' with {'description':description}%}{% endif %}
                 {% for group in tab.groups if (group.visible is not defined or group.visible != false) %}
                     
                     <div class="row-fluid">

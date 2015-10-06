@@ -250,6 +250,12 @@ class Base extends \CMF\Doctrine\Model
      * @var string
      */
     protected static $_icon = 'file-o';
+
+    /**
+    * Set Description For Model
+    * @var string
+    */
+    protected static $_description = null;
     
     /**
      * Tells the system which fields to use when generating the model's slug
@@ -698,6 +704,16 @@ class Base extends \CMF\Doctrine\Model
     {
         $called_class = get_called_class();
         return $called_class::$_icon;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_description
+     * @return string
+     */
+    public static function description()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_description;
     }
     
     /**
