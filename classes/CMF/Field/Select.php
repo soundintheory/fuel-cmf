@@ -120,7 +120,7 @@ class Select extends Base {
         }
 
         if (!is_string($value)) {
-            $value = $value.' ';
+            $value = strval($value);
         }
         
         $options = array_map('strip_tags', $options);
