@@ -15,7 +15,7 @@ class Controller_List extends Controller_Base {
 	{
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) {
-			return $this->customPageOr404(array($table_name), "Can't find that type!");
+			return $this->customPageOr404(array($table_name, $tab_id), "Can't find that type!");
 		}
 		
 		// Redirect straight to the edit page if the item is static

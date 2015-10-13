@@ -97,6 +97,7 @@ class Controller_Base extends \Controller {
         $main = array_shift($segments);
         $method = strtolower(\Input::method());
         $action = ((count($segments) > 0) ? array_shift($segments) : 'index');
+        if (empty($action)) $action = 'index';
         $controller = 'Controller_Admin_'.ucfirst($main);
         
         // Return normal 404 if we can't find the controller class
