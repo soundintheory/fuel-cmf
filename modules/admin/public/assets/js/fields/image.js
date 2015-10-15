@@ -603,31 +603,66 @@
                     var startScale = 1;
                     
                     if (aspectRatio > 0) {
-                        
-                        startH = Math.round(startW / aspectRatio);
-                        if (startH < sImageHeight) {
-                            startH = sImageHeight;
-                            startW = Math.round(startH * aspectRatio);
-                        }
-                        
-                        if (startH > canvasHeight) {
-                            startScale = canvasHeight / startH;
-                            startH = canvasHeight;
-                            startW = Math.round(startH * aspectRatio);
-                        }
-                        
-                        if (startW > canvasWidth) {
-                            startScale = startScale * (canvasWidth / startW);
-                            startW = canvasWidth;
+
+                        if (!!cropOption.fit) {
+
+                            // Fit image inside whitespace
+
                             startH = Math.round(startW / aspectRatio);
+                            if (startH < sImageHeight) {
+                                startH = sImageHeight;
+                                startW = Math.round(startH * aspectRatio);
+                            }
+                            
+                            if (startH > canvasHeight) {
+                                startScale = canvasHeight / startH;
+                                startH = canvasHeight;
+                                startW = Math.round(startH * aspectRatio);
+                            }
+                            
+                            if (startW > canvasWidth) {
+                                startScale = startScale * (canvasWidth / startW);
+                                startW = canvasWidth;
+                                startH = Math.round(startW / aspectRatio);
+                            }
+                            
+                            if (startScale < 1) {
+                                $zoomSlider.slider( "value", Math.round(startScale * 100));
+                            }
+                            
+                            startX = Math.round((sImageWidth - startW) / 2);
+                            startY = Math.round((sImageHeight - startH) / 2);
+
+                        } else {
+
+                            // Normal crop to fit
+
+                            startH = Math.round(startW / aspectRatio);
+                            if (startH > sImageHeight) {
+                                startH = sImageHeight;
+                                startW = Math.round(startH * aspectRatio);
+                            }
+                            
+                            if (startH > canvasHeight) {
+                                startScale = canvasHeight / startH;
+                                startH = canvasHeight;
+                                startW = Math.round(startH * aspectRatio);
+                            }
+                            
+                            if (startW > canvasWidth) {
+                                startScale = startScale * (canvasWidth / startW);
+                                startW = canvasWidth;
+                                startH = Math.round(startW / aspectRatio);
+                            }
+                            
+                            if (startScale < 1) {
+                                $zoomSlider.slider( "value", Math.round(startScale * 100));
+                            }
+                            
+                            startX = Math.round((sImageWidth - startW) / 2);
+                            startY = Math.round((sImageHeight - startH) / 2);
+
                         }
-                        
-                        if (startScale < 1) {
-                            $zoomSlider.slider( "value", Math.round(startScale * 100));
-                        }
-                        
-                        startX = Math.round((sImageWidth - startW) / 2);
-                        startY = Math.round((sImageHeight - startH) / 2);
                         
                     } else {
                         startX = 0;
