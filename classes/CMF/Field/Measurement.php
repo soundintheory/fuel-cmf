@@ -110,7 +110,7 @@ class Measurement extends Select {
         if (empty($display_units)) $display_units = array($default_unit);
         
         for ($i=$settings['from']; $i <= $settings['to']; $i+=$settings['step']) { 
-            $key = strval($i).' '; // Force this to be treated as a string
+            $key = strval($i); // Force this to be treated as a string
             $val = '';
             
             foreach ($display_units as $num => $unit) {
