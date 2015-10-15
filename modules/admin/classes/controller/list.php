@@ -47,9 +47,9 @@ class Controller_List extends Controller_Base {
 		
 		// Get the data for the list
 		$metadata = $class_name::metadata();
-		$sortable = $class_name::sortable();
 		$query_fields = $class_name::query_fields();
 		$pagination = $class_name::pagination();
+		$sortable = !$pagination && $class_name::sortable();
 		$per_page = $class_name::per_page();
 		$sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
 		$sort_process = $class_name::sortProcess();
@@ -91,6 +91,7 @@ class Controller_List extends Controller_Base {
 		// Retrieve any custom joins from config on the model
 		$manual_joins = $class_name::joins();
 		foreach ($manual_joins as $join_alias => $manual_join) {
+			var_dump($join_alias);
 			$qb->leftJoin($manual_join, $join_alias)->addSelect($join_alias);
 		}
 		
@@ -185,6 +186,7 @@ class Controller_List extends Controller_Base {
 				$qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
 				$joins[] = $field_name;
 			}
+
 			
 			// Get the field class and type
 			$field_class = $fields[$field]['field'];
@@ -349,10 +351,14 @@ class Controller_List extends Controller_Base {
 		    }
 			
 		}
-		if($pagination){
-			/* PAGINATION */
 
-			$count = count($qb->getQuery()->getScalarResult());
+		if ($pagination) {
+
+			/* PAGINATION */
+			$countquery = clone $qb;
+			$countquery->select('COUNT(item.id)');
+			$count = intval($countquery->getQuery()->getSingleScalarResult());
+
 			$config = array(
 			    'pagination_url' => 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
 			    'total_items'    => $count,
@@ -373,7 +379,6 @@ class Controller_List extends Controller_Base {
 			);
 			$pagination = \Pagination::forge('default', $config);
 			
-
 			$qb->setMaxResults($pagination->per_page);
 			$qb->setFirstResult($pagination->offset);
 			$this->pagination = $pagination->render();
