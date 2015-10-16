@@ -232,12 +232,28 @@ function initTree() {
 			
 			var childItems = [];
 			var childInfo = [];
+			var allowedChildren = (data['classes'][node['class']] || {}).allowed_children;
+			var disallowedChildren = (data['classes'][node['class']] || {}).disallowed_children;
 			
 			if (can_edit) {
 					
-				for (var p in data['classes']) {
+				for (var p in data['classes'])
+				{
 					var subclassData = data['classes'][p],
 					baseUrl = '/admin/' + subclassData['table_name'];
+
+					// Check if this allows the class as a child
+					if ((!!allowedChildren && allowedChildren.length && $.inArray(p, allowedChildren) === -1) ||
+						(!!disallowedChildren && $.inArray(p, disallowedChildren) > -1)) {
+						continue;
+					}
+
+					// Also check if the class allows this as a parent
+					if ((!!subclassData.allowed_parents && subclassData.allowed_parents.length && $.inArray(node['class'], subclassData.allowed_parents) === -1) ||
+						(!!subclassData.disallowed_parents && $.inArray(node['class'], subclassData.disallowed_parents) > -1)) {
+						continue;
+					}
+
 					if (subclassData['static'] || subclassData['can_create'] !== true || subclassData['can_edit'] !== true || subclassData['superclass']) { continue; }
 					childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create?parent=' + node.id + '"><i class="fa fa-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
 					childInfo.push({ 'edit':baseUrl + '/create?parent=' + node.id, 'icon':subclassData['icon'], 'singular':subclassData['singular'] });
@@ -291,6 +307,28 @@ function initTree() {
 			
 			if (target_node['can_edit'] !== true && position == 'inside') { return false; }
 			if (target_node.is_root && position != 'inside') { return false; }
+
+			var movedClassInfo = data['classes'][moved_node['class']] || {},
+				parentClass = null,
+				parentClassInfo = null;
+
+			if (position == 'inside') {
+				parentClass = target_node['class'];
+				parentClassInfo = data['classes'][parentClass] || {};
+			} else {
+				parentClass = ((target_node.parent || {})['class'] || 'root');
+				parentClassInfo = data['classes'][parentClass] || {};
+			}
+
+			if ((!!parentClassInfo.disallowed_children && $.inArray(moved_node['class'], parentClassInfo.disallowed_children) > -1) ||
+				(!!movedClassInfo.disallowed_parents && $.inArray(parentClass, movedClassInfo.disallowed_parents) > -1)) {
+				return false;
+			}
+
+			if ((!!parentClassInfo.allowed_children && parentClassInfo.allowed_children.length && $.inArray(moved_node['class'], parentClassInfo.allowed_children) === -1) ||
+				(!!movedClassInfo.allowed_parents && movedClassInfo.allowed_parents.length && $.inArray(parentClass, movedClassInfo.allowed_parents) === -1)) {
+				return false;
+			}
 			
 			var currentTime = new Date().getTime();
 			var elapsedTime = currentTime - moveStartTime;
@@ -366,10 +404,17 @@ function initTree() {
 		var childItems = [];
 		var childInfo = [];
 		
-		for (var p in data['classes']) {
+		for (var p in data['classes'])
+		{
 			var subclassData = data['classes'][p],
-
 			baseUrl = '/admin/' + subclassData['table_name'];
+
+			// Check if the class allows root as a parent
+			if ((!!subclassData.allowed_parents && subclassData.allowed_parents.length && $.inArray('root', subclassData.allowed_parents) === -1) ||
+				(!!subclassData.disallowed_parents && $.inArray('root', subclassData.disallowed_parents) > -1)) {
+				continue;
+			}
+
 			if (subclassData['static'] || !subclassData['can_create'] || !subclassData['can_edit'] || subclassData['superclass']) { continue; }
 			childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create"><i class="fa fa-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
 			childInfo.push({ 'edit':baseUrl + '/create', 'icon':subclassData['icon'], 'singular':subclassData['singular'] });

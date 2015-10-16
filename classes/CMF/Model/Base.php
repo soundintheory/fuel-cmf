@@ -850,21 +850,70 @@ class Base extends \CMF\Doctrine\Model
      * @see \Fuel\Core\Form::select()
      * @return array
      */
-    public static function options($filters = array(), $orderBy = array(), $limit = null, $offset = null, $params = null, $allow_html = true)
+    public static function options($filters = array(), $orderBy = array(), $limit = null, $offset = null, $params = null, $allow_html = true, $group_by = null)
     {
         $called_class = get_called_class();
         $cache_id = md5($called_class.serialize($filters).serialize($orderBy).$limit.$offset);
         if (isset($called_class::$_options[$cache_id])) return $called_class::$_options[$cache_id];
-        
-        $results = $called_class::findBy($filters, $orderBy, $limit, $offset, $params)->getQuery()->getResult();
+
+        $results = $called_class::findBy($filters, $orderBy, $limit, $offset, $params);
         $options = array();
-        
-        foreach ($results as $result) {
-            $thumbnail = $result->thumbnail();
-            $display = $result->display();
-            $val = !empty($display) ? $display : '-';
-            if ($thumbnail !== false && $allow_html) $val = '<img src="/image/2/40/40/'.$thumbnail.'" style="width:40px;height:40px;" /> '.$val;
-            $options[strval($result->get('id'))] = $val;
+
+        $group_column_names = !is_null($group_by) ? explode('.', $group_by) : null;
+
+        if (!is_null($group_column_names) && property_exists($called_class, $group_column_names[0])) {
+
+            $metadata = $called_class::metadata();
+
+            // Join any relations
+            if ($groupByRelation = $metadata->hasAssociation($group_column_names[0])) {
+                $results->leftJoin("item.".$group_column_names[0], $group_column_names[0])->addSelect($group_column_names[0]);
+            }
+
+            $results = $results->getQuery()->getResult();
+
+            foreach ($results as $result)
+            {
+                $thumbnail = $result->thumbnail();
+                $display = $result->display();
+                $val = !empty($display) ? $display : '-';
+                if ($thumbnail !== false && $allow_html)
+                    $val = '<img src="/image/2/40/40/'.$thumbnail.'" style="width:40px;height:40px;" /> '.$val;
+
+                $group_key = null;
+
+                if ($groupByRelation) {
+                    $column_name = $group_column_names[0];
+                    $relation = $result->get($column_name);
+                    if (count($group_column_names) > 1) {
+                        $group_key = $relation->get($group_column_names[1]);
+                    } else {
+                        $group_key = $relation->display();
+                    }
+                } else {
+                    $group_key = $result->get($group_by);
+                }
+
+                if (!empty($group_key)) {
+                    if (!isset($options[$group_key])) $options[$group_key] = array();
+                    $options[$group_key][strval($result->get('id'))] = $val;
+                } else {
+                    $options[strval($result->get('id'))] = $val;
+                }
+            }
+
+        } else {
+
+            $results = $results->getQuery()->getResult();
+
+            foreach ($results as $result) {
+                $thumbnail = $result->thumbnail();
+                $display = $result->display();
+                $val = !empty($display) ? $display : '-';
+                if ($thumbnail !== false && $allow_html) $val = '<img src="/image/2/40/40/'.$thumbnail.'" style="width:40px;height:40px;" /> '.$val;
+                $options[strval($result->get('id'))] = $val;
+            }
+
         }
         
         if ((is_null($orderBy) || empty($orderBy)) && (is_null($called_class::$_order) || empty($called_class::$_order))) {

@@ -24,8 +24,53 @@ class Node extends Base
     );
     
     protected static $_slug_fields = array('title');
+
+    protected static $_allowed_parents = null;
+    protected static $_allowed_children = null;
+    protected static $_disallowed_parents = null;
+    protected static $_disallowed_children = null;
     
     protected $root_url = '';
+
+    /**
+     * Returns an array of types (class names) that the model can be a child of
+     * @return array|null
+     */
+    public static function allowedParents()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_allowed_parents;
+    }
+
+    /**
+     * Returns an array of types (class names) that the model can have as children
+     * @return array|null
+     */
+    public static function allowedChildren()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_allowed_children;
+    }
+
+    /**
+     * Returns an array of types (class names) that the model cannot be a child of
+     * @return array|null
+     */
+    public static function disallowedParents()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_disallowed_parents;
+    }
+
+    /**
+     * Returns an array of types (class names) that the model cannot have as children
+     * @return array|null
+     */
+    public static function disallowedChildren()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_disallowed_children;
+    }
     
     /**
      * Does exactly what it says - results are in array form.
@@ -100,7 +145,7 @@ class Node extends Base
 	}
     
     /** inheritdoc */
-    public static function options($filters = array(), $orderBy = array(), $limit = null, $offset = null, $params = null, $allow_html = true)
+    public static function options($filters = array(), $orderBy = array(), $limit = null, $offset = null, $params = null, $allow_html = true, $group_by = null)
     {
         $called_class = get_called_class();
         $cache_id = md5($called_class.serialize($filters).serialize($orderBy).$limit.$offset);
@@ -109,9 +154,14 @@ class Node extends Base
         $metadata = $called_class::metadata();
         $is_root = ($metadata->name == $metadata->rootEntityName);
 
+        if (!is_null($group_by)) {
+            return parent::options($filters, $orderBy, $limit, $offset, $params, $allow_html, $group_by);
+        }
+
         $results = $called_class::select('item')->leftJoin('item.children', 'children')
         ->addSelect('children')
         ->orderBy('item.root, item.lft', 'ASC');
+
         if ($is_root) $results->where('item.lvl = 1');
         $results = $results->getQuery()->getResult();
         

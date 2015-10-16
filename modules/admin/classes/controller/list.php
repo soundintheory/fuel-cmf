@@ -813,7 +813,9 @@ class Controller_List extends Controller_Base {
 			'can_create' => $can_create && $can_edit,
 			'can_edit' => $can_edit,
 			'can_delete' => $can_delete,
-			'superclass' => $class_name::superclass()
+			'superclass' => $class_name::superclass(),
+			'allowed_children' => $class_name::allowedChildren(),
+			'allowed_parents' => $class_name::allowedParents()
 		);
 		
 		foreach ($metadata->subClasses as $sub_class) {
@@ -830,7 +832,11 @@ class Controller_List extends Controller_Base {
 				'can_create' => \CMF\Auth::can('create', $sub_class),
 				'can_edit' => \CMF\Auth::can('edit', $sub_class),
 				'can_delete' => \CMF\Auth::can('delete', $sub_class),
-				'superclass' => false
+				'superclass' => false,
+				'allowed_children' => $sub_class::allowedChildren(),
+				'allowed_parents' => $sub_class::allowedParents(),
+				'disallowed_children' => $sub_class::disallowedChildren(),
+				'disallowed_parents' => $sub_class::disallowedParents()
 			);
 			
 		}
