@@ -915,10 +915,14 @@ class Base extends \CMF\Doctrine\Model
             }
 
         }
-        
+
         if ((is_null($orderBy) || empty($orderBy)) && (is_null($called_class::$_order) || empty($called_class::$_order))) {
-            uasort($options, function($a, $b) {
-                return strcmp(strtolower($a), strtolower($b));
+            uksort($options, function($a, $b) use($options) {
+                $aval = $options[$a];
+                $bval = $options[$b];
+                if (is_array($aval)) $aval = $a;
+                if (is_array($bval)) $bval = $b;
+                return strcmp(strtolower($aval), strtolower($bval));
             });
         }
         
