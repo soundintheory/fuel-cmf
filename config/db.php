@@ -55,7 +55,9 @@ return array(
 			'config' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'array_config' => array( 'class' => 'Doctrine\\DBAL\\Types\\ArrayType' ),
 			'latlng' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
-        	'latlng_area' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' )
+        	'latlng_area' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
+        	'latlng_bing' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
+        	'latlng_bing_area' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' )
 		),
 		
 		'ignore_tables' => array(
