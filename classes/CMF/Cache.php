@@ -21,7 +21,7 @@ class Cache {
 		$controller_nocache = (!is_null($controller) && method_exists($controller, 'cache') && $controller->cache() === false);
         
 		// Don't run if it's already started, if we have a POST or if the controller says not to
-		if ($nocache !== false || static::$started === true || strtolower(\Input::method()) == 'post' || $controller_nocache) return false;
+		if (\Request::active()->action == "catchall" || $nocache !== false || static::$started === true || strtolower(\Input::method()) == 'post' || $controller_nocache) return false;
 		
 		$config = \Config::get('cmf.cache');
 		if ($config['enabled'] !== true) {
