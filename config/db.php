@@ -39,6 +39,7 @@ return array(
 		 * that extend the 'Doctrine\DBAL\Types\Type' class
 		 */
 		'types' => array(
+			'random_key' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'richtext' => array( 'class' => 'Doctrine\\DBAL\\Types\\TextType' ),
 			'color' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'enum' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),

@@ -7,7 +7,8 @@ class DateTime extends Date {
     protected static $defaults = array(
         'default' => null,
         'default_offset' => null,
-        'format' => 'd/m/Y H:i'
+        'format' => 'd/m/Y H:i',
+        'list_format' => 'M jS H:i'
     );
     
     public static function process($value, $settings, $model)
@@ -21,7 +22,7 @@ class DateTime extends Date {
     /** @inheritdoc */
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
-        return '<a href="'.$edit_link.'" class="item-link">'.$value->format('M jS H:i').'</a>';
+        return '<a href="'.$edit_link.'" class="item-link">'.$value->format(\Arr::get($settings, 'list_format', 'M jS H:i')).'</a>';
     }
     
     /** @inheritdoc */
