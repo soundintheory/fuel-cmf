@@ -31,6 +31,10 @@ class Controller_Model extends Controller_Resource
 		$this->singular = \Arr::get($arguments, 'singular');
 		$this->plural = \Arr::get($arguments, 'plural');
 
+		$model = $this->model;
+		if(!$model::exportable())
+			throw new \HttpException('This model is not exportable', \HttpException::BAD_REQUEST);
+
 		if (count($id)) {
 			$id_key = $single ? 'id' : 'ids';
 
@@ -43,6 +47,7 @@ class Controller_Model extends Controller_Resource
 
 		if ($this->unique && !count($id))
 			throw new \HttpException('A single item was requested, but no ID was specified', \HttpException::BAD_REQUEST);
+
 
 		if (!$resource)
 		{

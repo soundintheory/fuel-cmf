@@ -215,7 +215,29 @@ class Base extends \CMF\Doctrine\Model
      * @var string
      */
     protected static $_sort_process = true;
-    
+
+    /**
+     * Whether the model is exportable via the Json api
+     * @see \CMF\Model\Base::exportable()
+     * @var boolean
+     */
+    protected static $_exportable = false;
+
+    /**
+     * Whether the model is exportable via the Json api
+     * @see \CMF\Model\Base::importModel()
+     * @var array
+     * eg. array('file', 'api')
+     */
+    protected static $_import_type = null;
+
+    /**
+     * Whether the model is exportable via the Json api
+     * @see \CMF\Model\Base::importModel()
+     * @var string
+     */
+    protected static $_import_model = null;
+
     /**
      * Whether the model if static. Static means there will only ever be one record,
      * that cannot be removed. Use it for one-off pages, like a homepage model.
@@ -665,7 +687,8 @@ class Base extends \CMF\Doctrine\Model
         // Force it to be a string
         return strval($identifier);
     }
-    
+
+
     /**
      * @see \CMF\Model\Base::$_search
      * @return array
@@ -685,7 +708,37 @@ class Base extends \CMF\Doctrine\Model
         $called_class = get_called_class();
         return $called_class::$_joins;
     }
-    
+
+    /**
+     * @see \CMF\Model\Base::$_exportable
+     * @return bool
+     */
+    public static function exportable()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_exportable;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_import_model
+     * @return array
+     */
+    public static function importType()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_type;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_import_model
+     * @return string
+     */
+    public static function importModel()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_model;
+    }
+
     /**
      * @see \CMF\Model\Base::$_static
      * @return bool

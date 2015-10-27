@@ -1005,5 +1005,4 @@ class Controller_List extends Controller_Base {
 		$this->headers = array("Content-Type: application/json");
 		return \Response::forge(json_encode($output), $this->status, $this->headers);
 	}
-	
 }

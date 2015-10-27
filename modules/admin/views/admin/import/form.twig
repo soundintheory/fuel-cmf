@@ -24,15 +24,27 @@
         <div class="row-fluid">
 
             <div class="widget span12">
-                
-                <div class="widget-title">
-                    <h3><i class="fa fa-chevron-down"></i> Select a file to import...</h3>
-                </div>
-                <div class="widget-content">
-                    <input type="file" name="importdata" data-filename-placement="inside" class="fileinput-button" title="Browse..." />
-                </div>
+
+                {% if 'file' in type %}
+                    <div class="widget-title">
+                        <h3><i class="fa fa-chevron-down"></i> Select a file to import... </h3>
+                    </div>
+                    <div class="widget-content">
+                        <input type="file" name="importdata" data-filename-placement="inside" class="fileinput-button" title="Browse..." />
+                        {% if 'api' in model.type %}or Leave Blank to import from api {% endif %}
+                    </div>
+                {% endif %}
+                {% if 'api' in type %}
+                    <div class="widget-title">
+                        <h3><i class="fa fa-chevron-down"></i> Api import... </h3>
+                    </div>
+                    <div class="widget-content">
+                        Select Import Data to import via the api foreign model :  {{ importModel }}
+                    </div>
+                {% endif %}
                 
             </div>
+
 
         </div>
         

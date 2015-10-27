@@ -2,6 +2,8 @@
 
 namespace CMF\Controller;
 
+use \Api\Rest_Query;
+
 /**
  * The Base Controller.
  *
@@ -59,7 +61,6 @@ class Base extends \Controller
         // So the model was found - check if it has a controller to route to
         $template = \CMF::$template;
         $action = \CMF::$action;
-        
 	    if (\CMF::hasController($template))
 	    {
             $module = \CMF::$module;
@@ -176,5 +177,4 @@ class Base extends \Controller
     {
         $this->data[$key] = $value;
     }
-	
 }

@@ -36,9 +36,7 @@ class Controller_Resource extends \Controller_Rest
     	$user_type = \Input::param('user_type') ?: 'Admin\\Model_User';
 
 		if (\CMF\Auth::logged_in(null, $user_type)) {
-
 			return;
-
 		}
 
     	$auth = explode(' ', \Input::headers('Authorization', ' '));

@@ -680,5 +680,4 @@ abstract class Model
     {
         return isset($this->$name);
     }
-	
 }
