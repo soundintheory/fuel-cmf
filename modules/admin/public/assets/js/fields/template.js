@@ -79,6 +79,7 @@
 		}
 		
 		templateFields = new TemplateFields();
+		templateFields.data.settings = data.settings;
 		
 		$('.field-with-template').each(function() {
 			
