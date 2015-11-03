@@ -19,9 +19,13 @@ class Cache {
 		$controller = \Request::active()->controller_instance;
 		$nocache = \Input::param('nocache', \Session::get_flash('nocache', false, true));
 		$controller_nocache = (!is_null($controller) && method_exists($controller, 'cache') && $controller->cache() === false);
-        
+
 		// Don't run if it's already started, if we have a POST or if the controller says not to
-		if (\Request::active()->action == "catchall" || $nocache !== false || static::$started === true || strtolower(\Input::method()) == 'post' || $controller_nocache) return false;
+		if ($nocache !== false || strtolower(\Input::method()) == 'post' || $controller_nocache)
+        {
+            if (static::$started === true) static::stop();
+            return false;
+        }
 		
 		$config = \Config::get('cmf.cache');
 		if ($config['enabled'] !== true) {
@@ -61,7 +65,21 @@ class Cache {
 			\Event::register('request_finished', 'CMF\\Cache::finish');
 		}
 	}
-	
+
+    /**
+     * Stops the cache running for this request
+     */
+    public static function stop()
+    {
+        // Unregister the finish event
+        try {
+            \Event::unregister('request_finished', 'CMF\\Cache::finish');
+        } catch (\Exception $e) {}
+
+        // Stop the driver
+        static::driver()->stop();
+    }
+
 	/**
 	 * Runs on 'request_finished' event
 	 */
@@ -123,7 +141,7 @@ class Cache {
      * into the content
      * 
      */
-    public static function addNoCacheAreas($names, $content)
+    public static function addNoCacheAreas($names, $content, $context)
     {
     	if (count($names) === 0 || !$names) return $content;
         
@@ -134,9 +152,26 @@ class Cache {
         $env = \View_Twig::parser();
         
     	$template = new \CMF\Twig\TemplateInclude($env);
+        if (empty($context)) $context = array();
+
+        if (!empty(@$context['template']))
+        {
+            $module = @$context['module'];
+
+            // Determine whether the ViewModel class exists...
+            if ($viewClass = \CMF::hasViewModel($context['template'])) {
+                $context['view'] = new $viewClass('view', false, $context['template']);
+            } else {
+                try {
+                    $viewClass = ucfirst($module).'\\View_Base';
+                    if (!class_exists($viewClass)) $viewClass = '\\View_Base';
+                    $context['view'] = new $viewClass('view', false, $context['template']);
+                } catch(\Exception $e) {}
+            }
+        }
     	
     	foreach ($names as $name => $include) {
-    		$content = preg_replace('/<!-- nocache_'.$name.' .*<!-- endnocache_'.$name.' -->/sU', $template->renderInclude($include), $content);
+    		$content = preg_replace('/<!-- nocache_'.$name.' .*<!-- endnocache_'.$name.' -->/sU', $template->renderInclude($include, $context), $content);
     	}
         
     	return $content;

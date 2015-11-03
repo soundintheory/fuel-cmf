@@ -91,7 +91,6 @@ class Controller_List extends Controller_Base {
 		// Retrieve any custom joins from config on the model
 		$manual_joins = $class_name::joins();
 		foreach ($manual_joins as $join_alias => $manual_join) {
-			var_dump($join_alias);
 			$qb->leftJoin($manual_join, $join_alias)->addSelect($join_alias);
 		}
 		

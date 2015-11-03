@@ -67,6 +67,11 @@ class Simple implements Driver {
 		exit();
 		
 	}
+
+	public function stop()
+	{
+		$this->files = array();
+	}
 	
 	/**
 	 * Adds a file into the list to check for last modified date
