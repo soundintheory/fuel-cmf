@@ -23,9 +23,10 @@ class Select extends Base {
     
     public static function getValue($value, $settings, $model)
     {
-        if (!\Arr::is_assoc($settings['options']) || $settings['use_key'] === true) return $value;
+        $options = \CMF::getOptions(get_class($model), $settings['mapping']['columnName'], isset($settings['options']) ? $settings['options'] : array());
+        if (!\Arr::is_assoc($options) || $settings['use_key'] === true) return $value;
         if (is_numeric($value)) $value = strval($value);
-        $option = isset($settings['options'][$value]) ? $settings['options'][$value] : null;
+        $option = isset($options[$value]) ? $options[$value] : null;
         if (is_array($option)) {
             $output = isset($settings['output']) ? $settings['output'] : 'value';
             return isset($option[$output]) ? $option[$output] : $option;
