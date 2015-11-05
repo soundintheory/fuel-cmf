@@ -10,12 +10,14 @@ namespace Api;
  */
 class Controller_Model extends Controller_Resource
 {
+	protected $rest_format = 'json';
 	protected $params = array();
 	protected $unique;
 	protected $model;
 	protected $query;
 	protected $singular;
 	protected $plural;
+	protected $field;
 	protected $id;
 
 	/**
@@ -30,11 +32,7 @@ class Controller_Model extends Controller_Resource
 		$this->model = \Arr::get($arguments, 'model');
 		$this->singular = \Arr::get($arguments, 'singular');
 		$this->plural = \Arr::get($arguments, 'plural');
-
-		$model = $this->model;
-		if(!$model::exportable())
-			throw new \HttpException('This model is not exportable', \HttpException::BAD_REQUEST);
-
+		
 		if (count($id)) {
 			$id_key = $single ? 'id' : 'ids';
 
@@ -48,6 +46,20 @@ class Controller_Model extends Controller_Resource
 		if ($this->unique && !count($id))
 			throw new \HttpException('A single item was requested, but no ID was specified', \HttpException::BAD_REQUEST);
 
+		// Check whether a relationship is being requested
+		$class = $class = @$arguments['model'];
+		if ($single && $resource)
+		{
+			if (!$class::metadata()->hasAssociation($resource)) {
+				throw new \HttpException('You can only request relationships separately, not normal fields', \HttpException::BAD_REQUEST);
+			}
+
+			if (!in_array(strtolower(\Input::method()), array('get', 'patch')))
+				throw new \HttpException('Only GET and PATCH operations are supported for relationships', \HttpException::BAD_REQUEST);
+
+			$this->field = $resource;
+			$resource = null;
+		}
 
 		if (!$resource)
 		{
@@ -84,7 +96,7 @@ class Controller_Model extends Controller_Resource
 	protected function getQuery($params = array())
 	{
 		if (!$this->query) {
-			$this->query = new Rest_Query($this->model, $this->plural, $this->unique ? $this->singular : $this->plural, \Arr::merge($this->params, $params));
+			$this->query = new Rest_Query($this->model, $this->plural, 'data', \Arr::merge($this->params, $params), $this->field);
 		}
 		return $this->query;
 	}
@@ -123,7 +135,7 @@ class Controller_Model extends Controller_Resource
 	public function action_edit()
 	{
 		$model = $this->model;
-		$data = \Arr::get(\Input::json(), $this->singular, array());
+		$data = \Arr::get(\Input::json(), 'data', array());
 		$id = $this->id;
 		$entity = null;
 
@@ -168,7 +180,7 @@ class Controller_Model extends Controller_Resource
 	public function action_add()
 	{
 		$model = $this->model;
-		$data = \Arr::get(\Input::json(), $this->singular, array());
+		$data = \Arr::get(\Input::json(), 'data', array());
 		$entity = null;
 
 		if (isset($data['id']) && $data['id']) {

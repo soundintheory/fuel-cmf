@@ -16,6 +16,7 @@ class URLListener implements EventSubscriber
     protected $toFlush = array();
     protected $savedUrls = array();
     protected $moduleUrls = null;
+    public static $disableProcessing = false;
     
     protected function init()
     {
@@ -40,17 +41,20 @@ class URLListener implements EventSubscriber
     
     public function postPersist(LifecycleEventArgs $args)
     {
+        if (static::$disableProcessing) return;
+
         $this->init();
-        
         $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
         $entity = $args->getEntity();
-        
+
         $this->processNew($entity, $em, $uow);
     }
     
     public function postFlush(PostFlushEventArgs $args)
     {
+        if (static::$disableProcessing) return;
+
         $this->init();
         $em = $args->getEntityManager();
         
@@ -71,6 +75,8 @@ class URLListener implements EventSubscriber
     
     public function onFlush(OnFlushEventArgs $args)
     {
+        if (static::$disableProcessing) return;
+
         $this->init();
         $this->toFlush = array();
         

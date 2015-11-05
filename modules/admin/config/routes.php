@@ -30,7 +30,9 @@ return array(
 	// Routes for actions with models... these are quite dynamic so make sure they stay at the bottom!
 	'admin/(:segment)'                          => 'admin/list/index/$1',
 	'admin/(:segment)/saveall'                  => 'admin/list/saveall/$1',
+	'admin/(:segment)/deleteall'                => 'admin/list/deleteall/$1',
 	'admin/(:segment)/import'                   => 'admin/import/index/$1',
+	'admin/(:segment)/import/(:segment)'        => 'admin/import/$2/$1',
 	'admin/(:segment)/permissions'              => 'admin/list/permissions/$1',
 	'admin/(:segment)/options'                  => 'admin/list/options/$1',
 	'admin/(:segment)/recover-tree'             => 'admin/list/recover_tree/$1',

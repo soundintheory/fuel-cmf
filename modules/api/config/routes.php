@@ -14,6 +14,7 @@ return array(
 	// Resources
 	'(:segment)' => 'resource/render/$1',
 	'(:segment)/(:num)' => 'resource/render/$1/$2',
+	'(:segment)/(:num)/(:segment)' => 'resource/render/$1/$2/$3',
 	'(:segment)/(:segment)' => 'resource/render/$1//$2',
 	'(:segment)/(:segment)/(:segment)' => 'resource/render/$1/$2/$3',
 );

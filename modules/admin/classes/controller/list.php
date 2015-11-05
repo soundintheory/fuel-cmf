@@ -664,6 +664,31 @@ class Controller_List extends Controller_Base {
 		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "All ".strtolower($plural)." were saved" ));
 	    \Response::redirect(\Input::referrer($default_redirect), 'location');
 	}
+
+	public function action_deleteall($table_name)
+	{
+		$class_name = \Admin::getClassForTable($table_name);
+		$plural = $class_name::plural();
+		$msg = 'All '.strtolower($plural).' were deleted';
+		$msg_class = 'alert-success';
+
+		$user = \CMF\Auth::current_user();
+		if (!$user->super_user) {
+			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => 'Error: Only super users can do this!' ));
+			\Response::redirect_back();
+		}
+
+		try {
+			$class_name::removeAll();
+		} catch (\Exception $e) {
+			$msg = 'Error: '.$e->getMessage();
+			$msg_class = 'alert-danger';
+		}
+		
+		$default_redirect = \Uri::base(false)."admin/$table_name";
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => $msg_class ), 'msg' => $msg ));
+	    \Response::redirect_back($default_redirect);
+	}
 	
 	public function action_updatetree($table_name, $id = null)
 	{

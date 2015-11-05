@@ -11,9 +11,8 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\Table(name="dev_settings")
  * @ORM\HasLifecycleCallbacks
  **/
-class Devsettings extends Base
+class DevSettings extends Base
 {
-    
     protected static $_fields = array(
 
     );
@@ -23,9 +22,14 @@ class Devsettings extends Base
     protected static $_static = true;
     
     /**
-     * @ORM\Column(type="link", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      **/
     protected $parent_site;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     **/
+    protected $parent_site_api_key;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
@@ -45,7 +49,6 @@ class Devsettings extends Base
             return $this->$field();
         } else {
             return $default_value;
-            // throw new \BadMethodCallException("no field with name '".$field."' exists on '".$this->_metadata()->getName()."'");
         }
     }
     
@@ -62,7 +65,6 @@ class Devsettings extends Base
         return $called_class::instance()->get($setting_name, $default_value);
     }
 
-    
     public function display()
     {
         return 'Development Settings';
