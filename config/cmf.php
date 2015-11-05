@@ -93,6 +93,7 @@ return array (
     // Maps field types to field classes
     'fields_types' => array(
         'string' => 'CMF\\Field\\Text',
+        'random_key' => 'CMF\\Field\\RandomKey',
         'integer' => 'CMF\\Field\\Integer',
         'smallint' => 'CMF\\Field\\Integer',
         'bigint' => 'CMF\\Field\\Integer',

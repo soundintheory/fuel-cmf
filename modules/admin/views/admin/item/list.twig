@@ -201,7 +201,6 @@
         {% if user.super_user %}
             <a href="/admin/{{ table_name }}/saveall" class="btn btn-large btn-info">Save All</a>
         {% endif %}
-        
         {% if can_create %}
         <div class="actions pull-right">
             <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="fa fa-plus icon-white"></i> Add New {{ singular }}...</a>

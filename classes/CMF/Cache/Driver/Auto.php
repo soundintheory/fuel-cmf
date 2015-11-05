@@ -52,7 +52,10 @@ class Auto extends Simple {
 			
 			// Ok, now we can serve the cache, finally!!
 			// We process the cached content to find and replace any areas that shouldn't be cached
-			return \CMF\Cache::addNoCacheAreas($contents['nocache'], $contents['content']);
+			return \CMF\Cache::addNoCacheAreas($contents['nocache'], $contents['content'], array(
+				'template' => @$contents['template'],
+				'module' => @$contents['module']
+			));
 			
 		}
 		
@@ -75,6 +78,15 @@ class Auto extends Simple {
 		$this->logger = new \CMF\Doctrine\QueryLogger();
 		\D::setLogger($this->logger);
 	}
+
+	protected function stopListeners()
+	{
+		if ($this->logger)
+		{
+			$this->logger = null;
+			\D::setLogger(null);
+		}
+	}
 	
 	public function set($response)
 	{
@@ -88,6 +100,13 @@ class Auto extends Simple {
 			$driver->shutdown();
 		});
 	}
+
+	public function stop()
+	{
+		parent::stop();
+		$this->stopListeners();
+		$this->queries = array();
+	}
 	
 	public function shutdown()
 	{
@@ -95,6 +114,7 @@ class Auto extends Simple {
 		$controller = $this->request->controller_instance;
 		$tables = array();
 		$subqueries = array();
+		$queryTables = array();
 		$sql = '';
 		
 		// Add the template files to be checked
@@ -161,7 +181,7 @@ class Auto extends Simple {
 			}
 			
 			$subqueries[] = 'q'.$num;
-			$sql .= ($num > 0 ? ',' : '').' (SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'COALESCE(MAX('.implode('.updated_at),\'1000-01-01\'), COALESCE(MAX(', $aliases).'.updated_at),\'1000-01-01\')'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
+			$queryTables[] = '(SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'COALESCE(MAX('.implode('.updated_at),\'1000-01-01\'), COALESCE(MAX(', $aliases).'.updated_at),\'1000-01-01\')'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
 			$num++;
 		}
 		
@@ -212,24 +232,35 @@ class Auto extends Simple {
 				}
 				
 				$subqueries[] = 'q'.$num;
-				$sql .= ($num > 0 ? ',' : '').' (SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'COALESCE(MAX('.implode('.'.$field.'),\'1000-01-01\'), COALESCE(MAX(', $aliases).'.'.$field.'),\'1000-01-01\')'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
+				$queryTables[] = '(SELECT '.(count($aliases) > 1 ? 'GREATEST(' : '').'COALESCE(MAX('.implode('.'.$field.'),\'1000-01-01\'), COALESCE(MAX(', $aliases).'.'.$field.'),\'1000-01-01\')'.(count($aliases) > 1 ? ')' : '').' AS updated_at'.$append.') q'.$num;
 				$num++;
 			}
 		}
 		
-		if (!empty($sql)) {
+		if (count($queryTables))
+		{
+			// TODO: proper chunking of subqueries! For now, we will truncate them if they exeed MySQL's limit of 61
+			if (count($queryTables) > 60) {
+				$queryTables = array_slice($queryTables, 0, 60);
+				$subqueries = array_slice($subqueries, 0, 60);
+			}
+
 			// Complete the mega query that will check if items are updated or not...
 			if (count($subqueries) > 1) {
-				$sql = 'SELECT GREATEST('.implode('.updated_at, ', $subqueries).'.updated_at) AS updated_at, ('.implode('.count+', $subqueries).'.count) AS count FROM'.$sql;
+				$sql = 'SELECT GREATEST('.implode('.updated_at, ', $subqueries).'.updated_at) AS updated_at, ('.implode('.count+', $subqueries).'.count) AS count FROM '.implode(', ', $queryTables);
 			} else {
-				$sql = 'SELECT q0.updated_at, q0.count FROM'.$sql;
+				$sql = 'SELECT q0.updated_at, q0.count FROM '.implode(', ', $queryTables);
 			}
 			
 			// Run the query - this must be done now because we can't reliably get the correct results from what we have
-			$result = \DB::query($sql)->execute()->as_array();
-			$result = $result[0];
-			$result['updated_at'] = strtotime($result['updated_at']);
-			
+			try {
+				$result = \DB::query($sql)->execute()->as_array();
+				$result = $result[0];
+				$result['updated_at'] = strtotime($result['updated_at']);
+			} catch (\Exception $e) {
+				// We can't continue if the query doesn't work
+				return;
+			}
 		}
 		
 		// Add the rest of the stuff to the result
@@ -240,6 +271,8 @@ class Auto extends Simple {
 		$result['nocache'] = \CMF\Cache::getNoCacheAreas($result['content']);
 		$result['logs_made'] = \CMF\Log::$logs_made;
 		$result['content-type'] = 'text/html; charset=utf-8';
+		$result['template'] = \CMF::$template;
+		$result['module'] = \CMF::$module;
 		
 		// Store the content type header if it's set
 		$headers = headers_list();

@@ -27,5 +27,13 @@ interface Driver
 	 * @return  void
 	 */
 	public function serve($content);
+
+	/**
+	 * Stops the cache driver
+	 *
+	 * @param   mixed
+	 * @return  void
+	 */
+	public function stop();
 	
 }

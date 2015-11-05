@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
  **/
-class Base extends \CMF\Doctrine\Model
+class Base extends \CMF\Doctrine\Model implements \JsonSerializable
 {
     /**
      * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
@@ -215,7 +215,21 @@ class Base extends \CMF\Doctrine\Model
      * @var string
      */
     protected static $_sort_process = true;
-    
+
+    /**
+     * Which types of import are available for the model eg. array('file', 'url')
+     * @see \CMF\Model\Base::importMethods()
+     * @var array
+     */
+    protected static $_import_methods = null;
+
+    /**
+     * The type name that the model relates to (in the remote API)
+     * @see \CMF\Model\Base::importType()
+     * @var string
+     */
+    protected static $_import_type = null;
+
     /**
      * Whether the model if static. Static means there will only ever be one record,
      * that cannot be removed. Use it for one-off pages, like a homepage model.
@@ -665,7 +679,8 @@ class Base extends \CMF\Doctrine\Model
         // Force it to be a string
         return strval($identifier);
     }
-    
+
+
     /**
      * @see \CMF\Model\Base::$_search
      * @return array
@@ -685,7 +700,41 @@ class Base extends \CMF\Doctrine\Model
         $called_class = get_called_class();
         return $called_class::$_joins;
     }
-    
+
+    /**
+     * @see \CMF\Model\Base::$_import_methods
+     * @return array
+     */
+    public static function importMethods()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_methods;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_import_type
+     * @return string
+     */
+    public static function importType()
+    {
+        $called_class = get_called_class();
+        if (empty($called_class::$_import_type)) {
+            return \Admin::getTableForClass($called_class);
+        }
+        return $called_class::$_import_type;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_import_type
+     * @return string
+     */
+    public static function hasImportMethod($method)
+    {
+        $called_class = get_called_class();
+        if (empty($called_class::$_import_methods)) return false;
+        return in_array($method, $called_class::$_import_methods);
+    }
+
     /**
      * @see \CMF\Model\Base::$_static
      * @return bool
@@ -829,6 +878,23 @@ class Base extends \CMF\Doctrine\Model
             }
         }
 
+        \D::manager()->flush();
+    }
+
+    /**
+     * Removes all of the items from the DB
+     * @return void
+     */
+    public static function removeAll()
+    {
+        $called_class = get_called_class();
+        $metadata = \D::manager()->getClassMetadata($called_class);
+        $qb = $called_class::select('item');
+        $items = $qb->getQuery()->getResult();
+        
+        foreach ($items as $num => $item) {
+            \D::manager()->remove($item);
+        }
         \D::manager()->flush();
     }
     
@@ -1138,6 +1204,11 @@ class Base extends \CMF\Doctrine\Model
      */
     public function get_object_vars(){
         return get_object_vars($this);
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 	
 }

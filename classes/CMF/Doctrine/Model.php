@@ -595,10 +595,10 @@ abstract class Model
             $value = $this->$field_name;
             switch ($field['type']) {
                 case 'date':
-                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format('d/m/Y') : strval($value);
+                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format(\DateTime::ISO8601) : strval($value);
                     
                 case 'datetime':
-                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format('d/m/Y H:i') : strval($value);
+                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format(\DateTime::ISO8601) : strval($value);
                     break;
                 
                 case 'object':
@@ -612,9 +612,20 @@ abstract class Model
         
         if ($include_associations === false) return $this->array_data = $output;
         
-        foreach ($metadata->associationMappings as $assoc_name => $assoc) {
+        foreach ($metadata->associationMappings as $assoc_name => $assoc)
+        {
             $value = $this->$assoc_name;
-            if (!is_null($value) && $value instanceof \CMF\Doctrine\Model) $output[$assoc_name] = $value->toArray(false);
+            if (empty($value)) continue;            
+
+            if ($metadata->isCollectionValuedAssociation($assoc_name)) {
+                $items = array();
+                foreach ($value as $entity) {
+                    if ($entity instanceof \CMF\Doctrine\Model) $items[] = $entity->toArray(false);
+                }
+                $output[$assoc_name] = $items;
+            } else if ($value instanceof \CMF\Doctrine\Model) {
+                $output[$assoc_name] = $value->toArray(false);
+            }
         }
         
         return $this->array_data = $output;
@@ -680,5 +691,4 @@ abstract class Model
     {
         return isset($this->$name);
     }
-	
 }
