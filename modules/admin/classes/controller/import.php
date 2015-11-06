@@ -23,7 +23,7 @@ class Controller_Import extends Controller_Base {
 		$this->importUrl = '';
 		$base_url = rtrim(\CMF\Model\DevSettings::instance()->parent_site, '/');
 		if (!empty($base_url)) {
-			$this->importUrl = $base_url.'/api/'.\Inflector::pluralize($table_name);
+			$this->importUrl = $base_url.'/api/'.\Inflector::pluralize($table_name).'.json';
 		}
 	}
 	

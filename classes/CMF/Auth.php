@@ -398,7 +398,7 @@ class Auth
         }
 
         if (static::cannot($action, $resource)) {
-            $message || $message = __("auth.unauthorized.{$resource}.{$action}");
+            $message || $message = __("errors.unauthorized.{$resource}.{$action}");
             throw new Auth\AccessDenied($message, $action, $resource);
         }
     }

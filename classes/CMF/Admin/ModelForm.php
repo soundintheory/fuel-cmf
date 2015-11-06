@@ -65,7 +65,15 @@ class ModelForm
 		
 		// Merge any DB settings into the mix...
 		$model_settings = $model->settings;
-		if (is_array($model_settings)) $this->fields = \Arr::merge($this->fields, $model_settings);
+		if (is_array($model_settings)) {
+			$_model_settings = array();
+			foreach ($model_settings as $key => $value) {
+				if (is_array($value) && ($metadata->hasField($key) || $metadata->hasAssociation($key))) {
+					$_model_settings[$key] = $value;
+				}
+			}
+			$this->fields = \Arr::merge($this->fields, $_model_settings);
+		}
 		
 		// The field data
 		$this->processFieldSettings($metadata, $model, $prefix);

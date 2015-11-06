@@ -43,15 +43,11 @@ class HttpException extends \Fuel\Core\HttpException
 	const NOT_EXTENDED = 510;
 	const NETWORK_AUTHENTICATION_REQUIRED = 511;
 
+	/**
+	 * Tries to render the error response from a custom template, falling back to the default one
+	 */
 	public function response()
 	{
-		return new \Response(
-			\View::forge('errors/http', array(
-				'code' => $this->getCode(),
-				'status' => \Arr::get(\Response::$statuses, $this->getCode(), 'Internal Server Error'),
-				'message' => $this->getMessage()
-			)),
-			$this->getCode()
-		);
+		return \CMF::getCustomErrorResponse($this->getMessage(), $this->getCode());
 	}
 }

@@ -4,7 +4,6 @@ namespace CMF\Core;
 
 class Error extends \Fuel\Core\Error
 {
-
 	public static function show_production_error(\Exception $e)
 	{
 		// when we're on CLI, always show the php error
@@ -21,7 +20,7 @@ class Error extends \Fuel\Core\Error
 
 		$response = '';
 		try {
-			$response = \View::forge('errors'.DS.'500.twig');
+			$response = \CMF::getCustomErrorResponse(__("errors.http.500", array(), __("errors.http.default", array(), 'Please contact the website administrator')));
 		} catch (\Exception $e) {
 			$response = \View::forge('errors'.DS.'production');
 		}
@@ -29,6 +28,15 @@ class Error extends \Fuel\Core\Error
 		exit($response);
 	}
 
+	public static function exception_handler(\Exception $e)
+	{
+		// Try and stop the cache
+		try {
+			\CMF\Cache::stop();
+		} catch (\Exception $e) {}
+
+		parent::exception_handler($e);
+	}
 }
 
 

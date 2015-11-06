@@ -12,6 +12,7 @@ Autoloader::alias_to_namespace('CMF\\Admin');
 
 // Load cmf config
 \Config::load('cmf', true);
+\Lang::load('errors', true);
 
 // Check if custom module urls have been set
 if (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), 'admin') === 0) {

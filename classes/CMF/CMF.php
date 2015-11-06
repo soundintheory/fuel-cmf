@@ -766,5 +766,82 @@ class CMF
 		
 		return '/image/'.$crop['x'].'/'.$crop['y'].'/'.$crop['width'].'/'.$crop['height'].'/'.$w.'/'.$h.'/'.$src;
 	}
+
+	/**
+	 * Tries to render an error response from a custom template, falling back to the default one
+	 */
+	public static function getCustomErrorResponse($message = null, $code = 500, $default_template = 'errors/http.twig')
+	{
+		$view = null;
+		$template = 'errors/'.$code.'.twig';
+		$status = \Arr::get(\Response::$statuses, $code, 'Internal Server Error');
+		$data = array(
+			'code' => $code,
+			'status' => $status,
+			'message' => $message ? $message : __("errors.http.$code", array(), __("errors.http.default", array(), $status))
+		);
+
+		// First try the specific error page
+		try {
+			if ($viewClass = \CMF::hasViewModel($template))
+			{
+			    $view = new $viewClass('view', false, $template);
+			}
+			else
+			{
+				$viewClass = ucfirst(\CMF::$module).'\\View_Base';
+				if (!class_exists($viewClass)) $viewClass = '\\View_Base';
+				$view = new $viewClass('view', false, $template);
+			}
+
+			$view->set($data);
+			$view = $view->render();
+
+		} catch (\Exception $e) { $view = null; }
+
+		// Then try the provided default template
+		if (!$view) {
+
+			try {
+				if ($viewClass = \CMF::hasViewModel($default_template))
+				{
+				    $view = new $viewClass('view', false, $default_template);
+				}
+				else
+				{
+					$viewClass = ucfirst(\CMF::$module).'\\View_Base';
+					if (!class_exists($viewClass)) $viewClass = '\\View_Base';
+					$view = new $viewClass('view', false, $default_template);
+				}
+
+				$view->set($data);
+				$view = $view->render();
+
+			} catch (\Exception $e) { $view = null; }
+
+		}
+
+		// Then try the above, without the view models
+		if (!$view) {
+			try {
+				$view = \View::forge($template, $data);
+			} catch (\Exception $e) { $view = null; }
+		}
+		if (!$view) {
+			try {
+				$view = \View::forge($default_template, $data);
+			} catch (\Exception $e) { $view = null; }
+		}
+
+		// If all the above hasn't worked, we can always fall back to the system template!
+		if (!$view) {
+			$view = \View::forge('errors/http', $data);
+		}
+
+		return new \Response(
+			$view,
+			$code
+		);
+	}
 	
 }

@@ -26,10 +26,8 @@ class Importer
             ini_set('memory_limit', '256M');
         } catch (\Exception $e) { }
 
+        // Reset updated entities
         static::$_updatedEntities = array();
-        $metadata = $model::metadata();
-
-        var_dump('importing data...');
         
         // Normalise the data so we always have a collection
         if (is_array($data['data']) && \Arr::is_assoc($data['data'])) {
@@ -52,7 +50,7 @@ class Importer
 
         return array(
             'success' => true,
-            'message' => 'URL imported successfully'
+            'message' => 'Contents of remote URL imported successfully'
         );
     }
 
@@ -67,22 +65,21 @@ class Importer
         }
 
         $oid = \Arr::get($data, 'id', \Arr::get($data, '_oid_'));
-
-        // Return the actual entity if we've already dealt with this before
-        if ($oid && isset(static::$_updatedEntities[$model]) && isset(static::$_updatedEntities[$model][$oid])) {
-            return static::$_updatedEntities[$model][$oid];
-        }
-
         $metadata = $model::metadata();
         $associations = array();
         $entity = null;
+
+        // Return the actual entity if we've already dealt with this before
+        if ($oid && isset(static::$_updatedEntities[$model]) && isset(static::$_updatedEntities[$model][$oid])) {
+            $entity = static::$_updatedEntities[$model][$oid];
+        }
 
         // We need to resolve the link if this is some sort of API-ish reference to another object somewhere
         if (static::isObjectReference($data)) {
             $data = static::resolveObjectReference($data, $context);
         }
 
-        if (isset($data['id']))
+        if (!$entity && isset($data['id']))
         {
             // Add original ID to the settings
             if (!isset($data['settings'])) $data['settings'] = array();
@@ -104,8 +101,15 @@ class Importer
 
         // Create a new one if not found
         if (!$entity) {
+            var_dump("Creating $model");
             $entity = new $model();
             \D::manager()->persist($entity);
+        }
+
+        // Store the entity so we can reference later if needed
+        if (isset($data['_oid_'])) {
+            if (!isset(static::$_updatedEntities[$model])) static::$_updatedEntities[$model] = array();
+            static::$_updatedEntities[$model][$data['_oid_']] = $entity;
         }
 
         // Clean up the array before populating
@@ -147,25 +151,22 @@ class Importer
             }
         }
 
-        // Store the entity so we can reference later if needed
-        if (isset($data['_oid_'])) {
-            if (!isset(static::$_updatedEntities[$model])) static::$_updatedEntities[$model] = array();
-            static::$_updatedEntities[$model][$data['_oid_']] = $entity;
-        }
+        // Download any referenced files
+        static::downloadFilesForEntity($entity, \Arr::get($context, 'links.self'));
 
         return $entity;
     }
 
     /**
-     * Attempts to resolve a "JSON API" style object reference
+     * Attempts to resolve a "JSON API" style single object reference
      */
     protected static function resolveObjectReference($data, &$context = null)
     {
         if ($context)
         {
             // Attempt to find a 'sideloaded' object
-            if (isset($context['included']) && isset($context['included'][$data['type']]) && isset($context['included'][$data['type']][$data['_oid_']])) {
-                return $context['included'][$data['type']][$data['_oid_']];
+            if (isset($context['included']) && isset($context['included'][$data['type']]) && isset($context['included'][$data['type']][$data['id']])) {
+                return $context['included'][$data['type']][$data['id']];
             }
 
             // If the type is equal to the base type of the context, try and find it from the main 'data' array
@@ -173,17 +174,13 @@ class Importer
             {
                 foreach ($context['data'] as $rootEntity)
                 {
-                    if (@$rootEntity['id'] == $data['_oid_']) return $rootEntity;
+                    if (@$rootEntity['id'] == $data['id']) return $rootEntity;
                 }
             }
         }
 
         // As a last resort, we will try and load it from the 'href' location
         if (!empty($data['href'])) {
-            var_dump('MAKING AN OBJECT REQUEST, WHAAAT?');
-            var_dump($data);
-            var_dump($context);
-            exit();
             try {
                 $loaded = static::getDataFromUrl($data['href']);
                 if (is_array(@$loaded['included'])) {
@@ -233,10 +230,6 @@ class Importer
         // As a last resort, we will try and load any missing entities from the 'href' location
         if (count($found) < count($data['ids']) && !empty($data['href']))
         {
-            var_dump('MAKING A COLLECTION REQUEST, WHAAAT?');
-            var_dump($data);
-            var_dump($context);
-            exit();
             try {
                 $loaded = static::getDataFromUrl($data['href']);
                 if (isset($loaded['data'])) {
@@ -262,6 +255,30 @@ class Importer
         return $output;
     }
 
+    public static function downloadFilesForEntity($entity, $base_url)
+    {
+        $urlInfo = parse_url($base_url);
+        if (!$urlInfo) return;
+
+        $port = \Arr::get($urlInfo, 'port', 80);
+        $url = \Arr::get($urlInfo, 'scheme', 'http').'://'.\Arr::get($urlInfo, 'host', '').($port != 80 ? ":$port" : '').'/';
+
+        $class = get_class($entity);
+        $metadata = $class::metadata();
+
+        foreach ($metadata->getFieldNames() as $fieldName)
+        {
+            $fieldType = $metadata->getTypeOfField($fieldName);
+
+            if (in_array($fieldType, array('file', 'image'))) 
+            {
+                //$src = 
+            }
+        }
+
+        //var_dump($metadata); exit();
+    }
+
     /**
      * Checks whether an array conforms to the "JSON API" style approach of collection reference
      */
@@ -280,7 +297,7 @@ class Importer
      */
     protected static function isObjectReference($data)
     {
-        if (isset($data['_oid_']) && isset($data['type']))
+        if (isset($data['id']) && isset($data['type']))
         {
             if (count($data) === 2) return true;
             return isset($data['href']) && count($data) === 3;
@@ -342,9 +359,10 @@ class Importer
         // Create the request
         $type = $model::importType();
         $type_plural = \Inflector::pluralize($type);
+        $url = rtrim($base_url, '/').'/api/'.$type_plural.'.json';
 
         try {
-            $data = static::getDataFromUrl(rtrim($base_url, '/').'/api/'.$type_plural);
+            $data = static::getDataFromUrl($url);
         } catch (\Exception $e) {
 
             return array(
@@ -353,9 +371,13 @@ class Importer
             );
         }
 
-        // Standardise the meta data
+        // Standardise the root level meta object
         if (!isset($data['meta'])) $data['meta'] = array();
         if (!isset($data['meta']['type'])) $data['meta']['type'] = $type_plural;
+
+        // Standardise the root level links object
+        if (!isset($data['links'])) $data['links'] = array();
+        if (!isset($data['links']['self'])) $data['links']['self'] = $url;
 
         // Import the data
         return static::importData($data, $model, false);

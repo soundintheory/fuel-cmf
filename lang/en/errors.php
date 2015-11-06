@@ -1,22 +1,12 @@
 <?php
-/**
- * Warden: User authorization & authentication library for FuelPHP.
- *
- * @package    Warden
- * @subpackage Warden
- * @version    1.2
- * @author     Andrew Wayne <lifeandcoding@gmail.com>
- * @license    MIT License
- * @copyright  (c) 2011 - 2012 Andrew Wayne
- */
 
-/**
- * Example lang file.
- *
- * @package    Warden
- * @subpackage Warden
- */
 return array(
+
+    'http' => array(
+        'default' => 'Please contact the website administrator',
+        '404' => 'That page could not be found!'
+    ),
+    
     'failure' => array(
         'already_authenticated' => 'You are already signed in.',
         'unauthenticated'       => 'You need to sign in or sign up before continuing.',
@@ -75,4 +65,5 @@ return array(
             'unlock'         => 'Unlock instructions',
         )
     )
+
 );
