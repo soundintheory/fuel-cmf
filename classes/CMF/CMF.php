@@ -423,6 +423,15 @@ class CMF
 		// Plain query for the urls table to avoid initialising Doctrine for 404s
 		$url_item = \DB::query("SELECT type, item_id FROM urls WHERE url = '$url' AND alias_id IS NULL ".($type !== null ? "AND type = '$type'" : ""))->execute();
 
+		// If multilingual is enabled, we need to check the ext_translations table too
+		if (count($url_item) === 0 && static::langEnabled())
+		{
+			$lang = static::$lang ?: static::$lang_default;
+			if ($item_id = \DB::query("SELECT foreign_key FROM ext_translations WHERE locale = '$lang' AND field = 'url' AND object_class = 'CMF\\\Model\\\URL' AND content = '$url'")->execute()->get('foreign_key')) {
+				$url_item = \DB::query("SELECT type, item_id FROM urls WHERE id = $item_id")->execute();
+			}
+		}
+
 		if (count($url_item) === 0 && $url == '/') {
 			$url_item = static::settings()->start_page;
 			if (is_null($url_item)) return null;
