@@ -154,7 +154,7 @@ class Cache {
     	$template = new \CMF\Twig\TemplateInclude($env);
         if (empty($context)) $context = array();
 
-        if (!empty(@$context['template']))
+        if (!empty($context['template']))
         {
             $module = @$context['module'];
 
