@@ -130,7 +130,7 @@ class Controller_Image extends \Controller {
 		$h = intval($h);
 		$this->mode = 'cc';
 		
-		$output = $this->_init_image(7, $cropx."_".$cropy."_".$cropx."_".$cropw."_".$cropy."_".$croph."_".$w."x".$h);
+		$output = $this->_init_image(7, $cropx."_".$cropy."_".$cropx."_".$cropw."_".$cropy."_".$croph."_".$w."x".$h, \Input::param('format'));
 		
 		if (!is_null($output)) return $output;
 		
@@ -150,7 +150,7 @@ class Controller_Image extends \Controller {
 		$h = intval($h);
 		$this->mode = 'gc';
 		
-		$output = $this->_init_image(4, $grid."_".$w."x".$h);
+		$output = $this->_init_image(4, $grid."_".$w."x".$h, \Input::param('format'));
 		if (!is_null($output)) return $output;
 		
 		$bgcolor = '#'.\Input::param('bgcolor', 'fff');
@@ -231,7 +231,7 @@ class Controller_Image extends \Controller {
 		}
 		
 		// Init the image info with the filename format, and output if a cache has been produced
-		$output = $this->_init_image(4, $w.'x'.$h);
+		$output = $this->_init_image(4, $w.'x'.$h, \Input::param('format'));
 		if (!is_null($output)) return $output;
 
 		// Load the image and apply the filters
