@@ -893,6 +893,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         $items = $qb->getQuery()->getResult();
         
         foreach ($items as $num => $item) {
+            \D::manager()->persist($item);
             \D::manager()->remove($item);
         }
         \D::manager()->flush();

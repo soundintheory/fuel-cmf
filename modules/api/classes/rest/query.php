@@ -435,6 +435,7 @@ class Rest_Query
 		$metadata = $this->getMetadata();
 		$associations = $metadata->getAssociationNames();
 		$root_type = $this->root;
+		$polymorphic = $metadata->isInheritanceTypeJoined() || isInheritanceTypeSingleTable();
 
 		foreach ($results as $result)
 		{
@@ -442,6 +443,18 @@ class Rest_Query
 			$output = $result->toArray(false);
 			$output_type = $metadata->name;
 			$output_id = $result->id;
+
+			if ($polymorphic)
+			{
+				$class = get_class($result);
+				$resultMetadata = $class::metadata();
+				$class = $resultMetadata->name;
+
+				$typeField = is_array($resultMetadata->discriminatorColumn) ? \Arr::get($resultMetadata->discriminatorColumn, 'name') : null;
+				if ($typeField) {
+					$output[$typeField] = $resultMetadata->discriminatorValue;
+				}
+			}
 
 			// Put the associations into their respective sideloaded arrays
 			foreach ($associations as $assoc)
@@ -521,7 +534,6 @@ class Rest_Query
 		foreach ($results as $result)
 		{
 			if (!$isAssociation) {
-				var_dump('yeah?'); exit();
 				continue;
 			}
 
