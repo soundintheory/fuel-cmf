@@ -443,6 +443,17 @@ class Rest_Query
 	}
 
 	/**
+	 * Checks whether an entity is in the provided result set
+	 */
+	protected function entityInResultSet($entity, &$results)
+	{
+		foreach ($results as $result) {
+			if ($result->id === $entity->id) return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Transforms raw query results into a fully fledged JSON API response
 	 */
 	protected function buildOutput($results)
@@ -452,15 +463,19 @@ class Rest_Query
 		$this->output[$this->rootOutput] = array();
 		$this->output['included'] = array();
 		$metadata = $this->getMetadata();
-		$associations = $metadata->getAssociationNames();
 		$root_type = $this->root;
 		$polymorphic = $metadata->isInheritanceTypeJoined() || $metadata->isInheritanceTypeSingleTable();
 
 		foreach ($results as $result)
 		{
+			// Get metadata for this result
+			$resultClass = get_class($result);
+			$resultMeta = $resultClass::metadata();
+			$associations = $resultMeta->getAssociationNames();
+
 			// Create a simple array version of the result
 			$output = $result->toArray(false);
-			$output_type = $metadata->name;
+			$output_type = $resultMeta->name;
 			$output_id = $result->id;
 			$this->addDiscriminator($result, $output);
 
@@ -469,11 +484,11 @@ class Rest_Query
 			{
 				if (empty($result->$assoc)) continue;
 
-				$assoc_class = $metadata->getAssociationTargetClass($assoc);
+				$assoc_class = $resultMeta->getAssociationTargetClass($assoc);
 				$type = \Inflector::pluralize(\Admin::getTableForClass($assoc_class));
 				if (!isset($this->output['included'][$type])) $this->output['included'][$type] = array();
 
-				if ($metadata->isCollectionValuedAssociation($assoc))
+				if ($resultMeta->isCollectionValuedAssociation($assoc))
 				{
 					$output[$assoc] = array(
 						'ids' => array(),
@@ -484,7 +499,7 @@ class Rest_Query
 						$assoc_id = $assoc_value->id;
 						$output[$assoc]['ids'][] = $assoc_id;
 
-						if (!($type == $this->root && isset($this->output[$this->rootOutput][$assoc_id]))) {
+						if (!($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($assoc_value, $results)) )) {
 							$assocArray = $assoc_value->toArray(false);
 							$this->addDiscriminator($assoc_value, $assocArray);
 							$this->output['included'][$type][$assoc_id] = $assocArray;
@@ -499,7 +514,7 @@ class Rest_Query
 						'type' => $type,
 						'href' => \Uri::base(false)."api/$type/$assoc_id"
 					);
-					if (!($type == $this->root && isset($this->output[$this->rootOutput][$assoc_id]))) {
+					if (!($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($result->$assoc, $results)) )) {
 						$assocArray = $result->$assoc->toArray(false);
 						$this->addDiscriminator($result->$assoc, $assocArray);
 						$this->output['included'][$type][$assoc_id] = $assocArray;
@@ -536,12 +551,7 @@ class Rest_Query
 		$this->output[$this->rootOutput] = array();
 		$this->output['included'] = array();
 		$metadata = $this->getMetadata();
-
-		if ($isAssociation = $metadata->hasAssociation($field)) {
-			$fieldClass = $metadata->getAssociationTargetClass($field);
-			$fieldMetadata = $fieldClass::metadata();
-			$fieldAssociations = $fieldMetadata->getAssociationNames();
-		}
+		$isAssociation = $metadata->hasAssociation($field);
 
 		foreach ($results as $result)
 		{
@@ -552,6 +562,11 @@ class Rest_Query
 			$entities = $metadata->isSingleValuedAssociation($field) ? array($result->$field) : $result->$field->toArray();
 			foreach ($entities as $entity)
 			{
+				// Get metadata for this result
+				$resultClass = get_class($entity);
+				$fieldMetadata = $resultClass::metadata();
+				$fieldAssociations = $fieldMetadata->getAssociationNames();
+
 				// Create a simple array version of the entity
 				$output = $entity->toArray(false);
 				$this->addDiscriminator($entity, $output);
@@ -578,7 +593,7 @@ class Rest_Query
 							$assoc_id = $assoc_value->id;
 							$output[$assoc]['ids'][] = $assoc_id;
 
-							if (!($type == $this->root && isset($this->output[$this->rootOutput][$assoc_id]))) {
+							if (!($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($assoc_value, $results)) )) {
 								$assocArray = $assoc_value->toArray(false);
 								$this->addDiscriminator($assoc_value, $assocArray);
 								$this->output['included'][$type][$assoc_id] = $assocArray;
@@ -593,7 +608,7 @@ class Rest_Query
 							'type' => $type,
 							'href' => \Uri::base(false)."api/$type/$assoc_id"
 						);
-						if (!($type == $this->root && isset($assoc_id, $this->output[$this->rootOutput]))) {
+						if (!($type == $this->root && (isset($assoc_id, $this->output[$this->rootOutput]) || $this->entityInResultSet($entity->$assoc, $results)) )) {
 							$assocArray = $entity->$assoc->toArray(false);
 							$this->addDiscriminator($entity->$assoc, $assocArray);
 							$this->output['included'][$type][$assoc_id] = $assocArray;
