@@ -450,7 +450,7 @@ class Rest_Query
 
 		foreach ($this->hydrations[$class] as $assoc)
 		{
-			\D::manager()->createQuery("SELECT PARTIAL item.{id}, $assoc FROM $class item LEFT JOIN item.$assoc $assoc".$extra)->getResult();
+			\D::manager()->createQuery("SELECT item, $assoc FROM $class item LEFT JOIN item.$assoc $assoc".$extra)->getResult();
 		}
 	}
 
