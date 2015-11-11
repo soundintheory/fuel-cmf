@@ -39,8 +39,15 @@ class Importer
             foreach ($data['data'] as $entity)
             {
                 $entity = static::createOrUpdateEntity($entity, $model, $data);
-                \D::manager()->flush($entity);
+                \D::manager()->flush();
             }
+
+            static::processDeletions($model);
+            \D::manager()->flush();
+
+            // Try and repair any trees that may have been corrupted during the import
+            static::repairTrees(array_keys(static::$_updatedEntities));
+
         } catch (\Exception $e) {
             return array(
                 'success' => false,
@@ -55,59 +62,150 @@ class Importer
     }
 
     /**
+     * Checks each class provided and repairs the tree if it is corrupt
+     */
+    protected static function repairTrees($classes)
+    {
+        $processed = array();
+
+        try {
+            \D::manager()->clear();
+        } catch (\Exception $e) {}
+
+        foreach ($classes as $class) {
+            if (is_subclass_of($class, 'CMF\\Model\\Node')) {
+
+                $metadata = $class::metadata();
+                $className = $metadata->rootEntityName;
+                if (in_array($className, $processed)) continue;
+                $processed[] = $className;
+
+                try {
+
+                    $rootNode = $className::getRootNode(true);
+                    $repo = \D::manager()->getRepository($className);
+                    $qb = $repo->getNodesHierarchyQueryBuilder($rootNode);
+                    $treeValid = $repo->verify();
+
+                    if ($treeValid !== true) {
+                        $repo->recover();
+                        \D::manager()->flush();
+                        \D::manager()->clear();
+                    }
+
+                } catch (\Exception $e) {  }
+
+            }
+        }
+    }
+
+    /**
      * Given some data, tries either update an existing entry in the local DB or creates a new one
      */
     public static function createOrUpdateEntity($data, $model, &$context = null)
     {
+        if (!is_array($data)) return null;
+
         // If we ever deal with a URL, make sure URL processing is disabled
         if (trim($model, '\\') == 'CMF\\Model\\URL') {
             \CMF\Doctrine\Extensions\URLListener::$disableProcessing = true;
         }
 
-        $oid = \Arr::get($data, 'id', \Arr::get($data, '_oid_'));
+        $oid = intval(\Arr::get($data, 'id', \Arr::get($data, '_oid_', 0)));
         $metadata = $model::metadata();
+        $tableName = $metadata->table['name'];
+        $model = $metadata->name;
         $associations = array();
         $entity = null;
-
-        // Return the actual entity if we've already dealt with this before
-        if ($oid && isset(static::$_updatedEntities[$model]) && isset(static::$_updatedEntities[$model][$oid])) {
-            $entity = static::$_updatedEntities[$model][$oid];
-        }
+        $changed = true;
+        $polymorphic = $metadata->isInheritanceTypeJoined() || $metadata->isInheritanceTypeSingleTable();
+        $typeField = $polymorphic ? \Arr::get($metadata->discriminatorColumn, 'name') : null;
 
         // We need to resolve the link if this is some sort of API-ish reference to another object somewhere
         if (static::isObjectReference($data)) {
+            if (is_null($data['id'])) return null;
             $data = static::resolveObjectReference($data, $context);
         }
 
-        if (!$entity && isset($data['id']))
+        // Make sure the class is in line with the discriminator attribute
+        if ($polymorphic && isset($data[$typeField])) {
+            $model = \Arr::get($metadata->discriminatorMap, $data[$typeField], $model);
+            if ($model != $metadata->name) $metadata = $model::metadata();
+            unset($data[$typeField]);
+        }
+
+        // If we're using inheritance, make sure we have the base table name
+        if ($polymorphic && $metadata->rootEntityName != $model) {
+            $rootModel = $metadata->rootEntityName;
+            $tableName = $rootModel::metadata()->table['name'];
+        }
+
+        // Get the actual entity if we've already dealt with this before
+        if ($processed = ($oid && isset(static::$_updatedEntities[$model]) && isset(static::$_updatedEntities[$model][$oid]))) {
+            $entity = static::$_updatedEntities[$model][$oid];
+            return $entity;
+        }
+
+        // Check if we're dealing with a tree structure
+        if ($isTree = is_subclass_of($model, 'CMF\\Model\\Node')) {
+            if (@$data['is_root']) {
+                $entity = $model::getRootNode();
+                if (isset($data['children'])) unset($data['children']);
+            }
+            if (isset($data['root'])) unset($data['root']);
+            if (isset($data['rgt'])) unset($data['rgt']);
+            //if (isset($data['lft'])) unset($data['lft']);
+            //if (isset($data['lvl'])) unset($data['lvl']);
+        }
+
+        // Only ever one instance of static items
+        if (!$entity && $model::_static()) {
+            $entity = $model::instance();
+        }
+
+        if (isset($data['id']))
         {
             // Add original ID to the settings
             if (!isset($data['settings'])) $data['settings'] = array();
             $data['settings']['original_id'] = $data['id'];
             $data['_oid_'] = $data['id'];
-
-            // Find the ID of the existing record
-            $orig = '%s:11:"original_id";i:'.$data['id'].';%';
-            $orig_id = \DB::query("SELECT id FROM ".$metadata->table['name']." WHERE settings LIKE :orig LIMIT 1")
-                ->bind('orig', $orig)
-                ->execute()->get('id');
-
-            if ($orig_id) {
-                $entity = $model::find(intval($orig_id));
-            }
-
             unset($data['id']);
+
+            if (!$entity)
+            {
+                // Find the ID of the existing record
+                $orig = '%s:11:"original_id";i:'.$data['_oid_'].';%';
+                $orig_id = \DB::query("SELECT id FROM $tableName WHERE settings LIKE :orig LIMIT 1")
+                    ->bind('orig', $orig)
+                    ->execute()->get('id');
+
+                if ($orig_id) {
+                    $entity = $model::find(intval($orig_id));
+                }
+            }
+        }
+
+        // Find out whether the remote item has been updated since the last import
+        if ($entity && !empty($entity->id) && !empty($data['updated_at']))
+        {
+            $wasImported = is_array($entity->settings) ? (\Arr::get($entity->settings, 'original_id') !== null) : false;
+            if ($wasImported)
+            {
+                $updatedAt = new \DateTime($data['updated_at']);
+                $localUpdatedAt = new \DateTime($entity->updated_at->format('Y-m-d H:i:s'), $updatedAt->getTimezone());
+                $changed = ($updatedAt > $localUpdatedAt);
+            }
         }
 
         // Create a new one if not found
         if (!$entity) {
-            var_dump("Creating $model");
             $entity = new $model();
-            \D::manager()->persist($entity);
         }
+        \D::manager()->persist($entity);
 
         // Store the entity so we can reference later if needed
         if (isset($data['_oid_'])) {
+            $oid = intval($data['_oid_']);
             if (!isset(static::$_updatedEntities[$model])) static::$_updatedEntities[$model] = array();
             static::$_updatedEntities[$model][$data['_oid_']] = $entity;
         }
@@ -120,10 +218,19 @@ class Importer
                 unset($data[$field]);
                 continue;
             }
+
+            if (in_array($metadata->getTypeOfField($field), array('date', 'datetime'))) {
+                $data[$field] = new \DateTime($value);
+            }
         }
 
         // Populate the entity
-        $entity->populate($data);
+        if ($changed) {
+            if (!isset($data['settings'])) $data['settings'] = array();
+            $data['settings']['imported_from'] = \Arr::get($context, 'links.self');
+            $entity->populate($data);
+            $entity->changed = false;
+        }
 
         // Now populate the associations
         foreach ($associations as $field => $value)
@@ -151,10 +258,71 @@ class Importer
             }
         }
 
-        // Download any referenced files
-        static::downloadFilesForEntity($entity, \Arr::get($context, 'links.self'));
+        // Sometimes field values rely on associations being present, so populate again!
+        if ($changed) {
+            $entity->populate($data);
+            $entity->changed = false;
+        }
+
+        // Download any referenced files if we haven't done so already
+        if ($changed && !$processed)
+            static::downloadFilesForEntity($entity, $model, \Arr::get($context, 'links.self'));
 
         return $entity;
+    }
+
+    /**
+     * Deletes any imported local data that wasn't present in the import
+     */
+    protected static function processDeletions($model)
+    {
+        if (!isset(static::$_updatedEntities[$model]) || !is_array(static::$_updatedEntities[$model])) return;
+
+        $metadata = $model::metadata();
+        $polymorphic = $metadata->isInheritanceTypeJoined() || $metadata->isInheritanceTypeSingleTable();
+        $class = $metadata->name;
+
+        // Find all the ids of database items that have been imported
+        $orig = '%s:11:"original_id";i:%';
+        $ids = \DB::query("SELECT id FROM ".$metadata->table['name']." WHERE settings LIKE :orig")
+            ->bind('orig', $orig)
+            ->execute();
+        $localIds = array_map(function($item) {
+            return intval(@$item['id']);
+        }, $ids->as_array());
+
+        // Now get all the ids that have just been processed
+        $processedClasses = array($metadata->name);
+        $processedIds = array();
+        if ($polymorphic && count($metadata->subClasses)) {
+            foreach ($metadata->subClasses as $subClass) {
+                if (!in_array($subClass, $processedClasses)) $processedClasses[] = $subClass;
+            }
+        }
+
+        foreach ($processedClasses as $processedClass) {
+            if (!isset(static::$_updatedEntities[$processedClass]) || !is_array(static::$_updatedEntities[$processedClass])) continue;
+            foreach (static::$_updatedEntities[$processedClass] as $id => $entity){
+                if (!in_array($entity->id, $processedIds)) $processedIds[] = $entity->id;
+            }
+        }
+
+        // Find the difference between the two
+        asort($localIds);
+        asort($processedIds);
+        $diff = array_diff($localIds, $processedIds);
+
+        // Delete ones that weren't imported this time
+        if (count($diff))
+        {
+            $entities = $class::select('item')->where('item.id IN(:ids)')
+            ->setParameter('ids', $diff)
+            ->getQuery()->getResult();
+
+            foreach ($entities as $entity) {
+                \D::manager()->remove($entity);
+            }
+        }
     }
 
     /**
@@ -255,28 +423,46 @@ class Importer
         return $output;
     }
 
-    public static function downloadFilesForEntity($entity, $base_url)
+    /**
+     * Downloads any files needed by the entity
+     */
+    public static function downloadFilesForEntity($entity, $class, $base_url)
     {
+        $class = get_class($entity);
+        $metadata = $class::metadata();
+        $class = $metadata->name;
+
         $urlInfo = parse_url($base_url);
         if (!$urlInfo) return;
 
         $port = \Arr::get($urlInfo, 'port', 80);
         $url = \Arr::get($urlInfo, 'scheme', 'http').'://'.\Arr::get($urlInfo, 'host', '').($port != 80 ? ":$port" : '').'/';
 
-        $class = get_class($entity);
-        $metadata = $class::metadata();
-
         foreach ($metadata->getFieldNames() as $fieldName)
         {
-            $fieldType = $metadata->getTypeOfField($fieldName);
+            if (!in_array($metadata->getTypeOfField($fieldName), array('file', 'image'))) continue;
 
-            if (in_array($fieldType, array('file', 'image'))) 
-            {
-                //$src = 
+            $value = $entity->get($fieldName);
+            $src = is_array($value) ? \Arr::get($value, 'src') : null;
+
+            if (empty($src)) continue;
+
+            $path = preg_replace('/^uploads/', 'uploads/imported', $src);
+            $fullPath = DOCROOT.$path;
+            $dirPath = @pathinfo($fullPath, PATHINFO_DIRNAME);
+
+            if ($dirPath && !is_dir($dirPath)) {
+                @mkdir($dirPath, 0775, true);
+            }
+
+            $value['src'] = $path;
+            $entity->set($fieldName, $value);
+
+            // Now download the file
+            if ($contents = @file_get_contents($url.$src)) {
+                @file_put_contents($fullPath, $contents);
             }
         }
-
-        //var_dump($metadata); exit();
     }
 
     /**
@@ -393,7 +579,6 @@ class Importer
         try {
             $request->execute();
         } catch (\Exception $e) {
-
             switch ($request->response()->status) {
                 case 401:
                     $message = 'URL requires authentication. Check your API key settings.';

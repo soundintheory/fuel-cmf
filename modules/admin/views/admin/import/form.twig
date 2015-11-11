@@ -18,7 +18,7 @@
             </div>
         </div>
     
-        {% if 'file' in methods %}        
+        {% if 'file' in methods or show_all %}        
         <div class="row-fluid">
 
             <div class="widget span12">
@@ -43,7 +43,7 @@
         </div>
         {% endif %}
 
-        {% if 'url' in methods %}
+        {% if 'url' in methods or show_all %}
         <div class="row-fluid">
 
             <div class="widget span12">

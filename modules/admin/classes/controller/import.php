@@ -17,8 +17,9 @@ class Controller_Import extends Controller_Base {
 		$this->singular = $class_name::singular();
 		$this->icon = $class_name::icon();
 		$this->template = 'admin/import/form.twig';
-		$this->methods = $class_name::importMethods();
+		$this->methods = $methods = $class_name::importMethods();
 		$this->type = $class_name::importType();
+		$this->show_all = empty($methods);
 
 		$this->importUrl = '';
 		$base_url = rtrim(\CMF\Model\DevSettings::instance()->parent_site, '/');

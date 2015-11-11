@@ -453,6 +453,9 @@ class Controller_List extends Controller_Base {
 		    }
 			
 		}
+
+		// Import actions
+		$importMethods = $class_name::importMethods();
 		
 		// Actions
 		$this->actions = $class_name::actions();
@@ -475,11 +478,11 @@ class Controller_List extends Controller_Base {
 		$this->sort_process = $sort_process;
 		
 		// Permissions
-		$this->can_import = method_exists($class_name, 'action_import');
 		$this->can_create = $can_create && $can_edit;
 		$this->can_edit = $can_edit;
 		$this->can_delete = $can_delete;
 		$this->can_manage = $can_manage;
+		$this->can_import = !empty($importMethods) && $can_manage;
 		
 		// Add the stuff for JS
 		$this->js['table_name'] = $metadata->table['name'];
@@ -926,6 +929,9 @@ class Controller_List extends Controller_Base {
 			$this->tree_errors = $repo->verify();
 			$this->tree_is_valid = ($this->tree_errors === true);
 		}
+
+		// Import actions
+		$importMethods = $class_name::importMethods();
 		
 		// Add more context for the template
 		$this->table_name = $metadata->table['name'];
@@ -938,6 +944,7 @@ class Controller_List extends Controller_Base {
 		$this->can_edit = $can_edit;
 		$this->can_delete = $can_delete;
 		$this->can_manage = $can_manage;
+		$this->can_import = !empty($importMethods) && $can_manage;
 		
 		// Add the stuff for JS
 		$this->js['tree'] = $tree;
@@ -954,7 +961,6 @@ class Controller_List extends Controller_Base {
 		$this->js['can_edit'] = $can_edit;
 		$this->js['can_delete'] = $can_delete;
 		$this->js['can_manage'] = $can_manage;
-		
 	}
 	
 	protected function filterTreeNodes($nodes, $excluded_ids)

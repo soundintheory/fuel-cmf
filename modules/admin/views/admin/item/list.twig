@@ -77,7 +77,7 @@
         {% endif %}
         <div class="actions-top-right">
             {% if can_manage %}
-            {% if can_import %}<a href="/admin/{{ table_name }}/import" class="btn btn-success btn-permissions" title="Import data"><i class="fa fa-circle-arrow-right"></i> Import...</a>{% endif %}
+            {% if can_import %}<a href="/admin/{{ table_name }}/import" class="btn btn-success btn-permissions" title="Import data"><i class="fa fa-circle-arrow-down"></i> Import...</a>{% endif %}
             <a href="/admin/{{ table_name }}/permissions" class="btn btn-icon btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="fa fa-lock"></i></a>
             {% endif %}
         </div>

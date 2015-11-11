@@ -7,13 +7,14 @@ namespace CMF\Doctrine\Extensions;
  */
 class Tree extends Extension
 {
+	public static $listener;
 	
 	/** @override */
 	public static function init($em, $reader)
 	{
-		$listener = new \Gedmo\Tree\TreeListener();
-		$listener->setAnnotationReader($reader);
-		$em->getEventManager()->addEventSubscriber($listener);
+		static::$listener = new \Gedmo\Tree\TreeListener();
+		static::$listener->setAnnotationReader($reader);
+		$em->getEventManager()->addEventSubscriber(static::$listener);
 	}
 	
 }
