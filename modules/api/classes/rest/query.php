@@ -24,9 +24,12 @@ class Rest_Query
 	protected $excluded_types = array('binary');
 	protected $unselected_joins = array();
 
+	protected $joined = array();
 	protected $output = array();
 	protected $meta = array();
 	protected $hydrations = array();
+	protected $hydratedClasses = array();
+	protected $associationLinks = array();
 
 	/**
 	 * Initialise the wrapper and it's query builder instance
@@ -70,7 +73,7 @@ class Rest_Query
 			$this->buildOutputMeta($results);
 
 			// Get Doctrine to add the missing collection data
-			$this->performHydrations($this->class, array_keys($results));
+			$this->performAllHydrations();
 
 			$this->buildOutput($results);
 		}
@@ -120,15 +123,11 @@ class Rest_Query
 	 *
 	 * @return void
 	 */
-	protected function buildQuerySelect($root = null, $alias = 'item', $target_class = null, $level = 0, $root_prefix = null)
+	protected function buildQuerySelect($alias = 'item', $target_class = null)
 	{
-		$root = $root ?: $this->root;
-		$root_prefix = $root_prefix ?: $this->root.'.';
 		$target_class = $target_class ?: $this->class;
 		$builder = $this->getQueryBuilder();
 		$metadata = $target_class::metadata();
-		$prefix = '';
-		$next_level = array();
 
 		// If it's just one field we need, select only the bare essentials
 		if ($this->field)
@@ -151,15 +150,23 @@ class Rest_Query
 		foreach ($metadata->getAssociationNames() as $assoc) {
 			if ($metadata->isSingleValuedAssociation($assoc)) {
 
-				// If it's a single association, only select the ID so we can perform that 
-				$builder->leftJoin("$alias.$assoc", $assoc)->addSelect($assoc);
+				// If it's a single association, join it and select it
+				$assoc_class = $metadata->getAssociationTargetClass($assoc);
+				$assoc_alias = \Inflector::friendly_title("$target_class $assoc", '_', true);
 
-			} else {
+				// Only join if it hasn't been done already
+				if (!in_array($assoc_alias, $this->joined)) {
+					$builder->leftJoin("$alias.$assoc", $assoc_alias);
+					$this->joined[] = $assoc_alias;
+					$this->buildQuerySelect($assoc_alias, $assoc_class);
+					$this->hydrateCollectionsForClass($assoc_class);
+				}
 
-				// If it's a multi-valued association don't select it now! We'll hydrate them separately to improve performance
-				$this->hydrateCollectionLater($target_class, $assoc);
 			}
 		}
+
+		// Schedule hydration to happen for collections in this class - it's faster than joining and selecting them
+		$this->hydrateCollectionsForClass($target_class);
 	}
 
 	/**
@@ -334,6 +341,31 @@ class Rest_Query
 	}
 
 	/**
+	 * Schedules hydration for all collections in a class
+	 */
+	protected function hydrateCollectionsForClass($class)
+	{
+		if (in_array($class, $this->hydratedClasses)) return;
+
+		$this->hydratedClasses[] = $class;
+		$metadata = $class::metadata();
+		$class = $metadata->name;
+
+		foreach ($metadata->getAssociationNames() as $assoc)
+		{
+			if ($metadata->getReflectionProperty($assoc)->class == $class && $metadata->isCollectionValuedAssociation($assoc)) {
+				$this->hydrateCollectionLater($class, $assoc);
+			}
+			$this->hydrateCollectionsForClass($metadata->getAssociationTargetClass($assoc));
+		}
+
+		foreach ($metadata->subClasses as $subClass)
+		{
+			$this->hydrateCollectionsForClass($subClass);
+		}
+	}
+
+	/**
 	 * Hydrate a collection after the initial query
 	 */
 	protected function hydrateCollectionLater($model, $field)
@@ -391,7 +423,18 @@ class Rest_Query
 	}
 
 	/**
-	 * Performs hydrations that were scheduled during the build of the query
+	 * Performs all of the hydrations that were scheduled during the build of the query
+	 */
+	protected function performAllHydrations()
+	{
+		foreach ($this->hydrations as $class => $props)
+		{
+			$this->performHydrations($class);
+		}
+	}
+
+	/**
+	 * Performs hydrations for the class specified
 	 */
 	protected function performHydrations($class, $ids = null)
 	{
@@ -462,76 +505,21 @@ class Rest_Query
 		$this->output['meta'] = $this->meta;
 		$this->output[$this->rootOutput] = array();
 		$this->output['included'] = array();
-		$metadata = $this->getMetadata();
-		$root_type = $this->root;
-		$polymorphic = $metadata->isInheritanceTypeJoined() || $metadata->isInheritanceTypeSingleTable();
 
+		// Put the result into the root output
 		foreach ($results as $result)
 		{
-			// Get metadata for this result
-			$resultClass = get_class($result);
-			$resultMeta = $resultClass::metadata();
-			$associations = $resultMeta->getAssociationNames();
-
-			// Create a simple array version of the result
-			$output = $result->toArray(false);
-			$output_type = $resultMeta->name;
-			$output_id = $result->id;
-			$this->addDiscriminator($result, $output);
-
-			// Put the associations into their respective sideloaded arrays
-			foreach ($associations as $assoc)
-			{
-				if (empty($result->$assoc)) continue;
-
-				$assoc_class = $resultMeta->getAssociationTargetClass($assoc);
-				$type = \Inflector::pluralize(\Admin::getTableForClass($assoc_class));
-				if (!isset($this->output['included'][$type])) $this->output['included'][$type] = array();
-
-				if ($resultMeta->isCollectionValuedAssociation($assoc))
-				{
-					$output[$assoc] = array(
-						'ids' => array(),
-						'type' => $type,
-						'href' => \Uri::base(false)."api/$root_type/$output_id/$assoc"
-					);
-					foreach ($result->$assoc as $assoc_value) {
-						$assoc_id = $assoc_value->id;
-						$output[$assoc]['ids'][] = $assoc_id;
-
-						if (!($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($assoc_value, $results)) )) {
-							$assocArray = $assoc_value->toArray(false);
-							$this->addDiscriminator($assoc_value, $assocArray);
-							$this->output['included'][$type][$assoc_id] = $assocArray;
-						}
-					}
-				}
-				else
-				{
-					$assoc_id = $result->$assoc->id;
-					$output[$assoc] = array(
-						'id' => $assoc_id,
-						'type' => $type,
-						'href' => \Uri::base(false)."api/$type/$assoc_id"
-					);
-					if (!($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($result->$assoc, $results)) )) {
-						$assocArray = $result->$assoc->toArray(false);
-						$this->addDiscriminator($result->$assoc, $assocArray);
-						$this->output['included'][$type][$assoc_id] = $assocArray;
-					}
-				}
-			}
-
-			// Put the result into the root output
-			$this->output[$this->rootOutput][$output_id] = $output;
+			$this->output[$this->rootOutput][$result->id] = $this->buildSingleResult($result, $results);
 		}
 
+		// Single results
 		if ($this->param('id') && count($this->output[$this->rootOutput]) === 1) {
 			$this->output[$this->rootOutput] = $this->output[$this->rootOutput][$this->param('id')];
 		} else {
 			$this->output[$this->rootOutput] = array_values($this->output[$this->rootOutput]);
 		}
 
+		// Filter out any empty 'included' arrays
 		if (!empty($this->output['included'])) {
 			$this->output['included'] = array_filter($this->output['included'], function($included) {
 				return !empty($included);
@@ -559,65 +547,12 @@ class Rest_Query
 				continue;
 			}
 
+			// Put the result(s) into the root output
 			$entities = $metadata->isSingleValuedAssociation($field) ? array($result->$field) : $result->$field->toArray();
 			foreach ($entities as $entity)
 			{
-				// Get metadata for this result
-				$resultClass = get_class($entity);
-				$fieldMetadata = $resultClass::metadata();
-				$fieldAssociations = $fieldMetadata->getAssociationNames();
-
-				// Create a simple array version of the entity
-				$output = $entity->toArray(false);
-				$this->addDiscriminator($entity, $output);
-				$output_id = $entity->id;
-
-				// Put the associations into their respective sideloaded arrays
-				foreach ($fieldAssociations as $assoc)
-				{
-					if (empty($entity->$assoc)) continue;
-
-					$assoc_class = $fieldMetadata->getAssociationTargetClass($assoc);
-					$type = \Inflector::pluralize(\Admin::getTableForClass($assoc_class));
-					if (!isset($this->output['included'][$type])) $this->output['included'][$type] = array();
-
-					if ($fieldMetadata->isCollectionValuedAssociation($assoc))
-					{
-						$output[$assoc] = array(
-							'ids' => array(),
-							'type' => $type,
-							'href' => \Uri::base(false)."api/$type/$output_id/$assoc"
-						);
-
-						foreach ($entity->$assoc as $assoc_value) {
-							$assoc_id = $assoc_value->id;
-							$output[$assoc]['ids'][] = $assoc_id;
-
-							if (!($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($assoc_value, $results)) )) {
-								$assocArray = $assoc_value->toArray(false);
-								$this->addDiscriminator($assoc_value, $assocArray);
-								$this->output['included'][$type][$assoc_id] = $assocArray;
-							}
-						}
-					}
-					else
-					{
-						$assoc_id = $entity->$assoc->id;
-						$output[$assoc] = array(
-							'id' => $assoc_id,
-							'type' => $type,
-							'href' => \Uri::base(false)."api/$type/$assoc_id"
-						);
-						if (!($type == $this->root && (isset($assoc_id, $this->output[$this->rootOutput]) || $this->entityInResultSet($entity->$assoc, $results)) )) {
-							$assocArray = $entity->$assoc->toArray(false);
-							$this->addDiscriminator($entity->$assoc, $assocArray);
-							$this->output['included'][$type][$assoc_id] = $assocArray;
-						}
-					}
-				}
-
-				// Put the result into the root output
-				$this->output[$this->rootOutput][$output_id] = $output;
+				if (isset($this->output[$this->rootOutput][$entity->id])) continue;
+				$this->output[$this->rootOutput][$entity->id] = $this->buildSingleResult($result, $entities);
 			}
 		}
 
@@ -635,6 +570,73 @@ class Rest_Query
 		} else if (isset($this->output['included'])) {
 			unset($this->output['included']);
 		}
+	}
+
+	protected function buildSingleResult($entity, &$results)
+	{
+		$root_type = $this->root;
+
+		// Get metadata for this result
+		$resultClass = get_class($entity);
+		$resultMeta = $resultClass::metadata();
+		$associations = $resultMeta->getAssociationNames();
+
+		// Create a simple array version of the result
+		$output = $entity->toArray(false);
+		$output_type = $resultMeta->name;
+		$output_id = $entity->id;
+		$this->addDiscriminator($entity, $output);
+
+		// Put the associations into their respective sideloaded arrays
+		foreach ($associations as $assoc)
+		{
+			$assoc_class = $resultMeta->getAssociationTargetClass($assoc);
+			$type = \Inflector::pluralize(\Admin::getTableForClass($assoc_class));
+			
+			if (!isset($this->output['included'][$type])) $this->output['included'][$type] = array();
+
+			if ($resultMeta->isCollectionValuedAssociation($assoc))
+			{
+				$output[$assoc] = array(
+					'ids' => array(),
+					'type' => $type,
+					'href' => \Uri::base(false)."api/$root_type/$output_id/$assoc"
+				);
+
+				if (empty($entity->$assoc)) continue;
+
+				foreach ($entity->$assoc as $assoc_value) {
+					$assoc_id = $assoc_value->id;
+					$output[$assoc]['ids'][] = $assoc_id;
+
+					if (!isset($this->output['included'][$type][$assoc_id]) && !($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($assoc_value, $results)) )) {
+						$this->output['included'][$type][$assoc_id] = array();
+						$this->output['included'][$type][$assoc_id] = $this->buildSingleResult($assoc_value, $results);
+					}
+				}
+			}
+			else
+			{
+				if (empty($entity->$assoc)) {
+					$output[$assoc] = null;
+					continue;
+				}
+
+				$assoc_id = $entity->$assoc->id;
+				$output[$assoc] = array(
+					'id' => $assoc_id,
+					'type' => $type,
+					'href' => \Uri::base(false)."api/$type/$assoc_id"
+				);
+
+				if (!isset($this->output['included'][$type][$assoc_id]) && !($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($entity->$assoc, $results)) )) {
+					$this->output['included'][$type][$assoc_id] = array();
+					$this->output['included'][$type][$assoc_id] = $this->buildSingleResult($entity->$assoc, $results);
+				}
+			}
+		}
+
+		return $output;
 	}
 
 	/**
