@@ -106,11 +106,6 @@ class Importer
     {
         if (!is_array($data)) return null;
 
-        // If we ever deal with a URL, make sure URL processing is disabled
-        if (trim($model, '\\') == 'CMF\\Model\\URL') {
-            \CMF\Doctrine\Extensions\URLListener::$disableProcessing = true;
-        }
-
         $oid = intval(\Arr::get($data, 'id', \Arr::get($data, '_oid_', 0)));
         $metadata = $model::metadata();
         $tableName = $metadata->table['name'];
@@ -227,7 +222,9 @@ class Importer
         // Populate the entity
         if ($changed) {
             if (!isset($data['settings'])) $data['settings'] = array();
+            $now = new \DateTime();
             $data['settings']['imported_from'] = \Arr::get($context, 'links.self');
+            $data['settings']['imported_at'] = $now->format('Y-m-d H:i:s');
             $entity->populate($data);
             $entity->changed = false;
         }
