@@ -110,7 +110,6 @@ class Rest_Query
 
 		if (!isset($this->joins[$join_alias])) {
 			$builder->leftJoin("$alias.".$parts[0], $join_alias);
-			//var_dump("JOIN $alias.".$parts[0]." AS $join_alias");
 			$this->joins[$join_alias] = $join_class;
 		}
 
@@ -403,23 +402,22 @@ class Rest_Query
 		return $this->builder;
 	}
 
-	protected function getFieldsForModel($model, $resource)
+	protected function getFieldsForModel($model)
 	{
-		if (!empty($this->fields[$resource])) return $this->fields[$resource];
+		$fields = $model::restFields();
+		if (empty($fields) || !is_array($fields)) {
+			$metadata = $model::metadata();
+			$fields = array_merge($metadata->getFieldNames(), $metadata->getAssociationNames());
+		}
 
-		$metadata = $model::metadata();
-		$excluded = $this->excluded_types;
-		$fields = $this->fields[$resource] = array_merge($metadata->getFieldNames(), $metadata->getAssociationNames());
+		$exclude = $model::restFieldsExclude();
+		if (!empty($exclude) && is_array($exclude)) {
+			$fields = array_diff($fields, $exclude);
+		}
 
-        $filtered = array_values(array_filter($fields, function($field) use($metadata, $excluded) {
+		if (!in_array('id', $fields)) array_unshift($fields, 'id');
 
-        	if (!$metadata->hasField($field)) return true;
-        	
-        	$mapping = $metadata->getFieldMapping($field);
-            return !in_array($mapping['type'], $excluded);
-        }));
-
-        return $this->fields[$resource] = $filtered;
+		return $fields;
 	}
 
 	/**
@@ -579,10 +577,14 @@ class Rest_Query
 		// Get metadata for this result
 		$resultClass = get_class($entity);
 		$resultMeta = $resultClass::metadata();
-		$associations = $resultMeta->getAssociationNames();
+		$resultClass = $resultMeta->name;
+		$field_list = $this->getFieldsForModel($resultClass);
+
+		$associations = array_intersect($field_list, $resultMeta->getAssociationNames());
+		$fields = array_intersect($field_list, $resultMeta->getFieldNames());
 
 		// Create a simple array version of the result
-		$output = $entity->toArray(false);
+		$output = $entity->toArray($fields);
 		$output_type = $resultMeta->name;
 		$output_id = $entity->id;
 		$this->addDiscriminator($entity, $output);

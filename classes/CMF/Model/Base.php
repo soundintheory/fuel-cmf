@@ -302,6 +302,70 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
      * @var array
      */
     protected $_field_settings = null;
+
+    /**
+     * The fields that should appear in the API response for the model
+     * @see  CMF\Model\Base::restFields()
+     * @var array
+     */
+    protected static $_rest_fields = array();
+
+    /**
+     * The fields that should not appear in the API response for the model
+     * @see  CMF\Model\Base::restFieldsExcude()
+     * @var array
+     */
+    protected static $_rest_fields_exclude = array();
+
+    /**
+     * The fields that should be imported for the model
+     * @see  CMF\Model\Base::importFields()
+     * @var array
+     */
+    protected static $_import_fields = array();
+
+    /**
+     * The fields that should not be imported for the model
+     * @see  CMF\Model\Base::importFieldsExcude()
+     * @var array
+     */
+    protected static $_import_fields_exclude = array();
+
+    /**
+     * @see  CMF\Model\Base::$_rest_fields
+     */
+    public static function restFields()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_rest_fields;
+    }
+
+    /**
+     * @see  CMF\Model\Base::$_rest_fields_exclude
+     */
+    public static function restFieldsExclude()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_rest_fields_exclude;
+    }
+
+    /**
+     * @see  CMF\Model\Base::$_import_fields
+     */
+    public static function importFields()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_fields;
+    }
+
+    /**
+     * @see  CMF\Model\Base::$_import_fields_exclude
+     */
+    public static function importFieldsExclude()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_fields_exclude;
+    }
     
     /**
      * The URL-friendly identifier for the model. Uses the static slug_fields property to generate it.

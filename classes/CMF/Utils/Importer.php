@@ -205,9 +205,17 @@ class Importer
             static::$_updatedEntities[$model][$data['_oid_']] = $entity;
         }
 
+        // Find out which fields we can import
+        $fields = static::getImportableFields($metadata->name);
+
         // Clean up the array before populating
         foreach ($data as $field => $value)
         {
+            if (!in_array($field, $fields)) {
+                unset($data[$field]);
+                continue;
+            }
+
             if ($metadata->hasAssociation($field)) {
                 $associations[$field] = $value;
                 unset($data[$field]);
@@ -266,6 +274,26 @@ class Importer
             static::downloadFilesForEntity($entity, $model, \Arr::get($context, 'links.self'));
 
         return $entity;
+    }
+
+    protected static function getImportableFields($model)
+    {
+        $fields = $model::importFields();
+        if (empty($fields) || !is_array($fields)) {
+            $metadata = $model::metadata();
+            $fields = array_merge($metadata->getFieldNames(), $metadata->getAssociationNames());
+        }
+
+        $exclude = $model::importFieldsExclude();
+        if (!empty($exclude) && is_array($exclude)) {
+            $fields = array_diff($fields, $exclude);
+        }
+
+        if (!in_array('settings', $fields)) {
+            $fields[] = 'settings';
+        }
+
+        return $fields;
     }
 
     /**

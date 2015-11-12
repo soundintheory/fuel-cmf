@@ -588,10 +588,21 @@ abstract class Model
     public function toArray($include_associations = true)
     {
         if (isset($this->array_data)) return $this->array_data;
+
+        $metadata = $this->_metadata();
+        if (is_array($include_associations)) {
+            $fields = $include_associations;
+        } else if (!$include_associations) {
+            $fields = array_merge($metadata->getFieldNames(), $metadata->getAssociationNames());
+        } else {
+            $fields = $metadata->getFieldNames();
+        }
         
         $output = array();
-        $metadata = $this->_metadata();
-        foreach ($metadata->fieldMappings as $field_name => $field) {
+        foreach ($metadata->fieldMappings as $field_name => $field)
+        {
+            if (!in_array($field_name, $fields)) continue;
+
             $value = $this->$field_name;
             switch ($field['type']) {
                 case 'date':
@@ -614,6 +625,8 @@ abstract class Model
         
         foreach ($metadata->associationMappings as $assoc_name => $assoc)
         {
+            if (!in_array($assoc_name, $fields)) continue;
+
             $value = $this->$assoc_name;
             if (empty($value)) continue;            
 
