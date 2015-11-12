@@ -29,6 +29,7 @@
         marker = null,
         dragging = false;
 
+        if (!$map.length) { return; }
         if ($lat.attr('name').indexOf('__TEMP__') > -1) { return; }
 
         if ($tab.length > 0 && !$tab.is(':visible')) {
@@ -55,7 +56,7 @@
                 disableZooming: true,
                 disableBirdseye: true,
                 enableHighDpi: true,
-                credentials: "Am2yhW0Yng3RvpTQiFT6lV9viBV7-wakGQwVw3OG5CvKTQXLOKRF6LefTmlsAf6A"
+                credentials: settings.api_key
             });
 
             // Set up the search manager for geocoding

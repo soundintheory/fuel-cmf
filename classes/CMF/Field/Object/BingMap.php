@@ -14,6 +14,8 @@ class BingMap extends Object {
         'widget_icon' => 'globe',
         'sub_group' => true,
         'marker' => true,
+        'api_key' => null,
+        'api_key_setting' => 'bing_maps_api_key',
         'initial' => array(
             'lat' => 54.44340598200656,
             'lng' => -3.063812255859375,
@@ -48,7 +50,7 @@ class BingMap extends Object {
 
         // Search input or
         $searchInput = \Form::input($settings['mapping']['fieldName'].'[search]', null, array( 'class' => 'input input-xxlarge search-input', 'placeholder' => 'Search by address, postcode or coordinates' ));
-        $searchButton = \Form::button('mapsearch', 'Search', array( 'class' => 'btn btn-primary' ));
+        $searchButton = \Form::button('mapsearch', __('admin.common.search'), array( 'class' => 'btn btn-primary' ));
         $searchInput = html_tag('div', array( 'class' => 'form form-inline search-form' ), $searchInput.$searchButton);
 
         // Hidden inputs
@@ -62,12 +64,33 @@ class BingMap extends Object {
         $label = \Form::label($label_text);
         $mapDiv = html_tag('div', array( 'class' => 'map', 'id' => \Inflector::friendly_title($settings['mapping']['fieldName'], '-', true).'-bing-map' ), ' ');
 
-        $content = html_tag('div', array( 'class' => 'controls control-group field-type-bing-map', 'data-field-name' => $settings['mapping']['fieldName'] ), $label.$searchInput.$latInput.$lngInput.$zoomInput.$mapDiv);
+        // Check that we have an API key
+        if (empty($settings['api_key'])) {
+            $content = $label.'<div class="well"><p>'.__('admin.bing.api_key_not_set').'</p></div>';
+        } else {
+            $content = $label.$searchInput.$latInput.$lngInput.$zoomInput.$mapDiv;
+        }
+
+        $content = html_tag('div', array( 'class' => 'controls control-group field-type-bing-map', 'data-field-name' => $settings['mapping']['fieldName'] ), $content);
 
         return array(
             'content' => $content,
             'js_data' => $settings
         );
+    }
+
+    /** inheritdoc */
+    public static function settings($user_settings)
+    {
+        $settings = parent::settings($user_settings);
+
+        // Populate the Bing API key if not already present
+        $api_key = \Arr::get($settings, 'api_key', false);
+        if (empty($api_key)) {
+            $settings['api_key'] = \CMF::getSetting(\Arr::get($settings, 'api_key_setting', 'bing_maps_api_key'));
+        }
+
+        return $settings;
     }
 
     /** inheritdoc */

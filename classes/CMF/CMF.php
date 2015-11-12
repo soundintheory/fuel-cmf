@@ -589,6 +589,20 @@ class CMF
 	{
 		return $class::instance();
 	}
+
+	/**
+	 * Retrieves a setting value from either the settings model or the main config file
+	 * @param string $setting_name
+	 * @param mixed $default_value If the setting isn't found
+	 * @return mixed
+	 */
+	public static function getSetting($setting_name, $default_value = null)
+	{
+		if (class_exists('Model_Settings')) {
+			return \Model_Settings::getSetting($setting_name, $default_value);
+		}
+		return \Config::get($setting_name, $default_value);
+	}
 	
 	/**
 	 * A bit like PHP's get_class, but makes sure we don't end up with a weird Proxy model class
