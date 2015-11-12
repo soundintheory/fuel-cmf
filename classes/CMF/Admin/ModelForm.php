@@ -171,6 +171,11 @@ class ModelForm
 			}
 			
 			$field['required'] = $this->isRequired($field_name);
+
+			$field_title_method = 'get'.\Inflector::camelize($field_name).'Title';
+			if(method_exists($model,$field_title_method)){
+				$field['title'] = $model->$field_title_method();
+			}
 			
 			// Get the field's content
 			$field_class = $field['field'];
