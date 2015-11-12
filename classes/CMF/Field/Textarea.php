@@ -8,7 +8,10 @@ use Twig_Autoloader,
 
 class Textarea extends Base
 {
+    public static $always_process = true;
+
     protected static $defaults = array(
+        'auto_update' => '1',
         'input_attributes' => array(
             'class' => 'input-xxlarge',
             'rows' => 4
