@@ -128,10 +128,29 @@ abstract class Model
         
         foreach ($filters as $num => $filter)
         {
+            $item_alias = 'item';
+
+            if (strpos($filter, '.') !== false) {
+                $parts = explode('.', $filter);
+                $alias = 'item';
+
+                for ($i=0; $i < count($parts); $i++)
+                {
+                    if ($i == (count($parts)-1)) {
+                        $filter = $parts[$i];
+                        $item_alias = $alias;
+                    } else {
+                        $new_alias = $alias.'_'.$parts[$i];
+                        $qb->leftJoin($alias.'.'.$parts[$i], $new_alias);
+                        $alias = $new_alias;
+                    }
+                }
+            }
+
             if ($num === 0) {
-                $qb->where('item.'.$filter);
+                $qb->where("$item_alias.$filter");
             } else {
-                $qb->andWhere('item.'.$filter);
+                $qb->andWhere("$item_alias.$filter");
             }
         }
         

@@ -43,8 +43,6 @@ class Controller_Item extends Controller_Base {
 	    
 	    // Get stuff ready for the template
 	    $this->js['model'] = $class_name;
-		if(class_exists('Model_Settings'))
-			$this->js['settings'] = \Model_Settings::select('item')->getQuery()->getArrayResult()[0];
 	    $this->form = new ModelForm($metadata, $model);
 		$this->static = $class_name::_static();
 		$this->table_name = $metadata->table['name'];
@@ -99,8 +97,6 @@ class Controller_Item extends Controller_Base {
 		$this->js['model'] = $class_name;
 		$this->js['item_id'] = $model->id;
 		$this->js['table_name'] = $table_name;
-		if(class_exists('Model_Settings'))
-			$this->js['settings'] = \Model_Settings::select('item')->getQuery()->getArrayResult()[0];
 		$this->superlock = $class_name::superlock();
 		$this->template = 'admin/item/edit.twig';
 		$this->qs = \Uri::build_query_string(\Input::get());

@@ -54,7 +54,7 @@ class Controller_Base extends \Controller {
         
         // Populate the sidebar
         $this->sidebar = \Admin::getSidebarConfig();
-        
+
         // Add assets
         $this->data['assets'] = array(
             'js' => \Arr::get($this->assets, 'js', array()),
@@ -62,6 +62,7 @@ class Controller_Base extends \Controller {
         );
         
         // JSON encode the JS
+        $this->js['settings'] = $this->getSettings();
         $this->data['js_data'] = json_encode($this->js);
         
         // Info about the user
@@ -216,5 +217,16 @@ class Controller_Base extends \Controller {
         echo $output;
         exit();
     }
-	
+
+    /**
+     * Gets an array copy of the site settings, if one exists
+     */
+    protected function getSettings()
+    {
+        if (!class_exists('Model_Settings')) return array();
+        
+        $result = \Model_Settings::select('item')->getQuery()->getArrayResult();
+        if (count($result)) return $result[0];
+        return array();
+    }
 }
