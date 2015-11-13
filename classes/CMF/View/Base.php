@@ -71,6 +71,32 @@ class Base extends \ViewModel
         return array();
     }
 
+    protected function getCanonicalLink($model = null)
+    {
+        if (empty($model)) $model = $this->model;
+
+        if (!empty($model))
+        {
+            $base = rtrim(\Uri::base(false), '/');
+
+            // If this model was imported, we set the canonical base to where it came from
+            if (is_array($model->settings) && \Arr::get($model->settings, 'original_id', false)) {
+                $canonical_base = rtrim(\CMF\Model\DevSettings::instance()->parent_site ?: '', '/');
+                if (empty($canonical_base)) $canonical_base = rtrim(\Arr::get($model->settings, 'imported_from', $base), '/');
+            } else {
+                $canonical_base = $base;
+            }
+
+            $current_uri = '/'.trim($_SERVER['REQUEST_URI'], '/');
+            $uri = property_exists($model, 'url') ? strval($model->get('url', $current_uri)) : $current_uri;
+            
+            if (!empty($canonical_base) && $canonical_base.$uri != $base.$current_uri)
+                return $canonical_base.$uri;
+        }
+
+        return null;
+    }
+
     protected function processNodes(&$nodes, $uri, $level = 1, $label = 'level')
     {
         $hasActive = false;
@@ -117,7 +143,14 @@ class Base extends \ViewModel
         $uri = trim($_SERVER['REQUEST_URI'], '/');
         $this->uri = empty($uri) ? '/' : $uri;
         $this->view = $this;
-        $this->settings = $this->getSettings();
+
+        $data = $this->get(null);
+
+        if (!array_key_exists('settings', $data))
+            $this->settings = $this->getSettings();
+
+        if (!array_key_exists('canonical_link', $data))
+            $this->canonical_link = $this->getCanonicalLink();
     }
     
     public function template()
