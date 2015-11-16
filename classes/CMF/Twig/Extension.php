@@ -60,8 +60,9 @@ class Extension extends Twig_Extension
 			'module_url' => new Twig_Function_Function('CMF::moduleUrl'),
 			'current_module' => new Twig_Function_Function('CMF::currentModule'),
 			'get_options' => new Twig_Function_Function('CMF::getOptions'),
-			'get_options_select' => new Twig_Function_Method($this, 'getOptionsSelect')
-
+			'get_options_select' => new Twig_Function_Method($this, 'getOptionsSelect'),
+			'get_hostname' => new Twig_Function_Method($this, 'getHostname'),
+			'array_as_hidden_inputs' => new Twig_Function_Function('CMF::arrayAsHiddenInputs')
 		);
 	}
 
@@ -160,11 +161,18 @@ class Extension extends Twig_Extension
 		    return $item_opts['prefix'].$item->get($item_opts['field']).$item_opts['suffix'];
 		});
 	}
+
+	public function getHostname($url = null)
+	{
+		if (empty($url)) $url = \Uri::base(false);
+		return parse_url($url, PHP_URL_HOST);
+	}
 	
 	public function settings($name, $default=null)
 	{
 		return \CMF\Model\Settings::instance()->get($name, $default);
 	}
+
 	public function fieldListValue($value, $edit_link, $settings, $model)
 	{
 		$class_name = @$settings['field'];

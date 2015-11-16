@@ -63,6 +63,21 @@ class Controller_List extends Controller_Base {
 		$columns = array();
 		$joins = array();
 		$methods = array();
+
+		// See if we have any imported models
+		// $importedIds = $class_name::getImportedIds();
+		// if (count($importedIds)) {
+		// 	if (!count($list_tabs)) {
+		// 		$list_tabs['main'] = array(
+		// 			'title' => 'Main',
+		// 			'filters' => array('id NOT IN ('.implode(',',$importedIds).')')
+		// 		);
+		// 	}
+		// 	$list_tabs['imported'] = array(
+		// 		'title' => 'Imported ('.count($importedIds).')',
+		// 		'filters' => array('id IN ('.implode(',',$importedIds).')')
+		// 	);
+		// }
 		
 		// Find out the tab we're on
 		if (count($list_tabs) > 0) {
@@ -260,11 +275,7 @@ class Controller_List extends Controller_Base {
 		// Add list filters
 		foreach ($list_filters as $num => $filter) {
 			$filter_str = is_array($filter) ? 'item.'.implode(' OR item.', $filter) : 'item.'.$filter;
-			if ($num === 0) {
-				$qb->where($filter_str);
-			} else {
-				$qb->andWhere($filter_str);
-			}
+			$qb->andWhere($filter_str);
 		}
 
 		if(!empty($query_fields) && count($query_fields) > 0){

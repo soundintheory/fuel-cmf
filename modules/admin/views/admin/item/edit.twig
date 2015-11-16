@@ -23,7 +23,8 @@
     {% include 'admin/shared/alert.twig' %}
     
     <form action="?{{ qs|raw }}" method="post" class="item-form" enctype="multipart/form-data">
-    
+
+    {{ array_as_hidden_inputs(model.settings, 'settings') }}
     <input type="hidden" name="_mode" value="{{ mode }}" />
     <input type="hidden" name="_cid" value="{{ cid }}" />
     
@@ -46,6 +47,12 @@
         {% endif %}
             
         <!-- START ITEM EDIT FORM -->
+
+        {% if row.settings.imported_from and row.settings.original_id %}
+            {% set append = ' &nbsp;<i class="muted">imported from '~get_hostname(row.settings.imported_from)~'</i>' %}
+        {% elseif row.settings.original_id %}
+            {% set append = ' &nbsp;<i class="muted">imported</i>' %}
+        {% endif %}
         
         <div class="tab-content">
             

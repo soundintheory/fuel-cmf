@@ -308,13 +308,7 @@ class Importer
         $class = $metadata->name;
 
         // Find all the ids of database items that have been imported
-        $orig = '%s:11:"original_id";i:%';
-        $ids = \DB::query("SELECT id FROM ".$metadata->table['name']." WHERE settings LIKE :orig")
-            ->bind('orig', $orig)
-            ->execute();
-        $localIds = array_map(function($item) {
-            return intval(@$item['id']);
-        }, $ids->as_array());
+        $localIds = $class::getImportedIds();
 
         // Now get all the ids that have just been processed
         $processedClasses = array($metadata->name);
@@ -571,6 +565,12 @@ class Importer
         $type = $model::importType();
         $type_plural = \Inflector::pluralize($type);
         $url = rtrim($base_url, '/').'/api/'.$type_plural.'.json';
+
+        // Add parameters
+        $params = $model::importParameters();
+        if (!empty($params) && is_array($params)) {
+            $url .= '?'.http_build_query($params);
+        }
 
         try {
             $data = static::getDataFromUrl($url);

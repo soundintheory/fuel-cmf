@@ -231,6 +231,13 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     protected static $_import_type = null;
 
     /**
+     * Parameters that should be used when importing
+     * @see \CMF\Model\Base::importParameters()
+     * @var string
+     */
+    protected static $_import_parameters = null;
+
+    /**
      * Whether the model if static. Static means there will only ever be one record,
      * that cannot be removed. Use it for one-off pages, like a homepage model.
      * @var boolean
@@ -366,6 +373,15 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         $called_class = get_called_class();
         return $called_class::$_import_fields_exclude;
     }
+
+    /**
+     * @see  CMF\Model\Base::$_import_parameters
+     */
+    public static function importParameters()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_parameters;
+    }
     
     /**
      * The URL-friendly identifier for the model. Uses the static slug_fields property to generate it.
@@ -490,19 +506,22 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         if (parent::validate($groups, $fields, $exclude_fields)) {
             
             $class_name = get_class($this);
+            $metadata = $class_name::metadata();
             $field_settings = \Admin::getFieldSettings($class_name);
             $user_field_settings = $this->settings();
             $field_settings = \Arr::merge($field_settings, $user_field_settings);
             
-            foreach ($field_settings as $field_name => $field) {
-                
+            foreach ($field_settings as $field_name => $field)
+            {
                 if ($field_name == 'id' || ($fields !== null && !in_array($field_name, $fields)) || ($exclude_fields !== null && in_array($field_name, $exclude_fields)))
                     continue;
-                
+
+                if (!$metadata->hasField($field_name) && !$metadata->hasAssociation($field_name))
+                    continue;
+
                 $value = $this->get($field_name);
                 $field_class = $field['field'];
                 $field_class::validate($value, $field, $this);
-                
             }
             
             return count($this->errors) === 0;
@@ -1141,6 +1160,29 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         }
 
         return false;
+    }
+
+    /**
+     * Gets all the ids of this model that have been imported
+     */
+    public static function getImportedIds()
+    {
+        $class = get_called_class();
+        $metadata = $class::metadata();
+        $polymorphic = $metadata->isInheritanceTypeJoined() || $metadata->isInheritanceTypeSingleTable();
+        if ($polymorphic && $metadata->rootEntityName != $metadata->name) {
+            $class = $metadata->rootEntityName;
+            $metadata = $class::metadata();
+        }
+
+        $orig = '%s:11:"original_id";i:%';
+        $ids = \DB::query("SELECT id FROM ".$metadata->table['name']." WHERE settings LIKE :orig")
+            ->bind('orig', $orig)
+            ->execute();
+        
+        return array_map(function($item) {
+            return intval(@$item['id']);
+        }, $ids->as_array());
     }
     
     /**

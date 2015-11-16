@@ -165,6 +165,12 @@ function initDatePickers() {
     
 }
 
+var getHostName = function(href) {
+    var l = document.createElement("a");
+    l.href = href;
+    return l.hostname || href;
+};
+
 function initTree() {
 	
 	if ($('#item-tree').length == 0) { return; }
@@ -220,6 +226,14 @@ function initTree() {
 			
 			var can_edit_item = !(typeof(permissions[node.id]) != 'undefined' && permissions[node.id].length > 0 && $.inArray('edit', permissions[node.id]) == -1);
 			var can_edit = node['can_edit'] = classData['can_edit'] && can_edit_item;
+
+			if (node.settings && node.settings.original_id) {
+				var importedContent = 'imported';
+				if (node.settings.imported_from) {
+					importedContent += ' from '+getHostName(node.settings.imported_from);
+				}
+				node.title.append(' &nbsp;<i class="muted">'+importedContent+'</i>');
+			}
 			
 			if (can_edit) {
 				node.title.append(' <span class="edit-icon fa fa-pencil"></span>');

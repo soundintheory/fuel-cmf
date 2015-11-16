@@ -857,5 +857,47 @@ class CMF
 			$code
 		);
 	}
-	
+
+	/**
+	 * Takes an array and outputs it as a series of hidden inputs
+	 */
+	public static function arrayAsHiddenInputs($array, $path = null)
+	{
+		if (!is_array($array)) return '';
+		if (!isset($path)) $path = array();
+		if (!is_array($path) && !empty($path)) $path = array($path);
+
+		$str = '';
+
+		foreach ($array as $key => $value)
+		{
+			if (is_array($value)) {
+				$newpath = $path;
+				$newpath[] = $key;
+				$str .= static::arrayAsHiddenInputs($value, $newpath);
+				continue;
+			}
+
+			if (!count($path)) {
+				$name = $key;
+			} else {
+				$name = $path[0];
+				if (count($path) > 1) {
+					$rest = array_slice($path, 1);
+					$name .= '['.implode('][', $rest).']';
+				}
+				try {
+					$value = strval($value);
+				} catch (\Exception $e) {
+					continue;
+				}
+
+				$name .= '['.$key.']';
+				$str .= '<input type="hidden" name="'.$name.'" value="'.$value.'" />'."\n";
+			}
+		}
+
+		return $str;
+	}
+		
 }
