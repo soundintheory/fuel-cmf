@@ -32,7 +32,7 @@
                         </div>\
                         <select multiple="multiple" class="filtered target">\
                         </select>\
-                        <a href="#" class="selector-clearall"><i class="fa fa-caret-left"></i>&nbsp; Clear all</a>\
+                        <a href="#" class="selector-clearall"><i class="fa fa-caret-left"></i>&nbsp; ' + _('admin.common.clear_all') + '</a>\
                     </div>\
                 </td>\
             </tr>\

@@ -601,9 +601,15 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     public static function singular()
     {
         $called_class = get_called_class();
-        if ($called_class::$_singular !== null) return $called_class::$_singular;
-        $metadata = $called_class::metadata();
-        return \Inflector::singularize(\Inflector::humanize($metadata->table['name']));
+        $output = __("admin.models.$called_class.singular", array());
+
+        if (empty($output)) {
+            if ($called_class::$_singular !== null) return $called_class::$_singular;
+            $metadata = $called_class::metadata();
+            return \Inflector::singularize(\Inflector::humanize($metadata->table['name']));
+        }
+        
+        return $output;
     }
     
     /**
@@ -613,9 +619,15 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     public static function plural()
     {
         $called_class = get_called_class();
-        if ($called_class::$_plural !== null) return $called_class::$_plural;
-        $metadata = $called_class::metadata();
-        return \Inflector::pluralize(\Inflector::humanize($metadata->table['name']));
+        $output = __("admin.models.$called_class.plural", array());
+        
+        if (empty($output)) {
+            if ($called_class::$_plural !== null) return $called_class::$_plural;
+            $metadata = $called_class::metadata();
+            return \Inflector::pluralize(\Inflector::humanize($metadata->table['name']));
+        }
+        
+        return $output;
     }
     
     /**

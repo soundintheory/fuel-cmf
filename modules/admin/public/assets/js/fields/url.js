@@ -54,7 +54,7 @@
 			var $el = $(this),
 			opts = {
 				alwaysShowPlaceholder: true,
-				placeholder: 'click to select a link...'
+				placeholder: _('admin.messages.click_select_link')
 			};
 
 			opts.matcher = function(term, text, option) {

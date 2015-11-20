@@ -56,8 +56,23 @@
                 paramsInBody: false
             },
             text: {
-                uploadButton: '<i class="fa fa-upload-alt icon-white"></i> Upload',
-                formatProgress: " - {percent}% of {total_size}",
+                uploadButton: '<i class="fa fa-upload-alt icon-white"></i> ' + _('admin.verbs.upload'),
+                cancelButton: _('admin.verbs.cancel'),
+                retryButton: _('admin.verbs.retry'),
+                failUpload: _('admin.upload.fail_upload'),
+                dragZone: _('admin.upload.drag_zone'),
+                dropProcessing: _('admin.upload.drop_processing'),
+                formatProgress: _('admin.upload.format_progress'),
+                waitingForResponse: _('admin.upload.waiting_for_response')
+            },
+            messages: {
+                typeError: _('admin.upload.type_error'),
+                sizeError: _('admin.upload.size_error'),
+                minSizeError: _('admin.upload.min_size_error'),
+                emptyError: _('admin.upload.empty_error'),
+                noFilesError: _('admin.upload.no_files_error'),
+                onLeave: _('admin.upload.on_leave'),
+                tooManyFilesError: _('admin.upload.too_many_files_error')
             },
             template:
                 '<div class="qq-uploader input-xxlarge">' +
@@ -161,7 +176,7 @@
             
             $file.find('.progress').addClass('active');
             $el.find('.top-row').hide();
-            setStatus('Uploading...');
+            setStatus(_('admin.upload.upload_in_progress'));
             
         }
         
@@ -193,7 +208,7 @@
             if (isNull(val) || isNull(val['src']) || val['src'] == '') {
                 
                 $filePreview.html('<img style="height:' + settings['thumb_size']['height'] + 'px;" src="/image/2/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/placeholder.png" class="thumbnail" />');
-                setStatus('No file selected...');
+                setStatus(_('admin.upload.no_file_selected'));
                 $el.removeClass('populated');
                 $label.html(title);
                 
@@ -310,7 +325,7 @@
                     modalContent += '<li><a href="#' + fieldId + '-crop-' + cropOption['id'] + '" data-cropid="' + cropOption['id'] + '">' + cropOption['title'] + '</a></li>';
                 }
                 modalContent += '</ul>' +
-                '<div class="alert alert-info">Select an option above to edit the different crops for this image</div>';
+                '<div class="alert alert-info">' + _('admin.image.edit_crop_info') + '</div>';
             }
             
             // The top right close button
@@ -338,7 +353,7 @@
             '</div>' + // .modal-body
             '<div class="modal-footer">' +
             '<div class="footer-left clearfix"></div>' +
-            '<button class="btn btn-primary save-image" data-dismiss="modal"><i class="fa fa-ok"></i> &nbsp;Done</button>' +
+            '<button class="btn btn-primary save-image" data-dismiss="modal"><i class="fa fa-ok"></i> &nbsp;' + _('admin.common.done') + '</button>' +
             '</div>' +
             '</div>';
             
@@ -437,7 +452,7 @@
                 cropHeight = parseInt(cropOption.height),
                 aspectRatio = (isSet(cropWidth) && isSet(cropHeight)) ? cropWidth / cropHeight : 0,
                 $zoomSlider = null,
-                $resetBut = $('<span class="btn btn-warning btn-reset"><i class="fa fa-refresh"></i> Reset Crop</span>').on('click', resetCropArea),
+                $resetBut = $('<span class="btn btn-warning btn-reset"><i class="fa fa-refresh"></i> ' + _('admin.image.reset_crop') + '</span>').on('click', resetCropArea),
                 jcrop_api = null,
                 jcropSettings = {
                     onChange: updateCoords,
@@ -529,7 +544,7 @@
                     $footerLeft.find('.btn-reset').detach();
                     $footerLeft.html('');
                     $footerLeft.append($resetBut);
-                    $footerLeft.append($('<div class="slider-label">Scale: </div>'));
+                    $footerLeft.append($('<div class="slider-label">' + _('admin.image.scale') + ': </div>'));
                     $footerLeft.append($zoomSlider);
                     
                 }

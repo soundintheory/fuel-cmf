@@ -36,9 +36,9 @@
 		<tr class="no-items-row">
 	        <td class="no-items" colspan="{{ cols|length + (sortable ? 2 : 1) }}">
 	            
-	            <p>There are no {{ plural|lower }} added yet.</p>
+	            <p>{{ _('admin.messages.no_items_added', { resource:plural|lower }) }}</p>
 	            {% if not superlock %}
-	            <a href="#" class="btn-add btn btn-medium"><i class="fa fa-plus icon-white"></i> Add {{ singular }}...</a>
+	            <a href="#" class="btn-add btn btn-medium"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_resource', { resource:singular }) }}</a>
 	            {% endif %}
 	        
 	        </td>
@@ -46,10 +46,10 @@
 	</tbody>
 </table>
 <div class="widget-actions-top">
-	<a href="#" class="widget-action icon btn-add" title="Add {{ singular|lower }}"><i class="fa fa-plus"></i></a>
+	<a href="#" class="widget-action icon btn-add" title="{{ _('admin.common.add_resource', { resource:singular|lower }) }}"><i class="fa fa-plus"></i></a>
 </div>
 <div class="widget-footer">
 	<div class="widget-actions-bottom">
-		<a href="#" class="widget-action btn-add last"><i class="fa fa-plus"></i> Add {{ singular|lower }}</a>
+		<a href="#" class="widget-action btn-add last"><i class="fa fa-plus"></i> {{ _('admin.common.add_resource', { resource:singular|lower }) }}</a>
 	</div>
 </div>

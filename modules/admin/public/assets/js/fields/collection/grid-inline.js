@@ -23,13 +23,13 @@
 		modalHtml = '<div class="gallery-modal modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">' +
 			'<div class="modal-header">' +
 				'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>' +
-				'<h3 class="item-modal-label">Edit item</h3>' +
+				'<h3 class="item-modal-label">' + _('admin.common.edit_item') + '</h3>' +
 			'</div>' +
 			'<div class="modal-body">' +
 			// Item form will be inserted here
 			'</div>' +
 			'<div class="modal-footer">' +
-				'<button class="btn btn-primary btn-close" data-dismiss="modal"><i class="fa fa-ok"></i> Done</button>' +
+				'<button class="btn btn-primary btn-close" data-dismiss="modal"><i class="fa fa-ok"></i> ' + _('admin.common.done') + '</button>' +
 			'</div>' +
 		'</div>',
 		$body = $('body'),
@@ -56,13 +56,28 @@
                 paramsInBody: false
             },
             text: {
-                uploadButton: '<i class="fa fa-upload-alt icon-white"></i> Upload',
-                formatProgress: "{percent}%",
+                uploadButton: '<i class="fa fa-upload-alt icon-white"></i> ' + _('admin.verbs.upload'),
+                cancelButton: _('admin.verbs.cancel'),
+                retryButton: _('admin.verbs.retry'),
+                failUpload: _('admin.upload.fail_upload'),
+                dragZone: _('admin.upload.drag_zone'),
+                dropProcessing: _('admin.upload.drop_processing'),
+                formatProgress: _('admin.upload.format_progress'),
+                waitingForResponse: _('admin.upload.waiting_for_response')
+            },
+            messages: {
+            	typeError: _('admin.upload.type_error'),
+            	sizeError: _('admin.upload.size_error'),
+            	minSizeError: _('admin.upload.min_size_error'),
+            	emptyError: _('admin.upload.empty_error'),
+            	noFilesError: _('admin.upload.no_files_error'),
+            	onLeave: _('admin.upload.on_leave'),
+                tooManyFilesError: _('admin.upload.too_many_files_error')
             },
             template:
             	'<div class="qq-upload-list"></div>' +
             	'<div class="gallery-item qq-uploader">' +
-            		'<span href="#" class="img action qq-upload-button"><i class="fa fa-plus"></i> &nbsp;Add...</span>' +
+            		'<span href="#" class="img action qq-upload-button"><i class="fa fa-plus"></i> &nbsp;' + _('admin.verbs.add') + '...</span>' +
 				'</div>' +
                 '<pre class="qq-upload-drop-area"><span>{dragZoneText}</span></pre>' +
                 '<span class="qq-drop-processing" style="display:none;"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>',
@@ -302,7 +317,7 @@
 		function removeSelected() {
 			
 			var $selectedItems = $wrap.find('.gallery-items .gallery-item.selected');
-			if (!confirm("Do you really want to remove " + ($selectedItems.length === 1 ? 'this' : 'these '+$selectedItems.length) + " item" + ($selectedItems.length === 1 ? '' : 's') + "? You can't undo!")) { return false; }
+			if (!confirm(_($selectedItems.length === 1 ? 'admin.messages.item_delete_confirm' : 'admin.messages.items_delete_confirm'))) { return false; }
 			
 			$selectedItems.remove();
 			updateSelected();

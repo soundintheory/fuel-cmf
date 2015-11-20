@@ -147,7 +147,7 @@
 			
 			function removeButtonHandler() {
 				
-				if (!confirm("Do you really want to remove this item? You can't undo!")) { return false; }
+				if (!confirm(_('admin.messages.item_delete_confirm'))) { return false; }
 				var $item = $(this).parents('.item').eq(0);
 				$item.remove();
 				$items = $itemsWrap.find('> .item');

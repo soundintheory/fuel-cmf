@@ -288,7 +288,7 @@ class Admin
 				
 				// It's just a property of the class, no mapping info
 				if (!isset($field['field'])) $field['field'] = 'CMF\\Field\\Base';
-				if (!isset($field['title'])) $field['title'] = \Inflector::humanize($key);
+				if (!isset($field['title'])) $field['title'] = \Admin::getFieldDisplayAttribute($class_name, $key, 'title', \Inflector::humanize($key));
 				$field['mapping'] = array( 'fieldName' => $key );
 				$fields[$key] = $field;
 				continue;
@@ -306,14 +306,60 @@ class Admin
 			// Add in the field class from the field types map if it's not there
 			if (!isset($field['field'])) $field['field'] = isset($fields_types[$mapping['type']]) ? $fields_types[$mapping['type']] : 'CMF\\Field\\None';
 			
-			// Set up the title of the field it if it's not there
-			if (!isset($field['title'])) $field['title'] = \Inflector::humanize($mapping['fieldName']);
+			// Set up translated attributes
+			$field_class = $field['field'];
+			$translatableAttrs = $field_class::getTranslatableAttributes();
+			if (is_array($translatableAttrs))
+			{
+				foreach ($translatableAttrs as $attr)
+				{
+					if ($attr == 'title') continue;
+					$value = \Arr::get($field, $attr);
+					if (empty($value) || !is_string($value)) continue;
+					\Arr::set($field, $attr, \Admin::getFieldDisplayAttribute($class_name, $key, $attr, $value));
+				}
+				$field['title'] = \Admin::getFieldDisplayAttribute($class_name, $key, 'title', isset($field['title']) ? $field['title'] : \Inflector::humanize($key));
+			}
 			
 			$fields[$key] = $field;
 			
 		}
 
 		return static::$field_settings[$class_name] = $fields;
+	}
+
+	/**
+	 * Gets the human-readable title of a field
+	 */
+	public static function getFieldDisplayAttribute($class_name, $key, $attribute, $default = null)
+	{
+		// Work up the class tree trying to find a translation
+		$hierarchy = array_reverse($class_name::hierarchy());
+		foreach ($hierarchy as $model_class)
+		{
+			$value = __("admin.models.$model_class.fields.$key.$attribute");
+			if (!empty($value)) break;
+		}
+
+		// Finally, check common field translations
+		if (empty($value)) {
+			$value = __("admin.models.common.fields.$key.$attribute");
+		}
+
+		// Check field settings
+		if (empty($value)) {
+			$fields = $class_name::fields();
+			if (isset($fields[$key]) && is_array($fields[$key])) {
+				$value = \Arr::get($fields, "$key.$attribute");
+			}
+		}
+
+		// Return default if nothing found
+		if (empty($value)) {
+			return !is_null($default) ? $default : \Inflector::humanize($key);
+		}
+
+		return $value;
 	}
 	
 	/**

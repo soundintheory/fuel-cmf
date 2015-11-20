@@ -2,11 +2,11 @@
 	<input type="hidden" name="{{ settings.mapping.fieldName }}" value="" />
 	<table class="table table-condensed table-striped table-hover checkbox-matrix">
 		<tr>
-			<th class="item-label">{{ resources[0].title ? resources[0].title : 'Resources' }}</th>
+			<th class="item-label">{{ resources[0].title ? resources[0].title : _('admin.common.resources') }}</th>
 			{% for action in actions %}
 		    <th class="item-action"><label><span>{{ action }}</span> <input type="checkbox" data-action="{{ action }}" class="all-items" value="1" /></label></th>
 		    {% endfor %}
-		    <th class="item-action"><label><span>all</span> <input type="checkbox" data-action="all" class="all-items" value="1" /></label></th>
+		    <th class="item-action"><label><span>{{ _('admin.common.all')|lower }}</span> <input type="checkbox" data-action="all" class="all-items" value="1" /></label></th>
 		</tr>
 		{% for resource_group in resources %}
 			

@@ -19,7 +19,7 @@ class Integer extends Base {
     public static function validate($value, $settings, $model)
     {
         if (!is_null($value) && !is_int($value)) {
-            $model->addErrorForField($settings['mapping']['fieldName'], 'This is not a valid number');
+            $model->addErrorForField($settings['mapping']['fieldName'], __('admin.errors.not_a_number'));
         }
     }
 	

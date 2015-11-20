@@ -1,13 +1,13 @@
 {% extends interface_template|default("admin/shared/interface.twig") %}
 
-{% block html_title %}{{ singular }} Tree : {{ admin_title }}{% endblock %}
+{% block html_title %}{{ _('admin.common.resource_tree', { resource:singular }) }} : {{ admin_title }}{% endblock %}
 
 {% block main_pane %}
 
     {% if (not tree_is_valid) and user.super_user %}
         <div id="main-alert" class="alert warning">
             <button class="close" data-dismiss="alert">×</button>
-            <p><strong>Warning!</strong> This tree appears to be corrupted. Click the button below to attempt a recovery: <br /><br /><a href="/admin/{{ table_name }}/recover-tree" class="btn btn-warning">Recover Tree</a></p>
+            <p>{{ _('admin.messages.tree_corrupted') }} <br /><br /><a href="/admin/{{ table_name }}/recover-tree" class="btn btn-warning">{{ _('admin.common.recover_tree') }}</a></p>
         </div>
     {% endif %}
     {% include 'admin/shared/alert.twig' %}
@@ -16,8 +16,8 @@
         <h2 class="main-heading"><i class="fa fa-{{ icon }}"></i> {{ plural }}</h2>
         <div class="actions-top-right">
             {% if can_manage %}
-            {% if can_import %}<a href="/admin/{{ table_name }}/import" class="btn btn-success btn-permissions" title="Import data"><i class="fa fa-circle-arrow-down"></i> Import...</a>{% endif %}
-            <a href="/admin/{{ table_name }}/permissions" class="btn btn-medium btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="fa fa-lock"></i></a>
+            {% if can_import %}<a href="/admin/{{ table_name }}/import" class="btn btn-success btn-permissions" title="Import data"><i class="fa fa-circle-arrow-down"></i> {{ _('admin.verbs.import') }}</a>{% endif %}
+            <a href="/admin/{{ table_name }}/permissions" class="btn btn-medium btn-inverse btn-permissions" title="{{ _('admin.common.edit_resource_permissions', { resource:singular|lower }) }}"><i class="fa fa-lock"></i></a>
             {% endif %}
         </div>
 
@@ -31,9 +31,9 @@
         
         <div class="no-items">
             
-            <p>There are no {{ plural|lower }} added yet.</p>
+            <p>{{ _('admin.messages.no_items_added', { resource:plural|lower }) }}</p>
             {% if can_create %}
-            <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="fa fa-plus icon-white"></i> Add {{ singular }}...</a>
+            <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_resource', { resource:singular }) }}</a>
             {% endif %}
         
         </div>

@@ -12,8 +12,6 @@ Autoloader::alias_to_namespace('CMF\\Admin');
 
 // Load cmf config
 \Config::load('cmf', true);
-\Lang::load('errors', true);
-\Lang::load('admin', true);
 
 // Check if custom module urls have been set
 if (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), 'admin') === 0) {
@@ -37,6 +35,8 @@ Autoloader::add_classes(array(
 ));
 
 // Sort out the language
+\Lang::load('errors', true);
+\Lang::load('admin', true);
 $lang = \CMF::lang();
 
 // Quick and easy profiling using 'debug' in the query string

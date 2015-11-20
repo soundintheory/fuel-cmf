@@ -5,7 +5,7 @@
 	<div id="login-container" class="row-fluid">
 		
 		<div id="login-header">
-			<h3>Login</h3>
+			<h3>{{ _('admin.verbs.login') }}</h3>
 		</div> <!-- #login-header -->
 		
 		{% set main_alert = get_flash('main_alert') %}
@@ -26,13 +26,13 @@
 				
 				<fieldset>
 					<div class="control-group">
-						<label class="control-label" for="form_username">Username</label>
+						<label class="control-label" for="form_username">{{ _('admin.common.username') }}</label>
 						<div class="controls-row">
 							<input type="text" class="span12" id="form_username" name="username" value="{{ form_val('username') }}">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="form_password">Password</label>
+						<label class="control-label" for="form_password">{{ _('admin.common.password') }}</label>
 						<div class="controls-row">
 							<input type="password" class="span12" id="form_password" name="password">
 						</div>
@@ -40,7 +40,7 @@
 				</fieldset>
 				
 				<div class="pull-right">
-					<button type="submit" class="btn-primary btn-large">Login</button>
+					<button type="submit" class="btn-primary btn-large">{{ _('admin.verbs.login') }}</button>
 				</div>
 				
 			</form>

@@ -18,12 +18,12 @@ class Controller_Item extends Controller_Base {
 	{
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
-		if ($class_name === false) return $this->show404("Can't find that type!");
+		if ($class_name === false) return $this->show404(null, "type");
 		
 		$can_edit = \CMF\Auth::can('edit', $class_name);
 		
 		if (!$can_edit) {
-			return $this->show403("You're not allowed to create ".strtolower($class_name::plural())."!");
+			return $this->show403('action_plural', array( 'action' => __('admin.verbs.create'), 'resource' => strtolower($class_name::plural()) ));
 		}
 		
 		$metadata = $class_name::metadata();
@@ -67,7 +67,7 @@ class Controller_Item extends Controller_Base {
 	{
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
-		if ($class_name === false) return $this->show404("Can't find that type!");
+		if ($class_name === false) return $this->show404(null, "type");
 		
 		$metadata = $class_name::metadata();
 		\Admin::setCurrentClass($class_name);
@@ -80,7 +80,7 @@ class Controller_Item extends Controller_Base {
 	    
 	    $can_edit = \CMF\Auth::can('edit', $model);
 		if (!$can_edit) {
-			return $this->show403("You're not allowed to edit this ".strtolower($class_name::singular())."!");
+			return $this->show403('action_singular', array( 'action' => __('admin.verbs.edit'), 'resource' => strtolower($class_name::singular()) ));
 		}
 
 		$root_class = $metadata->rootEntityName;
@@ -118,7 +118,7 @@ class Controller_Item extends Controller_Base {
 		
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
-		if ($class_name === false) return $this->show404("Can't find that type!");
+		if ($class_name === false) return $this->show404(null, "type");
 		
 		$metadata = $class_name::metadata();
 		\Admin::setCurrentClass($class_name);
@@ -148,12 +148,11 @@ class Controller_Item extends Controller_Base {
     	
 	    if ($error !== null) {
 	    	$default_redirect = \Uri::base(false)."admin/$table_name";
-			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => "Could not duplicate item: ".$error ));
+			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => __('admin.errors.actions.duplicate', array( 'message' => $error )) ));
 			\Response::redirect(\Input::referrer($default_redirect), 'location');
 	    }
 		
-		\Response::redirect(\Uri::base(false)."admin/$table_name/".$model->id."/edit", 'location');
-		return $this->show403("Problem saving the data!");
+		\Response::redirect(\Uri::base(false)."admin/$table_name/{$model->id}/edit");
 	}
 	
 	/**
@@ -164,13 +163,13 @@ class Controller_Item extends Controller_Base {
 	    // Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) {
-			return $this->customPageOr404(array($table_name, $method), "Can't find that type!");
+			return $this->customPageOr404(array($table_name, $method), "type");
 		}
 		
 		$can_edit = \CMF\Auth::can('edit', $class_name);
 		
 		if (!$can_edit) {
-			return $this->show403("You're not allowed to edit ".strtolower($class_name::plural())."!");
+			return $this->show403('action_singular', array( 'action' => __('admin.verbs.edit'), 'resource' => strtolower($class_name::singular()) ));
 		}
 		
 		$metadata = $class_name::metadata();
@@ -191,15 +190,15 @@ class Controller_Item extends Controller_Base {
 		}
 
 		\Admin::setCurrentClass($class_name);
-		$actioned = "saved";
+		$message = __('admin.messages.item_save_success', array( 'resource' => $singular ));
 		
 		// Find the model, or create a new one if there's no ID
 		if ($exists = isset($id) && !empty($id)) {
 			$model = $class_name::find($id);
-			if (is_null($model)) return $this->show404("Can't find that model!");
+			if (is_null($model)) return $this->show404(null, "type");
 		} else {
 			$model = new $class_name();
-			$actioned = "created";
+			$message = __('admin.messages.item_create_success', array( 'resource' => $singular ));
 		}
 		$create_new = (\Input::post('create_new', false) !== false);
 		$save_and_close = (\Input::post('saveAndClose', false) !== false);
@@ -245,7 +244,7 @@ class Controller_Item extends Controller_Base {
 	        		$qs = \Uri::build_query_string(\Input::get());
 	        		if (strlen($qs) > 0) $qs = '?'.$qs;
 
-	        		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "$singular $actioned successfully" ));
+	        		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => $message ));
 
 	        		if ($create_new)
 	        			\Response::redirect(\Uri::base(false)."admin/$table_name/create$qs", 'location');
@@ -279,7 +278,7 @@ class Controller_Item extends Controller_Base {
 			$this->js['table_name'] = $table_name;
 		}		
 		
-	    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => "There were errors when saving the ".strtolower($class_name::singular()) ));
+	    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => __('admin.errors.actions.save', array( 'resource' => strtolower($class_name::singular()) )) ));
 	    
 	}
 	
@@ -295,7 +294,7 @@ class Controller_Item extends Controller_Base {
 	    
 	    // Don't let them delete it if they're not allowed!!
 		if (!$can_delete) {
-			return $this->show403("You're not allowed to delete ".strtolower($class_name::plural())."!");
+			return $this->show403('action_singular', array( 'action' => __('admin.verbs.delete'), 'resource' => strtolower($class_name::singular()) ));
 		}
 	    
 	    \Admin::setCurrentClass($class_name);
@@ -322,7 +321,7 @@ class Controller_Item extends Controller_Base {
 	    
 	    if (!empty($error)) {
 	    	$default_redirect = \Uri::base(false)."admin/$table_name";
-			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => "Could not delete item: ".$error ));
+			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => __('admin.errors.actions.delete', array( 'message' => $error )) ));
 			\Response::redirect(\Input::referrer($default_redirect), 'location');
 	    }
 	    
@@ -339,7 +338,7 @@ class Controller_Item extends Controller_Base {
 	    	default:
 	    		$default_redirect = \Uri::base(false)."admin/$table_name";
 			    
-			    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "The ".strtolower($singular)." was deleted" ));
+			    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => __('admin.errors.actions.delete', array( 'resource' => strtolower($singular) )) ));
 			    \Response::redirect(\Input::referrer($default_redirect), 'location');
 	    		break;
 	    	
@@ -354,10 +353,10 @@ class Controller_Item extends Controller_Base {
 	{
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
-		if ($class_name === false) return $this->show404("Can't find that type!");
+		if ($class_name === false) return $this->show404(null, "type");
 		
 		if (!\CMF\Auth::can('edit', $class_name)) {
-			return $this->show403("You're not allowed to edit that!");
+			return $this->show403('action_singular', array( 'action' => __('admin.verbs.edit'), 'resource' => strtolower($class_name::singular()) ));
 		}
 		
 		// Set the output content type
@@ -419,7 +418,7 @@ class Controller_Item extends Controller_Base {
 		
 		// Find the model, return 404 if not found
 		$model = $class_name::find($id);
-		if (is_null($model)) return $this->show404("Can't find that model!");
+		if (is_null($model)) return $this->show404(null, "item");
 		
 		// Populate with the POST data
 		$model->populate(\Input::post(), false);
@@ -463,7 +462,7 @@ class Controller_Item extends Controller_Base {
 		\Admin::setCurrentClass($class_name);
 		
 		if ($class_name === false) {
-			return $this->customPageOr404(array($table_name, $action_id), "Can't find that type!");
+			return $this->customPageOr404(array($table_name, $action_id), "type");
 		}
 		
 		// Load up the model with the Id
@@ -474,7 +473,7 @@ class Controller_Item extends Controller_Base {
 		
 		$actions = $class_name::actions();
 		if (!isset($actions[$action_id])) {
-			return $this->customPageOr404(array($table_name, $action_id), "The page you requested could not be found");
+			return $this->customPageOr404(array($table_name, $action_id), "page");
 		}
 		
 		$action = $actions[$action_id];
@@ -507,7 +506,7 @@ class Controller_Item extends Controller_Base {
 			break;
 			default:
 				
-				return $this->customPageOr404(array($table_name, $action_id), "The page you requested could not be found");
+				return $this->customPageOr404(array($table_name, $action_id), "page");
 				
 			break;
 			

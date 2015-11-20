@@ -16,7 +16,7 @@
 
 {% import _self as this %}
 
-{% block html_title %}Edit {{ form.singular }} : {{ admin_title }}{% endblock %}
+{% block html_title %}{{ _('admin.common.edit_resource', { resource:form.singular }) }} : {{ admin_title }}{% endblock %}
 
 {% block main_pane %}
     
@@ -30,7 +30,7 @@
     
     <div class="inner">
 
-        <h2 class="main-heading pull-left"><i class="fa fa-{{ form.icon }}"></i> Edit {{ form.title }}</h2>
+        <h2 class="main-heading pull-left"><i class="fa fa-{{ form.icon }}"></i> {{ _('admin.common.edit_resource', { resource:form.title }) }}</h2>
         <div class="item-actions-top pull-right">
             {% for action_id, action in actions if action.edit is not defined or action.edit != false %}
             {{ attribute(this, 'action_'~action.type, [action_id, action, model, table_name, 'list']) }}
@@ -49,9 +49,9 @@
         <!-- START ITEM EDIT FORM -->
 
         {% if row.settings.imported_from and row.settings.original_id %}
-            {% set append = ' &nbsp;<i class="muted">imported from '~get_hostname(row.settings.imported_from)~'</i>' %}
+            {% set append = ' &nbsp;<i class="muted">'~_('admin.import.imported_from_location', { location:get_hostname(row.settings.imported_from) })~'</i>' %}
         {% elseif row.settings.original_id %}
-            {% set append = ' &nbsp;<i class="muted">imported</i>' %}
+            {% set append = ' &nbsp;<i class="muted">'~_('admin.import.imported')~'</i>' %}
         {% endif %}
         
         <div class="tab-content">
@@ -104,15 +104,15 @@
 <div id="controls-fixed-bot"><div class="inner">
 
     <div class="status pull-left">
-        Item was last updated <span class="updated-at">{{ model.get('updated_at')|date("d/m/Y \\a\\t H:i:s", "Europe/London") }}</span>
+        {{ _('admin.common.last_updated_at', { date:'<span class="updated-at">'~(model.get('updated_at')|date("d/m/Y \\a\\t H:i:s", config('default_timezone', "Europe/London")))~'</span>' }) }}
         <!-- span>Page rendered in {exec_time}s using {mem_usage}mb of memory.</span -->
     </div>
 
     <div class="actions pull-right">
-        <button name="saveAndClose" value="true" data-loading-text="Saving {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> Save &amp; Close</button>
-        <button data-loading-text="Saving {{ form.singular }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> Save</button>
+        <button name="saveAndClose" value="true" data-loading-text="{{ _('admin.common.saving_resource', { resource:form.singular }) }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> {{ _('admin.common.save_and_close') }}</button>
+        <button data-loading-text="{{ _('admin.common.saving_resource', { resource:form.singular }) }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> {{ _('admin.verbs.save') }}</button>
         {% if can_delete %}
-        <a href="delete{{ mode == 'inline' ? '?_mode=inline&_cid='~cid : '' }}" class="btn btn-large btn-danger btn-remove padleft" data-singular="{{ form.singular }}"><i class="fa fa-remove icon-white"></i> Delete</a>
+        <a href="delete{{ mode == 'inline' ? '?_mode=inline&_cid='~cid : '' }}" class="btn btn-large btn-danger btn-remove padleft" data-singular="{{ form.singular }}"><i class="fa fa-remove icon-white"></i> {{ _('admin.verbs.delete') }}</a>
         {% endif %}
     </div>
 
@@ -133,14 +133,14 @@
 {% block admin_css %}
     {{ parent() }}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{{ css }}{% if 'http://' not in css and 'https://' not in css %}{{ ('?' in css) ? '&' : '?' }}v=19{% endif %}">
+        <link rel="stylesheet" type="text/css" href="{{ css }}{% if 'http://' not in css and 'https://' not in css %}{{ ('?' in css) ? '&' : '?' }}v=20{% endif %}">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}{% if 'http://' not in js and 'https://' not in js %}{{ ('?' in js) ? '&' : '?' }}v=19{% endif %}"></script>
+        <script type="text/javascript" src="{{ js }}{% if 'http://' not in js and 'https://' not in js %}{{ ('?' in js) ? '&' : '?' }}v=20{% endif %}"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

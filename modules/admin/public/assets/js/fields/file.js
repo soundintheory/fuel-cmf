@@ -32,12 +32,27 @@
                 paramsInBody: false
             },
             text: {
-                uploadButton: '<i class="fa fa-upload-alt icon-white"></i> Upload',
-                formatProgress: " - {percent}% of {total_size}",
+                uploadButton: '<i class="fa fa-upload-alt icon-white"></i> ' + _('admin.verbs.upload'),
+                cancelButton: _('admin.verbs.cancel'),
+                retryButton: _('admin.verbs.retry'),
+                failUpload: _('admin.upload.fail_upload'),
+                dragZone: _('admin.upload.drag_zone'),
+                dropProcessing: _('admin.upload.drop_processing'),
+                formatProgress: _('admin.upload.format_progress'),
+                waitingForResponse: _('admin.upload.waiting_for_response')
+            },
+            messages: {
+                typeError: _('admin.upload.type_error'),
+                sizeError: _('admin.upload.size_error'),
+                minSizeError: _('admin.upload.min_size_error'),
+                emptyError: _('admin.upload.empty_error'),
+                noFilesError: _('admin.upload.no_files_error'),
+                onLeave: _('admin.upload.on_leave'),
+                tooManyFilesError: _('admin.upload.too_many_files_error')
             },
             template:
                 '<div class="qq-uploader input-xxlarge">' +
-                '<div class="file-preview"><em class="muted">No file selected...</em></div>' +
+                '<div class="file-preview"><em class="muted">' + _('admin.upload.no_file_selected') + '...</em></div>' +
                 '<div class="top-row"><span class="qq-upload-button btn btn-small">{uploadButtonText}</span></div>' +
                 '<pre class="qq-upload-drop-area"><span>{dragZoneText}</span></pre>' +
                 '<span class="qq-drop-processing" style="display:none;"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>' +
@@ -104,7 +119,7 @@
             var $file = $($el.fineUploader('getItemByFileId', id));
             $file.find('.progress').addClass('active');
             $el.find('.top-row').hide();
-            setStatus('Uploading...');
+            setStatus(_('admin.upload.upload_in_progress'));
             
         }
         
@@ -130,7 +145,7 @@
             $srcInput.appendTo($el).val(val);
             if (val == null || val == undefined || val == '') {
 
-                setStatus('No file selected...');
+                setStatus(_('admin.upload.no_file_selected'));
                 $el.removeClass('populated');
                 if ($wrap.find('.click-copy-field').length > 0) {
                     $wrap.find('.click-copy-field').addClass('hide');

@@ -49,5 +49,12 @@ class DateTime extends Date {
         
         return html_tag('div', array( 'class' => 'controls control-group field-type-datetime'.($has_errors ? ' error' : '') ), $label.$input);
     }
+
+    public static function getTranslatableAttributes()
+    {
+        return array_merge(parent::getTranslatableAttributes(), array(
+            'list_format'
+        ));
+    }
 	
 }

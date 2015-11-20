@@ -49,8 +49,8 @@ class BingMap extends Object {
         if (!is_array($value)) $value = array();
 
         // Search input or
-        $searchInput = \Form::input($settings['mapping']['fieldName'].'[search]', null, array( 'class' => 'input input-xxlarge search-input', 'placeholder' => 'Search by address, postcode or coordinates' ));
-        $searchButton = \Form::button('mapsearch', __('admin.common.search'), array( 'class' => 'btn btn-primary' ));
+        $searchInput = \Form::input($settings['mapping']['fieldName'].'[search]', null, array( 'class' => 'input input-xxlarge search-input', 'placeholder' => __('admin.common.map_search_placeholder') ));
+        $searchButton = \Form::button('mapsearch', __('admin.verbs.search'), array( 'class' => 'btn btn-primary' ));
         $searchInput = html_tag('div', array( 'class' => 'form form-inline search-form' ), $searchInput.$searchButton);
 
         // Hidden inputs

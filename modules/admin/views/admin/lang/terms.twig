@@ -1,6 +1,6 @@
 {% extends interface_template|default("admin/shared/interface.twig") %}
 
-{% block html_title %}Edit language strings : {{ admin_title }}{% endblock %}
+{% block html_title %}{{ _('admin.common.edit_common_terms') }} : {{ admin_title }}{% endblock %}
 {% block frame_top %}<form action="" method="post">{% endblock %}
 {% block frame_bottom %}</form>{% endblock %}
 
@@ -39,7 +39,7 @@
 {% block breadcrumb %}
 
 <li><a href="{{ base_url }}">{{ dashboard_title }}</a> <span class="divider">/</span></li>
-<li><a href="{{ base_url }}/languages">languages</a> <span class="divider">/</span></li>
+<li><a href="{{ base_url }}/languages">{{ _('admin.common.languages') }}</a> <span class="divider">/</span></li>
 <li class="active">terms</li>
 
 {% endblock %}
@@ -66,7 +66,7 @@
 <div id="controls-fixed-bot"><div class="inner">
 
     <div class="actions pull-right">
-        <button data-loading-text="Saving Phrases..." class="btn btn-large btn-primary submit-item" autocomplete="off" type="submit"><i class="fa fa-ok icon-white"></i> Save Phrases</button>
+        <button data-loading-text="{{ _('admin.common.saving_resource', { resource:_('admin.common.phrases') }) }}..." class="btn btn-large btn-primary submit-item" autocomplete="off" type="submit"><i class="fa fa-ok icon-white"></i> Save Phrases</button>
     </div>
 
 </div></div>

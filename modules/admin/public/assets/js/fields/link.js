@@ -45,7 +45,7 @@
 				if (!select2_initted) {
 					$internal.find('select').select2({
 						alwaysShowPlaceholder: true,
-						placeholder: 'click to select a link...'
+						placeholder: _('admin.messages.click_select_link')
 					});
 					$internal.find('select').select2('container').find('.select2-choices, .select2-choice').addClass('input-xxlarge');
 					select2_initted = true;

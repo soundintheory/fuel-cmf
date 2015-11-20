@@ -126,5 +126,12 @@ class Measurement extends Select {
         
         return parent::displayForm($value, $settings, $model);
     }
+
+    public static function getTranslatableAttributes()
+    {
+        return array_merge(parent::getTranslatableAttributes(), array(
+            'default_unit'
+        ));
+    }
 	
 }

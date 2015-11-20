@@ -4,6 +4,7 @@ namespace CMF\Core;
 
 class Lang extends \Fuel\Core\Lang
 {
+	public static $autosave = true;
 	protected static $to_save = array();
 	protected static $loaded = array();
 
@@ -23,7 +24,8 @@ class Lang extends \Fuel\Core\Lang
 	
 	public static function get($line, array $params = array(), $default = null, $language = null)
 	{
-		if (!\CMF::$lang_enabled) return parent::get($line, $params, $default, $language);
+		$output = parent::get($line, $params, $default, $language);
+		if (!static::$autosave || !\CMF::$lang_enabled || (!empty($output) && $output !== $default)) return $output;
 
 		($language === null) and $language = static::get_lang();
 

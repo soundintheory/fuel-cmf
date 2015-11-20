@@ -599,6 +599,26 @@ abstract class Model
         $called_class = get_called_class();
         return $called_class::$_order;
     }
+
+    protected static $_hierarchy = array();
+
+    /**
+     * Returns the model's class hierarchy as an array
+     */
+    public static function hierarchy()
+    {
+        $called_class = get_called_class();
+        if (isset(static::$_hierarchy[$called_class])) return static::$_hierarchy[$called_class];
+
+        $parent_class = get_parent_class($called_class);
+        if ($parent_class !== false && $parent_class != 'CMF\\Model\\Base') {
+            $output = array_merge($parent_class::hierarchy(), array($called_class));
+        } else {
+            $output = array($called_class);
+        }
+
+        return static::$_hierarchy[$called_class] = $output;
+    }
     
     /**
      * Converts the model into an array format

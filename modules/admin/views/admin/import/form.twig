@@ -9,12 +9,12 @@
     <div class="inner">
 
         <div class="actions-top-right">
-            <a href="/admin/{{ table_name }}" class="btn btn-medium btn-inverse btn-permissions" title="{{ singular }} {{ list_name }}"><i class="fa fa-arrow-left"></i> &nbsp; Back to {{ plural|lower }}</a>
+            <a href="/admin/{{ table_name }}" class="btn btn-medium btn-inverse btn-permissions" title="{{ singular }} {{ list_name }}"><i class="fa fa-arrow-left"></i> &nbsp; {{ _('admin.common.back_to_resource', { resource:plural|lower }) }}</a>
         </div>
 
         <div class="row-fluid">
             <div class="span12">
-                <h2 class="main-heading"><i class="fa fa-{{ icon }}"></i> Import {{ plural }}</h2>
+                <h2 class="main-heading"><i class="fa fa-{{ icon }}"></i> {{ _('admin.import.import_resource', { resource:plural }) }}</h2>
             </div>
         </div>
     
@@ -23,17 +23,17 @@
 
             <div class="widget span12">
                 <div class="widget-title">
-                    <h3><i class="fa fa-chevron-down"></i> Select a file to import... </h3>
+                    <h3><i class="fa fa-chevron-down"></i> {{ _('admin.import.select_a_file') }} </h3>
                 </div>
                 <div class="widget-content">
                     <form class="form" action="/admin/{{ table_name }}/import/file" method="post" enctype="multipart/form-data">
                         <div class="controls controls-row">
-                            <input type="file" name="importdata" data-filename-placement="inside" class="fileinput-button" title="Browse..." />
+                            <input type="file" name="importdata" data-filename-placement="inside" class="fileinput-button" title="{{ _('admin.verbs.browse') }}" />
                         </div>
                         <br>
                         <div class="clear"></div>
                         <div class="actions">
-                            <button type="submit" class="btn btn-primary"><i class="fa fa-file icon-white"></i> Import File...</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-file icon-white"></i> {{ _('admin.import.import_from_file') }}</button>
                         </div>
                         <div class="clear"></div>
                     </form>
@@ -48,12 +48,12 @@
 
             <div class="widget span12">
                 <div class="widget-title">
-                    <h3><i class="fa fa-chevron-down"></i> Import from URL</h3>
+                    <h3><i class="fa fa-chevron-down"></i> {{ _('admin.import.import_from_url') }}</h3>
                 </div>
                 <div class="widget-content">
                     <form class="form" action="/admin/{{ table_name }}/import/url" method="post">
                         <div class="controls controls-row">
-                            <label>URL for import</label>
+                            <label>{{ _('admin.common.url') }}</label>
                             {% if importUrl %}
                                 <span class="input-xlarge uneditable-input">{{ importUrl }}</span>
                             {% else %}
@@ -62,7 +62,7 @@
                         </div>
                         <br>
                         <div class="actions">
-                            <button type="submit" class="btn btn-success"><i class="fa fa-download icon-white"></i> Import from URL...</button>
+                            <button type="submit" class="btn btn-success"><i class="fa fa-download icon-white"></i> {{ _('admin.import.import_from_url') }}</button>
                         </div>
                         <div class="clear"></div>
                     </form>

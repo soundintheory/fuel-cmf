@@ -31,8 +31,8 @@
         {% if searchable %}
             <div class="search list-filter-wrap">
                 <div class="form-search form-horizontal">
-                  <input name="query" type="text" class="input-medium search-query" value="{{query}}" placeholder="Search">
-                  <button type="submit" class="btn">Search</button>
+                  <input name="query" type="text" class="input-medium search-query" value="{{query}}" placeholder="{{ _('admin.verbs.search') }}">
+                  <button type="submit" class="btn">{{ _('admin.verbs.search') }}</button>
                 </div>
             </div>
         {% endif %}
@@ -57,9 +57,9 @@
                             <input type="hidden" name="{{ filter_field }}" value="" />
                         {% endfor %}
                     {% endif %}
-                    <button type="submit" class="btn btn-mini">Reset filters</button>
+                    <button type="submit" class="btn btn-mini">{{ _('admin.common.reset_filters') }}</button>
                 </form>
-                {% if (query is not empty) %}<p>&nbsp; Search results for "{{query}}".</p>{% endif %}
+                {% if (query is not empty) %}<p>&nbsp; {{ _('admin.common.search_results_for', { query:query }) }}</p>{% endif %}
             </div>
         {% endif %}
         <div class="clearfix"></div>
@@ -77,8 +77,8 @@
         {% endif %}
         <div class="actions-top-right">
             {% if can_manage %}
-            {% if can_import %}<a href="/admin/{{ table_name }}/import" class="btn btn-success btn-permissions" title="Import data"><i class="fa fa-circle-arrow-down"></i> Import...</a>{% endif %}
-            <a href="/admin/{{ table_name }}/permissions" class="btn btn-icon btn-inverse btn-permissions" title="Edit {{ singular|lower }} permissions"><i class="fa fa-lock"></i></a>
+            {% if can_import %}<a href="/admin/{{ table_name }}/import" class="btn btn-success btn-permissions" title="{{ _('admin.verbs.import') }}"><i class="fa fa-circle-arrow-down"></i> {{ _('admin.verbs.import') }}</a>{% endif %}
+            <a href="/admin/{{ table_name }}/permissions" class="btn btn-icon btn-inverse btn-permissions" title="{{ _('admin.common.edit_resource_permissions', { resource:singular|lower }) }}"><i class="fa fa-lock"></i></a>
             {% endif %}
         </div>
         <div class="clear"></div>
@@ -152,8 +152,8 @@
                                 {% for action_id, action in actions if action.list is not defined or action.list != false %}
                                 {{ attribute(this, 'action_'~action.type, [action_id, action, row, table_name, 'list']) }}
                                 {% endfor %}
-                                {% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="Edit"><i class="fa fa-pencil"></i></a>{% endif %}
-                                {% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="Delete" data-singular="{{ singular }}"><i class="fa fa-remove icon-white"></i></a>{% endif %}
+                                {% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="{{ _('admin.verbs.edit') }}"><i class="fa fa-pencil"></i></a>{% endif %}
+                                {% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="/admin/{{ table_name }}/{{ row.get('id') }}/delete" rel="tooltip" title="{{ _('admin.verbs.delete') }}" data-singular="{{ singular }}"><i class="fa fa-remove icon-white"></i></a>{% endif %}
                             </span></td>
                             
                         </tr>
@@ -162,11 +162,11 @@
                             <td class="no-items" colspan="{{ columns|length + 1 }}">
                                 
                                 {% if (tabs|length > 1 and current_tab != default_tab) or has_filters %}
-                                <p>No {{ plural|lower }} were found.</p>
+                                <p>{{ _('admin.messages.no_items_found', { resource:plural|lower }) }}</p>
                                 {% else %}
-                                <p>There are no {{ plural|lower }} added yet.</p>
+                                <p>{{ _('admin.messages.no_items_added', { resource:plural|lower }) }}</p>
                                 {% if can_create %}
-                                <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="fa fa-plus icon-white"></i> Add {{ singular }}...</a>
+                                <a href="/admin/{{ table_name }}/create" class="btn btn-medium"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_resource', { resource:singular }) }}</a>
                                 {% endif %}
                                 {% endif %}
                                 
@@ -209,11 +209,11 @@
         </div -->
         
         {% if user.super_user %}
-            <a href="/admin/{{ table_name }}/saveall" class="btn btn-large btn-info">Save All</a>
+            <a href="/admin/{{ table_name }}/saveall" class="btn btn-large btn-info">{{ _('admin.common.save_all') }}</a>
         {% endif %}
         {% if can_create %}
         <div class="actions pull-right">
-            <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="fa fa-plus icon-white"></i> Add New {{ singular }}...</a>
+            <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_new_resource', { resource:singular }) }}...</a>
         </div>
         {% endif %}
         

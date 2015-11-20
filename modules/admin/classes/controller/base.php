@@ -25,6 +25,8 @@ class Controller_Base extends \Controller {
 		if (!\CMF\Auth::check(null, 'view', 'admin_site')) {
             \Response::redirect(\Uri::base(false)."admin/login?next=".\Uri::string(), 'location');
         }
+
+        \Lang::$autosave = false;
         
         // Find the lang from the session, or from the user
         if ($this->lang_enabled = \Config::get('cmf.languages.enabled', false)) {
@@ -42,9 +44,11 @@ class Controller_Base extends \Controller {
         
         // A unique ID that can be passed through
         $this->cid = \Input::param('_cid', 'none');
+
+        // Lang info
         $this->current_lang = \Lang::get_lang();
         $this->fallback_lang = \Lang::$fallback;
-		
+        $this->lang_lines = \Lang::$lines;
 	}
 	
 	public function after($response)
@@ -74,12 +78,12 @@ class Controller_Base extends \Controller {
         );
         
         // Some vital settings
-        $this->admin_title = \Config::get("cmf.admin.title", array());
+        $this->admin_title = __('admin.title', array(), \Config::get("cmf.admin.title", ''));
         $this->base_url = \Admin::$base;
         $this->modules = \Config::get('cmf.admin.modules', false);
         $this->current_module = \Admin::$current_module;
         $this->current_class = \Admin::$current_class;
-        $this->dashboard_title = \Config::get('cmf.admin.modules.'.\Admin::$current_module.'.title', 'Dashboard');
+        $this->dashboard_title = __('admin.modules.'.\Admin::$current_module.'.title', array(), \Config::get('cmf.admin.modules.'.\Admin::$current_module.'.title', __('admin.common.dashboard', array(), 'Dashboard')));
         
         $this->headers['X-XSS-Protection'] = 0;
         
@@ -110,7 +114,7 @@ class Controller_Base extends \Controller {
 	    $this->assets[$type] = $current;
 	}
     
-    protected function customPageOr404($segments, $msg)
+    protected function customPageOr404($segments, $resource)
     {
         $main = array_shift($segments);
         $method = strtolower(\Input::method());
@@ -124,7 +128,7 @@ class Controller_Base extends \Controller {
         }
         
         // Return normal 404 if we can't find the controller class
-        if (!class_exists($controller)) return $this->show404($msg);
+        if (!class_exists($controller)) return $this->show404(null, $resource);
         
         // Load the controller using reflection
         $class = new \ReflectionClass($controller);
@@ -138,7 +142,7 @@ class Controller_Base extends \Controller {
         // Return normal 404 if we can't find the action method
         if (!$class->hasMethod($method."_".$action)) {
             $method = 'action';
-            if (!$class->hasMethod("action_".$action)) return $this->show404($msg);
+            if (!$class->hasMethod("action_".$action)) return $this->show404(null, $resource);
         }
         
         // Run through the before > action > after process
@@ -151,16 +155,24 @@ class Controller_Base extends \Controller {
         
     }
     
-    protected function show404($msg)
+    protected function show404($msg = null, $resource = null)
     {
+        if (!$resource) $resource = __('admin.common.page');
+        if (empty($msg)) {
+            $msg = __('admin.errors.http.404', array( 'resource' => $resource ), "That $resource could not be found!");
+        }
+
         $this->template = 'admin/errors/404.twig';
         $this->status = 404;
         $this->data = array( 'msg' => $msg );
         return;
     }
     
-    protected function show403($msg)
+    protected function show403($line = null, $params = array())
     {
+        if (empty($line)) $line = 'default';
+        
+        $msg = __('admin.errors.unauthorized.'.$line, $params, "You are not authorised");
         $this->template = 'admin/errors/403.twig';
         $this->status = 403;
         $this->data = array( 'msg' => $msg );
@@ -184,7 +196,7 @@ class Controller_Base extends \Controller {
         }
         
         // if not, we got ourselfs a genuine 404!
-        $this->show404('That page could not be found!');
+        $this->show404();
     }
 	
 	public function __get($key)
