@@ -24,10 +24,11 @@ class Lang extends \Fuel\Core\Lang
 	
 	public static function get($line, array $params = array(), $default = null, $language = null)
 	{
-		$output = parent::get($line, $params, $default, $language);
-		if (!static::$autosave || !\CMF::$lang_enabled || (!empty($output) && $output !== $default)) return $output;
+		$output = parent::get($line, $params, '__NOT__FOUND__', $language);
+		if (!static::$autosave || !\CMF::$lang_enabled || (!empty($output) && $output != '__NOTFOUND__')) return $output;
 
 		($language === null) and $language = static::get_lang();
+		if ($output == '__NOT__FOUND__') $output = $default;
 
 		$pos = strpos($line, '.');
 		$group = 'common';
