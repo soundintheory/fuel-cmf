@@ -397,13 +397,18 @@ abstract class Model
                         $item = $target_class::find($item);
                         
                     } else if (is_array($item)) {
+
+                        $new_item = null;
                         if (array_key_exists('id', $item) && !empty($item['id'])) {
                             $new_item = $target_class::find($item['id']);
-                        } else {
+                        }
+
+                        if (is_null($new_item)) {
                             $type = str_replace('\\\\', '\\', isset($item['__type__']) ? $item['__type__'] : $target_class);
                             if (isset($item['__type__']) && is_subclass_of($type, $target_class)) $item_target_class = $type;
                             $new_item = new $item_target_class();
                         }
+
                         $new_item->populate($item);
                         $item = $new_item;
                     }
