@@ -240,7 +240,7 @@ class CMF
 		// Get the language from the request
 		if (!$iso) {
 			$iso = \Arr::get(explode('/', static::original_uri()), 1, \Lang::get_lang())."";
-            if (\Lang::get("languages.$iso", array(), 'notfound') == 'notfound') $iso = \Lang::get_lang();
+            if (\Lang::_get("languages.$iso", array(), 'notfound') == 'notfound') $iso = \Lang::get_lang();
 		}
 		
 		// Set the languages into Fuel for future reference

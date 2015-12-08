@@ -21,6 +21,11 @@ class Lang extends \Fuel\Core\Lang
 
 		return $output;
 	}
+
+	public static function _get($line, array $params = array(), $default = null, $language = null)
+	{
+		return parent::get($line, $params, $default, $language);
+	}
 	
 	public static function get($line, array $params = array(), $default = null, $language = null)
 	{
@@ -34,11 +39,13 @@ class Lang extends \Fuel\Core\Lang
 
 		$pos = strpos($line, '.');
 		$group = 'common';
+		$basename = $line;
 		if ($pos === false) {
 			if (empty($default)) $default = $line;
 			$line = "$group.$line";
 		} else {
-			if (empty($default)) $default = substr($line, $pos+1);
+			$basename = substr($line, $pos+1);
+			if (empty($default)) $default = $basename;
 			$group = substr($line, 0, $pos);
 		}
 
@@ -48,6 +55,9 @@ class Lang extends \Fuel\Core\Lang
 			static::$loaded[] = $group.'_'.$language;
 		}
 
+		// Don't continue if it's not the 'common' group
+		if ($group != 'common') return ($output != null) ? \Str::tr(\Fuel::value($output), $params) : $default;
+
 		$output = \Arr::get(static::$lines, "$language.$line");
 		if ($output == null)
 		{
@@ -55,6 +65,8 @@ class Lang extends \Fuel\Core\Lang
 			$output = \Arr::get(static::$lines, static::$fallback[0].".$line");
 
 			if (!in_array($group, static::$to_save)) static::$to_save[] = $group;
+
+			//if (!empty($default) && $default != $line)
 			static::set($line, $default);
 			static::set($line, $default, null, static::$fallback[0]);
 
