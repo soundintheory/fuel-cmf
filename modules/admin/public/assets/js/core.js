@@ -269,7 +269,7 @@ function initTree() {
 			node['hidden'] = (typeof node.hidden != 'undefined' && (node.hidden === true || node.hidden === 1));
 
 			// If this item is an alias, append ?alias to the edit URL
-			if (node['url']['alias']) {
+			if (node['url'] && node['url']['alias']) {
 				node['href'] += '?alias';
 				node['icon'] = 'link';
 			}
@@ -320,13 +320,13 @@ function initTree() {
 					baseUrl = '/admin/' + subclassData['table_name'];
 
 					// Check if this allows the class as a child
-					if ((!!allowedChildren && allowedChildren.length && $.inArray(p, allowedChildren) === -1) ||
+					if ((!!allowedChildren && $.inArray(p, allowedChildren) === -1) ||
 						(!!disallowedChildren && $.inArray(p, disallowedChildren) > -1)) {
 						continue;
 					}
 
 					// Also check if the class allows this as a parent
-					if ((!!subclassData.allowed_parents && subclassData.allowed_parents.length && $.inArray(node['class'], subclassData.allowed_parents) === -1) ||
+					if ((!!subclassData.allowed_parents && $.inArray(node['class'], subclassData.allowed_parents) === -1) ||
 						(!!subclassData.disallowed_parents && $.inArray(node['class'], subclassData.disallowed_parents) > -1)) {
 						continue;
 					}
@@ -402,7 +402,7 @@ function initTree() {
 				return false;
 			}
 
-			if ((!!parentClassInfo.allowed_children && parentClassInfo.allowed_children.length && $.inArray(moved_node['class'], parentClassInfo.allowed_children) === -1) ||
+			if ((!!parentClassInfo.allowed_children && $.inArray(moved_node['class'], parentClassInfo.allowed_children) === -1) ||
 				(!!movedClassInfo.allowed_parents && movedClassInfo.allowed_parents.length && $.inArray(parentClass, movedClassInfo.allowed_parents) === -1)) {
 				return false;
 			}
@@ -487,7 +487,7 @@ function initTree() {
 			baseUrl = '/admin/' + subclassData['table_name'];
 
 			// Check if the class allows root as a parent
-			if ((!!subclassData.allowed_parents && subclassData.allowed_parents.length && $.inArray('root', subclassData.allowed_parents) === -1) ||
+			if ((!!subclassData.allowed_parents && $.inArray('root', subclassData.allowed_parents) === -1) ||
 				(!!subclassData.disallowed_parents && $.inArray('root', subclassData.disallowed_parents) > -1)) {
 				continue;
 			}
