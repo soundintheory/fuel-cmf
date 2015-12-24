@@ -109,7 +109,9 @@
     </div>
 
     <div class="actions pull-right">
+        {% if not (mode == 'inline') %}
         <button name="saveAndClose" value="true" data-loading-text="{{ _('admin.common.saving_resource', { resource:form.singular }) }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> {{ _('admin.common.save_and_close') }}</button>
+        {% endif %}
         <button data-loading-text="{{ _('admin.common.saving_resource', { resource:form.singular }) }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> {{ _('admin.verbs.save') }}</button>
         {% if can_delete %}
         <a href="delete{{ mode == 'inline' ? '?_mode=inline&_cid='~cid : '' }}" class="btn btn-large btn-danger btn-remove padleft" data-singular="{{ form.singular }}"><i class="fa fa-remove icon-white"></i> {{ _('admin.verbs.delete') }}</a>

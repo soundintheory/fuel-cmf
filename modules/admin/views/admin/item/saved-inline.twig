@@ -10,6 +10,7 @@
 	    	
 	    	var modelId = {{ model.id }},
 	    	modelTitle = {{ model.display()|json_encode() }},
+	    	type = {{ className|json_encode() }},
 	    	cid = '{{ cid }}',
 	    	hasParent = (typeof(parent) != 'undefined' && parent != null);
 	    	
@@ -18,6 +19,7 @@
 	    		parent.{{ cid }}.onSave({
 	    			'id': modelId,
 	    			'title': modelTitle,
+	    			'type': type,
 	    			'options': {{ options|json_encode() }},
 	    			'pos': {{ pos }}
 	    		});

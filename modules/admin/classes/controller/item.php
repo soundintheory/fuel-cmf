@@ -235,6 +235,7 @@ class Controller_Item extends Controller_Base {
 	        		$this->options = $options;
 	        		$this->pos = $pos;
 	        		$this->model = $model;
+	        		$this->className = $metadata->name;
 	        		$this->template = 'admin/item/saved-inline.twig';
 	        		return;
 	        		break;

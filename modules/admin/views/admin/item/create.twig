@@ -86,7 +86,7 @@
                     {{ _('admin.common.create_resource', { resource:form.singular }) }}
                 {% endif %}
             </button>
-            {% if not static %}<button name="create_new" value="1" data-loading-text="{{ _('admin.common.creating_resource', { resource:form.singular }) }}" class="btn btn-large btn-success submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> {{ _('admin.common.create_add_another') }}</button>{% endif %}
+            {% if not static and not (mode == 'inline') %}<button name="create_new" value="1" data-loading-text="{{ _('admin.common.creating_resource', { resource:form.singular }) }}" class="btn btn-large btn-success submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> {{ _('admin.common.create_add_another') }}</button>{% endif %}
         </div>
 
     </div></div>

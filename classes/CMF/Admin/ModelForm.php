@@ -120,6 +120,10 @@ class ModelForm
 				$group['fields'] = $new_fields;
 				
 			}
+
+			if (empty($tab['groups'])) {
+				unset($this->content[$tab_index]);
+			}
 			
 		}
 		

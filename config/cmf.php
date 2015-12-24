@@ -143,7 +143,9 @@ return array (
         'manytomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline',
         'onetomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline',
         'manytomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline',
-        'onetomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline'
+        'onetomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline',
+        'manytomany_inline_popup' => 'CMF\\Field\\Collection\\PopupInline',
+        'onetomany_inline_popup' => 'CMF\\Field\\Collection\\PopupInline'
     ),
     
     'languages' => array(
