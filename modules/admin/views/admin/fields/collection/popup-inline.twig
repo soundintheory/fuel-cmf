@@ -37,7 +37,7 @@
     {% if not superlock %}
     
     {% for type in add_types %}
-    <a href="#" class="btn-add btn btn-medium" data-type="{{ type.type }}"><i class="fa fa-{{ type.icon }} icon-white"></i> {{ _('admin.common.add_resource', { resource:type.singular }) }}</a>
+    <a href="{{ type.add_link }}" class="btn-add btn btn-medium" data-type="{{ type.type }}"><i class="fa fa-{{ type.icon }} icon-white"></i> {{ _('admin.common.add_resource', { resource:type.singular }) }}</a>
     &nbsp;&nbsp;
     {% endfor %}
     
