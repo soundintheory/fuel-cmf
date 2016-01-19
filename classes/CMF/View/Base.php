@@ -74,8 +74,8 @@ class Base extends \ViewModel
         $hasActive = false;
         
         foreach ($nodes as &$node) {
-            
-            $node['active'] = $node['url'] == $uri;
+
+            $node['active'] = ltrim ( $node['url'] ,"/") == ltrim ( $uri ,"/");
             $node['parent_active'] = false;
             $node['type'] = \Inflector::classify($node['type']);
 
@@ -83,7 +83,7 @@ class Base extends \ViewModel
 
                 $newlevel = $level + 1;
                 $node['parent_active'] = $this->processNodes($node['__children'], $uri, $newlevel, $label);
-                
+
                 if ($node['active'] || $node['parent_active']) {
 
                     $levelid = $label ? $label.'_level'.$newlevel : 'level'.$newlevel;
