@@ -22,14 +22,14 @@ class PageNode extends Node
         'content' => array( 'widget' => true ),
         'url_alias' => array( 'visible' => false ),
     	'extra_meta' => array('fields' => array(
-    				'og:title'=>array('type'=>'string'),
-    				'og:site_name'=>array('type'=>'string'),
-    				'og:url'=>array('type'=>'string'),
-    				'og:description'=>array('type'=>'text'),
-    				'og:image'=>array('type'=>'string'),
+                'og:title'=>array('type'=>'string'),
+                'og:site_name'=>array('type'=>'string'),
+                'og:url'=>array('type'=>'string'),
+                'og:description'=>array('type'=>'text'),
+                'og:image'=>array('type'=>'string'),
     		),
-    				'dynamic'=>true,'group' => 'meta','widget'=>false
-    		)
+            'dynamic'=>true,'group' => 'meta','widget'=>false
+        )
     );
     
     protected static $_list_fields = array('title');

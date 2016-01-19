@@ -16,7 +16,7 @@
         var $wrap = $(this),
         fieldName = $wrap.attr('data-field-name'),
         settings = typeof(field_settings[fieldName]) != 'undefined' ? field_settings[fieldName] : {},
-        initial = settings.initial || { lat:-53, lng:0, zoom:3 }
+        initial = settings.initial || { lat:-53, lng:0, zoom:3 },
         $map = $wrap.find('div.map'),
         $lat = $wrap.find('input.lat'),
         $lng = $wrap.find('input.lng'),

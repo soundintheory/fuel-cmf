@@ -14,7 +14,8 @@
 			$addBut = $el.find('.btn-add').click(addItem),
 			$addText = $addBut.find('span'),
 			$template = $el.find('.child-template').detach(),
-			$emptyMsg = $('<span class="help-block"><br />There are no ' + config['plural'] + " added at the moment. Click 'Add a " + config['singular'] + "' below to get started...<br /><br /><br /></span>").hide().insertAfter($table),
+			newStr = _('admin.common.add_resource', { resource:config['singular'] }),
+			$emptyMsg = $('<span class="help-block"><br />' + _('admin.messages.no_items_added', { resource:config['plural'] }) + ". " + _('admin.messages.get_started_click', { button:newStr }) + "<br /><br /><br /></span>").hide().insertAfter($table),
 			inline_fields = config['inline_fields'],
 			numItems = $tableBody.find('tr').length;
 			
@@ -36,7 +37,7 @@
 			
 			$('#' + id + ' .btn-remove').live('click', function() {
 				
-				if (!confirm('Are you sure you want to remove this ' + config['singular'] + '? This operation cannot be undone.')) { return false; }
+				if (!confirm(_('admin.messages.item_delete_confirm'))) { return false; }
 				
 				var $clicked = $(this),
 				$row = $clicked.parents('tr').eq(0);
@@ -108,7 +109,7 @@
 					
 					var value = $el.attr('title');
 					if (value == '' || typeof(value) == 'undefined' || value == null) {
-						value = 'No file selected...';
+						value = _('admin.upload.no_file_selected');
 						$el.trigger('reset');
 					} else {
 						var segments = value.split('/');
@@ -123,7 +124,7 @@
 					
 					$clear.click(function() {
 						$outer.find('.thumbnail').remove();
-						$outer.find('.customfile-feedback').html('No file selected...');
+						$outer.find('.customfile-feedback').html(_('admin.upload.no_file_selected'));
 						$el.trigger('reset');
 						return false;
 					});

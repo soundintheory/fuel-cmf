@@ -240,7 +240,7 @@ class CMF
 		// Get the language from the request
 		if (!$iso) {
 			$iso = \Arr::get(explode('/', static::original_uri()), 1, \Lang::get_lang())."";
-            if (\Lang::get("languages.$iso", array(), 'notfound') == 'notfound') $iso = \Lang::get_lang();
+            if (\Lang::_get("languages.$iso", array(), 'notfound') == 'notfound') $iso = \Lang::get_lang();
 		}
 		
 		// Set the languages into Fuel for future reference
@@ -423,6 +423,15 @@ class CMF
 		// Plain query for the urls table to avoid initialising Doctrine for 404s
 		$url_item = \DB::query("SELECT type, item_id FROM urls WHERE url = '$url' AND alias_id IS NULL ".($type !== null ? "AND type = '$type'" : ""))->execute();
 
+		// If multilingual is enabled, we need to check the ext_translations table too
+		if (count($url_item) === 0 && static::langEnabled())
+		{
+			$lang = static::$lang ?: static::$lang_default;
+			if ($item_id = \DB::query("SELECT foreign_key FROM ext_translations WHERE locale = '$lang' AND field = 'url' AND object_class = 'CMF\\\Model\\\URL' AND content = '$url'")->execute()->get('foreign_key')) {
+				$url_item = \DB::query("SELECT type, item_id FROM urls WHERE id = $item_id")->execute();
+			}
+		}
+
 		if (count($url_item) === 0 && $url == '/') {
 			$url_item = static::settings()->start_page;
 			if (is_null($url_item)) return null;
@@ -579,6 +588,20 @@ class CMF
 	public static function settings($class = '\\Model_Settings')
 	{
 		return $class::instance();
+	}
+
+	/**
+	 * Retrieves a setting value from either the settings model or the main config file
+	 * @param string $setting_name
+	 * @param mixed $default_value If the setting isn't found
+	 * @return mixed
+	 */
+	public static function getSetting($setting_name, $default_value = null)
+	{
+		if (class_exists('Model_Settings')) {
+			return \Model_Settings::getSetting($setting_name, $default_value);
+		}
+		return \Config::get($setting_name, $default_value);
 	}
 	
 	/**
@@ -757,5 +780,124 @@ class CMF
 		
 		return '/image/'.$crop['x'].'/'.$crop['y'].'/'.$crop['width'].'/'.$crop['height'].'/'.$w.'/'.$h.'/'.$src;
 	}
-	
+
+	/**
+	 * Tries to render an error response from a custom template, falling back to the default one
+	 */
+	public static function getCustomErrorResponse($message = null, $code = 500, $default_template = 'errors/http.twig')
+	{
+		$view = null;
+		$template = 'errors/'.$code.'.twig';
+		$status = \Arr::get(\Response::$statuses, $code, 'Internal Server Error');
+		$data = array(
+			'code' => $code,
+			'status' => $status,
+			'message' => $message ? $message : __("site.errors.http.$code", array( 'resource' => 'page' ), __("site.errors.http.default", array( 'resource' => 'page' ), $status))
+		);
+
+		// First try the specific error page
+		try {
+			if ($viewClass = \CMF::hasViewModel($template))
+			{
+			    $view = new $viewClass('view', false, $template);
+			}
+			else
+			{
+				$viewClass = ucfirst(\CMF::$module).'\\View_Base';
+				if (!class_exists($viewClass)) $viewClass = '\\View_Base';
+				$view = new $viewClass('view', false, $template);
+			}
+
+			$view->set($data);
+			$view = $view->render();
+
+		} catch (\Exception $e) { $view = null; }
+
+		// Then try the provided default template
+		if (!$view) {
+
+			try {
+				if ($viewClass = \CMF::hasViewModel($default_template))
+				{
+				    $view = new $viewClass('view', false, $default_template);
+				}
+				else
+				{
+					$viewClass = ucfirst(\CMF::$module).'\\View_Base';
+					if (!class_exists($viewClass)) $viewClass = '\\View_Base';
+					$view = new $viewClass('view', false, $default_template);
+				}
+
+				$view->set($data);
+				$view = $view->render();
+
+			} catch (\Exception $e) { $view = null; }
+
+		}
+
+		// Then try the above, without the view models
+		if (!$view) {
+			try {
+				$view = \View::forge($template, $data);
+			} catch (\Exception $e) { $view = null; }
+		}
+		if (!$view) {
+			try {
+				$view = \View::forge($default_template, $data);
+			} catch (\Exception $e) { $view = null; }
+		}
+
+		// If all the above hasn't worked, we can always fall back to the system template!
+		if (!$view) {
+			$view = \View::forge('errors/http', $data);
+		}
+
+		return new \Response(
+			$view,
+			$code
+		);
+	}
+
+	/**
+	 * Takes an array and outputs it as a series of hidden inputs
+	 */
+	public static function arrayAsHiddenInputs($array, $path = null)
+	{
+		if (!is_array($array)) return '';
+		if (!isset($path)) $path = array();
+		if (!is_array($path) && !empty($path)) $path = array($path);
+
+		$str = '';
+
+		foreach ($array as $key => $value)
+		{
+			if (is_array($value)) {
+				$newpath = $path;
+				$newpath[] = $key;
+				$str .= static::arrayAsHiddenInputs($value, $newpath);
+				continue;
+			}
+
+			if (!count($path)) {
+				$name = $key;
+			} else {
+				$name = $path[0];
+				if (count($path) > 1) {
+					$rest = array_slice($path, 1);
+					$name .= '['.implode('][', $rest).']';
+				}
+				try {
+					$value = strval($value);
+				} catch (\Exception $e) {
+					continue;
+				}
+
+				$name .= '['.$key.']';
+				$str .= '<input type="hidden" name="'.$name.'" value="'.$value.'" />'."\n";
+			}
+		}
+
+		return $str;
+	}
+		
 }

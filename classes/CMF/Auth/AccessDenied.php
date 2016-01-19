@@ -28,7 +28,7 @@ class AccessDenied extends \FuelException
         $this->action = $action;
         $this->resource = $resource;
 
-        $message || $message = __('auth.unauthorized.default');
+        $message || $message = __('admin.errors.unauthorized.default');
 
         if (empty($message)) {
             $message = 'You are not authorized to access this page.';

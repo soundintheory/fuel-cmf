@@ -39,6 +39,7 @@ return array(
 		 * that extend the 'Doctrine\DBAL\Types\Type' class
 		 */
 		'types' => array(
+			'random_key' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'richtext' => array( 'class' => 'Doctrine\\DBAL\\Types\\TextType' ),
 			'color' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'enum' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
@@ -55,7 +56,9 @@ return array(
 			'config' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'array_config' => array( 'class' => 'Doctrine\\DBAL\\Types\\ArrayType' ),
 			'latlng' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
-        	'latlng_area' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' )
+        	'latlng_area' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
+        	'latlng_bing' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
+        	'latlng_bing_area' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' )
 		),
 		
 		'ignore_tables' => array(

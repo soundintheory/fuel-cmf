@@ -49,5 +49,12 @@ class Date extends Base {
         
         return html_tag('div', array( 'class' => 'controls control-group field-type-date'.($has_errors ? ' error' : '') ), $label.$input);
     }
+
+    public static function getTranslatableAttributes()
+    {
+        return array_merge(parent::getTranslatableAttributes(), array(
+            'format'
+        ));
+    }
 	
 }

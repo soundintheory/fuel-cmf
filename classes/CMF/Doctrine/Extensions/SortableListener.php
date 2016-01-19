@@ -14,6 +14,7 @@ use Doctrine\Common\EventArgs,
 class SortableListener implements EventSubscriber
 {
     protected $relocations;
+    public static $disableProcessing = false;
     
     /**
      * Specifies the list of events to listen to
@@ -29,6 +30,8 @@ class SortableListener implements EventSubscriber
     
     public function onFlush(OnFlushEventArgs $args)
     {
+        if (static::$disableProcessing) return;
+
         $this->relocations = array();
         $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();

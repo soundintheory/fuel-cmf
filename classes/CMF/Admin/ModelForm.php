@@ -65,7 +65,15 @@ class ModelForm
 		
 		// Merge any DB settings into the mix...
 		$model_settings = $model->settings;
-		if (is_array($model_settings)) $this->fields = \Arr::merge($this->fields, $model_settings);
+		if (is_array($model_settings)) {
+			$_model_settings = array();
+			foreach ($model_settings as $key => $value) {
+				if (is_array($value) && ($metadata->hasField($key) || $metadata->hasAssociation($key))) {
+					$_model_settings[$key] = $value;
+				}
+			}
+			$this->fields = \Arr::merge($this->fields, $_model_settings);
+		}
 		
 		// The field data
 		$this->processFieldSettings($metadata, $model, $prefix);
@@ -111,6 +119,10 @@ class ModelForm
 				$this->field_keys = array_merge($this->field_keys, $new_fields);
 				$group['fields'] = $new_fields;
 				
+			}
+
+			if (empty($tab['groups'])) {
+				unset($this->content[$tab_index]);
 			}
 			
 		}
@@ -163,6 +175,11 @@ class ModelForm
 			}
 			
 			$field['required'] = $this->isRequired($field_name);
+
+			$field_title_method = 'get'.\Inflector::camelize($field_name).'Title';
+			if(method_exists($model,$field_title_method)){
+				$field['title'] = $model->$field_title_method();
+			}
 			
 			// Get the field's content
 			$field_class = $field['field'];

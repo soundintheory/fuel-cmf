@@ -104,7 +104,7 @@ class Base {
             
             $attributes['class'] .= ' field-with-controls field-with-template';
             $auto_update_setting = 'settings['.$settings['mapping']['fieldName'].'][auto_update]';
-            $auto_update_content = \Form::hidden($auto_update_setting, '0', array()).html_tag('label', array( 'class' => 'checkbox auto-update-label' ), \Form::checkbox($auto_update_setting, '1', \Arr::get($settings, 'auto_update', true), array( 'class' => 'auto-update' )).' auto update');
+            $auto_update_content = \Form::hidden($auto_update_setting, '0', array()).html_tag('label', array( 'class' => 'checkbox auto-update-label' ), \Form::checkbox($auto_update_setting, '1', \Arr::get($settings, 'auto_update', true), array( 'class' => 'auto-update' )).strtolower(__('admin.common.auto_update')));
             $auto_update = html_tag('div', array( 'class' => 'controls-top' ), $auto_update_content);
             $label .= $auto_update;
             
@@ -146,6 +146,8 @@ class Base {
             $post_data = $context = \Input::post();
             if (!is_array($context)) $context = array();
             $context['model'] = $model;
+            if(class_exists('Model_Settings'))
+                $context['settings'] = \Model_Settings::select('item')->getQuery()->getResult()[0];
             
             $twig = \View_Twig::parser();
             $loader = \View_Twig::loader();
@@ -172,6 +174,18 @@ class Base {
     public static function validate($value, $settings, $model)
     {
         // Nothing
+    }
+
+    /**
+     * Returns a list of setting names for the field which are translatable
+     */
+    public static function getTranslatableAttributes()
+    {
+        return array(
+            'title',
+            'description',
+            'template'
+        );
     }
     
     /**

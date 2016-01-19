@@ -2,6 +2,8 @@
 
 namespace CMF\Controller;
 
+use \Api\Rest_Query;
+
 /**
  * The Base Controller.
  *
@@ -53,13 +55,12 @@ class Base extends \Controller
 	    if (is_null($model)) {
             $action = trim(\Input::uri(), '/');
             if (!empty($action)) return \Request::forge('base/'.$action, false)->execute()->response();
-	        return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
+	        return $this->show404();
         }
         
         // So the model was found - check if it has a controller to route to
         $template = \CMF::$template;
         $action = \CMF::$action;
-        
 	    if (\CMF::hasController($template))
 	    {
             $module = \CMF::$module;
@@ -70,7 +71,7 @@ class Base extends \Controller
         }
         else if (!empty($action))
         {
-            return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
+            return $this->show404();
         }
         else if (\CMF::$root)
         {
@@ -81,7 +82,7 @@ class Base extends \Controller
     
     public function show404($msg = null)
     {
-        return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => ($msg !== null ? $msg : "That page couldn't be found!") )), 404);
+        throw new \HttpException($msg, \HttpException::NOT_FOUND);
     }
 	
 	/**
@@ -98,7 +99,7 @@ class Base extends \Controller
             return $response;
         }
         
-        if ($this->status == 404) return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
+        if ($this->status == 404) return $this->show404();
         
         // Get the model - this will have previously been found
         if (is_null($this->model)) $this->model = \CMF::currentModel();
@@ -108,7 +109,7 @@ class Base extends \Controller
             $this->template = \CMF::$template;
         }
         
-        if (is_null($this->template)) return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
+        if (is_null($this->template)) return $this->show404();
         
         // Determine whether the ViewModel class exists...
         if ($viewClass = \CMF::hasViewModel($this->template)) {
@@ -126,7 +127,7 @@ class Base extends \Controller
             
         } catch(\Exception $e) {
             
-            return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "The template '".$this->template."' couldn't be found!" )), 404);
+            return $this->show404("The template '".$this->template."' couldn't be found!");
             
         }
         
@@ -154,7 +155,7 @@ class Base extends \Controller
         }
         
         // if not, we got ourselfs a genuine 404!
-        return \Response::forge(\View::forge('errors/404.twig', array( 'msg' => "That page couldn't be found!" )), 404);
+        return $this->show404();
     }
     
     protected function bindData($viewModel)
@@ -176,5 +177,4 @@ class Base extends \Controller
     {
         $this->data[$key] = $value;
     }
-	
 }

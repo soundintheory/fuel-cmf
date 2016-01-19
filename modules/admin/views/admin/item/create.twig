@@ -1,6 +1,6 @@
 {% extends interface_template|default("admin/shared/interface.twig") %}
 
-{% block html_title %}{% if static %}{{ form.singular }}{% else %}New {{ form.singular }}{% endif %} : {{ admin_title }}{% endblock %}
+{% block html_title %}{% if static %}{{ form.singular }}{% else %}{{ _('admin.common.new_resource', { resource:form.singular }) }}{% endif %} : {{ admin_title }}{% endblock %}
 
 {% block main_pane %}
     
@@ -13,7 +13,7 @@
     
     <div class="inner">
 
-        <h2 class="main-heading"><i class="fa fa-{{ form.icon }}"></i>{% if static %}{{ form.singular }}{% else %} New {{ form.singular }}{% endif %}</h2>
+        <h2 class="main-heading"><i class="fa fa-{{ form.icon }}"></i>{% if static %}{{ form.singular }}{% else %} {{ _('admin.common.new_resource', { resource:form.singular }) }}{% endif %}</h2>
         
         {% if form.content|length > 1 %}
         <ul class="nav nav-pills">
@@ -30,7 +30,7 @@
             {% for tab in form.content %}
             
             <div class="tab-pane {{ loop.index == 1 ? 'active' : '' }}" id="tab-{{ tab.slug }}">
-                
+                {% if loop.first %}{% include 'admin/shared/description.twig' with {'description':description}%}{% endif %}
                 {% for group in tab.groups %}
                     
                     <div class="row-fluid">
@@ -79,8 +79,14 @@
         </div>
 
         <div class="actions pull-right">
-            <button data-loading-text="Creating {{ form.singular }}..." class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> {{ static ? 'Save' : 'Create' }} {{ form.singular }}</button>
-            {% if not static %}<button name="create_new" value="1" data-loading-text="Creating {{ form.singular }}..." class="btn btn-large btn-success submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> Create &amp; Add Another...</button>{% endif %}
+            <button data-loading-text="{{ _('admin.common.creating_resource', { resource:form.singular }) }}" class="btn btn-large btn-primary submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> 
+                {% if static %}
+                    {{ _('admin.common.save_resource', { resource:form.singular }) }}
+                {% else %}
+                    {{ _('admin.common.create_resource', { resource:form.singular }) }}
+                {% endif %}
+            </button>
+            {% if not static and not (mode == 'inline') %}<button name="create_new" value="1" data-loading-text="{{ _('admin.common.creating_resource', { resource:form.singular }) }}" class="btn btn-large btn-success submit-item" autocomplete="off"><i class="fa fa-ok icon-white"></i> {{ _('admin.common.create_add_another') }}</button>{% endif %}
         </div>
 
     </div></div>
@@ -100,14 +106,14 @@
 {% block admin_css %}
     {{ parent() }}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{{ css }}{{ ('?' in css) ? '&' : '?' }}v=16">
+        <link rel="stylesheet" type="text/css" href="{{ css }}{% if 'http://' not in css and 'https://' not in css %}{{ ('?' in css) ? '&' : '?' }}v=20{% endif %}">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}{{ ('?' in js) ? '&' : '?' }}v=16"></script>
+        <script type="text/javascript" src="{{ js }}{% if 'http://' not in js and 'https://' not in js %}{{ ('?' in js) ? '&' : '?' }}v=20{% endif %}"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

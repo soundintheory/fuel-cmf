@@ -1,0 +1,87 @@
+<!-- We need to output different templates for any different types that can be added -->
+{% for template_type, template_content in templates %}
+<div class="item-template" data-type="{{ template_type }}">
+	<a href="{{ template_content.edit_link }}" class="item-title btn-edit handle">
+		<h3><i class="fa fa-{{ template_content.icon }}"></i> <span class="title-value">{{ _('admin.common.new_resource', { resource:template_content.singular|lower }) }}</span></h3>
+	</a>
+	{{ template_content.hidden_fields.id }}
+	{{ template_content.hidden_fields.__type__ }}
+	{% if sortable %}{{ template_content.hidden_fields.pos }}{% endif %}
+	<div class="item-actions-top">
+		<a href="#" class="item-action icon btn-remove" title="Remove {{ template_content.singular|lower }}"><i class="fa fa-remove"></i></a>
+	</div>
+</div>
+{% endfor %}
+
+<!-- Output the item forms -->
+<input type="hidden" name="{{ settings.mapping.fieldName }}" value="" />
+<div class="items{{ sortable ? ' sortable' : '' }}" data-field-name="{{ settings.mapping.fieldName }}">
+{% for row in rows %}
+<div class="item draggable">
+	<a href="{{ row.edit_link }}" class="item-title btn-edit handle">
+		<h3><i class="fa fa-{{ row._icon_ }}"></i> <span class="title-value">{{ row._title_ }}</span></h3>
+	</a>
+	{{ row.hidden_fields.id }}
+	{{ row.hidden_fields.__type__ }}
+	{% if sortable %}{{ row.hidden_fields.pos }}{% endif %}
+	<div class="item-actions-top">
+		<a href="#" class="item-action icon btn-remove" title="{{ _('admin.verbs.remove') }}"><i class="fa fa-remove"></i></a>
+	</div>
+</div>
+{% endfor %}
+
+<!-- Show this when there are no items -->
+<div class="no-items">
+    
+    <p>{{ _('admin.messages.no_items_added', { resource:plural|lower }) }}</p>
+    {% if not superlock %}
+    
+    {% for type in add_types %}
+    <a href="{{ type.add_link }}" class="btn-add btn btn-medium" data-type="{{ type.type }}"><i class="fa fa-{{ type.icon }} icon-white"></i> {{ _('admin.common.add_resource', { resource:type.singular }) }}</a>
+    &nbsp;&nbsp;
+    {% endfor %}
+    
+    {% endif %}
+
+</div>
+</div>
+
+<div class="widget-actions-top">
+	
+	{% if add_types|length > 1 %}
+	<span class="dropdown pull-right">
+		<a href="#" class="widget-action icon dropdown-toggle" title="{{ _('admin.common.add_resource', { resource:singular|lower }) }}"><i class="fa fa-plus"></i></a>
+		<ul class="dropdown-menu" role="menu">
+			<li class="nav-header">{{ _('admin.common.choose_a_type') }}</li>
+			{% for type in add_types %}
+			<li><a tabindex="-1" class="btn-add" href="{{ type.add_link }}"><i class="fa fa-{{ type.icon }}"></i> {{ type.singular }}</a></li>
+			{% endfor %}
+		</ul>
+	</span>	
+	{% else %}
+		<a href="{{ add_types[0].add_link }}" class="widget-action icon add-btn" title="{{ _('admin.common.add_resource', { resource:singular|lower }) }}"><i class="fa fa-plus"></i></a>
+	{% endif %}
+	
+</div>
+
+<div class="widget-footer">
+	
+	<div class="widget-actions-bottom">
+	
+		{% if add_types|length > 1 %}
+		<span class="dropup pull-right">
+			<a href="#" class="widget-action dropdown-toggle last"><i class="fa fa-plus"></i> {{ _('admin.common.add_resource', { resource:singular|lower }) }}</a>
+			<ul class="dropdown-menu" role="menu">
+				<li class="nav-header">{{ _('admin.common.choose_a_type') }}</li>
+				{% for type in add_types %}
+				<li><a tabindex="-1" class="btn-add" href="{{ type.add_link }}"><i class="fa fa-{{ type.icon }}"></i> {{ type.singular }}</a></li>
+				{% endfor %}
+			</ul>
+		</span>	
+		{% else %}
+			<a href="{{ add_types[0].add_link }}" class="widget-action btn-add last"><i class="fa fa-plus"></i> {{ _('admin.common.add_resource', { resource:singular|lower }) }}</a>
+		{% endif %}
+		
+	</div>
+	
+</div>

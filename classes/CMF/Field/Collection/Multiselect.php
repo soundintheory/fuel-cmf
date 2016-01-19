@@ -14,7 +14,8 @@ class Multiselect extends \CMF\Field\Base {
             'class' => '',
             'multiple' => 'multiple',
             'size' => '10'
-        )
+        ),
+        'group_by' => null
     );
     
     public static function getAssets()
@@ -56,7 +57,7 @@ class Multiselect extends \CMF\Field\Base {
         $settings = static::settings($settings);
         $target_class = $settings['mapping']['targetEntity'];
         $target_table = \CMF\Admin::getTableForClass($target_class);
-        $options = $target_class::options(\Arr::get($settings, 'filters', array()), array(), null, null, null, is_array($settings['select2']));
+        $options = $target_class::options(\Arr::get($settings, 'filters', array()), array(), null, null, null, is_array($settings['select2']), \Arr::get($settings, 'group_by'));
         $settings['required'] = isset($settings['required']) ? $settings['required'] : false;
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;

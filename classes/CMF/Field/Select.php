@@ -23,9 +23,10 @@ class Select extends Base {
     
     public static function getValue($value, $settings, $model)
     {
-        if (!\Arr::is_assoc($settings['options']) || $settings['use_key'] === true) return $value;
-        if (is_numeric($value)) $value = trim(strval($value), ' ').' ';
-        $option = isset($settings['options'][$value]) ? $settings['options'][$value] : null;
+        $options = \CMF::getOptions(get_class($model), $settings['mapping']['columnName'], isset($settings['options']) ? $settings['options'] : array());
+        if (!\Arr::is_assoc($options) || @$settings['use_key'] === true) return $value;
+        if (is_numeric($value)) $value = strval($value);
+        $option = isset($options[$value]) ? $options[$value] : null;
         if (is_array($option)) {
             $output = isset($settings['output']) ? $settings['output'] : 'value';
             return isset($option[$output]) ? $option[$output] : $option;
@@ -37,12 +38,13 @@ class Select extends Base {
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
         try {
-            $value = strval($value);
-            if (is_array($settings['options']) && \Arr::is_assoc($settings['options'])) {
-                $value = $settings['options'][$value];
+            $output = static::getValue($value, $settings, $model);
+            if ($edit_link) {
+                return '<a href="'.$edit_link.'" class="item-link">'.$output.'</a>';
             }
-            return '<a href="'.$edit_link.'" class="item-link">'.$value.'</a>';
+            return $value;
         } catch (\Exception $e) {
+            var_dump($e);
             return '(empty)';
         }
     }
@@ -120,7 +122,7 @@ class Select extends Base {
         }
 
         if (!is_string($value)) {
-            $value = $value.' ';
+            $value = strval($value);
         }
         
         $options = array_map('strip_tags', $options);

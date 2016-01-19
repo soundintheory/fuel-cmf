@@ -3,6 +3,7 @@
 return array(
     
     'driver' => 'imagick',
+    'quality' => 80,
     
 	'presets' => array(
 	    

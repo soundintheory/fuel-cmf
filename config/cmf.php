@@ -93,6 +93,7 @@ return array (
     // Maps field types to field classes
     'fields_types' => array(
         'string' => 'CMF\\Field\\Text',
+        'random_key' => 'CMF\\Field\\RandomKey',
         'integer' => 'CMF\\Field\\Integer',
         'smallint' => 'CMF\\Field\\Integer',
         'bigint' => 'CMF\\Field\\Integer',
@@ -129,6 +130,8 @@ return array (
         'array_config' => 'CMF\\Field\\Object\\ArrayConfig',
         'latlng' => 'CMF\\Field\\Object\\GoogleMap',
         'latlng_area' => 'CMF\\Field\\Object\\GoogleMap',
+        'latlng_bing' => 'CMF\\Field\\Object\\BingMap',
+        'latlng_bing_area' => 'CMF\\Field\\Object\\BingMap',
         
         // Associations with specific tables can be mapped...
         'onetoone_urls' => 'CMF\\Field\\Relation\\URL',
@@ -140,7 +143,9 @@ return array (
         'manytomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline',
         'onetomany_inline_stacked' => 'CMF\\Field\\Collection\\StackedInline',
         'manytomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline',
-        'onetomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline'
+        'onetomany_inline_gallery' => 'CMF\\Field\\Collection\\GalleryInline',
+        'manytomany_inline_popup' => 'CMF\\Field\\Collection\\PopupInline',
+        'onetomany_inline_popup' => 'CMF\\Field\\Collection\\PopupInline'
     ),
     
     'languages' => array(

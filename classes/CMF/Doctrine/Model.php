@@ -128,10 +128,29 @@ abstract class Model
         
         foreach ($filters as $num => $filter)
         {
+            $item_alias = 'item';
+
+            if (strpos($filter, '.') !== false) {
+                $parts = explode('.', $filter);
+                $alias = 'item';
+
+                for ($i=0; $i < count($parts); $i++)
+                {
+                    if ($i == (count($parts)-1)) {
+                        $filter = $parts[$i];
+                        $item_alias = $alias;
+                    } else {
+                        $new_alias = $alias.'_'.$parts[$i];
+                        $qb->leftJoin($alias.'.'.$parts[$i], $new_alias);
+                        $alias = $new_alias;
+                    }
+                }
+            }
+
             if ($num === 0) {
-                $qb->where('item.'.$filter);
+                $qb->where("$item_alias.$filter");
             } else {
-                $qb->andWhere('item.'.$filter);
+                $qb->andWhere("$item_alias.$filter");
             }
         }
         
@@ -378,13 +397,18 @@ abstract class Model
                         $item = $target_class::find($item);
                         
                     } else if (is_array($item)) {
+
+                        $new_item = null;
                         if (array_key_exists('id', $item) && !empty($item['id'])) {
                             $new_item = $target_class::find($item['id']);
-                        } else {
+                        }
+
+                        if (is_null($new_item)) {
                             $type = str_replace('\\\\', '\\', isset($item['__type__']) ? $item['__type__'] : $target_class);
                             if (isset($item['__type__']) && is_subclass_of($type, $target_class)) $item_target_class = $type;
                             $new_item = new $item_target_class();
                         }
+
                         $new_item->populate($item);
                         $item = $new_item;
                     }
@@ -580,6 +604,26 @@ abstract class Model
         $called_class = get_called_class();
         return $called_class::$_order;
     }
+
+    protected static $_hierarchy = array();
+
+    /**
+     * Returns the model's class hierarchy as an array
+     */
+    public static function hierarchy()
+    {
+        $called_class = get_called_class();
+        if (isset(static::$_hierarchy[$called_class])) return static::$_hierarchy[$called_class];
+
+        $parent_class = get_parent_class($called_class);
+        if ($parent_class !== false && $parent_class != 'CMF\\Model\\Base') {
+            $output = array_merge($parent_class::hierarchy(), array($called_class));
+        } else {
+            $output = array($called_class);
+        }
+
+        return static::$_hierarchy[$called_class] = $output;
+    }
     
     /**
      * Converts the model into an array format
@@ -588,17 +632,28 @@ abstract class Model
     public function toArray($include_associations = true)
     {
         if (isset($this->array_data)) return $this->array_data;
+
+        $metadata = $this->_metadata();
+        if (is_array($include_associations)) {
+            $fields = $include_associations;
+        } else if (!$include_associations) {
+            $fields = array_merge($metadata->getFieldNames(), $metadata->getAssociationNames());
+        } else {
+            $fields = $metadata->getFieldNames();
+        }
         
         $output = array();
-        $metadata = $this->_metadata();
-        foreach ($metadata->fieldMappings as $field_name => $field) {
+        foreach ($metadata->fieldMappings as $field_name => $field)
+        {
+            if (!in_array($field_name, $fields)) continue;
+
             $value = $this->$field_name;
             switch ($field['type']) {
                 case 'date':
-                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format('d/m/Y') : strval($value);
+                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format(\DateTime::ISO8601) : strval($value);
                     
                 case 'datetime':
-                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format('d/m/Y H:i') : strval($value);
+                    $output[$field_name] = ($value instanceof \DateTime) ? $value->format(\DateTime::ISO8601) : strval($value);
                     break;
                 
                 case 'object':
@@ -612,9 +667,22 @@ abstract class Model
         
         if ($include_associations === false) return $this->array_data = $output;
         
-        foreach ($metadata->associationMappings as $assoc_name => $assoc) {
+        foreach ($metadata->associationMappings as $assoc_name => $assoc)
+        {
+            if (!in_array($assoc_name, $fields)) continue;
+
             $value = $this->$assoc_name;
-            if (!is_null($value) && $value instanceof \CMF\Doctrine\Model) $output[$assoc_name] = $value->toArray(false);
+            if (empty($value)) continue;            
+
+            if ($metadata->isCollectionValuedAssociation($assoc_name)) {
+                $items = array();
+                foreach ($value as $entity) {
+                    if ($entity instanceof \CMF\Doctrine\Model) $items[] = $entity->toArray(false);
+                }
+                $output[$assoc_name] = $items;
+            } else if ($value instanceof \CMF\Doctrine\Model) {
+                $output[$assoc_name] = $value->toArray(false);
+            }
         }
         
         return $this->array_data = $output;
@@ -680,5 +748,4 @@ abstract class Model
     {
         return isset($this->$name);
     }
-	
 }

@@ -27,7 +27,7 @@
 			}
 			
 			function removeItem() {
-				if (confirm("Are you sure you want to delete this entry? You can't undo!")) {
+				if (confirm(_('admin.messages.item_delete_confirm'))) {
 					$(this).parents('.object-item').eq(0).detach();
 					$rows = $el.find('.object-item');
 				}

@@ -45,7 +45,7 @@ class Decimal extends Base {
             }
             else    
             {            
-                $model->addErrorForField($settings['mapping']['fieldName'], 'This is not a valid number');
+                $model->addErrorForField($settings['mapping']['fieldName'], __('admin.errors.not_a_number'));
             }
         }
     }

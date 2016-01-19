@@ -288,7 +288,7 @@ class Admin
 				
 				// It's just a property of the class, no mapping info
 				if (!isset($field['field'])) $field['field'] = 'CMF\\Field\\Base';
-				if (!isset($field['title'])) $field['title'] = \Inflector::humanize($key);
+				if (!isset($field['title'])) $field['title'] = \Admin::getFieldDisplayAttribute($class_name, $key, 'title', \Inflector::humanize($key));
 				$field['mapping'] = array( 'fieldName' => $key );
 				$fields[$key] = $field;
 				continue;
@@ -306,14 +306,60 @@ class Admin
 			// Add in the field class from the field types map if it's not there
 			if (!isset($field['field'])) $field['field'] = isset($fields_types[$mapping['type']]) ? $fields_types[$mapping['type']] : 'CMF\\Field\\None';
 			
-			// Set up the title of the field it if it's not there
-			if (!isset($field['title'])) $field['title'] = \Inflector::humanize($mapping['fieldName']);
+			// Set up translated attributes
+			$field_class = $field['field'];
+			$translatableAttrs = $field_class::getTranslatableAttributes();
+			if (is_array($translatableAttrs))
+			{
+				foreach ($translatableAttrs as $attr)
+				{
+					if ($attr == 'title') continue;
+					$value = \Arr::get($field, $attr);
+					if (empty($value) || !is_string($value)) continue;
+					\Arr::set($field, $attr, \Admin::getFieldDisplayAttribute($class_name, $key, $attr, $value));
+				}
+				$field['title'] = \Admin::getFieldDisplayAttribute($class_name, $key, 'title', isset($field['title']) ? $field['title'] : \Inflector::humanize($key));
+			}
 			
 			$fields[$key] = $field;
 			
 		}
 
 		return static::$field_settings[$class_name] = $fields;
+	}
+
+	/**
+	 * Gets the human-readable title of a field
+	 */
+	public static function getFieldDisplayAttribute($class_name, $key, $attribute, $default = null)
+	{
+		// Work up the class tree trying to find a translation
+		$hierarchy = array_reverse($class_name::hierarchy());
+		foreach ($hierarchy as $model_class)
+		{
+			$value = __("admin.models.$model_class.fields.$key.$attribute");
+			if (!empty($value)) break;
+		}
+
+		// Finally, check common field translations
+		if (empty($value)) {
+			$value = __("admin.models.common.fields.$key.$attribute");
+		}
+
+		// Check field settings
+		if (empty($value)) {
+			$fields = $class_name::fields();
+			if (isset($fields[$key]) && is_array($fields[$key])) {
+				$value = \Arr::get($fields, "$key.$attribute");
+			}
+		}
+
+		// Return default if nothing found
+		if (empty($value)) {
+			return !is_null($default) ? $default : \Inflector::humanize($key);
+		}
+
+		return $value;
 	}
 	
 	/**
@@ -455,78 +501,5 @@ class Admin
 	public static function getTranslatable($class)
 	{
 		return \Arr::filter_keys(\Arr::get(static::$translatable, $class, array()), $class::excludeTranslations(), true);
-	}
-
-	/**
-	 * Attempts to parse a file containing data for import
-	 */
-	public static function parseImportFile($path)
-	{
-		$data = null;
-		$columns = null;
-		$output = array();
-
-		// Work out some basic config settings
-		\Config::load('format', true);
-
-		// Work out the format from the extension
-		$pathinfo = pathinfo($path);
-		$format = strtolower($pathinfo['extension']);
-
-		// Work out how to parse the data
-		switch ($format) {
-			case 'xls':
-			case 'xlsx':
-
-				$data = \Format::forge($path, 'xls')->to_array();
-				$first = array_shift($data);
-				$columns = is_array($first) ? array_filter(array_map(function($key) {
-					return \Inflector::friendly_title($key, '_', true);
-				}, array_values($first))) : array();
-				
-			break;
-			default:
-
-				$data = @file_get_contents($path);
-				if (strpos($data, "\n") !== false) {
-					\Config::set('format.csv.regex_newline', "\n");
-				} else if (strpos($data, "\r") !== false) {
-					\Config::set('format.csv.regex_newline', "\r");
-				}
-				$data = \Format::forge($data, $format)->to_array();
-
-				// Find out some stuff...
-				$first = \Arr::get($data, '0');
-				$columns = is_array($first) ? array_map(function($key) {
-					return \Inflector::friendly_title($key, '_', true);
-				}, array_keys($first)) : array();
-
-			break;
-		}
-
-		if (count($columns) > 0) {
-			foreach ($data as $num => $row) {
-				$values = array_values($row);
-				$filtered = array_filter($values);
-				if (count($values) > count($columns)) {
-					$values = array_slice($values, 0, count($columns));
-				} else if (count($values) < count($columns)) {
-					while (count($values) < count($columns)) {
-						$values[] = null;
-					}
-				}
-				if (!empty($filtered)) $output[] = array_combine($columns, $values);
-			}
-		} else {
-			$columns = $data = $output = null;
-		}
-
-		// Stop if there's no data by this point
-		if (!$data) return array( 'result' => false );
-
-		return array(
-			'columns' => $columns,
-			'data' => $output
-		);
 	}
 }

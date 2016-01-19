@@ -865,7 +865,7 @@ class User extends Base
         }
 
         if (empty($this->encrypted_password)) {
-            throw new \Exception(__('cmf.auth.validation.password.required'));
+            throw new \Exception(__('admin.validation.required', array( 'field' => 'Password' )));
         }
     }
 

@@ -2,7 +2,7 @@
 {% for template_type, template_content in templates %}
 <div class="item-template" data-type="{{ template_type }}">
 	<div class="item-title handle">
-		<h3><i class="fa fa-{{ template_content.icon }}"></i> New {{ template_content.singular|lower }}</h3>
+		<h3><i class="fa fa-{{ template_content.icon }}"></i> {{ _('admin.common.new_resource', { resource:template_content.singular|lower }) }}</h3>
 	</div>
 	<div class="item-content">
 		{% if sortable %}{{ form.hidden_fields.pos }}{% endif %}
@@ -34,7 +34,7 @@
 		{% endfor %}
 	</div>
 	<div class="item-actions-top">
-		<a href="#" class="item-action icon btn-remove" title="Remove item"><i class="fa fa-remove"></i></a>
+		<a href="#" class="item-action icon btn-remove" title="{{ _('admin.verbs.remove') }}"><i class="fa fa-remove"></i></a>
 	</div>
 </div>
 {% endfor %}
@@ -42,11 +42,11 @@
 <!-- Show this when there are no items -->
 <div class="no-items">
     
-    <p>There are no {{ plural|lower }} added yet.</p>
+    <p>{{ _('admin.messages.no_items_added', { resource:plural|lower }) }}</p>
     {% if not superlock %}
     
     {% for type in add_types %}
-    <a href="#" class="btn-add btn btn-medium" data-type="{{ type.type }}"><i class="fa fa-{{ type.icon }} icon-white"></i> Add {{ type.singular }}...</a>
+    <a href="#" class="btn-add btn btn-medium" data-type="{{ type.type }}"><i class="fa fa-{{ type.icon }} icon-white"></i> {{ _('admin.common.add_resource', { resource:type.singular }) }}</a>
     &nbsp;&nbsp;
     {% endfor %}
     
@@ -59,16 +59,16 @@
 	
 	{% if add_types|length > 1 %}
 	<span class="dropdown pull-right">
-		<a href="#" class="widget-action icon dropdown-toggle" title="Add {{ singular|lower }}"><i class="fa fa-plus"></i></a>
+		<a href="#" class="widget-action icon dropdown-toggle" title="{{ _('admin.common.add_resource', { resource:singular|lower }) }}"><i class="fa fa-plus"></i></a>
 		<ul class="dropdown-menu" role="menu">
-			<li class="nav-header">Choose a type...</li>
+			<li class="nav-header">{{ _('admin.common.choose_a_type') }}</li>
 			{% for type in add_types %}
 			<li><a tabindex="-1" class="btn-add" href="#" data-type="{{ type.type }}"><i class="fa fa-{{ type.icon }}"></i> {{ type.singular }}</a></li>
 			{% endfor %}
 		</ul>
 	</span>	
 	{% else %}
-		<a href="#" class="widget-action icon add-btn" data-type="{{ add_types[0].type }}" title="Add {{ singular|lower }}"><i class="fa fa-plus"></i></a>
+		<a href="#" class="widget-action icon add-btn" data-type="{{ add_types[0].type }}" title="{{ _('admin.common.add_resource', { resource:singular|lower }) }}"><i class="fa fa-plus"></i></a>
 	{% endif %}
 	
 </div>
@@ -79,16 +79,16 @@
 	
 		{% if add_types|length > 1 %}
 		<span class="dropup pull-right">
-			<a href="#" class="widget-action dropdown-toggle last"><i class="fa fa-plus"></i> Add {{ singular|lower }}</a>
+			<a href="#" class="widget-action dropdown-toggle last"><i class="fa fa-plus"></i> {{ _('admin.common.add_resource', { resource:singular|lower }) }}</a>
 			<ul class="dropdown-menu" role="menu">
-				<li class="nav-header">Choose a type...</li>
+				<li class="nav-header">{{ _('admin.common.choose_a_type') }}</li>
 				{% for type in add_types %}
 				<li><a tabindex="-1" class="btn-add" href="#" data-type="{{ type.type }}"><i class="fa fa-{{ type.icon }}"></i> {{ type.singular }}</a></li>
 				{% endfor %}
 			</ul>
 		</span>	
 		{% else %}
-			<a href="#" class="widget-action btn-add last" data-type="{{ add_types[0].type }}"><i class="fa fa-plus"></i> Add {{ singular|lower }}</a>
+			<a href="#" class="widget-action btn-add last" data-type="{{ add_types[0].type }}"><i class="fa fa-plus"></i> {{ _('admin.common.add_resource', { resource:singular|lower }) }}</a>
 		{% endif %}
 		
 	</div>

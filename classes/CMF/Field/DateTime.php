@@ -7,7 +7,8 @@ class DateTime extends Date {
     protected static $defaults = array(
         'default' => null,
         'default_offset' => null,
-        'format' => 'd/m/Y H:i'
+        'format' => 'd/m/Y H:i',
+        'list_format' => 'M jS H:i'
     );
     
     public static function process($value, $settings, $model)
@@ -21,7 +22,7 @@ class DateTime extends Date {
     /** @inheritdoc */
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
-        return '<a href="'.$edit_link.'" class="item-link">'.$value->format('M jS H:i').'</a>';
+        return '<a href="'.$edit_link.'" class="item-link">'.$value->format(\Arr::get($settings, 'list_format', 'M jS H:i')).'</a>';
     }
     
     /** @inheritdoc */
@@ -47,6 +48,13 @@ class DateTime extends Date {
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
         
         return html_tag('div', array( 'class' => 'controls control-group field-type-datetime'.($has_errors ? ' error' : '') ), $label.$input);
+    }
+
+    public static function getTranslatableAttributes()
+    {
+        return array_merge(parent::getTranslatableAttributes(), array(
+            'list_format'
+        ));
     }
 	
 }

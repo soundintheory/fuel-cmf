@@ -1,0 +1,53 @@
+#sidebar,
+#top-bar,
+#controls-fixed-bot,
+.actions-top-right,
+th.handle,
+td.handle,
+th.actions,
+td.actions,
+.sort-link span,
+#table-fixed-head-wrap,
+.list-filter-form,
+.nav-pills {
+	display: none !important;
+}
+
+.table {
+	border: none;
+	position: relative;
+
+	tr {
+		position: relative;
+	}
+
+	th,td {
+		position: relative;
+		border: none;
+		border-bottom: 0.5mm solid #ccc;
+		padding-left: 0px !important;
+		page-break-inside: avoid;
+	}
+
+	a {
+		display: block;
+		position: relative;
+	}
+}
+
+body,
+#frame,
+#outer,
+#main,
+#content {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+@page {
+	margin: 2cm;
+}
+
+a[href]:after {
+	content: none !important;
+}

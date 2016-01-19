@@ -1,6 +1,6 @@
 <div class="controls control-group">
 	{{ form_hidden(form.settings.fields.external.mapping.fieldName, '0') }}
-	<label class="checkbox external-checkbox">{{ form.settings.fields.external.content }} External</label>
+	<label class="checkbox external-checkbox">{{ form.settings.fields.external.content }} {{ _('admin.common.external') }}</label>
 	{{ form_label(form.settings.title, form.settings.fields.href.mapping.fieldName) }}
 	{{ form.settings.fields.href.content }}
 </div>

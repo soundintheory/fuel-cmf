@@ -16,7 +16,7 @@ class Controller_List extends Controller_Base {
 	{
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) {
-			return $this->customPageOr404(array($table_name, $tab_id), "Can't find that type!");
+			return $this->customPageOr404(array($table_name, $tab_id), "type");
 		}
 		
 		// Redirect straight to the edit page if the item is static
@@ -31,7 +31,7 @@ class Controller_List extends Controller_Base {
 	    }
 	    
 	    if (!\CMF\Auth::can('view', $class_name)) {
-	    	return $this->show403("You're not allowed to view ".strtolower($class_name::plural())."!");
+	    	return $this->show403('action_plural', array( 'action' => __('admin.verbs.view'), 'resource' => strtolower($class_name::plural()) ));
 	    }
 		
 		// Here's where we catch special types, eg tree nodes. These can now be rendered using a special template
@@ -47,9 +47,9 @@ class Controller_List extends Controller_Base {
 		
 		// Get the data for the list
 		$metadata = $class_name::metadata();
-		$sortable = $class_name::sortable();
 		$query_fields = $class_name::query_fields();
 		$pagination = $class_name::pagination();
+		$sortable = !$pagination && $class_name::sortable();
 		$per_page = $class_name::per_page();
 		$sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
 		$sort_process = $class_name::sortProcess();
@@ -63,6 +63,21 @@ class Controller_List extends Controller_Base {
 		$columns = array();
 		$joins = array();
 		$methods = array();
+
+		// See if we have any imported models
+		// $importedIds = $class_name::getImportedIds();
+		// if (count($importedIds)) {
+		// 	if (!count($list_tabs)) {
+		// 		$list_tabs['main'] = array(
+		// 			'title' => 'Main',
+		// 			'filters' => array('id NOT IN ('.implode(',',$importedIds).')')
+		// 		);
+		// 	}
+		// 	$list_tabs['imported'] = array(
+		// 		'title' => 'Imported ('.count($importedIds).')',
+		// 		'filters' => array('id IN ('.implode(',',$importedIds).')')
+		// 	);
+		// }
 		
 		// Find out the tab we're on
 		if (count($list_tabs) > 0) {
@@ -185,6 +200,7 @@ class Controller_List extends Controller_Base {
 				$qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
 				$joins[] = $field_name;
 			}
+
 			
 			// Get the field class and type
 			$field_class = $fields[$field]['field'];
@@ -259,11 +275,7 @@ class Controller_List extends Controller_Base {
 		// Add list filters
 		foreach ($list_filters as $num => $filter) {
 			$filter_str = is_array($filter) ? 'item.'.implode(' OR item.', $filter) : 'item.'.$filter;
-			if ($num === 0) {
-				$qb->where($filter_str);
-			} else {
-				$qb->andWhere($filter_str);
-			}
+			$qb->andWhere($filter_str);
 		}
 
 		if(!empty($query_fields) && count($query_fields) > 0){
@@ -349,10 +361,14 @@ class Controller_List extends Controller_Base {
 		    }
 			
 		}
-		if($pagination){
-			/* PAGINATION */
 
-			$count = count($qb->getQuery()->getScalarResult());
+		if ($pagination) {
+
+			/* PAGINATION */
+			$countquery = clone $qb;
+			$countquery->select('COUNT(item.id)');
+			$count = intval($countquery->getQuery()->getSingleScalarResult());
+
 			$config = array(
 			    'pagination_url' => 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
 			    'total_items'    => $count,
@@ -373,7 +389,6 @@ class Controller_List extends Controller_Base {
 			);
 			$pagination = \Pagination::forge('default', $config);
 			
-
 			$qb->setMaxResults($pagination->per_page);
 			$qb->setFirstResult($pagination->offset);
 			$this->pagination = $pagination->render();
@@ -449,6 +464,9 @@ class Controller_List extends Controller_Base {
 		    }
 			
 		}
+
+		// Import actions
+		$importMethods = $class_name::importMethods();
 		
 		// Actions
 		$this->actions = $class_name::actions();
@@ -471,11 +489,11 @@ class Controller_List extends Controller_Base {
 		$this->sort_process = $sort_process;
 		
 		// Permissions
-		$this->can_import = method_exists($class_name, 'action_import');
 		$this->can_create = $can_create && $can_edit;
 		$this->can_edit = $can_edit;
 		$this->can_delete = $can_delete;
 		$this->can_manage = $can_manage;
+		$this->can_import = !empty($importMethods) && $can_manage;
 		
 		// Add the stuff for JS
 		$this->js['table_name'] = $metadata->table['name'];
@@ -487,19 +505,19 @@ class Controller_List extends Controller_Base {
 	public function action_permissions($table_name, $role_id=null)
 	{
 		$class_name = \Admin::getClassForTable($table_name);
-		if ($class_name === false) return $this->show404("Can't find that type!");
+		if ($class_name === false) return $this->show404(null, "type");
 		
 		if ($role_id == null) {
 			$first_role = \CMF\Model\Role::select('item.id')->setMaxResults(1)->getQuery()->getArrayResult();
 			if (count($first_role) > 0) {
 				$role_id = intval($first_role[0]['id']);
 			} else {
-				return $this->show404("There are no roles to manage!");
+				return $this->show404();
 			}
 		}
 		
 		$role_check = intval(\CMF\Model\Role::select("COUNT(item.id)")->where("item.id = $role_id")->getQuery()->getSingleScalarResult());
-		if ($role_check === 0) return $this->show404("Can't find that role!");
+		if ($role_check === 0) return $this->show404(null, "role");
 		
 		// Redirect straight to the edit page if the item is static
 		if ($class_name::_static() === true) {
@@ -514,9 +532,9 @@ class Controller_List extends Controller_Base {
 	    
 	    // Permissions
 	    if (!\CMF\Auth::can(array('view', 'edit'), 'CMF\\Model\\Permission')) {
-	    	return $this->show403("You're not allowed to manage permissions!");
+	    	return $this->show403('action_plural', array( 'action' => __('admin.verbs.manage'), 'resource' => __('admin.common.permissions') ));
 	    } elseif (!\CMF\Auth::can('view', $class_name)) {
-	    	return $this->show403("You're not allowed to manage permissions for ".strtolower($class_name::plural())."!");
+	    	return $this->show403('action_plural', array( 'action' => __('admin.verbs.manage'), 'resource' => strtolower($class_name::plural()) ));
 	    }
 	    
 	    // Get the values for the list
@@ -582,14 +600,14 @@ class Controller_List extends Controller_Base {
 	public function action_save_permissions($table_name, $role_id)
 	{
 		$class_name = \Admin::getClassForTable($table_name);
-		if ($class_name === false) return $this->show404("Can't find that type!");
+		if ($class_name === false) return $this->show404(null, "type");
 		
 		$post = \Input::post();
 		$ids = array_keys($post);
 		
 		$role = \CMF\Model\Role::select('item')->where('item.id = '.$role_id)->getQuery()->getResult();
 		if (count($role) === 0) {
-			return $this->show404("Can't find that role!");
+			return $this->show404(null, "role");
 		} else {
 			$role = $role[0];
 		}
@@ -660,6 +678,31 @@ class Controller_List extends Controller_Base {
 		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "All ".strtolower($plural)." were saved" ));
 	    \Response::redirect(\Input::referrer($default_redirect), 'location');
 	}
+
+	public function action_deleteall($table_name)
+	{
+		$class_name = \Admin::getClassForTable($table_name);
+		$plural = $class_name::plural();
+		$msg = 'All '.strtolower($plural).' were deleted';
+		$msg_class = 'alert-success';
+
+		$user = \CMF\Auth::current_user();
+		if (!$user->super_user) {
+			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => __('admin.errors.unauthorized.super_only') ));
+			\Response::redirect_back();
+		}
+
+		try {
+			$class_name::removeAll();
+		} catch (\Exception $e) {
+			$msg = 'Error: '.$e->getMessage();
+			$msg_class = 'alert-danger';
+		}
+		
+		$default_redirect = \Uri::base(false)."admin/$table_name";
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => $msg_class ), 'msg' => $msg ));
+	    \Response::redirect_back($default_redirect);
+	}
 	
 	public function action_updatetree($table_name, $id = null)
 	{
@@ -670,7 +713,7 @@ class Controller_List extends Controller_Base {
 	        $this->template = 'admin/item/404.twig';
 	        $this->status = 404;
 	        $this->data = array(
-	           'msg' => "Not enough data to update the tree!"
+	           'msg' => __('admin.errors.tree.not_enough_data')
 	        );
 	        return;
 	    }
@@ -688,7 +731,7 @@ class Controller_List extends Controller_Base {
 	        $this->template = 'admin/item/404.twig';
 	        $this->status = 404;
 	        $this->data = array(
-	           'msg' => "That ".$admin_config['singular']." Doesn't Exist!"
+	           'msg' => __('admin.errors.http.404', array( 'resource' => $class_name::singular() ))
 	        );
 	        return;
 	        
@@ -697,7 +740,7 @@ class Controller_List extends Controller_Base {
 	        $this->template = 'admin/item/404.twig';
 	        $this->status = 404;
 	        $this->data = array(
-	           'msg' => "That item is not part of a tree!"
+	           'msg' => __('admin.errors.tree.not_in_tree')
 	        );
 	        return;
 	        
@@ -743,10 +786,10 @@ class Controller_List extends Controller_Base {
 	{
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) {
-			return $this->customPageOr404(array($table_name, $tab_id), "Can't find that type!");
+			return $this->customPageOr404(array($table_name, $tab_id), "type");
 		}
 		
-		$msg = 'The tree was recovered';
+		$msg = __('admin.messages.tree_recovery_success');
 		$msg_class = 'alert-success';
 
 		try {
@@ -761,12 +804,12 @@ class Controller_List extends Controller_Base {
 			$tree_errors = $repo->verify();
 
 			if ($tree_errors !== true) {
-				$msg = 'Recovery was unsuccessful - you may need to manually check it or empty the database table and start again';
+				$msg = __('admin.errors.tree.recovery_unsuccessful');
 				$msg_class = 'alert-danger';
 			}
 
 		} catch (\Exception $e) {
-			$msg = 'There was an error recovering the tree: '.$e->getMessage();
+			$msg = __('admin.errors.tree.recovery_error', array( 'message' => $e->getMessage() ));
 			$msg_class = 'alert-danger';
 		}
 
@@ -808,7 +851,9 @@ class Controller_List extends Controller_Base {
 			'can_create' => $can_create && $can_edit,
 			'can_edit' => $can_edit,
 			'can_delete' => $can_delete,
-			'superclass' => $class_name::superclass()
+			'superclass' => $class_name::superclass(),
+			'allowed_children' => $class_name::allowedChildren(),
+			'allowed_parents' => $class_name::allowedParents()
 		);
 		
 		foreach ($metadata->subClasses as $sub_class) {
@@ -825,7 +870,11 @@ class Controller_List extends Controller_Base {
 				'can_create' => \CMF\Auth::can('create', $sub_class),
 				'can_edit' => \CMF\Auth::can('edit', $sub_class),
 				'can_delete' => \CMF\Auth::can('delete', $sub_class),
-				'superclass' => false
+				'superclass' => false,
+				'allowed_children' => $sub_class::allowedChildren(),
+				'allowed_parents' => $sub_class::allowedParents(),
+				'disallowed_children' => $sub_class::disallowedChildren(),
+				'disallowed_parents' => $sub_class::disallowedParents()
 			);
 			
 		}
@@ -891,6 +940,9 @@ class Controller_List extends Controller_Base {
 			$this->tree_errors = $repo->verify();
 			$this->tree_is_valid = ($this->tree_errors === true);
 		}
+
+		// Import actions
+		$importMethods = $class_name::importMethods();
 		
 		// Add more context for the template
 		$this->table_name = $metadata->table['name'];
@@ -903,6 +955,7 @@ class Controller_List extends Controller_Base {
 		$this->can_edit = $can_edit;
 		$this->can_delete = $can_delete;
 		$this->can_manage = $can_manage;
+		$this->can_import = !empty($importMethods) && $can_manage;
 		
 		// Add the stuff for JS
 		$this->js['tree'] = $tree;
@@ -919,7 +972,6 @@ class Controller_List extends Controller_Base {
 		$this->js['can_edit'] = $can_edit;
 		$this->js['can_delete'] = $can_delete;
 		$this->js['can_manage'] = $can_manage;
-		
 	}
 	
 	protected function filterTreeNodes($nodes, $excluded_ids)
@@ -971,7 +1023,7 @@ class Controller_List extends Controller_Base {
 	public function action_options($table_name)
 	{
 		$class_name = \Admin::getClassForTable($table_name);
-		if ($class_name === false) return $this->show404("Can't find that type!");
+		if ($class_name === false) return $this->show404(null, "type");
 		
 		// Check and see if we need to filter the results...
 		$filters = array();
@@ -994,5 +1046,4 @@ class Controller_List extends Controller_Base {
 		$this->headers = array("Content-Type: application/json");
 		return \Response::forge(json_encode($output), $this->status, $this->headers);
 	}
-	
 }

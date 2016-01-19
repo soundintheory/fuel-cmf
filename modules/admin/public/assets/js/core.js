@@ -1,3 +1,66 @@
+
+// Translate function
+_ = function(key, vars)
+{
+	var parts = key.split('.');
+	if (typeof(lang) == 'undefined') { return parts[parts.length-1]; }
+
+	// Try using the current language
+	var current = (typeof(current_lang) != 'undefined' && !!current_lang) ? current_lang : 'en';
+	var fallback = (typeof(fallback_lang) != 'undefined' && !!fallback_lang) ? fallback_lang : ['en'];
+	var output = _get(lang, current + '.' + key);
+
+	// Go through the fallback languages and try them
+	if (!output && !!fallback && fallback.length)
+	{
+		for (var i = 0; i < fallback.length; i++) {
+			if (fallback[i] == current) { continue; }
+			output = _get(lang, fallback[i] + '.' + key);
+			if (!!output) { break; }
+		}
+	}
+
+	// If we have output and vars have been passed, try to fill them
+	if (!!output && !!vars) {
+		for (var p in vars) {
+			output = output.replace(new RegExp(':'+p, 'gi'), vars[p]);
+		}
+	}
+
+	// Try using the current language
+	return !!output ? output : parts[parts.length-1];
+}
+
+function _get(obj, prop)
+{
+	var parts = prop.split('.'),
+		current = obj,
+		output = null;
+
+	for (var i = 0; i < parts.length; i++)
+	{
+		// If it's not set, we're at a dead end so stop
+		if (typeof(current[parts[i]]) == 'undefined') {
+			output = null;
+			break;
+		}
+
+		// Set the next part
+		current = current[parts[i]];
+
+		// If it's an object, carry on descending into it
+		if (typeof(current) == 'object' && current != null) {
+			continue;
+		}
+
+		// It's a value that can be returned
+		output = current;
+		break;
+	}
+
+	return output;
+}
+
 $(document).ready(function() {
 	
 	if ($('.widget.collapsible').length > 0) { initCollapsibleWidgets(); }
@@ -165,6 +228,12 @@ function initDatePickers() {
     
 }
 
+var getHostName = function(href) {
+    var l = document.createElement("a");
+    l.href = href;
+    return l.hostname || href;
+};
+
 function initTree() {
 	
 	if ($('#item-tree').length == 0) { return; }
@@ -200,7 +269,7 @@ function initTree() {
 			node['hidden'] = (typeof node.hidden != 'undefined' && (node.hidden === true || node.hidden === 1));
 
 			// If this item is an alias, append ?alias to the edit URL
-			if (node['url']['alias']) {
+			if (node['url'] && node['url']['alias']) {
 				node['href'] += '?alias';
 				node['icon'] = 'link';
 			}
@@ -220,6 +289,14 @@ function initTree() {
 			
 			var can_edit_item = !(typeof(permissions[node.id]) != 'undefined' && permissions[node.id].length > 0 && $.inArray('edit', permissions[node.id]) == -1);
 			var can_edit = node['can_edit'] = classData['can_edit'] && can_edit_item;
+
+			if (node.settings && node.settings.original_id) {
+				var importedContent = 'imported';
+				if (node.settings.imported_from) {
+					importedContent += ' from '+getHostName(node.settings.imported_from);
+				}
+				node.title.append(' &nbsp;<i class="muted">'+importedContent+'</i>');
+			}
 			
 			if (can_edit) {
 				node.title.append(' <span class="edit-icon fa fa-pencil"></span>');
@@ -232,12 +309,28 @@ function initTree() {
 			
 			var childItems = [];
 			var childInfo = [];
+			var allowedChildren = (data['classes'][node['class']] || {}).allowed_children;
+			var disallowedChildren = (data['classes'][node['class']] || {}).disallowed_children;
 			
 			if (can_edit) {
 					
-				for (var p in data['classes']) {
+				for (var p in data['classes'])
+				{
 					var subclassData = data['classes'][p],
 					baseUrl = '/admin/' + subclassData['table_name'];
+
+					// Check if this allows the class as a child
+					if ((!!allowedChildren && $.inArray(p, allowedChildren) === -1) ||
+						(!!disallowedChildren && $.inArray(p, disallowedChildren) > -1)) {
+						continue;
+					}
+
+					// Also check if the class allows this as a parent
+					if ((!!subclassData.allowed_parents && $.inArray(node['class'], subclassData.allowed_parents) === -1) ||
+						(!!subclassData.disallowed_parents && $.inArray(node['class'], subclassData.disallowed_parents) > -1)) {
+						continue;
+					}
+
 					if (subclassData['static'] || subclassData['can_create'] !== true || subclassData['can_edit'] !== true || subclassData['superclass']) { continue; }
 					childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create?parent=' + node.id + '"><i class="fa fa-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
 					childInfo.push({ 'edit':baseUrl + '/create?parent=' + node.id, 'icon':subclassData['icon'], 'singular':subclassData['singular'] });
@@ -249,15 +342,15 @@ function initTree() {
 				
 				if (childItems.length > 1) {
 					
-					actionsContent += '<a class="btn btn-small btn-icon dropdown-toggle" data-toggle="dropdown" href="#" title="Add Child..."><i class="fa fa-plus"></i></a>' +
+					actionsContent += '<a class="btn btn-small btn-icon dropdown-toggle" data-toggle="dropdown" href="#" title="' + _('admin.common.add_child') + '"><i class="fa fa-plus"></i></a>' +
 					'<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' + 
-					'<li class="nav-header">Add a child...</li>' + 
+					'<li class="nav-header">' + _('admin.common.add_child') + '</li>' + 
 					childItems.join('') + 
 					'</ul>';
 					
 				} else if (childItems.length == 1) {
 					
-					actionsContent += '<a class="btn btn-small btn-icon" href="' + childInfo[0]['edit'] + '" rel="tooltip" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="fa fa-plus"></i></a>';
+					actionsContent += '<a class="btn btn-small btn-icon" href="' + childInfo[0]['edit'] + '" rel="tooltip" title="' + _('admin.common.add_child_resource', { resource:childInfo[0]['singular'] }) + '"><i class="fa fa-plus"></i></a>';
 					
 				}
 				
@@ -267,7 +360,7 @@ function initTree() {
 			var can_delete = node['can_delete'] = classData['can_delete'] && can_delete_item;
 			
 			if (!(typeof(classData.static) != 'undefined' && classData.static == true) && can_delete) {
-				actionsContent += '<a class="btn btn-small btn-icon btn-danger btn-remove" rel="tooltip" title="Delete" href="' + node['delete'] + '" data-singular="' + classData['singular'] + '"><i class="fa fa-remove"></i></a>';
+				actionsContent += '<a class="btn btn-small btn-icon btn-danger btn-remove" rel="tooltip" title="' + _('admin.verbs.delete') + '" href="' + node['delete'] + '" data-singular="' + classData['singular'] + '"><i class="fa fa-remove"></i></a>';
 			}
 			
 			actionsContent += '</div>';
@@ -291,6 +384,28 @@ function initTree() {
 			
 			if (target_node['can_edit'] !== true && position == 'inside') { return false; }
 			if (target_node.is_root && position != 'inside') { return false; }
+
+			var movedClassInfo = data['classes'][moved_node['class']] || {},
+				parentClass = null,
+				parentClassInfo = null;
+
+			if (position == 'inside') {
+				parentClass = target_node['class'];
+				parentClassInfo = data['classes'][parentClass] || {};
+			} else {
+				parentClass = ((target_node.parent || {})['class'] || 'root');
+				parentClassInfo = data['classes'][parentClass] || {};
+			}
+
+			if ((!!parentClassInfo.disallowed_children && $.inArray(moved_node['class'], parentClassInfo.disallowed_children) > -1) ||
+				(!!movedClassInfo.disallowed_parents && $.inArray(parentClass, movedClassInfo.disallowed_parents) > -1)) {
+				return false;
+			}
+
+			if ((!!parentClassInfo.allowed_children && $.inArray(moved_node['class'], parentClassInfo.allowed_children) === -1) ||
+				(!!movedClassInfo.allowed_parents && movedClassInfo.allowed_parents.length && $.inArray(parentClass, movedClassInfo.allowed_parents) === -1)) {
+				return false;
+			}
 			
 			var currentTime = new Date().getTime();
 			var elapsedTime = currentTime - moveStartTime;
@@ -354,7 +469,7 @@ function initTree() {
 		
 		$(this).click(function() {
 			
-			return confirm("Do you really want to delete this " + $(this).attr('data-singular').toLowerCase() + "? You can't undo!");
+			return confirm(_('admin.messages.item_delete_confirm'));
 		});
 		
 	});
@@ -366,10 +481,17 @@ function initTree() {
 		var childItems = [];
 		var childInfo = [];
 		
-		for (var p in data['classes']) {
+		for (var p in data['classes'])
+		{
 			var subclassData = data['classes'][p],
-
 			baseUrl = '/admin/' + subclassData['table_name'];
+
+			// Check if the class allows root as a parent
+			if ((!!subclassData.allowed_parents && $.inArray('root', subclassData.allowed_parents) === -1) ||
+				(!!subclassData.disallowed_parents && $.inArray('root', subclassData.disallowed_parents) > -1)) {
+				continue;
+			}
+
 			if (subclassData['static'] || !subclassData['can_create'] || !subclassData['can_edit'] || subclassData['superclass']) { continue; }
 			childItems.push('<li><a tabindex="-1" href="' + baseUrl + '/create"><i class="fa fa-' + subclassData['icon'] + '"></i> ' + subclassData['singular'] + '</a></li>');
 			childInfo.push({ 'edit':baseUrl + '/create', 'icon':subclassData['icon'], 'singular':subclassData['singular'] });
@@ -382,15 +504,15 @@ function initTree() {
 		if (childItems.length > 1) {
 			//group all the items into a dropdown
 			buttonContent += '<div class="dropup pull-right">' + 
-			'<button class="btn btn-large btn-primary dropdown-toggle"><i class="fa fa-plus"></i>  Add New ' + data.singular + ' <span class="caret"></span></button>' +
+			'<button class="btn btn-large btn-primary dropdown-toggle"><i class="fa fa-plus"></i> ' + _('admin.common.add_new_resource', { resource:data.singular.toLowerCase() }) + ' <span class="caret"></span></button>' +
 			'<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' + 
-			'<li class="nav-header">Choose a type...</li>' + 
+			'<li class="nav-header">' + _('admin.common.choose_a_type') + '</li>' + 
 			childItems.join('') + 
 			'</ul></div>';
 			
 		} else if (childItems.length == 1) {
 			//if there is only one item, make the button here
-			buttonContent += '<a class="btn btn-large btn-primary" href="' + childInfo[0]['edit'] + '" title="Add Child ' + childInfo[0]['singular'] + '..."><i class="fa fa-plus"></i> Add New ' + childInfo[0]['singular'] + '</a>';
+			buttonContent += '<a class="btn btn-large btn-primary" href="' + childInfo[0]['edit'] + '" title="' + _('admin.common.add_child_resource', { resource:childInfo[0]['singular'].toLowerCase() }) + '"><i class="fa fa-plus"></i> ' + _('admin.common.add_new_resource', { resource:childInfo[0]['singular'].toLowerCase() }) + '</a>';
 		}
 		
 		// Add the actions
@@ -408,7 +530,7 @@ function initItemList() {
 	$('.btn-remove').each(function() {
 		
 		$(this).click(function() {
-			return confirm("Do you really want to delete this " + $(this).attr('data-singular').toLowerCase() + "? You can't undo!");
+			return confirm(_('admin.messages.item_delete_confirm'));
 		});
 		
 	});
@@ -517,7 +639,7 @@ function initItemForm() {
 	$('#controls-fixed-bot .btn-remove').each(function() {
 		
 		$(this).click(function() {
-			return confirm("Do you really want to delete this " + $(this).attr('data-singular').toLowerCase() + "? You can't undo!");
+			return confirm(_('admin.messages.item_delete_confirm'));
 		});
 		
 	});
@@ -627,7 +749,7 @@ function initItemForm() {
     	if (initialFormData != null && latestFormData != initialFormData) {
     		//console.log(latestFormData);
     		//console.log(initialFormData);
-    		var msg = "There are potentially unsaved changes to this item. You have two options:\n\n1) Stay and click the 'save' button.\n\n2) Continue and they may be lost.";
+    		var msg = _('admin.messages.unsaved_changes');
     		e.returnValue = msg;
     		return msg;
     	} else {

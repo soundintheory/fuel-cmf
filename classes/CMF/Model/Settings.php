@@ -59,7 +59,14 @@ class Settings extends Base
     public static function getSetting($setting_name, $default_value = null)
     {
         $called_class = get_called_class();
-        return $called_class::instance()->get($setting_name, $default_value);
+        $value = $called_class::instance()->get($setting_name, $default_value);
+
+        // Try and fall back to stored config
+        if (empty($value) && is_null($default_value)) {
+            return \Config::get($setting_name, $default_value);
+        }
+
+        return $value;
     }
     
     /** inheritdoc */

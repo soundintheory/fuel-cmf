@@ -35,6 +35,9 @@ Autoloader::add_classes(array(
 ));
 
 // Sort out the language
+\Lang::load('errors', true);
+\Lang::load('admin', true);
+\Lang::load('site', true);
 $lang = \CMF::lang();
 
 // Quick and easy profiling using 'debug' in the query string

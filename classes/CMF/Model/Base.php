@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
  **/
-class Base extends \CMF\Doctrine\Model
+class Base extends \CMF\Doctrine\Model implements \JsonSerializable
 {
     /**
      * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
@@ -215,7 +215,28 @@ class Base extends \CMF\Doctrine\Model
      * @var string
      */
     protected static $_sort_process = true;
-    
+
+    /**
+     * Which types of import are available for the model eg. array('file', 'url')
+     * @see \CMF\Model\Base::importMethods()
+     * @var array
+     */
+    protected static $_import_methods = null;
+
+    /**
+     * The type name that the model relates to (in the remote API)
+     * @see \CMF\Model\Base::importType()
+     * @var string
+     */
+    protected static $_import_type = null;
+
+    /**
+     * Parameters that should be used when importing
+     * @see \CMF\Model\Base::importParameters()
+     * @var string
+     */
+    protected static $_import_parameters = null;
+
     /**
      * Whether the model if static. Static means there will only ever be one record,
      * that cannot be removed. Use it for one-off pages, like a homepage model.
@@ -250,6 +271,12 @@ class Base extends \CMF\Doctrine\Model
      * @var string
      */
     protected static $_icon = 'file-o';
+
+    /**
+    * Set Description For Model
+    * @var string
+    */
+    protected static $_description = null;
     
     /**
      * Tells the system which fields to use when generating the model's slug
@@ -282,6 +309,79 @@ class Base extends \CMF\Doctrine\Model
      * @var array
      */
     protected $_field_settings = null;
+
+    /**
+     * The fields that should appear in the API response for the model
+     * @see  CMF\Model\Base::restFields()
+     * @var array
+     */
+    protected static $_rest_fields = array();
+
+    /**
+     * The fields that should not appear in the API response for the model
+     * @see  CMF\Model\Base::restFieldsExcude()
+     * @var array
+     */
+    protected static $_rest_fields_exclude = array();
+
+    /**
+     * The fields that should be imported for the model
+     * @see  CMF\Model\Base::importFields()
+     * @var array
+     */
+    protected static $_import_fields = array();
+
+    /**
+     * The fields that should not be imported for the model
+     * @see  CMF\Model\Base::importFieldsExcude()
+     * @var array
+     */
+    protected static $_import_fields_exclude = array();
+
+    /**
+     * @see  CMF\Model\Base::$_rest_fields
+     */
+    public static function restFields()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_rest_fields;
+    }
+
+    /**
+     * @see  CMF\Model\Base::$_rest_fields_exclude
+     */
+    public static function restFieldsExclude()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_rest_fields_exclude;
+    }
+
+    /**
+     * @see  CMF\Model\Base::$_import_fields
+     */
+    public static function importFields()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_fields;
+    }
+
+    /**
+     * @see  CMF\Model\Base::$_import_fields_exclude
+     */
+    public static function importFieldsExclude()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_fields_exclude;
+    }
+
+    /**
+     * @see  CMF\Model\Base::$_import_parameters
+     */
+    public static function importParameters()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_parameters;
+    }
     
     /**
      * The URL-friendly identifier for the model. Uses the static slug_fields property to generate it.
@@ -406,19 +506,22 @@ class Base extends \CMF\Doctrine\Model
         if (parent::validate($groups, $fields, $exclude_fields)) {
             
             $class_name = get_class($this);
+            $metadata = $class_name::metadata();
             $field_settings = \Admin::getFieldSettings($class_name);
             $user_field_settings = $this->settings();
             $field_settings = \Arr::merge($field_settings, $user_field_settings);
             
-            foreach ($field_settings as $field_name => $field) {
-                
+            foreach ($field_settings as $field_name => $field)
+            {
                 if ($field_name == 'id' || ($fields !== null && !in_array($field_name, $fields)) || ($exclude_fields !== null && in_array($field_name, $exclude_fields)))
                     continue;
-                
+
+                if (!$metadata->hasField($field_name) && !$metadata->hasAssociation($field_name))
+                    continue;
+
                 $value = $this->get($field_name);
                 $field_class = $field['field'];
                 $field_class::validate($value, $field, $this);
-                
             }
             
             return count($this->errors) === 0;
@@ -497,10 +600,18 @@ class Base extends \CMF\Doctrine\Model
      */
     public static function singular()
     {
+        $autosave = \Lang::$autosave;
+        \Lang::$autosave = false;
         $called_class = get_called_class();
-        if ($called_class::$_singular !== null) return $called_class::$_singular;
-        $metadata = $called_class::metadata();
-        return \Inflector::singularize(\Inflector::humanize($metadata->table['name']));
+        $output = __("admin.models.$called_class.singular", array(),"__NOT__FOUND__");
+        \Lang::$autosave = $autosave;
+        if (empty($output)|| $output == "__NOT__FOUND__") {
+            if ($called_class::$_singular !== null) return $called_class::$_singular;
+            $metadata = $called_class::metadata();
+            return \Inflector::singularize(\Inflector::humanize($metadata->table['name']));
+        }
+        
+        return $output;
     }
     
     /**
@@ -509,10 +620,18 @@ class Base extends \CMF\Doctrine\Model
      */
     public static function plural()
     {
+        $autosave = \Lang::$autosave;
+        \Lang::$autosave = false;
         $called_class = get_called_class();
-        if ($called_class::$_plural !== null) return $called_class::$_plural;
-        $metadata = $called_class::metadata();
-        return \Inflector::pluralize(\Inflector::humanize($metadata->table['name']));
+        $output = __("admin.models.$called_class.plural", array(),"__NOT__FOUND__");
+        \Lang::$autosave = $autosave;
+        if (empty($output) || $output == "__NOT__FOUND__") {
+            if ($called_class::$_plural !== null) return $called_class::$_plural;
+            $metadata = $called_class::metadata();
+            return \Inflector::pluralize(\Inflector::humanize($metadata->table['name']));
+        }
+        
+        return $output;
     }
     
     /**
@@ -659,7 +778,8 @@ class Base extends \CMF\Doctrine\Model
         // Force it to be a string
         return strval($identifier);
     }
-    
+
+
     /**
      * @see \CMF\Model\Base::$_search
      * @return array
@@ -679,7 +799,41 @@ class Base extends \CMF\Doctrine\Model
         $called_class = get_called_class();
         return $called_class::$_joins;
     }
-    
+
+    /**
+     * @see \CMF\Model\Base::$_import_methods
+     * @return array
+     */
+    public static function importMethods()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_import_methods;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_import_type
+     * @return string
+     */
+    public static function importType()
+    {
+        $called_class = get_called_class();
+        if (empty($called_class::$_import_type)) {
+            return \Admin::getTableForClass($called_class);
+        }
+        return $called_class::$_import_type;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_import_type
+     * @return string
+     */
+    public static function hasImportMethod($method)
+    {
+        $called_class = get_called_class();
+        if (empty($called_class::$_import_methods)) return false;
+        return in_array($method, $called_class::$_import_methods);
+    }
+
     /**
      * @see \CMF\Model\Base::$_static
      * @return bool
@@ -698,6 +852,16 @@ class Base extends \CMF\Doctrine\Model
     {
         $called_class = get_called_class();
         return $called_class::$_icon;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_description
+     * @return string
+     */
+    public static function description()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_description;
     }
     
     /**
@@ -815,6 +979,24 @@ class Base extends \CMF\Doctrine\Model
 
         \D::manager()->flush();
     }
+
+    /**
+     * Removes all of the items from the DB
+     * @return void
+     */
+    public static function removeAll()
+    {
+        $called_class = get_called_class();
+        $metadata = \D::manager()->getClassMetadata($called_class);
+        $qb = $called_class::select('item');
+        $items = $qb->getQuery()->getResult();
+        
+        foreach ($items as $num => $item) {
+            \D::manager()->persist($item);
+            \D::manager()->remove($item);
+        }
+        \D::manager()->flush();
+    }
     
     /**
      * Gets this model's actions
@@ -834,26 +1016,79 @@ class Base extends \CMF\Doctrine\Model
      * @see \Fuel\Core\Form::select()
      * @return array
      */
-    public static function options($filters = array(), $orderBy = array(), $limit = null, $offset = null, $params = null, $allow_html = true)
+    public static function options($filters = array(), $orderBy = array(), $limit = null, $offset = null, $params = null, $allow_html = true, $group_by = null)
     {
         $called_class = get_called_class();
         $cache_id = md5($called_class.serialize($filters).serialize($orderBy).$limit.$offset);
         if (isset($called_class::$_options[$cache_id])) return $called_class::$_options[$cache_id];
-        
-        $results = $called_class::findBy($filters, $orderBy, $limit, $offset, $params)->getQuery()->getResult();
+
+        $results = $called_class::findBy($filters, $orderBy, $limit, $offset, $params);
         $options = array();
-        
-        foreach ($results as $result) {
-            $thumbnail = $result->thumbnail();
-            $display = $result->display();
-            $val = !empty($display) ? $display : '-';
-            if ($thumbnail !== false && $allow_html) $val = '<img src="/image/2/40/40/'.$thumbnail.'" style="width:40px;height:40px;" /> '.$val;
-            $options[strval($result->get('id'))] = $val;
+
+        $group_column_names = !is_null($group_by) ? explode('.', $group_by) : null;
+
+        if (!is_null($group_column_names) && property_exists($called_class, $group_column_names[0])) {
+
+            $metadata = $called_class::metadata();
+
+            // Join any relations
+            if ($groupByRelation = $metadata->hasAssociation($group_column_names[0])) {
+                $results->leftJoin("item.".$group_column_names[0], $group_column_names[0])->addSelect($group_column_names[0]);
+            }
+
+            $results = $results->getQuery()->getResult();
+
+            foreach ($results as $result)
+            {
+                $thumbnail = $result->thumbnail();
+                $display = $result->display();
+                $val = !empty($display) ? $display : '-';
+                if ($thumbnail !== false && $allow_html)
+                    $val = '<img src="/image/2/40/40/'.$thumbnail.'" style="width:40px;height:40px;" /> '.$val;
+
+                $group_key = null;
+
+                if ($groupByRelation) {
+                    $column_name = $group_column_names[0];
+                    $relation = $result->get($column_name);
+                    if (count($group_column_names) > 1) {
+                        $group_key = $relation->get($group_column_names[1]);
+                    } else {
+                        $group_key = $relation->display();
+                    }
+                } else {
+                    $group_key = $result->get($group_by);
+                }
+
+                if (!empty($group_key)) {
+                    if (!isset($options[$group_key])) $options[$group_key] = array();
+                    $options[$group_key][strval($result->get('id'))] = $val;
+                } else {
+                    $options[strval($result->get('id'))] = $val;
+                }
+            }
+
+        } else {
+
+            $results = $results->getQuery()->getResult();
+
+            foreach ($results as $result) {
+                $thumbnail = $result->thumbnail();
+                $display = $result->display();
+                $val = !empty($display) ? $display : '-';
+                if ($thumbnail !== false && $allow_html) $val = '<img src="/image/2/40/40/'.$thumbnail.'" style="width:40px;height:40px;" /> '.$val;
+                $options[strval($result->get('id'))] = $val;
+            }
+
         }
-        
+
         if ((is_null($orderBy) || empty($orderBy)) && (is_null($called_class::$_order) || empty($called_class::$_order))) {
-            uasort($options, function($a, $b) {
-                return strcmp(strtolower($a), strtolower($b));
+            uksort($options, function($a, $b) use($options) {
+                $aval = $options[$a];
+                $bval = $options[$b];
+                if (is_array($aval)) $aval = $a;
+                if (is_array($bval)) $bval = $b;
+                return strcmp(strtolower($aval), strtolower($bval));
             });
         }
         
@@ -941,6 +1176,29 @@ class Base extends \CMF\Doctrine\Model
         }
 
         return false;
+    }
+
+    /**
+     * Gets all the ids of this model that have been imported
+     */
+    public static function getImportedIds()
+    {
+        $class = get_called_class();
+        $metadata = $class::metadata();
+        $polymorphic = $metadata->isInheritanceTypeJoined() || $metadata->isInheritanceTypeSingleTable();
+        if ($polymorphic && $metadata->rootEntityName != $metadata->name) {
+            $class = $metadata->rootEntityName;
+            $metadata = $class::metadata();
+        }
+
+        $orig = '%s:11:"original_id";i:%';
+        $ids = \DB::query("SELECT id FROM ".$metadata->table['name']." WHERE settings LIKE :orig")
+            ->bind('orig', $orig)
+            ->execute();
+        
+        return array_map(function($item) {
+            return intval(@$item['id']);
+        }, $ids->as_array());
     }
     
     /**
@@ -1069,6 +1327,11 @@ class Base extends \CMF\Doctrine\Model
      */
     public function get_object_vars(){
         return get_object_vars($this);
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 	
 }

@@ -8,7 +8,10 @@ use Twig_Autoloader,
 
 class Textarea extends Base
 {
+    public static $always_process = true;
+
     protected static $defaults = array(
+        'auto_update' => '1',
         'input_attributes' => array(
             'class' => 'input-xxlarge',
             'rows' => 4
@@ -60,7 +63,7 @@ class Textarea extends Base
             
             $attributes['class'] .= ' field-with-controls field-with-template';
             $auto_update_setting = 'settings['.$settings['mapping']['fieldName'].'][auto_update]';
-            $auto_update_content = \Form::hidden($auto_update_setting, '0', array()).html_tag('label', array( 'class' => 'checkbox auto-update-label' ), \Form::checkbox($auto_update_setting, '1', \Arr::get($settings, 'auto_update', true), array( 'class' => 'auto-update' )).' auto update');
+            $auto_update_content = \Form::hidden($auto_update_setting, '0', array()).html_tag('label', array( 'class' => 'checkbox auto-update-label' ), \Form::checkbox($auto_update_setting, '1', \Arr::get($settings, 'auto_update', true), array( 'class' => 'auto-update' )).strtolower(__('admin.common.auto_update')));
             $auto_update = html_tag('div', array( 'class' => 'controls-top' ), $auto_update_content);
             $label .= $auto_update;
             

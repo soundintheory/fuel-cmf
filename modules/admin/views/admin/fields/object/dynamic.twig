@@ -10,12 +10,12 @@
 	<tr class="item-template">
 		<td class="object-key">
 			<div class="controls control-group">
-				<input placeholder="Type label..." data-name="{{ fieldName }}[keys][]" value="" class="input dynamic" type="text" />
+				<input placeholder="{{ _('admin.common.label') }}" data-name="{{ fieldName }}[keys][]" value="" class="input dynamic" type="text" />
 			</div>
 		</td>
 		<td class="object-value">
 			<div class="controls control-group">
-				<input placeholder="Type value..." data-name="{{ fieldName }}[values][]" value="" class="input-xxlarge" type="text" />
+				<input placeholder="{{ _('admin.common.value') }}" data-name="{{ fieldName }}[values][]" value="" class="input-xxlarge" type="text" />
 			</div>
 		</td>
 		<td class="object-actions"><span><a href="#" class="btn btn-small btn-remove"><i class="fa fa-remove"></i></a></span></td>
@@ -41,7 +41,7 @@
 	<tr class="last">
 		<td colspan="3">
 			<div class="actions">
-				<a href="#" class="btn {{ (form.settings.widget == false) ? 'btn-small' : 'btn-medium' }} btn-add"><i class="fa fa-plus"></i> Add entry</a>
+				<a href="#" class="btn {{ (form.settings.widget == false) ? 'btn-small' : 'btn-medium' }} btn-add"><i class="fa fa-plus"></i> {{ _('admin.verbs.add') }}</a>
 			</div>
 		</td>
 	</tr>
