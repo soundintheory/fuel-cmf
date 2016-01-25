@@ -1,0 +1,14 @@
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <nav class="nav" role="navigation">
+                <ul>
+                    {% for item in level1 %}
+                        <li><a href="{{ item.url }}">{{ item.menu_title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </nav>
+            <p class="copy">&copy; {{ settings.site_title }} {{ "now"|date('Y') }}</p>
+        </div>
+    </div> <!-- container -->
+</footer> <!-- footer -->

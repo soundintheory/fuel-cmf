@@ -1,0 +1,43 @@
+<header id="header">
+<div class="container">
+    <div class="row top">
+        <div class="left">
+            <ul>
+                <li><a href="#">Log in</a></li>
+                <li><a href="#">Register</a></li>
+            </ul>
+        </div> <!-- left -->
+        <div class="right">
+            <ul>
+                <li><a href="#">Basket - <b>&pound;100</b></a></li>
+            </ul>
+        </div> <!-- right -->
+    </div> <!-- row -->
+
+    <div class="row middle">
+        <div class="right">
+            <form action="" class="form form-search collapse navbar-collapse">
+                <input type="text" name="q" placeholder="Search for stuff..." />
+            </form>
+            <div class="expand-menu">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                    <i class="sprite menu"></i>
+                </button>
+            </div>
+        </div> <!-- right -->
+        <div class="left"></div>
+        <div class="logo">
+            <a href="/"><img src="/assets/images/logo.png" alt="{{ settings.site_title }}" /></a>
+        </div> <!-- logo -->
+    </div> <!-- middle -->
+    <div class="row">
+        <nav class="nav collapse navbar-collapse navbar-toggle" id="navbar-collapse" role="navigation">
+            <ul>
+                {% for item in level1 %}
+                    <li class="{{ item.parent_active?'on':'' }}"><a href="{{ item.url }}">{{ item.menu_title }}</a></li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</div> <!-- conatiner -->
+</header> <!-- header -->

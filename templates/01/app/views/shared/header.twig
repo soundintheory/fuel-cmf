@@ -1,0 +1,36 @@
+<header id="header">
+    <div class="container">
+        <div class="row">
+            <div class="logo">
+                <a href="/"><img src="{{ settings.logo.src }}" alt="{{ settings.site_title }}" /></a>
+            </div>
+            <div class="right collapse navbar-collapse">
+                <div class="top">
+                    <ul>
+                        <li><a href="#">Log in / Register</a></li>
+                        <li><a href="tel:{{ settings.phone_number }}">{{ settings.phone_number }}</a></li>
+                    </ul>
+                </div>
+                <nav class="nav collapse navbar-collapse" role="navigation">
+                    <ul>
+                        {% for item in level1 %}
+                            <li class="{{ item.parent_active?'on':'' }}"><a href="{{ item.url }}">{{ item.menu_title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+            </div>
+            <div class="expand-menu navbar-toggle">
+                <button type="button" data-toggle="collapse" data-target="#navbar-collapse">
+                    <i class="sprite menu"></i>
+                </button>
+            </div>
+            <nav class="nav-mobile collapse navbar-toggle" id="navbar-collapse" role="navigation">
+                <ul>
+                    {% for item in level1 %}
+                        <li class="{{ item.parent_active?'on':'' }}"><a href="{{ item.url }}">{{ item.menu_title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header> <!-- header -->

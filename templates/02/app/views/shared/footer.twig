@@ -1,0 +1,45 @@
+<footer id="footer" class="container">
+    <section class="top-footer row">
+        <div class="item-list">
+            <div class="item" data-height-group="2">
+                <h3 class="heading">Logos</h3>
+                <ul>
+                    <li><a href="#"><img src="http://placehold.it/100x35&text=100x35" /></a></li>
+                    <li><a href="#"><img src="http://placehold.it/100x35&text=100x35" /></a></li>
+                </ul>
+            </div>
+            <div class="item" data-height-group="2">
+                <h3 class="heading">Telephone</h3>
+                <p class="tel"><a href="tel:{{ settings.phone_number }}">{{ settings.phone_number }}</a></p>
+            </div>
+            <div class="item" data-height-group="2">
+                <h3 class="heading">Social Links</h3>
+                <ul class="social">
+                    {% if settings.twitter.href %}<li><a href="{{ get_link(settings.twitter) }}"><i class="sprite twitter"></i></a></li>{% endif %}
+                    {% if settings.facebook.href %}<li><a href="{{ get_link(settings.facebook) }}"><i class="sprite facebook"></i></a></li>{% endif %}
+                    {% if settings.googleplus.href %}<li><a href="{{ get_link(settings.googleplus) }}"><i class="sprite google-plus"></i></a></li>{% endif %}
+                    {% if settings.pinterest.href %}<li><a href="{{ get_link(settings.pinterest) }}"><i class="sprite pinterest"></i></a></li>{% endif %}
+                </ul>
+            </div>
+            <div class="item" data-height-group="2">
+                <h3 class="heading">Newsletter</h3>
+                <form action="" class="form newsletter">
+                    <input type="email" name="email" placeholder="Enter your email" />
+                    <button type="submit" class="submit"><i class="sprite play"></i></button>
+                </form>
+            </div>
+        </div>
+    </section>
+    <section class="bottom-footer row">
+        <div>
+            <nav class="nav" role="navigation">
+                <ul>
+                    {% for item in level1 %}
+                        <li><a href="{{ item.url }}">{{ item.menu_title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </nav>
+            <p class="copy">&copy; {{ settings.site_title }} {{ "now"|date('Y') }}</p>
+        </div>
+    </section><!-- bottom-footer -->
+</footer> <!-- footer -->

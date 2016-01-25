@@ -1,0 +1,34 @@
+<header id="header">
+    <div class="container">
+        <div class="row">
+            <div class="logo">
+                <a href="/"><img src="/assets/images/logo.png" alt="{{ settings.site_title }}" /></a>
+            </div> <!-- logo -->
+            <div class="expand-menu  navbar-toggle">
+                <button type="button" data-toggle="collapse" data-target="#navbar-collapse">
+                    <i class="sprite menu"></i>
+                </button>
+            </div>
+            <div class="right">
+                <div class="row">
+                    <div class="top collapse navbar-collapse">
+                        <ul>
+                            <li><a href="#">Log in</a></li>
+                            <li><a href="#">Register</a></li>
+                        </ul>
+                    </div>
+                    <div class="middle collapse navbar-collapse">
+                        <span class="tel">tel. <a href="tel:{{ settings.phone_number }}">{{ settings.phone_number }}</a></span>
+                    </div>
+                    <nav class="nav collapse navbar-collapse navbar-toggle" role="navigation" id="navbar-collapse">
+                        <ul>
+                            {% for item in level1 %}
+                                <li class="{{ item.parent_active?'on':'' }}"><a href="{{ item.url }}">{{ item.menu_title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                </div>
+            </div><!-- right -->
+        </div><!-- row -->
+    </div> <!-- conatiner -->
+</header> <!-- header -->

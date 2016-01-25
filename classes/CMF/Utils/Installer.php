@@ -46,7 +46,10 @@ class Installer
 
             while (empty($template)) {
                 $template = \Cli::prompt('Choose a template', str_replace('_', '','default'));
-                if (file_exists(CMFPATH.'templates/'.$template)) \Cli::error('You must enter existing template');
+                if (!file_exists(CMFPATH.'templates/'.$template)){
+                    \Cli::error('You must enter existing template');
+                    unset($template);
+                };
             }
 
         }

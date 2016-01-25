@@ -1,0 +1,92 @@
+{% extends "layouts/4/base.twig" %}
+
+{% block html_title %}{{ model.html_title }} {{ parent() }}{% endblock %}
+
+{% block content %}
+
+    <section id="top-banner">
+        <div class="container">
+            <div class="row no-pad">
+                <div class="homepage-slider flexslider">
+                    <ul class="slides">
+                        {% for slide in model.layout3slides %}
+                            <li>
+                                <img src="{{ crop_url(slide.image,1225,400,'main') }}" />
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                // Reference: http://www.woothemes.com/flexslider/
+                $('.homepage-slider').flexslider({
+                    animation: "slide",
+                    selector: ".slides > li",
+                    slideshow: true,
+                    slideshowSpeed: 7000,
+                    animationSpeed: 800,
+                    smoothHeight: false,
+                    controlNav: true, // Generates pagination
+                    directionNav: true // Generates next / prev arrows
+                });
+
+            });
+        </script>
+    </section> <!-- outer -->
+
+    <section id="homepage">
+        <div class="container">
+            <div class="body-list overlay top row">
+                {% for item in model.first_section %}
+                    <a href="{{ get_link(item.link) }}" class="item">
+                        <figure>
+                            <img src="{{ crop_url(item.image,400,300,'main') }}" />
+                            <figcaption><h3>{{ item.title }}</h3></figcaption>
+                        </figure>
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="body-list middle row">
+                {% if model.second_section_title %}<div class="block-heading">
+                        <h3 class="heading">{{ model.second_section_title }}</h3>
+                </div>{% endif %}
+                {% for item in model.second_section %}
+                    <a href="{{ get_link(item.link) }}" class="item">
+                        <figure>
+                            <img src="{{ crop_url(item.image,400,250,'smaller') }}" />
+                            <figcaption><h3>{{ item.title }}</h3></figcaption>
+                        </figure>
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="body-list bottom row">
+                {% if model.third_section_title %}<div class="block-heading">
+                    <h3 class="heading">{{ model.third_section_title }}</h3>
+                </div>{% endif %}
+                {% for item in model.third_section %}
+                    <a href="{{ get_link(item.link) }}" class="item">
+                        <figure>
+                            <img src="{{ crop_url(item.image,400,300,'main') }}" />
+                        </figure>
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="body-list other row">
+                {% for item in model.third_section %}
+                    <div class="item" data-height-group="usp2">
+                        <h3 class="heading">{{ item.title }}</h3>
+                        <p class="text">{{ item.text }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div> <!-- wrap -->
+    </section> <!-- outer -->
+
+{% endblock %}

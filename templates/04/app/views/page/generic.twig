@@ -1,0 +1,32 @@
+{% extends "layouts/4/base.twig" %}
+
+{% block html_title %}{{ model.html_title }} {{ parent() }}{% endblock %}
+
+{% block content %}
+
+<section id="homepage">
+    <div class="container">
+        <h1 class="page-title">{{ model.title }}</h1>
+        <div class="row generic">
+            {% if level2|length  %}
+                <div class="right">
+                    <nav class="nav-secondary" role="navigation">
+                        <ul>
+                            {% for item in level2 %}
+                                <li class="{{ item.active?'on':'' }}"><a href="{{ item.url }}">{{ item.menu_title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                </div> <!-- right -->
+            {% endif %}
+
+            <div class="left{{ level2|length?'':' large' }}">
+                <div class="editor pad-bot">
+                    {{ model.content }}
+                </div> <!-- editor -->
+            </div>
+        </div>
+    </div> <!-- wrap -->
+</section> <!-- outer -->
+
+{% endblock %}

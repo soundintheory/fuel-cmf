@@ -1,0 +1,80 @@
+{% extends "layouts/3/base.twig" %}
+
+{% block html_title %}{{ model.html_title }} {{ parent() }}{% endblock %}
+
+{% block content %}
+
+    <section id="top-banner" class="container">
+        <div class="homepage-slider row">
+            <div class="flexslider">
+                <ul class="slides">
+                    {% for slide in model.layout3slides %}
+                        <li>
+                            <div class="body-list">
+                                <div class="slide-content">
+                                    <h1 class="title">{{ slide.title }}</h1>
+                                    <p class="text">{{ slide.text|nl2br }}</p>
+                                    <a class="cta sc inverse" href="{{ get_link(slide.cta_link) }}">{{ slide.cta_text }}</a>
+                                </div>
+                                <img src="{{ crop_url(slide.image,640,360,'main') }}" />
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                // Reference: http://www.woothemes.com/flexslider/
+                $('.homepage-slider').flexslider({
+                    animation: "slide",
+                    selector: ".slides > li",
+                    slideshow: true,
+                    slideshowSpeed: 7000,
+                    animationSpeed: 800,
+                    smoothHeight: false,
+                    controlNav: true, // Generates pagination
+                    directionNav: true // Generates next / prev arrows
+                });
+
+            });
+        </script>
+    </section> <!-- top-banner -->
+
+    <section class="body container pad-top pad-bot">
+        {% if model.first_section_title %}<div class="block-heading">
+            <div>
+                <h3 class="heading">{{ model.first_section_title }}</h3>
+            </div>
+        </div>{% endif %}
+        <div class="item-list row body-top">
+            {% for item in model.first_section %}
+                <a href="{{ get_link(item.link) }}" class="item">
+                    <figure>
+                        <img src="{{ crop_url(item.image,400,300,'main') }}" />
+                        <h3>{{ item.title }}</h3>
+                        <figcaption>{{ item.text }}</figcaption>
+                    </figure>
+                </a>
+            {% endfor %}
+        </div>
+        {% if model.second_section_title %}<div class="block-heading">
+            <div>
+                <h3 class="heading">{{ model.second_section_title }}</h3>
+            </div>
+            </div>{% endif %}
+        <div class="item-list body-middle row">
+            {% for item in model.second_section %}
+                <a href="{{ get_link(item.link) }}" class="item">
+                    <figure>
+                        <img src="{{ crop_url(item.image,400,250,'smaller') }}" />
+                        <figcaption>{{ item.text }}</figcaption>
+                    </figure>
+                </a>
+            {% endfor %}
+        </div>
+    </section> <!-- outer -->
+
+{% endblock %}
