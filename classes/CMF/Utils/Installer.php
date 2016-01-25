@@ -211,7 +211,6 @@ class Installer
             \File::copy(CMFPATH.'templates/'.$template.'/root/Gruntfile.js', DOCROOT);
             \File::copy(CMFPATH.'templates/'.$template.'/root/package.json', DOCROOT);
         }
-
         return true;
     }
 
