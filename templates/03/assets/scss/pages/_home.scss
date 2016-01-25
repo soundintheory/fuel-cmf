@@ -1,0 +1,30 @@
+
+// ------------------------------------------------------------------------------------------------------
+// HOMEPAGE
+
+.large{
+	font-size: 26px; line-height: 30px;
+	margin: 20px 0 40px 0;
+}
+
+.body{
+	padding-bottom: 50px;
+	.body-top{
+		margin-bottom: 50px;
+
+		.item{	
+			@extend .col-lg-8;@extend .col-md-8;@extend .col-sm-8;@extend .col-xs-12;@extend .col-hs-24;
+			margin-bottom: 25px;
+			h3{
+				margin-bottom: 20px;
+				margin-top: 10px;
+			}
+		}
+	}
+
+	.body-middle{
+		.item{	
+			@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-6;@extend .col-xs-12;@extend .col-hs-24;
+		}
+	}
+}

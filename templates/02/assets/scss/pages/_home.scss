@@ -1,0 +1,55 @@
+
+// ------------------------------------------------------------------------------------------------------
+// HOMEPAGE
+
+
+.body{
+	.editor{
+		@extend .col-lg-24;@extend .col-md-24;@extend .col-sm-24;@extend .col-xs-24;@extend .col-hs-24;
+	}
+	.body-top{
+		padding-top: 35px;
+		.item{	
+			@extend .col-lg-8;@extend .col-md-8;@extend .col-sm-8;@extend .col-xs-12;@extend .col-hs-24;
+		}
+	}
+
+
+	.body-middle{
+		.item{
+			@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-6;@extend .col-xs-12;@extend .col-hs-24;
+			margin-bottom: 25px;
+		}
+	}
+
+	.body-bottom{
+		border-top: 2px solid #aaa;
+		border-bottom: 2px solid #aaa;
+		padding-top: 20px;
+		padding-bottom: 20px;
+		margin-bottom: 40px;
+
+		.item{
+			@extend .col-lg-8; @extend .col-md-8;@extend .col-sm-8;@extend .col-xs-12;@extend .col-hs-24;
+			padding-top: 20px;
+			padding-bottom: 20px;
+			border-left: 2px solid #aaa;
+			@media #{$xs-down} {
+				border-left: none;
+			}
+			text-align:center;
+			.heading{
+				font-size: 18px;
+				margin: 0 0 10px;
+			}
+			.text{
+				font-size: 13px;
+				line-height: 20px;
+				margin-bottom: 0;
+			}
+			&:first-of-type{
+				border-left: none;
+			}
+		}
+	}
+}

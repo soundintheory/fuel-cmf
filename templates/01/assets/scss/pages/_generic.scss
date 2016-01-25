@@ -1,0 +1,13 @@
+#generic{
+	padding-top: 50px;
+	.left{
+		@extend .col-lg-18;@extend .col-md-18;@extend .col-sm-16;@extend .col-xs-24;@extend .col-hs-24;
+		&.large{
+			@extend .col-lg-24;@extend .col-md-24;@extend .col-sm-24;@extend .col-xs-24;@extend .col-hs-24;
+		}
+	}
+	.right{
+		@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-6;@extend .col-xs-24;@extend .col-hs-24;
+		@extend .pull-right;
+	}
+}

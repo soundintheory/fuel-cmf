@@ -1,0 +1,30 @@
+{
+  // Default options
+  'functions': true
+}
+
+.sprite {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+  background: url('/assets/images/sprite.png');
+  text-indent: -9999px;
+}
+
+{{#options.functions}}
+@mixin sprite($sprite) {
+  @extend .sprite;
+
+  $sprite-offset-x: nth($sprite, 3);
+  $sprite-offset-y: nth($sprite, 4);
+  background-position: $sprite-offset-x  $sprite-offset-y;
+
+  width: nth($sprite, 5);
+  height: nth($sprite, 6);
+} 
+{{/options.functions}}
+
+{{#items}}
+${{name}}: {{px.x}} {{px.y}} {{px.offset_x}} {{px.offset_y}} {{px.width}} {{px.height}} {{px.total_width}} {{px.total_height}} '{{{escaped_image}}}';
+.sprite.{{name}} { @include sprite(${{name}}); }
+{{/items}}

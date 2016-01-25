@@ -1,0 +1,36 @@
+#contact{
+	padding-top: 50px;
+	.page-title{
+		@extend .col-lg-24;@extend .col-md-24;@extend .col-sm-24;@extend .col-xs-24;@extend .col-hs-24;
+	}
+	.form{
+		@extend .col-lg-18;@extend .col-md-18;@extend .col-sm-16;@extend .col-xs-24;@extend .col-hs-24;
+		form{
+			padding: 0;
+			width:95%;
+		}
+	}
+	.right{
+		@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-8;@extend .col-xs-24;@extend .col-hs-24;
+		@extend .pull-right;
+		.address-block{
+			@extend .col-lg-24;@extend .col-md-24;@extend .col-sm-24;@extend .col-xs-12;@extend .col-hs-24;
+			margin-bottom: 40px;
+			.name{
+				font-size: 21px;
+				font-weight: 500;
+				margin-bottom: 15px;
+			}
+			.address,.phone,.email{
+				position: relative;
+				padding-left: 30px;
+				margin-bottom: 15px;
+				i{
+					position: absolute;
+					left: 0;
+					top:4px;
+				}
+			}
+		}
+	}
+}

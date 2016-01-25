@@ -1,0 +1,63 @@
+
+@mixin calc-fraction-column($index, $class, $type, $suffix) {
+  @if ($type == width) and ($index > 0) {
+    .col-#{$class}-#{$suffix} {
+      width: percentage((1 / $index));
+      float: left;
+      position: relative;
+      min-height: 1px;
+      padding-left:  ($grid-gutter-width / 2);
+      padding-right: ($grid-gutter-width / 2);
+    }
+  }
+  @if ($type == push) and ($index > 0) {
+    .col-#{$class}-push-#{$suffix} {
+      left: percentage((1 / $index));
+    }
+  }
+  @if ($type == push) and ($index == 0) {
+    .col-#{$class}-push-0 {
+      left: auto;
+    }
+  }
+  @if ($type == pull) and ($index > 0) {
+    .col-#{$class}-pull-#{$suffix} {
+      right: percentage((1 / $index));
+    }
+  }
+  @if ($type == pull) and ($index == 0) {
+    .col-#{$class}-pull-0 {
+      right: auto;
+    }
+  }
+  @if ($type == offset) {
+    .col-#{$class}-offset-#{$suffix} {
+      margin-left: percentage((1 / $index));
+    }
+  }
+}
+
+@mixin make-extra-grid-columns($i: 1, $list: ".col-hs-#{$i}") {
+  @for $i from (1 + 1) through $grid-columns {
+    $list: "#{$list}, .col-hs-#{$i}";
+  }
+  #{$list} {
+    position: relative;
+    // Prevent columns from collapsing when empty
+    min-height: 1px;
+    // Inner gutter via padding
+    padding-left:  ($grid-gutter-width / 2);
+    padding-right: ($grid-gutter-width / 2);
+  }
+}
+
+@mixin loop-fraction-columns($class, $type) {
+	@include calc-fraction-column(5, $class, $type, 5th); // 5ths
+}
+
+@mixin make-fraction-grid($class) {
+	@include loop-fraction-columns($class, width);
+	@include loop-fraction-columns($class, pull);
+	@include loop-fraction-columns($class, push);
+	@include loop-fraction-columns($class, offset);
+}

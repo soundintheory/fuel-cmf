@@ -1,0 +1,186 @@
+
+// ------------------------------------------------------------------------------------------------------
+// GLOBAL STYLES
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+// ------------------------------------------------------------------------------------------------------
+// FLEXSLIDER DEFAULTS
+
+.flexslider {
+	border: none;
+	margin:0;
+	.flex-direction-nav {
+		line-height: normal;
+	}
+}
+
+//--------------
+//Item list
+
+.block-heading {
+	div{
+		position: relative;
+		background: #999999;
+		color: #fff;
+		padding: 10px 0 12px;
+		margin-bottom: 25px;
+		.heading {
+			@extend .heading-font-2; font-size: 20px; line-height: 24px;
+			margin: 0;
+			padding: 0 80px;
+			text-align: center;
+		}
+
+		a{
+			position: absolute; top: 12px; right: 14px;
+			font-size: 15px; line-height: 24px;
+			color: #fff;
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+}
+
+.item-list{
+	.item{
+		figure{
+			position:relative;
+			img {
+				margin: 0;
+				max-width: 100%;
+			}
+
+			figcaption {
+				font-size: 13px; line-height: 16px;
+				padding: 8px 0;
+				h3{
+					@extend .light-font;
+					font-size: 18px;
+					line-height: 16px;
+				}
+				p{
+					line-height: 16px;
+				}
+			}
+		}
+		&:hover {
+			img {
+				opacity: .8;
+			}
+		}
+	}
+	p{
+		margin-bottom: 30px;
+	}
+	/* Overlay the figcaptions onto the image */
+	&.overlay {
+		> .item {
+			margin-bottom: 24px;
+			figure{
+				position:relative;
+				img {
+					margin: 0;
+				}
+
+				figcaption {
+
+					@include transition(background-color .15s cubic-bezier(0.215, 0.610, 0.355, 1.000));
+					transition-property: background-color, padding;
+
+					position: absolute; bottom: -1px; left: 0px; right: 0px;
+					background: rgb(230,230,230); background: rgba(255,255,255, .7);
+					font-size: 13px; line-height: 16px;
+					padding: 8px 12px;
+
+					@media #{$xs-down} {
+						position: relative;
+						background: rgb(238, 238, 238);
+					}
+				}
+			}
+
+			&:hover {
+				@media #{$md-up} {
+					figcaption {
+						background: rgb(245,245,245); background: rgba(255,255,255, .9);
+						padding-top: 14px; padding-bottom: 14px;
+						
+					}
+				}
+			}
+
+		}
+	}
+}
+
+.page-title{
+  font-size: 34px;
+  line-height: 38px;
+  margin: 0 0 20px;
+  padding: 0 0 16px;
+}
+
+.nav-secondary {
+  margin: 0 0 24px;
+  ul{
+  	@extend .list-unstyled;
+  	li{
+  		font-size: 14px;
+	  line-height: 18px;
+	  border-bottom: 1px solid #eee;
+	  @extend .regular-font;
+	  a{
+	  		display: block;
+  			padding: 10px 0;
+	  	}
+	  &.on{
+	  	@extend .bold-font;
+	  }
+  	}
+  }
+}
+
+.responsive-table{
+	@media #{$hs} {
+		  max-width: 100%; // adjust to your needs
+		  tr {
+		    border-top: 1px solid #ddd;
+		    border-bottom: 1px solid #ddd;
+		  }  
+		  th {
+		    display: none; // for accessibility, use a visually hidden method here instead! Thanks, reddit!   
+		  }
+		  
+		  td {
+		    display: block; 
+		    border:none !important;
+		    
+		    &:first-child {
+		      padding-top: .5em;
+		    }
+		    &:last-child {
+		      padding-bottom: .5em;
+		    }
+
+		    &:before {
+		      content: attr(data-th)": "; // who knew you could do this? The internet, that's who.
+		      font-weight: bold;
+
+		      // optional stuff to make it look nicer
+		      width: 6.5em; // magic number :( adjust according to your own content
+		      display: inline-block;
+		    }
+		  }
+		  
+		  th, td {
+		    text-align: left;
+
+		  }	  	  
+	}
+}
+

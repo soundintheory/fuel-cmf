@@ -1,0 +1,37 @@
+#top-banner{
+	.homepage-slider{
+		@extend .hidden-xs;@extend .hidden-hs;
+		.slides{
+			li{
+				position:relative;
+				@extend .clearfix;
+				img{
+					width:100%;
+					height:auto;
+					padding: 0;
+					margin:0;
+				}
+			}
+		}
+		.flex-control-nav{
+			bottom:0;
+			@extend .hidden-xs;@extend .hidden-hs;
+		}
+
+		.flex-direction-nav{
+			@extend .hidden-xs;@extend .hidden-hs;
+			li{
+				a{
+					line-height: initial;
+				}
+			}
+		}
+		.flex-direction-nav .flex-prev {
+			left:30px;
+		}
+
+		.flex-direction-nav .flex-next {
+			right:30px;
+		}
+	}
+}

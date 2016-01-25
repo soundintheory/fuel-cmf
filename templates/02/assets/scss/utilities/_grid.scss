@@ -1,0 +1,77 @@
+.container{
+  padding-left: $grid-gutter-width;
+  padding-right: $grid-gutter-width;
+}
+
+@include make-fraction-grid(xs);
+
+@media (min-width: $screen-sm-min) {
+  @include make-fraction-grid(sm);
+}
+
+@media (min-width: $screen-md-min) {
+  @include make-fraction-grid(md);
+}
+
+@media (min-width: $screen-lg-min) {
+  @include make-fraction-grid(lg);
+}
+
+@media (max-width: $screen-hs) {
+  @include make-grid(hs);
+}
+
+// Hide "xs" at the handheld size
+@media (max-width: $screen-hs) {
+	.visible-xs
+	.visible-xs-block,
+	.visible-xs-inline,
+	.visible-xs-inline-block {
+		display: none !important;
+	}
+}
+
+// Re-show "xs" within it's proper size range
+.visible-xs-block {
+  @media (min-width: $screen-xs-min) and (max-width: $screen-xs-max) {
+    display: block !important;
+  }
+}
+.visible-xs-inline {
+  @media (min-width: $screen-xs-min) and (max-width: $screen-xs-max) {
+    display: inline !important;
+  }
+}
+.visible-xs-inline-block {
+  @media (min-width: $screen-xs-min) and (max-width: $screen-xs-max) {
+    display: inline-block !important;
+  }
+}
+
+@include responsive-invisibility('.visible-hs');
+
+.visible-hs-block,
+.visible-hs-inline,
+.visible-hs-inline-block {
+  display: none !important;
+}
+
+@media (max-width: $screen-hs) {
+  @include responsive-invisibility('.hidden-hs');
+}
+
+.visible-hs-block {
+  @media (max-width: $screen-hs) {
+    display: block !important;
+  }
+}
+.visible-hs-inline {
+  @media (max-width: $screen-hs) {
+    display: inline !important;
+  }
+}
+.visible-hs-inline-block {
+  @media (max-width: $screen-hs) {
+    display: inline-block !important;
+  }
+}

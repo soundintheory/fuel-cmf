@@ -1,0 +1,112 @@
+
+// ------------------------------------------------------------------------------------------------------
+// RICH TEXT EDITOR CONTENT
+
+.editor {
+	&.cke_editable {
+		max-width: 755px;
+		@extend .clearfix;
+	}
+
+	&.centered {
+		text-align: center;
+	}
+
+	&.pad-top {
+		padding-top: 20px;
+	}
+
+	&.pad-bot {
+		padding-bottom: 24px;
+	}
+	
+	h1, .h1 { @extend .h1;}
+	h2, .h2 { @extend .h2;}
+	h3, .h3 { @extend .h3;}
+	h4, .h4 { @extend .h4; @extend .bold-font;}
+	h5, .h5 { @extend .h5; @extend .bold-font;}
+	h6, .h6 { @extend .h6; }
+	
+	p, li {
+		font-size: 15px; line-height: 20px;
+	}
+	
+	p {
+		margin: 0 0 18px 0;
+	}
+	
+	.large {
+		font-size: 26px; line-height: 30px;
+		margin: 0 0 20px;
+	}
+	
+	ul {
+		list-style: disc outside none;
+		margin: 0 0 18px 0; padding: 0 0 0 1.6em;
+	}
+	
+	ol {
+		list-style: decimal outside none;
+		margin: 0 0 18px 0; padding: 0 0 0 1.6em;
+	}
+	
+	li {
+		margin: 0 0 5px;
+	}
+
+	sub, sup {
+		position:relative;
+		font-size:75%;
+		line-height:0;
+		vertical-align:baseline
+	}
+
+	sup {
+		top:-0.5em;
+	}
+
+	sub {
+		bottom:-0.25em;
+	}
+	
+	strong, b {
+		@extend .bold-font;
+	}
+	
+	i, em {
+		font-style: italic;
+	}
+	
+	a {
+		text-decoration: underline;
+	}
+	
+	a:hover {
+		text-decoration: none;
+	}
+	
+	table {
+		border: 1px solid #d9d9d9;
+		margin: 0 0 22px 0;
+		
+		td, th {
+			border: 1px solid #d9d9d9;
+			color: #4C4C4C;
+			padding: 5px 9px;
+		}
+		
+		th {
+			color: #333;
+		}
+	}
+
+	img[style*="float:left"],
+	img[style*="float: left"] {
+		margin: 0 20px 15px 0;
+	}
+
+	img[style*="float:right"],
+	img[style*="float: right"] {
+		margin: 0 0 15px 20px;
+	}
+}

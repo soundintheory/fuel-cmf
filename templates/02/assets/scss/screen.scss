@@ -1,0 +1,74 @@
+
+// ------------------------------------------------------------------------------------------------------
+// MAIN IMPORTS
+
+@import "utilities/bootstrap";
+@import "utilities/sprites";
+@import "utilities/mixins";
+@import "utilities/grid";
+@import "utilities/pages";
+
+@import "components/buttons";
+@import "components/banners";
+@import "components/footer";
+@import "components/global";
+@import "components/header";
+@import "components/editor";
+@import "components/fonts";
+@import "components/forms";
+
+
+
+// ------------------------------------------------------------------------------------------------------
+// INLINE MEDIA QUERY EXAMPLES
+
+body {
+
+	//// HANDHELD : 0px - 479px
+
+	@media #{$hs} {
+
+	}
+
+	//// EXTRA SMALL : 480px - 767px
+
+	@media #{$xs} {
+
+	}
+	@media #{$xs-down} {
+
+	}
+	@media #{$xs-up} {
+
+	}
+
+	//// SMALL : 768px - 991px
+
+	@media #{$sm} {
+
+	}
+	@media #{$sm-down} {
+
+	}
+	@media #{$sm-up} {
+
+	}
+
+	//// MEDIUM : 992px - 1199px
+
+	@media #{$md} {
+
+	}
+	@media #{$md-down} {
+
+	}
+	@media #{$md-up} {
+
+	}
+
+	//// LARGE : 1200px >
+
+	@media #{$lg} {
+
+	}
+}

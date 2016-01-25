@@ -1,0 +1,60 @@
+
+// ------------------------------------------------------------------------------------------------------
+// FORM ELEMENTS
+
+.form-group {
+
+	// Validation feedback styles
+
+	.form-control-feedback {
+		@include transition(opacity .2s ease-out);
+		opacity: 0;
+	}
+
+	&.form-group-lg .form-control-feedback {
+		line-height: $input-height-large;
+		width: $input-height-large;
+		font-size: $font-size-large;
+	}
+
+	&.form-group-sm .form-control-feedback {
+		line-height: $input-height-small;
+		width: $input-height-small;
+		font-size: $font-size-small;
+	}
+
+	&.has-error {
+		.feedback-error {
+			opacity: 1;
+		}
+	}
+
+	&.has-success {
+		.feedback-success {
+			opacity: 1;
+		}
+	}
+
+	.parsley-errors-list {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		color: $state-danger-text;
+		clear: both;
+
+		li {
+			margin: 4px 0;
+			padding: 0;
+		}
+	}
+
+	&.row {
+		.parsley-errors-list {
+			padding-left: ($grid-gutter-width / 2);
+			padding-right: ($grid-gutter-width / 2);
+		}
+	}
+	textarea{
+		resize: vertical;
+	}
+}

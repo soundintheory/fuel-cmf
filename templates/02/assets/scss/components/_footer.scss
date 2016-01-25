@@ -1,0 +1,128 @@
+
+// ------------------------------------------------------------------------------------------------------
+// FOOTER
+
+#footer {
+	padding-bottom: 36px;
+	.top-footer{
+		.item{
+			@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-12;@extend .col-xs-12;@extend .col-hs-24;
+			padding: 0 20px;
+			border-left: 2px solid #aaa;
+			text-align:center;
+			margin-bottom: 25px;
+			@media #{$sm-down} {
+				border-left: none;
+			}
+			@media #{$xs-down} {
+				text-align:left;
+			}
+			.heading{
+				font-size: 18px;
+					margin: 0 0 10px;
+			}
+			.text{
+				font-size: 13px;
+					line-height: 20px;
+					margin-bottom: 0;
+			}
+
+			.social{
+				li{
+					height:35px;
+					width:35px;
+					background:#EEEEEE;
+					a{
+						line-height: 35px;
+					}
+				}
+			}
+			&:first-child{
+				border-left: none;
+				@media #{$sm} {
+					border-right: 2px solid #aaa;;
+				}
+			}
+			&:last-child{
+				@media #{$sm} {
+					border-left: 2px solid #aaa;;
+				}
+			}
+		}
+
+		ul{
+			@extend .list-unstyled; @extend .list-inline;
+			li{
+				margin-bottom: 10px;
+			}
+		}
+		input{
+			font-size: 14px;
+			line-height: 18px;
+			padding: 6px 10px;
+			border: 2px solid #ddd;
+			@media #{$md} {
+				width:140px;
+			}
+			@media #{$xs} {
+				width:135px;
+			}
+		}
+		button{
+			line-height: 18px;
+			padding: 6px 10px;
+			border: 2px solid #ddd;
+			background:#ddd;
+			margin-left:-3px;
+		}
+	}
+
+	.bottom-footer{
+		color: #fff;
+		div{
+			@extend .col-lg-24;@extend .col-md-24;@extend .col-sm-24;@extend .col-xs-24;@extend .col-hs-24;
+			.copy{
+				@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-8;@extend .col-xs-24;@extend .col-hs-24;
+				text-align:right;
+				background:#333;
+				padding-top: 10px;
+				padding-bottom: 10px;
+				@media #{$xs-down} {
+					text-align:left;
+				}
+			}
+			.nav{
+				@extend .col-lg-18;@extend .col-md-18;@extend .col-sm-16;@extend .col-xs-24;@extend .col-hs-24;
+				overflow: hidden;
+				background:#333;
+				padding-top: 10px;
+				padding-bottom: 10px;
+				ul{
+					margin:0;
+					@extend .list-unstyled;
+					@media #{$xs-down} {
+						text-align:left;
+					}
+					li {
+						display: inline-block;
+						margin: 0 0 0 20px;
+						@media #{$xs-down} {
+							display: block;
+							margin:0;
+							padding:10px 0;
+							border-bottom:1px #fff solid;
+						}
+						a {
+							display: block;
+							color: #fff;
+						}
+
+						a:hover {
+							text-decoration: underline;
+						}
+					}
+				}
+			}
+		}
+	}		
+}

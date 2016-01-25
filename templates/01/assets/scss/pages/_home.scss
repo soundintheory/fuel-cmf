@@ -1,0 +1,20 @@
+
+// ------------------------------------------------------------------------------------------------------
+// HOMEPAGE
+
+body{
+
+	.body-top{
+		padding-top:50px;
+		.item{	
+			@extend .col-lg-8;@extend .col-md-8;@extend .col-sm-8;@extend .col-xs-12;@extend .col-hs-24;
+		}
+	}
+
+	.body-middle{
+		padding-top:50px;
+		.item{	
+			@extend .col-lg-8;@extend .col-md-8;@extend .col-sm-8;@extend .col-xs-12;@extend .col-hs-24;
+		}
+	}
+}

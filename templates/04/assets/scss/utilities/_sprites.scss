@@ -1,0 +1,35 @@
+.sprite {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+  background: url('/assets/images/sprite.png');
+  text-indent: -9999px;
+}
+
+@mixin sprite($sprite) {
+  @extend .sprite;
+
+  $sprite-offset-x: nth($sprite, 3);
+  $sprite-offset-y: nth($sprite, 4);
+  background-position: $sprite-offset-x  $sprite-offset-y;
+
+  width: nth($sprite, 5);
+  height: nth($sprite, 6);
+} 
+
+$arrow-left: 50px 24px -50px -24px 12px 19px 76px 44px '../../../images/sprite.png';
+.sprite.arrow-left { @include sprite($arrow-left); }
+$arrow-right: 64px 0px -64px 0px 12px 19px 76px 44px '../../../images/sprite.png';
+.sprite.arrow-right { @include sprite($arrow-right); }
+$facebook: 50px 0px -50px 0px 12px 22px 76px 44px '../../../images/sprite.png';
+.sprite.facebook { @include sprite($facebook); }
+$google-plus: 0px 22px 0px -22px 21px 22px 76px 44px '../../../images/sprite.png';
+.sprite.google-plus { @include sprite($google-plus); }
+$menu: 0px 0px 0px 0px 25px 20px 76px 44px '../../../images/sprite.png';
+.sprite.menu { @include sprite($menu); }
+$pinterest: 27px 0px -27px 0px 21px 21px 76px 44px '../../../images/sprite.png';
+.sprite.pinterest { @include sprite($pinterest); }
+$play: 64px 21px -64px -21px 9px 11px 76px 44px '../../../images/sprite.png';
+.sprite.play { @include sprite($play); }
+$twitter: 27px 23px -27px -23px 21px 17px 76px 44px '../../../images/sprite.png';
+.sprite.twitter { @include sprite($twitter); }

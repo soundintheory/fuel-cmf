@@ -1,0 +1,129 @@
+
+// ------------------------------------------------------------------------------------------------------
+// FOOTER
+
+#footer {
+	.top-footer{
+		background: #F0F0F0;	
+		.item-list{
+			.item{
+				@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-12;@extend .col-xs-12;@extend .col-hs-24;
+				padding-top: 20px;
+				padding-bottom: 20px;
+				border-left: 1px solid #aaa;
+				text-align:center;
+				@media #{$sm-down} {
+					border-left: none;
+				}
+				@media #{$xs-down} {
+					text-align:left;
+				}
+				.heading{
+					font-size: 18px;
+						margin: 0 0 10px;
+				}
+				.text{
+					font-size: 13px;
+						line-height: 20px;
+						margin-bottom: 0;
+				}
+				&:first-child{
+					border-left: none;
+					@media #{$sm} {
+						border-right: 1px solid #aaa;
+					}
+				}
+				&:last-child{
+					@media #{$sm} {
+						border-left: 1px solid #aaa;
+					}
+				}
+				.newsletter{
+					input{
+						font-size: 14px;
+						  line-height: 18px;
+						  padding: 7px 10px;
+						  border: 2px solid rgb(221, 221, 221);
+						  width: 200px;
+						  @media #{$sm} {
+								width: 140px;
+							}
+							@media #{$xs} {
+								width: 140px;
+							}
+					}
+					button{
+						background-color: rgb(204, 204, 204);
+						-webkit-appearance: none;
+						 border: none;
+						 width: 35px;
+ 						 height: 36px;
+ 						 padding:0;
+ 						 margin-left: -6px;
+					}
+				}
+				.social{
+					li{
+						padding:0;
+						margin-right: 20px;
+						&:last-child{
+							margin-right: 0;	
+						}
+					}
+				}
+			}
+			ul{
+				@extend .list-unstyled; @extend .list-inline;
+			}
+		}
+	}
+
+	.bottom-footer{
+		background: #333;
+		color: #fff;
+		.copy{
+			margin:0;
+			@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-8;@extend .col-xs-24;@extend .col-hs-24;
+			text-align:right;
+			padding-top:10px;
+			padding-bottom:10px;
+			@media #{$xs-down} {
+				text-align:left;
+			}
+		}
+		.nav{
+			@extend .col-lg-18;@extend .col-md-18;@extend .col-sm-16;@extend .col-xs-24;@extend .col-hs-24;
+			overflow: hidden;	
+			ul{
+				margin:0;
+				@extend .list-unstyled; @extend .list-inline;
+				li {
+					margin: 0 0 0 20px;
+					@media #{$xs-down} {
+						display: block;
+						margin:0;
+						padding:10px 0;
+						border-bottom:1px #fff solid;
+					}
+
+					a {
+						display: block;
+						color: #fff;
+						padding: 10px 0;
+						@media #{$xs-down} {
+							padding: 5px 0;
+						}
+					}
+
+					a:hover {
+						text-decoration: underline;
+					}
+					&:first-child{
+						margin-left: 0;
+						padding-left: 0;
+					}
+				}
+			}
+		}
+	}		
+}

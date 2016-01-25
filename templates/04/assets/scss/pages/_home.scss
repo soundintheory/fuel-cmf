@@ -1,0 +1,52 @@
+
+// ------------------------------------------------------------------------------------------------------
+// HOMEPAGE
+
+#homepage{
+	margin-bottom:25px;
+	.container{
+		background: #fff;
+		padding-top: 25px;
+	}
+
+	.top{
+		.item{
+			@extend .col-lg-8;@extend .col-md-8;@extend .col-sm-8;@extend .col-xs-12;@extend .col-hs-24;
+			
+		}
+	}
+
+	.middle{
+		.item{
+			@extend .col-lg-8;@extend .col-md-8;@extend .col-sm-8;@extend .col-xs-12;@extend .col-hs-24;
+			margin-bottom: 20px;
+		}
+	}
+
+	.bottom{
+		.item{
+			@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-6;@extend .col-xs-12;@extend .col-hs-24;
+			margin-bottom: 20px;
+		}
+		margin-bottom: 20px;
+	}
+
+	.other{
+		padding-bottom: 20px;
+		.item{
+			@extend .col-lg-8;@extend .col-md-8;@extend .col-sm-8;@extend .col-xs-12;@extend .col-hs-24;
+			border-right: 1px solid rgb(170, 170, 170);
+			padding:0 20px;
+			@media #{$xs-down} {
+				border-right:none;
+				margin-bottom: 20px;
+			}
+			&:last-child{
+				border-right:none;
+			}
+			p{
+				margin:0
+			}
+		}
+	}
+}

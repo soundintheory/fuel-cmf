@@ -1,0 +1,106 @@
+
+// ------------------------------------------------------------------------------------------------------
+// HEADER
+
+#header {
+	.top{
+		.left{
+			@extend .col-lg-12;@extend .col-md-12;@extend .col-sm-12;@extend .col-xs-12;@extend .col-hs-12;
+		}
+		.right{
+			@extend .col-lg-12;@extend .col-md-12;@extend .col-sm-12;@extend .col-xs-12;@extend .col-hs-12;
+			@extend .text-right;
+		}
+
+		ul{
+			@extend .list-unstyled; @extend .list-inline;
+			margin:0;
+			li{
+				font-size: 15px;
+  				line-height: 20px;
+  				margin: 0px 0px 0px 20px;
+  				padding:0;
+  				&:first-child{
+  					margin:0;
+  				}
+				a{
+					display:block;
+					padding: 14px 2px;
+				}
+			}
+		}
+	}
+	.middle{
+		.left{
+			@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-6;@extend .col-xs-6;@extend .col-hs-6;
+		}
+		.right{
+			@extend .col-lg-6;@extend .col-md-6;@extend .col-sm-6;@extend .col-xs-6;@extend .col-hs-6;
+			@extend .pull-right;
+			form{
+				width:100%;
+				padding:0;
+				input{
+					@extend .pull-right;
+					@extend .clearfix;
+					font-size: 14px;
+					line-height: 18px;
+					padding: 6px 10px;
+					border: 2px solid #ddd;
+				}
+			}
+			@media #{$xs} {
+				text-align: center;
+			}
+		}
+		.logo{
+			@extend .col-lg-12;@extend .col-md-12;@extend .col-sm-12;@extend .col-xs-12;@extend .col-hs-12;
+			padding: 4px 0px 40px;
+			img {
+				display: block;
+				margin: 0 auto;
+				max-width: 100%;
+			}
+		}
+	}
+	.nav{
+		@extend .col-lg-24;@extend .col-md-24;@extend .col-sm-24;@extend .col-xs-24;@extend .col-hs-24;
+		@extend .text-center;
+		margin:0;
+		padding-top:0;
+		ul{
+			@extend .list-unstyled;
+			margin:0;
+			li {
+				@extend .regular-font; font-size: 15px; line-height: 20px;
+				margin: 0 0 0 6px;
+				display: inline-block;
+				&:first-child{
+					margin-left: 0;
+				}
+				&.on{
+					text-decoration: underline;
+				}
+				a, span {
+					display: block;
+					padding: 13px 14px;
+				}
+			}
+			@media #{$xs} {
+				width:70%;
+				margin:0 auto 0;
+				li{
+					display: block;
+				}
+			}
+		}
+	}
+
+	.expand-menu {
+		button{
+			float:right;
+			margin:0;
+			padding:0;
+		}
+	}
+}
