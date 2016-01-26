@@ -201,14 +201,20 @@ class Installer
         \File::copy_dir(CMFPATH.'templates/'.$template.'/app/views', APPPATH.'views');
 
         if(file_exists(CMFPATH.'templates/'.$template.'/assets')){
+            \File::delete_dir(DOCROOT.'public/assets/');
             \File::copy_dir(CMFPATH.'templates/'.$template.'/assets', DOCROOT.'public/');
         }
 
         if(file_exists(CMFPATH.'templates/'.$template.'/cuts')){
+            \File::delete_dir(DOCROOT.'public/cuts/');
             \File::copy_dir(CMFPATH.'templates/'.$template.'/cuts', DOCROOT.'public/');
         }
 
         if(file_exists(CMFPATH.'templates/'.$template.'/root')){
+            \File::delete(DOCROOT.'bower.json');
+            \File::delete(DOCROOT.'composer.json');
+            \File::delete(DOCROOT.'Gruntfile.js');
+            \File::delete(DOCROOT.'package.json');
             \File::copy(CMFPATH.'templates/'.$template.'/root/bower.json', DOCROOT);
             \File::copy(CMFPATH.'templates/'.$template.'/root/composer.json', DOCROOT);
             \File::copy(CMFPATH.'templates/'.$template.'/root/Gruntfile.js', DOCROOT);
