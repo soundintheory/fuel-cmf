@@ -215,10 +215,7 @@ class Installer
             \File::delete(DOCROOT.'composer.json');
             \File::delete(DOCROOT.'Gruntfile.js');
             \File::delete(DOCROOT.'package.json');
-            \File::copy(CMFPATH.'templates/'.$template.'/root/bower.json', DOCROOT);
-            \File::copy(CMFPATH.'templates/'.$template.'/root/composer.json', DOCROOT);
-            \File::copy(CMFPATH.'templates/'.$template.'/root/Gruntfile.js', DOCROOT);
-            \File::copy(CMFPATH.'templates/'.$template.'/root/package.json', DOCROOT);
+            \File::copy_dir(CMFPATH.'templates/'.$template.'/root/', DOCROOT);
         }
         return true;
     }
