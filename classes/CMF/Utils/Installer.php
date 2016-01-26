@@ -201,13 +201,13 @@ class Installer
         \File::copy_dir(CMFPATH.'templates/'.$template.'/app/views', APPPATH.'views');
 
         if(file_exists(CMFPATH.'templates/'.$template.'/assets')){
-            \File::delete_dir(DOCROOT.'public/assets/');
-            \File::copy_dir(CMFPATH.'templates/'.$template.'/assets', DOCROOT.'public/');
+            if (DOCROOT.'public/assets/') \File::delete_dir(DOCROOT.'public/assets/');
+            \File::copy_dir(CMFPATH.'templates/'.$template.'/assets/', DOCROOT.'public/assets/');
         }
 
         if(file_exists(CMFPATH.'templates/'.$template.'/cuts')){
-            \File::delete_dir(DOCROOT.'public/cuts/');
-            \File::copy_dir(CMFPATH.'templates/'.$template.'/cuts', DOCROOT.'public/');
+            if (DOCROOT.'public/cuts/') \File::delete_dir(DOCROOT.'public/cuts/');
+            \File::copy_dir(CMFPATH.'templates/'.$template.'/cuts', DOCROOT.'public/cuts/');
         }
 
         if(file_exists(CMFPATH.'templates/'.$template.'/root')){
