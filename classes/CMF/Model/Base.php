@@ -276,7 +276,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     * Set Description For Model
     * @var string
     */
-    protected static $_description = null;
+    protected static $_form_description = null;
     
     /**
      * Tells the system which fields to use when generating the model's slug
@@ -855,13 +855,13 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     }
 
     /**
-     * @see \CMF\Model\Base::$_description
+     * @see \CMF\Model\Base::$_form_description
      * @return string
      */
-    public static function description()
+    public static function formDescription()
     {
         $called_class = get_called_class();
-        return $called_class::$_description;
+        return $called_class::$_form_description;
     }
     
     /**
