@@ -337,13 +337,20 @@ class Admin
 		$hierarchy = array_reverse($class_name::hierarchy());
 		foreach ($hierarchy as $model_class)
 		{
-			$value = __("admin.models.$model_class.fields.$key.$attribute");
-			if (!empty($value)) break;
+			$lang_key = "admin.models.$model_class.fields.$key.$attribute";
+			$value = __($lang_key);
+			if (!empty($value) && $value != $lang_key) {
+				break;
+			} else {
+				$value = null;
+			}
 		}
 
 		// Finally, check common field translations
 		if (empty($value)) {
-			$value = __("admin.models.common.fields.$key.$attribute");
+			$lang_key = "admin.models.common.fields.$key.$attribute";
+			$value = __($lang_key);
+			if ($value == $lang_key) $value = null;
 		}
 
 		// Check field settings
