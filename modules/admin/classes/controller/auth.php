@@ -14,7 +14,7 @@ class Controller_Auth extends \Controller {
 	    if (\CMF\Auth::authenticate(\Input::post('username'), \Input::post('password'))) {
             \Response::redirect(\Uri::base(false).\Input::post('next', 'admin/'.\Config::get('cmf.admin.default_section')), 'location');
         } else {
-        	\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => __('admin.errors.account.invalid') ));
+        	\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => \Lang::get('admin.errors.account.invalid') ));
             return \View::forge('admin/auth/login.twig', array( 'next' => \Input::get('next') ));
         }
 	}

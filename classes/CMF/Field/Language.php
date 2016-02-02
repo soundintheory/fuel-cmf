@@ -33,7 +33,7 @@ class Language extends Base {
         if ($settings['active_only']) {
             
             $options = array_map(function($lang) {
-                return \Arr::get(\Lang::$lines, 'en.languages.'.$lang['code'], __('admin.errors.language.name_not_found'));
+                return \Arr::get(\Lang::$lines, 'en.languages.'.$lang['code'], \Lang::get('admin.errors.language.name_not_found'));
             }, \CMF\Model\Language::select('item.code', 'item', 'item.code')->orderBy('item.pos', 'ASC')->where('item.visible = true')->getQuery()->getArrayResult());
             
         } else {

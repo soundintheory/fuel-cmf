@@ -603,7 +603,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         $autosave = \Lang::$autosave;
         \Lang::$autosave = false;
         $called_class = get_called_class();
-        $output = __("admin.models.$called_class.singular", array(),"__NOT__FOUND__");
+        $output = \Lang::get("admin.models.$called_class.singular", array(),"__NOT__FOUND__");
         \Lang::$autosave = $autosave;
         if (empty($output)|| $output == "__NOT__FOUND__") {
             if ($called_class::$_singular !== null) return $called_class::$_singular;
@@ -623,7 +623,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         $autosave = \Lang::$autosave;
         \Lang::$autosave = false;
         $called_class = get_called_class();
-        $output = __("admin.models.$called_class.plural", array(),"__NOT__FOUND__");
+        $output = \Lang::get("admin.models.$called_class.plural", array(),"__NOT__FOUND__");
         \Lang::$autosave = $autosave;
         if (empty($output) || $output == "__NOT__FOUND__") {
             if ($called_class::$_plural !== null) return $called_class::$_plural;

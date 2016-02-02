@@ -45,7 +45,7 @@ class Decimal extends Base {
             }
             else    
             {            
-                $model->addErrorForField($settings['mapping']['fieldName'], __('admin.errors.not_a_number'));
+                $model->addErrorForField($settings['mapping']['fieldName'], \Lang::get('admin.errors.not_a_number'));
             }
         }
     }

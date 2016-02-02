@@ -57,7 +57,7 @@ class Controller_Lang extends Controller_Base {
 			// Nothing
 		}
 
-		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => __('admin.messages.translations_save_success') ));
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => \Lang::get('admin.messages.translations_save_success') ));
 
 		$referrer = \Input::referrer('/admin');
 		return \Response::redirect($referrer);

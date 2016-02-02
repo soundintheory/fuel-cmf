@@ -57,7 +57,7 @@ class Importer
 
         return array(
             'success' => true,
-            'message' => __('admin.messages.import_success')
+            'message' => \Lang::get('admin.messages.import_success')
         );
     }
 
@@ -606,10 +606,10 @@ class Importer
         } catch (\Exception $e) {
             switch ($request->response()->status) {
                 case 401:
-                    $message = __('admin.errors.import.url_auth_required');
+                    $message = \Lang::get('admin.errors.import.url_auth_required');
                 break;
                 default:
-                    $message = __('admin.errors.import.url_inaccessible');
+                    $message = \Lang::get('admin.errors.import.url_inaccessible');
                 break;
             }
 
@@ -637,7 +637,7 @@ class Importer
 
         // Stop if we don't support the format
         if (!static::supportsFormat($format)) {
-            throw new \Exception(__('admin.errors.import.file_format_unknown'));
+            throw new \Exception(\Lang::get('admin.errors.import.file_format_unknown'));
         }
 
         // Work out how to parse the data
@@ -690,7 +690,7 @@ class Importer
 
         // Stop if there's no data by this point
         if (!$data) {
-            throw new \Exception(__('admin.errors.import.file_parse_error'));
+            throw new \Exception(\Lang::get('admin.errors.import.file_parse_error'));
         }
 
         return array(

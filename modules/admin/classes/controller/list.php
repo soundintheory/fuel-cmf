@@ -31,7 +31,7 @@ class Controller_List extends Controller_Base {
 	    }
 	    
 	    if (!\CMF\Auth::can('view', $class_name)) {
-	    	return $this->show403('action_plural', array( 'action' => __('admin.verbs.view'), 'resource' => strtolower($class_name::plural()) ));
+	    	return $this->show403('action_plural', array( 'action' => \Lang::get('admin.verbs.view'), 'resource' => strtolower($class_name::plural()) ));
 	    }
 		
 		// Here's where we catch special types, eg tree nodes. These can now be rendered using a special template
@@ -532,9 +532,9 @@ class Controller_List extends Controller_Base {
 	    
 	    // Permissions
 	    if (!\CMF\Auth::can(array('view', 'edit'), 'CMF\\Model\\Permission')) {
-	    	return $this->show403('action_plural', array( 'action' => __('admin.verbs.manage'), 'resource' => __('admin.common.permissions') ));
+	    	return $this->show403('action_plural', array( 'action' => \Lang::get('admin.verbs.manage'), 'resource' => \Lang::get('admin.common.permissions') ));
 	    } elseif (!\CMF\Auth::can('view', $class_name)) {
-	    	return $this->show403('action_plural', array( 'action' => __('admin.verbs.manage'), 'resource' => strtolower($class_name::plural()) ));
+	    	return $this->show403('action_plural', array( 'action' => \Lang::get('admin.verbs.manage'), 'resource' => strtolower($class_name::plural()) ));
 	    }
 	    
 	    // Get the values for the list
@@ -688,7 +688,7 @@ class Controller_List extends Controller_Base {
 
 		$user = \CMF\Auth::current_user();
 		if (!$user->super_user) {
-			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => __('admin.errors.unauthorized.super_only') ));
+			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => \Lang::get('admin.errors.unauthorized.super_only') ));
 			\Response::redirect_back();
 		}
 
@@ -713,7 +713,7 @@ class Controller_List extends Controller_Base {
 	        $this->template = 'admin/item/404.twig';
 	        $this->status = 404;
 	        $this->data = array(
-	           'msg' => __('admin.errors.tree.not_enough_data')
+	           'msg' => \Lang::get('admin.errors.tree.not_enough_data')
 	        );
 	        return;
 	    }
@@ -731,7 +731,7 @@ class Controller_List extends Controller_Base {
 	        $this->template = 'admin/item/404.twig';
 	        $this->status = 404;
 	        $this->data = array(
-	           'msg' => __('admin.errors.http.404', array( 'resource' => $class_name::singular() ))
+	           'msg' => \Lang::get('admin.errors.http.404', array( 'resource' => $class_name::singular() ))
 	        );
 	        return;
 	        
@@ -740,7 +740,7 @@ class Controller_List extends Controller_Base {
 	        $this->template = 'admin/item/404.twig';
 	        $this->status = 404;
 	        $this->data = array(
-	           'msg' => __('admin.errors.tree.not_in_tree')
+	           'msg' => \Lang::get('admin.errors.tree.not_in_tree')
 	        );
 	        return;
 	        
@@ -789,7 +789,7 @@ class Controller_List extends Controller_Base {
 			return $this->customPageOr404(array($table_name, $tab_id), "type");
 		}
 		
-		$msg = __('admin.messages.tree_recovery_success');
+		$msg = \Lang::get('admin.messages.tree_recovery_success');
 		$msg_class = 'alert-success';
 
 		try {
@@ -804,12 +804,12 @@ class Controller_List extends Controller_Base {
 			$tree_errors = $repo->verify();
 
 			if ($tree_errors !== true) {
-				$msg = __('admin.errors.tree.recovery_unsuccessful');
+				$msg = \Lang::get('admin.errors.tree.recovery_unsuccessful');
 				$msg_class = 'alert-danger';
 			}
 
 		} catch (\Exception $e) {
-			$msg = __('admin.errors.tree.recovery_error', array( 'message' => $e->getMessage() ));
+			$msg = \Lang::get('admin.errors.tree.recovery_error', array( 'message' => $e->getMessage() ));
 			$msg_class = 'alert-danger';
 		}
 

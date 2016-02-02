@@ -792,7 +792,7 @@ class CMF
 		$data = array(
 			'code' => $code,
 			'status' => $status,
-			'message' => $message ? $message : __("site.errors.http.$code", array( 'resource' => 'page' ), __("site.errors.http.default", array( 'resource' => 'page' ), $status))
+			'message' => $message ? $message : \Lang::get("site.errors.http.$code", array( 'resource' => 'page' ), \Lang::get("site.errors.http.default", array( 'resource' => 'page' ), $status))
 		);
 
 		// First try the specific error page

@@ -78,12 +78,12 @@ class Controller_Base extends \Controller {
         );
         
         // Some vital settings
-        $this->admin_title = __('admin.title', array(), \Config::get("cmf.admin.title", ''));
+        $this->admin_title = \Lang::get('admin.title', array(), \Config::get("cmf.admin.title", ''));
         $this->base_url = \Admin::$base;
         $this->modules = \Config::get('cmf.admin.modules', false);
         $this->current_module = \Admin::$current_module;
         $this->current_class = \Admin::$current_class;
-        $this->dashboard_title = __('admin.modules.'.\Admin::$current_module.'.title', array(), \Config::get('cmf.admin.modules.'.\Admin::$current_module.'.title', __('admin.common.dashboard', array(), 'Dashboard')));
+        $this->dashboard_title = \Lang::get('admin.modules.'.\Admin::$current_module.'.title', array(), \Config::get('cmf.admin.modules.'.\Admin::$current_module.'.title', \Lang::get('admin.common.dashboard', array(), 'Dashboard')));
         
         $this->headers['X-XSS-Protection'] = 0;
         
@@ -157,9 +157,9 @@ class Controller_Base extends \Controller {
     
     protected function show404($msg = null, $resource = null)
     {
-        if (!$resource) $resource = __('admin.common.page');
+        if (!$resource) $resource = \Lang::get('admin.common.page');
         if (empty($msg)) {
-            $msg = __('admin.errors.http.404', array( 'resource' => $resource ), "That $resource could not be found!");
+            $msg = \Lang::get('admin.errors.http.404', array( 'resource' => $resource ), "That $resource could not be found!");
         }
 
         $this->template = 'admin/errors/404.twig';
@@ -172,7 +172,7 @@ class Controller_Base extends \Controller {
     {
         if (empty($line)) $line = 'default';
         
-        $msg = __('admin.errors.unauthorized.'.$line, $params, "You are not authorised");
+        $msg = \Lang::get('admin.errors.unauthorized.'.$line, $params, "You are not authorised");
         $this->template = 'admin/errors/403.twig';
         $this->status = 403;
         $this->data = array( 'msg' => $msg );

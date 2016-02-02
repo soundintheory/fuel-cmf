@@ -30,7 +30,7 @@ class Password extends \CMF\Field\Base {
 
         if($value != $cpv){
             $model->addErrorForField($settings['mapping']['fieldName'], '');
-            $model->addErrorForField($confirm_password, __('admin.errors.account.password_mismatch'));
+            $model->addErrorForField($confirm_password, \Lang::get('admin.errors.account.password_mismatch'));
         }
     }
     

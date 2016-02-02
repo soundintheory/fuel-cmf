@@ -49,8 +49,8 @@ class BingMap extends Object {
         if (!is_array($value)) $value = array();
 
         // Search input or
-        $searchInput = \Form::input($settings['mapping']['fieldName'].'[search]', null, array( 'class' => 'input input-xxlarge search-input', 'placeholder' => __('admin.common.map_search_placeholder') ));
-        $searchButton = \Form::button('mapsearch', __('admin.verbs.search'), array( 'class' => 'btn btn-primary' ));
+        $searchInput = \Form::input($settings['mapping']['fieldName'].'[search]', null, array( 'class' => 'input input-xxlarge search-input', 'placeholder' => \Lang::get('admin.common.map_search_placeholder') ));
+        $searchButton = \Form::button('mapsearch', \Lang::get('admin.verbs.search'), array( 'class' => 'btn btn-primary' ));
         $searchInput = html_tag('div', array( 'class' => 'form form-inline search-form' ), $searchInput.$searchButton);
 
         // Hidden inputs
@@ -66,7 +66,7 @@ class BingMap extends Object {
 
         // Check that we have an API key
         if (empty($settings['api_key'])) {
-            $content = $label.'<div class="well"><p>'.__('admin.bing.api_key_not_set').'</p></div>';
+            $content = $label.'<div class="well"><p>'.\Lang::get('admin.bing.api_key_not_set').'</p></div>';
         } else {
             $content = $label.$searchInput.$latInput.$lngInput.$zoomInput.$mapDiv;
         }

@@ -187,7 +187,7 @@ class VideoEmbed extends Object {
             $info = static::getBasicVideoInfo($settings, $url);
             
             if (is_null($info)) {
-                $model->addErrorForField($settings['mapping']['fieldName'], __('admin.errors.video.video_url_unknown'));
+                $model->addErrorForField($settings['mapping']['fieldName'], \Lang::get('admin.errors.video.video_url_unknown'));
             }
             
         }

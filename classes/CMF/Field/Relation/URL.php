@@ -79,7 +79,7 @@ class URL extends OneToOne {
         }
         
         $keep_updated_setting = 'settings['.$settings['mapping']['fieldName'].'][keep_updated]';
-        $keep_updated = \Form::hidden($keep_updated_setting, '0', array()).html_tag('label', array( 'class' => 'checkbox keep-updated' ), \Form::checkbox($keep_updated_setting, '1', \Arr::get($settings, 'keep_updated', true), array()).strtolower(__('admin.common.auto_update')));
+        $keep_updated = \Form::hidden($keep_updated_setting, '0', array()).html_tag('label', array( 'class' => 'checkbox keep-updated' ), \Form::checkbox($keep_updated_setting, '1', \Arr::get($settings, 'keep_updated', true), array()).strtolower(\Lang::get('admin.common.auto_update')));
         $input = \Form::input($slug_name, $value->slug, array( 'class' => 'input-xlarge', 'data-copy-from' => implode(',', $model_class::slugFields()) ));
         $label = (!$include_label) ? '' : html_tag('label', array( 'class' => 'item-label', 'for' => $slug_name ), $label_text).$keep_updated.html_tag('div', array( 'class' => 'clear' ), '&nbsp;');
         $prefix = $value->prefix;

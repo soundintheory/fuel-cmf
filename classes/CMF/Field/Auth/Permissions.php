@@ -65,7 +65,7 @@ class Permissions extends \CMF\Field\Collection\Multiselect {
         // Get the resources defined in the config
         $extra_resources = \CMF\Auth::extra_resources();
         $resources = array();
-        $resource_group = array( 'title' => __('admin.common.resources'), 'classes' => array() );
+        $resource_group = array( 'title' => \Lang::get('admin.common.resources'), 'classes' => array() );
         $classes_index = 0;
         
         // Set the values of the resources
@@ -84,7 +84,7 @@ class Permissions extends \CMF\Field\Collection\Multiselect {
             
         }
         
-    	$resources[] = array( 'title' => __('admin.common.content_types'), 'classes' => array() );
+    	$resources[] = array( 'title' => \Lang::get('admin.common.content_types'), 'classes' => array() );
     	
     	// Build the resources list...
     	foreach ($activeClasses as $class_name => $classes) {

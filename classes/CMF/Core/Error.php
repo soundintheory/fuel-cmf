@@ -20,7 +20,7 @@ class Error extends \Fuel\Core\Error
 
 		$response = '';
 		try {
-			$response = \CMF::getCustomErrorResponse(__("site.errors.http.500", array( 'resource' => 'page' ), __("site.errors.http.default", array( 'resource' => 'page' ), 'Please contact the website administrator')));
+			$response = \CMF::getCustomErrorResponse(\Lang::get("site.errors.http.500", array( 'resource' => 'page' ), \Lang::get("site.errors.http.default", array( 'resource' => 'page' ), 'Please contact the website administrator')));
 		} catch (\Exception $e) {
 			$response = \View::forge('errors'.DS.'production');
 		}

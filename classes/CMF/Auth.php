@@ -398,7 +398,7 @@ class Auth
         }
 
         if (static::cannot($action, $resource)) {
-            $message || $message = __("admin.errors.unauthorized.{$resource}.{$action}", array(), __("admin.errors.unauthorized.default"));
+            $message || $message = \Lang::get("admin.errors.unauthorized.{$resource}.{$action}", array(), \Lang::get("admin.errors.unauthorized.default"));
             throw new Auth\AccessDenied($message, $action, $resource);
         }
     }

@@ -58,7 +58,7 @@ class Controller_Actions extends Controller_Base {
 		}
 		
 		\D::manager()->flush();
-		$this->heading = __('admin.messages.reset_images_success');
+		$this->heading = \Lang::get('admin.messages.reset_images_success');
 		$this->template = 'admin/generic.twig';
 	}
 	
@@ -88,7 +88,7 @@ class Controller_Actions extends Controller_Base {
     		    \D::manager()->persist($item);
     		    \D::manager()->persist($url);
     		    
-		        $output .= __('admin.messages.item_updated', array( 'resource' => $item->getUrl() ))."<br />\n";
+		        $output .= \Lang::get('admin.messages.item_updated', array( 'resource' => $item->getUrl() ))."<br />\n";
 		        $updated++;
 		        usleep(5000);
 		        
@@ -123,7 +123,7 @@ class Controller_Actions extends Controller_Base {
 		}
 		
 		\D::manager()->flush();
-		$output .= "<br /><br />".__('admin.messages.num_items_updated', array( 'num' => $updated ))."<br />";
+		$output .= "<br /><br />".\Lang::get('admin.messages.num_items_updated', array( 'num' => $updated ))."<br />";
 		
 		return $output;
 		
@@ -161,7 +161,7 @@ class Controller_Actions extends Controller_Base {
             }
         }
 
-		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => __('admin.messages.save_all_success') ));
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => \Lang::get('admin.messages.save_all_success') ));
 		\Response::redirect_back();
 	}
 	
