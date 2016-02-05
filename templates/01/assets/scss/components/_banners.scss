@@ -17,8 +17,12 @@
 				.container{
 					position:relative;
 					.row{
-						padding-top: 60px;
-						padding-bottom: 70px;
+						padding-top: 100px;
+						padding-bottom: 150px;
+						@media #{$xs-down} {
+							padding-top: 30px;
+							padding-bottom: 20px;
+						}
 					}
 					.slide-content{
 						@extend .col-lg-16;@extend .col-md-16;@extend .col-sm-12;@extend .col-xs-24;@extend .col-hs-24;				
