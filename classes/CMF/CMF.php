@@ -10,7 +10,7 @@ namespace CMF;
  */
 class CMF
 {
-	protected static $model;
+	public static $model;
 	protected static $uri = null;
 	protected static $lang = null;
 	protected static $lang_default = null;

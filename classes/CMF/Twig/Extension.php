@@ -42,6 +42,7 @@ class Extension extends Twig_Extension
 			'singularize' => new Twig_Function_Function('Inflector::singularize'),
 			'ordinalize' => new Twig_Function_Function('Inflector::ordinalize'),
 			'str_repeat' => new Twig_Function_Function('str_repeat'),
+			'array_to_attr' => new Twig_Function_Function('array_to_attr'),
 			'phpinfo' => new Twig_Function_Function('phpinfo'),
 			'basename' => new Twig_Function_Function('basename'),
 			'uri' => new Twig_Function_Method($this, 'uri'),
