@@ -487,6 +487,38 @@ class Controller_List extends Controller_Base {
 		$this->sort_group = $sort_group;
 		$this->tabs = $list_tabs;
 		$this->sort_process = $sort_process;
+
+		// Find all possible types that can be added
+		$classes = array();
+		$classes[$class_name] = array(
+			'plural' => $this->plural,
+			'singular' => $this->singular,
+			'icon' => $this->icon,
+			'table_name' => $metadata->table['name'],
+			'can_create' => $can_create && $can_edit,
+			'can_edit' => $can_edit,
+			'can_delete' => $can_delete,
+			'superclass' => $class_name::superclass()
+		);
+		
+		foreach ($metadata->subClasses as $sub_class)
+		{
+			$subclass_metadata = $sub_class::metadata();
+			if (($subclass_cancreate = \CMF\Auth::can('create', $sub_class)) && !$sub_class::_static()) {
+				$classes[$sub_class] = array(
+					'superlock' => $sub_class::superlock(),
+					'plural' => $sub_class::plural(),
+					'singular' => $sub_class::singular(),
+					'icon' => $sub_class::icon(),
+					'table_name' => $subclass_metadata->table['name'],
+					'can_edit' => \CMF\Auth::can('edit', $sub_class),
+					'can_delete' => \CMF\Auth::can('delete', $sub_class),
+					'superclass' => false
+				);
+			}
+		}
+
+		$this->classes = $classes;
 		
 		// Permissions
 		$this->can_create = $can_create && $can_edit;

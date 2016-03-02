@@ -213,7 +213,21 @@
         {% endif %}
         {% if can_create %}
         <div class="actions pull-right">
-            <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_new_resource', { resource:singular }) }}...</a>
+
+            {% if classes|length %}
+                <div class="dropup pull-right">
+                    <button href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary dropdown-toggle"><i class="fa fa-plus"></i> Add New {{ singular }} <span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li class="nav-header">Choose a type...</li>
+                        {% for className, classInfo in classes %}
+                            <li><a tabindex="-1" href="/admin/{{ classInfo['table_name'] }}/create"><i class="fa fa-{{ classInfo['icon'] }}"></i> {{ classInfo['singular'] }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <a href="/admin/{{ table_name }}/create" class="btn btn-large btn-primary"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_new_resource', { resource:singular }) }}...</a>
+            {% endif %}
+
         </div>
         {% endif %}
         

@@ -23,8 +23,11 @@ class Base extends \ViewModel
     protected function pageTree($model = 'Model_Page_Base', $label = null, $active_url = null, $extra_fields = null)
     {
         $extra_fields_str = (!is_null($extra_fields) ? ', page.'.implode(', page.', $extra_fields) : '');
+        if ($model == 'Model_Page_Base') {
+            $extra_fields_str = ', TYPE(page) AS type';
+        }
 
-        $nodes = $model::select('page.id, page.title, page.menu_title, page.lvl, page.lft, page.rgt, TYPE(page) AS type'.$extra_fields_str.', url.url, url.slug', 'page')
+        $nodes = $model::select('page.id, page.title, page.menu_title, page.lvl, page.lft, page.rgt'.$extra_fields_str.', url.url, url.slug', 'page')
         ->leftJoin('page.url', 'url')
         ->where('page.lvl > 0')
         ->andWhere('page.visible = true')
@@ -46,7 +49,7 @@ class Base extends \ViewModel
         $uri = $active_url ? $active_url : \CMF::original_uri();
         $nodes = \D::manager()->getRepository($model)->buildTree($nodes, array());
         $this->$crumbs_label = array();
-        $this->processNodes($nodes, $uri, 1, $label);
+        $this->processNodes($nodes, $uri, 1, $label, $model);
 
         $crumbs = $this->$crumbs_label;
         ksort($crumbs);
@@ -97,7 +100,7 @@ class Base extends \ViewModel
         return null;
     }
 
-    protected function processNodes(&$nodes, $uri, $level = 1, $label = 'level')
+    protected function processNodes(&$nodes, $uri, $level = 1, $label = 'level', $type = null)
     {
         $hasActive = false;
         
@@ -105,12 +108,16 @@ class Base extends \ViewModel
 
             $node['active'] = ltrim ( $node['url'] ,"/") == ltrim ( $uri ,"/");
             $node['parent_active'] = false;
-            $node['type'] = \Inflector::classify($node['type']);
+            if (isset($node['type'])) {
+                $node['type'] = \Inflector::classify($node['type']);
+            } else if (!is_null($type)) {
+                $node['type'] = $type;
+            }
 
             if (isset($node['__children']) && count($node['__children']) > 0) {
 
                 $newlevel = $level + 1;
-                $node['parent_active'] = $this->processNodes($node['__children'], $uri, $newlevel, $label);
+                $node['parent_active'] = $this->processNodes($node['__children'], $uri, $newlevel, $label, $type);
 
                 if ($node['active'] || $node['parent_active']) {
 

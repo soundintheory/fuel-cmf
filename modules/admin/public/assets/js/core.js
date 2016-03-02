@@ -71,6 +71,8 @@ $(document).ready(function() {
 	if ($('input.datepicker').length > 0 || $('input.datetimepicker').length > 0) { initDatePickers(); }
 	if ($('.fileinput-button').length > 0) { $('.fileinput-button').bootstrapFileInput(); }
 	initCopyFields();
+
+	$('.dropdown-toggle').dropdown();
 	
 });
 
