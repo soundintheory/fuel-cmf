@@ -58,7 +58,8 @@ return array(
 			'latlng' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
         	'latlng_area' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
         	'latlng_bing' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
-        	'latlng_bing_area' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' )
+        	'latlng_bing_area' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
+			'google_place' => array( 'class' => 'Doctrine\\DBAL\\Types\\ObjectType' ),
 		),
 		
 		'ignore_tables' => array(

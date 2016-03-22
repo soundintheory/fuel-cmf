@@ -132,6 +132,7 @@ return array (
         'latlng_area' => 'CMF\\Field\\Object\\GoogleMap',
         'latlng_bing' => 'CMF\\Field\\Object\\BingMap',
         'latlng_bing_area' => 'CMF\\Field\\Object\\BingMap',
+        'google_place' => 'CMF\\Field\\Object\\GooglePlace',
         
         // Associations with specific tables can be mapped...
         'onetoone_urls' => 'CMF\\Field\\Relation\\URL',

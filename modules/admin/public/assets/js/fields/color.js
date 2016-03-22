@@ -6,7 +6,6 @@
 	    
 	    // When a new form is added, run it again!
 	    $(window).bind('cmf.newform', function(e, data) {
-	    	
 	    	data.wrap.find('.field-type-color').each(init);
 	        
 	    });
