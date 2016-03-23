@@ -32,7 +32,7 @@ class Textarea extends Base
         $label_text = $settings['title'].($required ? ' *' : '');
         
         // Translation?
-        if (\CMF::$lang_enabled && !\CMF::langIsDefault() && $model->isTranslatable($settings['mapping']['columnName'])) {
+        if (\CMF::$lang_enabled && !\CMF::langIsDefault() && isset($settings['mapping']['columnName']) && $model->isTranslatable($settings['mapping']['columnName'])) {
             
             // If there is no translation
             if (!$model->hasTranslation($settings['mapping']['columnName'])) {

@@ -250,7 +250,7 @@ class CMF
 		
 		// Load the languages back in, now we might have a translation for them
 		if ($fallback != $iso) {
-			\Lang::load('languages', true, $iso, true);
+			\Lang::load('languages', true, $iso, false, true);
 			static::$lang_prefix = "/$iso";
 		}
 		
@@ -301,7 +301,10 @@ class CMF
 		\Config::set('language', $lang);
 		
 		if (static::$lang_default != $lang) {
-			\Lang::load('languages', true, $lang, true);
+			\Lang::load('errors', true, $lang, false, true);
+			\Lang::load('admin', true, $lang, false, true);
+			\Lang::load('site', true, $lang, false, true);
+			\Lang::load('languages', true, $lang, false, true);
 			static::$lang_prefix = "/$lang";
 		}
 		

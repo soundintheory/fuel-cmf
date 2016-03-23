@@ -23,6 +23,8 @@ class Select extends Base {
     
     public static function getValue($value, $settings, $model)
     {
+        if (!isset($settings['mapping']['columnName'])) return null;
+
         $options = \CMF::getOptions(get_class($model), $settings['mapping']['columnName'], isset($settings['options']) ? $settings['options'] : array());
         if (!\Arr::is_assoc($options) || @$settings['use_key'] === true) return $value;
         if (is_numeric($value)) $value = strval($value);
@@ -58,7 +60,7 @@ class Select extends Base {
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
-        $options = \CMF::getOptions(get_class($model), $settings['mapping']['columnName'], isset($settings['options']) ? $settings['options'] : array());
+        $options = \CMF::getOptions(get_class($model), \Arr::get($settings, 'mapping.columnName'), isset($settings['options']) ? $settings['options'] : array());
 
         // Description?
         $description = isset($settings['description']) ? '<span class="help-block">'.$settings['description'].'</span>' : '';

@@ -1,11 +1,21 @@
-<div class="dynamic-object-tabular form-inline{{ (form.settings.widget == false) ? ' field-type-object-dynamic controls control-group' : '' }}">
+<div class="dynamic-object-tabular {% if form.showTranslationStatus(model) and (not form.hasTranslation(model)) %}no-translation{% endif %} form-inline{{ (form.settings.widget == false) ? ' field-type-object-dynamic controls control-group' : '' }}">
 
 {% set fieldName = form.settings.mapping.fieldName %}
 
 <input type="hidden" name="{{ fieldName }}[keys]" value="" />
 <input type="hidden" name="{{ fieldName }}[values]" value="" />
 
-{% if form.settings.widget == false %}<h5>{{ form.settings.title }}</h5>{% endif %}
+{% if form.settings.widget == false %}
+	{% if form.showTranslationStatus(model)  %}
+		{% if form.hasTranslation(model) %}
+			<img class="lang-flag" src="/admin/assets/img/lang/{{ default_language() }}.png" />
+		{% else %}
+			<img class="lang-flag" src="/admin/assets/img/lang/{{ language() }}.png" />
+		{% endif %}
+	{% endif %}
+	<h5>{{ form.settings.title }}</h5>
+{% endif %}
+
 <table class="table-striped table-hover">
 	<tr class="item-template">
 		<td class="object-key">

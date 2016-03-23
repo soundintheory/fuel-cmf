@@ -78,6 +78,19 @@ class ObjectForm
 		}
 		
 	}
+
+	public function showTranslationStatus($model)
+	{
+		return \CMF::$lang_enabled &&
+			!\CMF::langIsDefault() &&
+			isset($this->settings['mapping']['columnName']) &&
+			$model->isTranslatable($this->settings['mapping']['columnName']);
+	}
+
+	public function hasTranslation($model)
+	{
+		return isset($this->settings['mapping']['columnName']) && $model->hasTranslation($this->settings['mapping']['columnName']);
+	}
 	
 	public function getContent($model)
 	{
@@ -115,7 +128,7 @@ class ObjectForm
 				
 			}
 			
-			return \View::forge($this->settings['template'], array( 'form' => $this ), false);
+			return \View::forge($this->settings['template'], array( 'form' => $this, 'model' => $model ), false);
 			
 		}
 		
@@ -152,7 +165,7 @@ class ObjectForm
 				
 			}
 			
-			return \View::forge('admin/fields/object/dynamic.twig', array( 'form' => $this ), false);
+			return \View::forge('admin/fields/object/dynamic.twig', array( 'form' => $this, 'model' => $model ), false);
 			
 		}
 		
@@ -245,6 +258,7 @@ class ObjectForm
 			
 			return \View::forge('admin/fields/collection/tabular-array.twig', array(
 				'form' => $this,
+				'model' => $model,
 				'template' => $template,
 				'rows' => $rows,
 				'cols' => $cols,
