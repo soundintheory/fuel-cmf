@@ -6,14 +6,15 @@
 <input type="hidden" name="{{ fieldName }}[values]" value="" />
 
 {% if form.settings.widget == false %}
-	{% if form.showTranslationStatus(model)  %}
-		{% if form.hasTranslation(model) %}
-			<img class="lang-flag" src="/admin/assets/img/lang/{{ default_language() }}.png" />
-		{% else %}
-			<img class="lang-flag" src="/admin/assets/img/lang/{{ language() }}.png" />
-		{% endif %}
-	{% endif %}
-	<h5>{{ form.settings.title }}</h5>
+	<h5>
+		{% if form.showTranslationStatus(model)  %}
+			{% if form.hasTranslation(model) %}
+				<img class="lang-flag" src="/admin/assets/img/lang/{{ language() }}.png" />
+			{% else %}
+				<img class="lang-flag" src="/admin/assets/img/lang/{{ default_language() }}.png" />
+			{% endif %}
+		{% endif %}&nbsp;{{ form.settings.title }}
+	</h5>
 {% endif %}
 
 <table class="table-striped table-hover">

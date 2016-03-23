@@ -94,7 +94,7 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
         		oembed_maxHeight: '315',
         		oembed_WrapperClass: 'embedded-content',
         		bodyClass: 'editor',
-        		contentsCss: ['/admin/assets/ckeditor/contents.css'],
+        		contentsCss: ['/admin/assets/css/ckeditor-contents.css', '/admin/assets/ckeditor/contents.css'],
         		filebrowserBrowseUrl: '/admin/finder/browser?start=files',
         		filebrowserImageBrowseUrl: '/admin/finder/browser?start=images',
         		filebrowserWindowFeatures: 'location=no,menubar=no,toolbar=no,dependent=yes,minimizable=no,modal=yes,alwaysRaised=yes,resizable=no,scrollbars=no',

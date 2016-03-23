@@ -13,7 +13,6 @@ class Translatable extends Extension
 	public static function init($em, $reader)
 	{
 		// http://www.w3schools.com/tags/ref_language_codes.asp
-		
 		static::$listener = $listener = new \Gedmo\Translatable\TranslatableListener();
 		
 		// Current translation locale should be set from session or hook later into the listener

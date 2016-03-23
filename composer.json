@@ -22,11 +22,11 @@
         "twig/twig": "1.*",
         "twig/extensions": "~1.0.0",
         "roderik/pwgen-php": "0.1.*",
-        "vesselinv/fuel-sprockets": "1.*",
         "soundintheory/php-sql-parser": "*",
         "hautelook/phpass": "0.3.*",
         "soundintheory/php-sql-parser": "1.*",
         "helios-ag/fm-elfinder-php-connector": "1.1.*",
+        "leafo/lessphp": "0.4.*",
         "doctrine/orm": "2.4.4",
         "doctrine/collections": "1.2",
         "doctrine/dbal": "dev-master as 2.4.2"
@@ -39,7 +39,8 @@
         "ruudk/twitter-oauth": "Need to interact with the twitter API?"
     },
     "config": {
-        "vendor-dir": "vendor"
+        "vendor-dir": "vendor",
+        "preferred-install": "dist"
     },
     "autoload": {
         "psr-0": {

@@ -13,6 +13,15 @@ Autoloader::alias_to_namespace('CMF\\Admin');
 // Load cmf config
 \Config::load('cmf', true);
 
+if (\Config::get('cmf.languages.enabled')) {
+	\Config::load('db', true);
+	$extensions = \Config::get('db.doctrine2.extensions');
+	if (!is_array($extensions)) $extensions = array();
+	if (!in_array('CMF\\Doctrine\\Extensions\\Translatable', $extensions))
+		$extensions[] = 'CMF\\Doctrine\\Extensions\\Translatable';
+	\Config::set('db.doctrine2.extensions', $extensions);
+}
+
 // Check if custom module urls have been set
 if (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), 'admin') === 0) {
 	\Config::set('security.uri_filter', array_merge( array('\Admin::module_url_filter'), \Config::get('security.uri_filter') ));
@@ -21,7 +30,7 @@ if (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), 'admin') === 
 }
 
 // Load up the required packages
-Package::load(array('email', 'parser', 'sprockets'));
+Package::load(array('email', 'parser'));
 
 // Override some external classes
 Autoloader::add_core_namespace('CMF\\Core', true);
@@ -50,18 +59,6 @@ if (isset($_GET['debug']) && !\Fuel::$profiling) {
 
 // Listen for events at the beginning of the request for caching
 \Event::register('controller_started', 'CMF\\Cache::start');
-
-\Config::load('sprockets', true);
-\Config::load(CMFPATH.'config/sprockets.php', 'sprockets');
-$assets_dir = \Config::get('sprockets.asset_compile_dir');
-
-// Check the compiled assets dir is working
-if (!is_dir($assets_dir)) {
-	@mkdir($assets_dir);
-	@mkdir($assets_dir.'js');
-	@mkdir($assets_dir.'css');
-	@mkdir($assets_dir.'img');
-}
 
 // Add CMF's modules directory so it's modules can be autoloaded
 $module_paths = Config::get('module_paths');

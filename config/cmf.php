@@ -165,7 +165,8 @@ return array (
         'translatable_fields' => array(
             'string',
             'text',
-            'richtext'
+            'richtext',
+            'object'
         )
     ),
     

@@ -1,0 +1,7 @@
+html,
+body {
+	width: auto;
+	height: auto;
+	min-height: 0px;
+	max-height: none;
+}
