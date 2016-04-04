@@ -16,5 +16,17 @@ class Tree extends Extension
 		static::$listener->setAnnotationReader($reader);
 		$em->getEventManager()->addEventSubscriber(static::$listener);
 	}
+
+	public static function disableListener()
+	{
+		if (empty(static::$listener)) return;
+		\D::manager()->getEventManager()->removeEventSubscriber(static::$listener);
+	}
+
+	public static function enableListener()
+	{
+		if (empty(static::$listener)) return;
+		\D::manager()->getEventManager()->addEventSubscriber(static::$listener);
+	}
 	
 }

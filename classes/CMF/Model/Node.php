@@ -80,6 +80,51 @@ class Node extends Base
 	{
 	    return \D::manager()->getRepository(get_called_class())->childrenHierarchy();
 	}
+
+    /**
+     * NOTE: flush your entity manager after
+     *
+     * Tries to recover the tree
+     *
+     * @return void
+     */
+    public static function rebuildTree($sortByField = null)
+    {
+        $called_class = get_called_class();
+        $rep = $called_class::repository();
+        if (!($rep instanceof \Gedmo\Tree\Entity\Repository\NestedTreeRepository))
+            return false;
+
+        $em = \D::manager();
+        $meta = $called_class::metadata();
+        $config = \CMF\Doctrine\Extensions\Tree::$listener->getConfiguration($em, $meta->name);
+
+        $doRecover = function ($root, &$count, $level) use ($meta, $config, $rep, $em, $sortByField, &$doRecover) {
+            $lft = $count++;
+            foreach ($rep->getChildren($root, true, $sortByField) as $child) {
+                $doRecover($child, $count, $level + 1);
+            }
+            $rgt = $count++;
+            $meta->getReflectionProperty($config['left'])->setValue($root, $lft);
+            $meta->getReflectionProperty($config['right'])->setValue($root, $rgt);
+            if (isset($config['level']) && $meta->hasField($config['level'])) {
+                $meta->getReflectionProperty($config['level'])->setValue($root, $level);
+            }
+            $em->persist($root);
+        };
+
+        if (isset($config['root'])) {
+            foreach ($rep->getRootNodes($sortByField) as $root) {
+                $count = 1; // reset on every root node
+                $doRecover($root, $count, 0);
+            }
+        } else {
+            $count = 1;
+            foreach ($rep->getChildren(null, true, $sortByField) as $root) {
+                $doRecover($root, $count, 0);
+            }
+        }
+    }
     
     /**
      * Returns a flat array of ids for all children of the model. Useful for filtering in queries.
