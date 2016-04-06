@@ -147,7 +147,7 @@ class Base {
             if (!is_array($context)) $context = array();
             $context['model'] = $model;
             if(class_exists('Model_Settings'))
-                $context['settings'] = \Model_Settings::select('item')->getQuery()->getResult()[0];
+                $context['settings'] = \Model_Settings::instance();
             
             $twig = \View_Twig::parser();
             $loader = \View_Twig::loader();

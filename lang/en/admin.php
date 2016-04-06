@@ -94,6 +94,7 @@ return array(
 		'item_create_success'		=> ':resource created successfully',
 		'item_updated'				=> ':resource updated successfully',
 		'num_items_updated'			=> ':num items were updated',
+		'num_type_deleted'			=> ':num :type were deleted',
 		'save_all_success'			=> 'All items were saved',
 		'reset_images_success'		=> 'All the images have been reset',
 		'import_success'			=> 'Data Successfully imported',

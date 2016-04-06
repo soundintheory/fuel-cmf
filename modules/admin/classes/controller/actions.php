@@ -61,6 +61,16 @@ class Controller_Actions extends Controller_Base {
 		$this->heading = \Lang::get('admin.messages.reset_images_success');
 		$this->template = 'admin/generic.twig';
 	}
+
+	/**
+	 * Remove old and broken URL entries
+	 */
+	public function action_clean_urls()
+	{
+		$deleted = \CMF\Model\URL::cleanOld();
+		echo \Lang::get('admin.messages.num_type_deleted', array( 'num' => $deleted, 'type' => strtolower(\CMF\Model\URL::plural()) ));
+		exit();
+	}
 	
 	/**
 	 * Go through every entry in the system and make sure the URL is up to date

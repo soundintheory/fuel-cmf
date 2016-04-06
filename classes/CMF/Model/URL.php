@@ -54,6 +54,23 @@ class URL extends Base
         return \CMF::link(strval($this->url));
     }
 
+    public static function cleanOld()
+    {
+        $urls = \CMF\Model\URL::select('item')->getQuery()->getResult();
+        $deleted = 0;
+        
+        foreach ($urls as $url) {
+            $item = $url->item();
+            if (empty($item)) {
+                \D::manager()->remove($url);
+                $deleted++;
+            }
+        }
+
+        \D::manager()->flush();
+        return $deleted;
+    }
+
     public $processed = false;
     
     /**
