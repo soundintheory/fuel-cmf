@@ -16,7 +16,7 @@
 		var autocomplete = new google.maps.places.Autocomplete($wrap.children("input")[0]);
 		autocomplete.addListener('place_changed', function() {
 			var place = autocomplete.getPlace();
-			$wrap.children("[data-ref='place-id']").val(place.id);
+			$wrap.children("[data-ref='place-id']").val(place.place_id);
 			$wrap.children("[data-ref='address_components']").val(JSON.stringify(place.address_components));
 		});
 	}
