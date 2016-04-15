@@ -145,7 +145,11 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
                 config.templates_files = settings['templatesFiles'];
                 config.templates_replaceContent = false;
             }
-        	
+
+            if (!!settings['editor']) {
+                config = $.extend(true, {}, config, settings['editor']);
+            }
+            
         	editor = $input.ckeditor(config).ckeditorGet();
 
             initialised = true;
