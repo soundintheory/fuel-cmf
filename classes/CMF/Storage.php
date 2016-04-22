@@ -132,7 +132,7 @@ class Storage
 		    				if ($cdn && $field_type == 'file')
 		    				{
 		    					// Sync straight-up files directly to the CDN
-		    					//$staticFiles[] = $field_value['src'];
+		    					$staticFiles[] = $field_value['src'];
 		    				}
 		    			}
 		    		}
