@@ -36,6 +36,11 @@
             {{ attribute(this, 'action_'~action.type, [action_id, action, model, table_name, 'list']) }}
             {% endfor %}
         </div>
+        {% if viewLink %}
+            <div class="preview-row clear pull-right">
+                <a href="{{ viewLink }}" target="_blank" class="btn btn-success">View on site &nbsp;<i class="fa fa-chevron-right"></i></a>
+            </div>
+        {% endif %}
         <div class="clear"></div>
         
         {% if form.content|length > 1 %}

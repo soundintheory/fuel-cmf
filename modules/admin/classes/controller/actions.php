@@ -63,6 +63,16 @@ class Controller_Actions extends Controller_Base {
 	}
 
 	/**
+	 * Syncs the files table with file and image fields
+	 */
+	public function action_sync_files_table()
+	{	
+		\CMF\Storage::syncFiles();
+		$this->heading = 'All files were synced';
+		$this->template = 'admin/generic.twig';
+	}
+
+	/**
 	 * Remove old and broken URL entries
 	 */
 	public function action_clean_urls()

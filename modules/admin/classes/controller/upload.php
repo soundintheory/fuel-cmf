@@ -46,9 +46,9 @@ class Controller_Upload extends Controller_Base {
         $result = $this->handleUpload(DOCROOT.$path);
         
         // We may have been passed details about the owner of this video field
-        $model_class = \Input::get('model', urldecode(\Input::post('model', null)));
+        $model_class = \Input::get('model', urldecode(\Input::post('model', '')));
         $item_id = \Input::get('item_id', urldecode(\Input::post('item_id', null)));
-        $field_name = \Input::get('fieldName', urldecode(\Input::post('fieldName', null)));
+        $field_name = \Input::get('fieldName', urldecode(\Input::post('fieldName', '')));
         
         // Log any errors
         if (isset($result['error'])) {
@@ -65,7 +65,18 @@ class Controller_Upload extends Controller_Base {
             
             $info = @getimagesize($this->target);
             if ($info !== false) $result['info'] = $info;
+
             
+            // Write a file entry to the database
+            \DB::insert('_files')->set(array(
+                'path' => $result['path'],
+                'url' => '/'.$result['path'],
+                'storage' => 'local',
+                'type' => $model_class,
+                'field' => $field_name,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ))->execute();
         }
         
         $this->headers = array("Content-Type: text/plain");

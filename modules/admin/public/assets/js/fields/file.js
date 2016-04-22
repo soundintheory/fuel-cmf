@@ -28,7 +28,7 @@
             debug: false,
             request: {
                 endpoint: '/admin/upload',
-                params: { 'path':settings['path'], 'fieldName':fieldName },
+                params: { 'path':settings['path'], 'fieldName':fieldName, 'model':(settings.model || '') },
                 paramsInBody: false
             },
             text: {

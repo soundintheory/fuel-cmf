@@ -29,7 +29,9 @@
         "leafo/lessphp": "0.4.*",
         "doctrine/orm": "2.4.4",
         "doctrine/collections": "1.2",
-        "doctrine/dbal": "dev-master as 2.4.2"
+        "doctrine/dbal": "dev-master as 2.4.2",
+        "league/glide": "^1.0",
+        "league/flysystem": "^1.0"
     },
     "suggest": {
         "phpoffice/phpexcel": "To allow the import of .xls or .xlsx spreadsheets",
@@ -45,6 +47,10 @@
     "autoload": {
         "psr-0": {
             "CMF\\": "classes/"
+        },
+        "psr-4": {
+            "League\\Glide\\": "classes/Glide/",
+            "Intervention\\Image\\": "classes/Intervention/Image"
         },
         "classmap": [
             "classes/CMF/Doctrine/Manager.php",

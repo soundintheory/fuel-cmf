@@ -52,7 +52,7 @@
             debug: false,
             request: {
                 endpoint: '/admin/upload',
-                params: { 'path':settings['path'], 'fieldName':fieldName },
+                params: { 'path':settings['path'], 'fieldName':fieldName, 'model':(settings.model || '') },
                 paramsInBody: false
             },
             text: {
@@ -207,7 +207,7 @@
             
             if (isNull(val) || isNull(val['src']) || val['src'] == '') {
                 
-                $filePreview.html('<img style="height:' + settings['thumb_size']['height'] + 'px;" src="/image/2/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/placeholder.png" class="thumbnail" />');
+                $filePreview.html('<img style="height:' + settings['thumb_size']['height'] + 'px;" src="/image/2/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/assets/images/placeholder.png" class="thumbnail" />');
                 setStatus(_('admin.upload.no_file_selected'));
                 $el.removeClass('populated');
                 $label.html(title);
@@ -426,7 +426,7 @@
                 
             } else {
                 
-                rightCol += '<img class="main-img" src="/image/3/565/390/' + cValue + '" />';
+                rightCol += '<img class="main-img" src="/image/3/565/390/' + cValue['src'] + '" />';
                 
             }
             

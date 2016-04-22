@@ -85,6 +85,10 @@ class Controller_Item extends Controller_Base {
 
 		$root_class = $metadata->rootEntityName;
 		$root_metadata = $root_class::metadata();
+
+		if ($url = $model->getURLObject()) {
+			$this->viewLink = $url->url;
+		}
 	    
 	   	// Get stuff ready for the template
 	   	$this->actions = $class_name::actions();
@@ -221,6 +225,11 @@ class Controller_Item extends Controller_Base {
         	    $em->flush();
 
 	        }
+
+	        // Sync file fields to DB
+	        try {
+	        	\CMF\Storage::syncFilesFor($model);
+	        } catch (\Exception $e) { }
 	        
 	        // Do something depending on what mode we're in...
 	        switch (\Input::param('_mode', 'default')) {

@@ -356,6 +356,8 @@ class CMF
 	public static function link($url = null, $lang = null)
 	{
 		if ($url === null) $url = \Input::uri();
+		if (is_array($url)) return static::getLink($url);
+		if ($url instanceof \CMF\Model\URL) return strval($url);
 		if (!static::$lang_enabled) return $url;
 
 		$use_tld = \Config::get('cmf.languages.use_tld', false);
@@ -368,6 +370,19 @@ class CMF
 			(strlen($url) > 3 && strpos($url, $prefix.'/') === 0)) return $url;
 		
 		return $url == $prefix ? $url : '/'.trim($prefix.$url, '/');
+	}
+
+	/**
+	 * Get a url to an asset
+	 */
+	public static function asset($url = null)
+	{
+		if (empty($url)) return '#';
+		if (strpos($url, 'http://') !== 0 && \Config::get('cmf.cdn.enabled'))
+		{
+			return \CMF\Storage::getCDNAssetUrl($url);
+		}
+		return $url;
 	}
 	
 	/**
@@ -774,7 +789,7 @@ class CMF
 		
 	}
 	
-	public static function getCropUrl($image, $cropid, $w, $h)
+	public static function getUrl($image, $cropid, $w, $h)
 	{
 		$crop = empty($image) ? false : \Arr::get($image, 'crop.'.$cropid, false);
 		$src = (isset($image['src']) && !empty($image['src'])) ? $image['src'] : 'placeholder.png';

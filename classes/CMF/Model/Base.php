@@ -419,6 +419,17 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
 
         return $this->urlPrefix().$this->urlSlug();
     }
+
+    /**
+     * Get the CMF URL object associated with the item
+     */
+    public function getURLObject()
+    {
+        if (property_exists($this, 'url') && isset($this->url) && ($this->url instanceof \CMF\Model\URL))
+        {
+            return $this->url;
+        }
+    }
     
     /**
      * The name of the template the model will try to render to. By default it is automatically generated

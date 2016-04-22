@@ -46,7 +46,6 @@ class Select extends Base {
             }
             return $value;
         } catch (\Exception $e) {
-            var_dump($e);
             return '(empty)';
         }
     }

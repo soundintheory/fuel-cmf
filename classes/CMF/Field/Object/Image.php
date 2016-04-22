@@ -220,54 +220,9 @@ class Image extends File {
         return parent::preProcess($value, $settings, $model);
     }
     
-    public static function getCropUrl($image, $width, $height, $crop_id = 'main', $crop_mode = 2, $params = array())
-    {
-        if (!is_array($image)) return "/image/2/$width/$height/placeholder.png";
-        if (is_null($crop_id) || $crop_id === false) $crop_id = '_';
-
-        $params = http_build_query($params);
-        
-        $crop = \Arr::get($image, "crop.$crop_id", false);
-        $src = \Arr::get($image, 'src', false);
-        if (!$src) return null;
-        
-        if ($crop === false) {
-            return "/image/$crop_mode/$width/$height/".$src.($params ? '?'.$params : '');
-        }
-
-        if (($cw = intval($crop['width'])) && ($ch = intval($crop['height'])) && $width > 0 && $height > 0) {
-            $cr = $cw / $ch;
-            $rr = $width / $height;
-
-            if ($cr != $rr) {
-
-                $nh = round($cw / $rr);
-                if ($nh > $ch) {
-                    $nw = round($ch * $rr);
-                    $crop['width'] = $nw;
-                    $crop['x'] += round(($cw - $nw) / 2);
-                } else {
-                    $crop['height'] = $nh;
-                    $crop['y'] += round(($ch - $nh) / 2);
-                }
-
-            }
-        }
-        
-        return "/image/".
-        $crop['x']."/".
-        $crop['y']."/".
-        $crop['width']."/".
-        $crop['height']."/".
-        $width."/".
-        $height."/".
-        $src.
-        ($params ? '?'.$params : '');
-    }
-    
     public static function displayList($value, $edit_link, &$settings, &$model)
     {
-        $src = (isset($value) && !empty($value['src'])) ? $value['src'] : 'placeholder.png';
+        $src = (isset($value) && !empty($value['src'])) ? $value['src'] : 'assets/images/placeholder.png';
         return \Html::anchor($edit_link, \Html::img('image/2/50/50/'.$src, array()));
     }
     
@@ -276,11 +231,13 @@ class Image extends File {
     {
         if (!is_array($value)) $value = array( 'src' => $value );
         
+        $metadata = $model->metadata();
         $settings = static::settings($settings);
         $settings['label'] = isset($settings['label']) ? $settings['label'] : true;
         $settings['required'] = isset($settings['required']) ? $settings['required'] : false;
         $settings['errors'] = $model->getErrorsForField($settings['mapping']['fieldName']);
         $settings['has_errors'] = count($settings['errors']) > 0;
+        $settings['model'] = $metadata->name;
         $preview_value = (isset($value) && isset($value['src'])) ? str_replace($settings['path'], '', $value['src']) : '';
         
         // Prepare the crop settings
@@ -317,6 +274,14 @@ class Image extends File {
         $output['js_data'] = $settings;
         return $output;
         
+    }
+
+    /**
+     * Alias for \CMF\Image::getUrl, for backwards compatibility
+     */
+    public static function getCropUrl($image, $width, $height, $crop_id = 'main', $crop_mode = 2, $params = array())
+    {
+        return \CMF\Image::getUrl($image, $width, $height, $crop_id, $crop_mode, $params);
     }
     
    /** inheritdoc */

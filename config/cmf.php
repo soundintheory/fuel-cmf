@@ -70,6 +70,26 @@ return array (
             'height' => 720
         )
     ),
+
+    'cdn' => array(
+        'enabled' => false,
+        'base_url' => null,
+        'sync' => array(
+            'enabled' => true,
+            'paths' => array(
+                'assets'
+            ),
+            'exclude' => array(
+                '/\.scss$/',
+                '/\.less$/',
+                '/\.mustache$/'
+            )
+        ),
+        'adapter' => function() {
+            // Return a flysystem adapter here
+            return null;
+        }
+    ),
     
     'cache' => array(
         'enabled' => true,

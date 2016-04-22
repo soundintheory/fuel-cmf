@@ -37,11 +37,13 @@ class File extends Object {
     {
         if (!is_array($value)) $value = array( 'src' => $value );
         
+        $metadata = $model->metadata();
         $settings = static::settings($settings);
         $settings['label'] = isset($settings['label']) ? $settings['label'] : true;
         $settings['required'] = isset($settings['required']) ? $settings['required'] : false;
         $settings['errors'] = $model->getErrorsForField($settings['mapping']['fieldName']);
         $settings['has_errors'] = count($settings['errors']) > 0;
+        $settings['model'] = $metadata->name;
         $preview_value = (isset($value) && isset($value['src'])) ? str_replace($settings['path'], '', $value['src']) : '';
         $content = strval(\View::forge('admin/fields/file.twig', array( 'settings' => $settings, 'value' => $value, 'preview_value' => $preview_value ), false));
         
