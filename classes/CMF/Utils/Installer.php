@@ -211,10 +211,14 @@ class Installer
         }
 
         if(file_exists(CMFPATH.'templates/'.$template.'/root')){
-            \File::delete(DOCROOT.'bower.json');
-            \File::delete(DOCROOT.'composer.json');
-            \File::delete(DOCROOT.'Gruntfile.js');
-            \File::delete(DOCROOT.'package.json');
+            if(file_exists(DOCROOT.'bower.json'))
+                \File::delete(DOCROOT.'bower.json');
+            if(file_exists(DOCROOT.'composer.json'))
+                \File::delete(DOCROOT.'composer.json');
+            if(file_exists(DOCROOT.'Gruntfile.js'))
+                \File::delete(DOCROOT.'Gruntfile.js');
+            if(file_exists(DOCROOT.'package.json'))
+                \File::delete(DOCROOT.'package.json');
             \File::copy_dir(CMFPATH.'templates/'.$template.'/root/', DOCROOT);
         }
         return true;

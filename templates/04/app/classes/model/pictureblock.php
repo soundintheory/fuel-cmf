@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\Table(name="picture_blocks")
  * @ORM\Entity
  **/
-class Model_PictureTextblock extends \CMF\Model\Base
+class Model_Pictureblock extends \CMF\Model\Base
 {
     protected static $_fields = array(
         'image' => array( 'crop'=>array(
