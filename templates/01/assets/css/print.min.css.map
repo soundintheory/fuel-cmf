@@ -2,8 +2,7 @@
 	"version": 3,
 	"file": "print.min.css",
 	"sources": [
-		"../../scss/1/print.scss",
-		"../../scss/global/print.scss"
+		"../scss/print.scss"
 	],
 	"mappings": "",
 	"names": []
