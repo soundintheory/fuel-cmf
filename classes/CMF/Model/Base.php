@@ -339,6 +339,12 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     protected static $_import_fields_exclude = array();
 
     /**
+     * Whether the type is visible in the sitemap or not
+     * @see  CMF\Model\Base::showInSitemap()
+     */
+    protected static $_show_in_sitemap = true;
+
+    /**
      * @see  CMF\Model\Base::$_rest_fields
      */
     public static function restFields()
@@ -372,6 +378,15 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     {
         $called_class = get_called_class();
         return $called_class::$_import_fields_exclude;
+    }
+
+    /**
+     * @see  CMF\Model\Base::$_show_in_sitemap
+     */
+    public static function showInSitemap()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_show_in_sitemap;
     }
 
     /**

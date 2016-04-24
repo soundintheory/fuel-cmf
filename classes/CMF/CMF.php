@@ -511,7 +511,10 @@ class CMF
 		$types = array_map('current', $types);
 		$urls = array();
 		
-		foreach ($types as $type) {
+		foreach ($types as $type)
+		{
+			if ($type::showInSitemap() === false)
+				continue;
 			
 			$items = $type::select('item');
 			if (!$type::_static()) $items->where('item.visible = true');
@@ -522,19 +525,24 @@ class CMF
 					
 					$item_url = '/';
 					$updated_at = $item->updated_at;
+					$item_class = get_class($item);
+
+					if ($item_class::showInSitemap() === false)
+						continue;
 					
 					if (!is_null($item->url)) {
 						$item_url = $item->url->url;
 						$urls[] = array( 'url' => $item_url, 'updated_at' => $updated_at );
 					}
 					
-					$child_urls = $item->childUrls();
-					if (count($child_urls) > 0) {
-						foreach ($child_urls as $child_url) {
-							$urls[] = array( 'url' => $item_url.'/'.$child_url, 'updated_at' => $updated_at );
+					if (method_exists($item, 'childUrls') && ($child_urls = $item->childUrls()))
+					{
+						if (!empty($child_urls)) {
+							foreach ($child_urls as $child_url) {
+								$urls[] = array( 'url' => $item_url.'/'.$child_url, 'updated_at' => $updated_at );
+							}
 						}
 					}
-					
 				}
 			}
 			
