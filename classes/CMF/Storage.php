@@ -48,6 +48,9 @@ class Storage
 	 */
 	public static function getCDNAssetUrl($path)
 	{
+		if (!empty($base = \Config::get('cmf.cdn.base_url')))
+			return $base . ltrim($path, '/');
+
 		$info = parse_url($path);
 		$q = !empty($info['query']) ? '?'.$info['query'] : '';
 
