@@ -818,6 +818,7 @@ class CMF
 		$data = array(
 			'code' => $code,
 			'status' => $status,
+			'model' => null,
 			'message' => $message ? $message : \Lang::get("site.errors.http.$code", array( 'resource' => 'page' ), \Lang::get("site.errors.http.default", array( 'resource' => 'page' ), $status))
 		);
 

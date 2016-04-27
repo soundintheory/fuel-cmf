@@ -98,7 +98,7 @@ class Base extends \Controller
         {
             return $response;
         }
-        
+
         if ($this->status == 404) return $this->show404();
         
         // Get the model - this will have previously been found
@@ -153,7 +153,7 @@ class Base extends \Controller
         if (!\CMF::$routed) {
             return call_user_func_array(array($this, 'action_catchall'), $arguments);
         }
-        
+
         // if not, we got ourselfs a genuine 404!
         return $this->show404();
     }
