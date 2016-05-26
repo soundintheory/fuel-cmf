@@ -357,7 +357,7 @@ class CMF
 	{
 		if ($url === null) $url = \Input::uri();
 		if (is_array($url)) return static::getLink($url);
-		if ($url instanceof \CMF\Model\URL) return strval($url);
+		if ($url instanceof \CMF\Model\URL) $url = strval($url);
 		if (!static::$lang_enabled) return $url;
 
 		$use_tld = \Config::get('cmf.languages.use_tld', false);
@@ -744,8 +744,12 @@ class CMF
 		if ($is_array = is_array($data)) {
 			$output = isset($data['href']) ? $data['href'] : '';
 		} else {
-			$output = $data;
+			$output = strval($data);
 		}
+
+		// Empty links, anchor links or static internal links
+		if (empty($output) || substr($output, 0, 1) == '#' || substr($output, 0, 1) == '/')
+			return $output;
 		
 		// Query the urls table if it's an ID
 		if (is_numeric($output)) {
@@ -759,8 +763,6 @@ class CMF
 			}
 			$link = $link->getArrayResult();
 			$output = (count($link) > 0) ? static::link($link[0]['url']) : null;
-		} elseif (empty($output)) {
-			$output = null;
 		} else {
 			$output = "http://" . $output;
 		}

@@ -50,7 +50,7 @@ class Link extends Object {
         // EXTERNAL CHECKBOX
         $external_name = $settings['mapping']['fieldName'].'[external]';
         $external_value = \Arr::get($value, 'external', false);
-        $external = \Form::hidden($external_name, '0').html_tag('label', array( 'class' => 'checkbox external-checkbox' ), \Form::checkbox($external_name, '1', $external_value, array()).' external');
+        $external = \Form::hidden($external_name, '0').html_tag('label', array( 'class' => 'checkbox external-checkbox' ), \Form::checkbox($external_name, '1', $external_value, array()).' custom');
         $label = \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $href_name, array( 'class' => 'item-label' )).$external.html_tag('div', array( 'class' => 'clear' ), '&nbsp;');
         
         if ($external_value) {
@@ -60,8 +60,7 @@ class Link extends Object {
         // EXTERNAL INPUT CONTENT
         $href_value_ext = ($external_value) ? $value['href'] : '';
         $ext_input = \Form::input($href_name, $href_value_ext, $input_attributes);
-        $addon = html_tag('span', array( 'class' => 'add-on' ), 'http://');
-        $ext_content = html_tag('div', array( 'class' => 'external-link input-prepend' ), $addon.$ext_input);
+        $ext_content = html_tag('div', array( 'class' => 'external-link' ), $ext_input);
 
         // INTERNAL DROPDOWN CONTENT
         $options = static::getOptions($settings, $model);
