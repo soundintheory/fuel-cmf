@@ -8,6 +8,12 @@
 	    $(window).bind('cmf.newform', function(e, data) {
 	    	data.wrap.find('.field-type-google-place').each(init);
 	    });
+
+	    $(document).on('keydown', function(e) {
+	    	if (e.keyCode == 13 && $(e.target).parents('.field-type-google-place').length > 0) {
+	    		e.preventDefault();
+	    	}
+	    });
 	    
 	});
 	
