@@ -41,6 +41,14 @@ class CKEditor extends Textarea {
         $required = isset($settings['required']) ? $settings['required'] : false;
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
+
+        // Check stylesSet URL
+        $stylesSet = \Arr::get($settings, 'stylesSet');
+        if (!empty($stylesSet) && substr($stylesSet, 0, 1) == '/')
+        {
+            // Add an absolute URL to the start
+            $settings['stylesSet'] = rtrim(\Uri::base(false), '/').$stylesSet;
+        }
         
         // Add ckeditor to the class for the field
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-xxlarge' );
