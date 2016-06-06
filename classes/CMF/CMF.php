@@ -239,7 +239,12 @@ class CMF
 		
 		// Get the language from the request
 		if (!$iso) {
-			$iso = \Arr::get(explode('/', static::original_uri()), 1, \Lang::get_lang())."";
+			$iso = strtolower(\Arr::get(explode('/', static::original_uri()), 1, \Lang::get_lang())."");
+			if (strpos($iso, '_') !== false)
+			{
+				$parts = explode('_', $iso);
+				$iso = strtolower($parts[0]).'_'.strtoupper($parts[1]);
+			}
             if (\Lang::_get("languages.$iso", array(), 'notfound') == 'notfound') $iso = \Lang::get_lang();
 		}
 		
@@ -253,7 +258,7 @@ class CMF
 			\Lang::load('languages', true, $iso, false, true);
 			static::$lang_prefix = "/$iso";
 		}
-		
+
 		// Set the uri filter so we don't see the lang prefix
 		\Config::set('security.uri_filter', array_merge(
 			array('\CMF::removeLangPrefix'),
@@ -337,17 +342,17 @@ class CMF
 	 */
 	public static function removeLangPrefix($url)
 	{
-		$prefix = '/'.static::lang();
+		$prefix = '/'.strtolower(static::lang());
 		
-		if ($url !== '/') $url = '/'.trim($url, '/');
+		if ($url !== '/') $url = '/'.strtolower(trim($url, '/'));
 		
 		if ($url == $prefix) {
-			return '/';
-		} else if (strlen($url) > 3 && strpos($url, $prefix.'/') === 0) {
-			return substr($url, 3);
+			return static::$uri = '/';
+		} else if (strlen($url) > strlen($prefix) && strpos($url, $prefix.'/') === 0) {
+			return static::$uri = substr($url, strlen($prefix));
 		}
 		
-		return $url;
+		return static::$uri = $url;
 	}
 	
 	/**

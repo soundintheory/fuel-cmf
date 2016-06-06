@@ -46,7 +46,7 @@ class Base extends \ViewModel
         $root_label = $label ? $label.'_level1' : 'level1';
         $crumbs_label = $label ? $label.'_crumbs' : 'crumbs';
         
-        $uri = $active_url ? $active_url : \CMF::original_uri();
+        $uri = $active_url ? $active_url : \CMF::link(\CMF::original_uri());
         $nodes = \D::manager()->getRepository($model)->buildTree($nodes, array());
         $this->$crumbs_label = array();
         $this->processNodes($nodes, $uri, 1, $label, $model);
@@ -106,6 +106,7 @@ class Base extends \ViewModel
         
         foreach ($nodes as &$node) {
 
+            $node['url'] = \CMF::link($node['url']);
             $node['active'] = ltrim ( $node['url'] ,"/") == ltrim ( $uri ,"/");
             $node['parent_active'] = false;
             if (isset($node['type'])) {
