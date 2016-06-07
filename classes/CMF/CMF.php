@@ -256,6 +256,7 @@ class CMF
 		// Load the languages back in, now we might have a translation for them
 		if ($fallback != $iso) {
 			\Lang::load('languages', true, $iso, false, true);
+			\Lang::load('admin', true, $iso, false, true);
 			static::$lang_prefix = "/$iso";
 		}
 
