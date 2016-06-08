@@ -10,6 +10,12 @@ class Controller_Lang extends Controller_Base {
 		
 		// Don't bother if no code
 		if (is_null($code)) return \Response::redirect($referrer);
+
+		// Case
+		if (strpos($code, '_') !== false) {
+			$parts = explode('_', $code);
+			$code = strtolower($parts[0]).'_'.strtoupper($parts[1]);
+		}
 		
 		// Don't bother if it's not an active language
 		$languages = \Admin::languages();

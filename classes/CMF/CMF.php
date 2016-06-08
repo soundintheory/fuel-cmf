@@ -343,13 +343,13 @@ class CMF
 	 */
 	public static function removeLangPrefix($url)
 	{
-		$prefix = '/'.strtolower(static::lang());
+		$prefix = '/'.static::lang();
 		
-		if ($url !== '/') $url = '/'.strtolower(trim($url, '/'));
+		if ($url !== '/') $url = '/'.trim($url, '/');
 		
 		if ($url == $prefix) {
 			return static::$uri = '/';
-		} else if (strlen($url) > strlen($prefix) && strpos($url, $prefix.'/') === 0) {
+		} else if (strlen($url) > strlen($prefix) && strpos(strtolower($url), strtolower($prefix).'/') === 0) {
 			return static::$uri = substr($url, strlen($prefix));
 		}
 		
