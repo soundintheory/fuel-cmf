@@ -44,7 +44,45 @@ class D extends \Fuel\Doctrine
 	 */
 	public static function _init_manager($connection)
 	{
-		parent::_init_manager($connection);
+		///////////////////////// START FROM PARENT METHOD //////////////////////////
+
+		$settings = static::connection_settings($connection);
+
+		$config = new \Doctrine\ORM\Configuration();
+
+		$cache = static::_init_cache($settings);
+		if ($cache)
+		{
+			$config->setMetadataCacheImpl($cache);
+			if (!\CMF::$lang_enabled) {
+				$config->setQueryCacheImpl($cache);
+			}
+			$config->setResultCacheImpl($cache);
+		}
+
+		$config->setProxyDir($settings['proxy_dir']);
+		$config->setProxyNamespace($settings['proxy_namespace']);
+		$config->setAutoGenerateProxyClasses(\Arr::get($settings, 'auto_generate_proxy_classes', false));
+		$config->setMetadataDriverImpl(static::_init_metadata($config, $settings));
+
+		$EventManager = new \Doctrine\Common\EventManager();
+
+		static::$_managers[$connection] = \Doctrine\ORM\EntityManager::create($settings['connection'], $config, $EventManager);
+
+		if (!empty($settings['profiling']))
+			static::$_managers[$connection]->getConnection()->getConfiguration()->setSQLLogger(new Doctrine\Logger($connection));
+
+		// Connection init callback
+		if (!empty($settings['init_callback']))
+		{
+			// If array merge combined this numeric array, grab last two array elements as the real callback
+			if (is_array($settings['init_callback']) && count($settings['init_callback']) > 2)
+				$settings['init_callback'] = array_slice($settings['init_callback'], -2);
+
+			call_user_func($settings['init_callback'], static::$_managers[$connection], $connection);
+		}
+
+		///////////////////////// END FROM PARENT METHOD //////////////////////////
 		
 		if (isset(static::$_logger)) {
 			$current_logger = static::$_managers[$connection]->getConnection()->getConfiguration()->getSQLLogger(static::$_logger);
