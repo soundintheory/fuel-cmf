@@ -390,6 +390,29 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     }
 
     /**
+     * @see  CMF\Model\Base::$_show_in_sitemap
+     */
+    public function showItemInSitemap()
+    {
+        $class_name = get_class($this);
+        return $class_name::$_show_in_sitemap;
+    }
+
+    /**
+     * Get a result set for use in the sitemap
+     */
+    public static function getItemsForSitemap()
+    {
+        $called_class = get_called_class();
+        if (!property_exists($called_class, 'url')) return null;
+
+        $items = $called_class::select('item, url')->leftJoin('item.url', 'url');
+        if (!$called_class::_static()) $items->where('item.visible = true');
+        
+        return $items->getQuery()->getResult();
+    }
+
+    /**
      * @see  CMF\Model\Base::$_import_parameters
      */
     public static function importParameters()

@@ -77,6 +77,11 @@ class URL extends Base
      * @ORM\Column(type="integer", length=11, nullable=true)
      **/
     protected $item_id;
+
+    /**
+     * @ORM\Column(type="integer", length=11, nullable=true)
+     **/
+    protected $parent_id;
     
     /**
      * @ORM\Column(type="string", nullable=true)

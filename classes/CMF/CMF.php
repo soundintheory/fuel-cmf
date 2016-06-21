@@ -439,7 +439,7 @@ class CMF
 	public static function getItemByUrl($url, $type = null)
 	{
 		// Plain query for the urls table to avoid initialising Doctrine for 404s
-		$url_item = \DB::query("SELECT type, item_id FROM urls WHERE url = '$url' AND alias_id IS NULL ".($type !== null ? "AND type = '$type'" : ""))->execute();
+		$url_item = \DB::query("SELECT type, item_id, parent_id FROM urls WHERE url = '$url' AND alias_id IS NULL ".($type !== null ? "AND type = '$type' " : "")."ORDER BY item_id DESC")->execute();
 
 		// If multilingual is enabled, we need to check the ext_translations table too
 		if (count($url_item) === 0 && static::langEnabled())
@@ -459,8 +459,23 @@ class CMF
 		} else {
 			$url_item = $url_item[0];
 			$type = $url_item['type'];
-			if (empty($type) || is_null($url_item['item_id'])) return null;
+
+			// Redirect
+			if (!empty($url_item['parent_id']))
+			{
+				$parentUrl = \DB::query("SELECT url FROM urls WHERE id = ".$url_item['parent_id'])->execute()->get('url');
+				if (!empty($parentUrl))
+				{
+					$uri = '/'.ltrim(\Input::uri(), '/');
+					$q = \Input::get();
+					if (isset($q[$uri])) unset($q[$uri]);
+
+					$qs = str_replace('=&', '&', trim(http_build_query($q), '='));
+					return \Response::redirect($parentUrl.(!empty($qs) ? '?'.$qs : ''), 'location', (!empty($type) && is_numeric($type)) ? intval($type) : 301);
+				}
+			}
 			
+			if (empty($type) || is_null($url_item['item_id'])) return null;
 			$item = $type::select('item')->where('item.id = '.$url_item['item_id'])->getQuery()->getResult();
 		}
 		
@@ -507,49 +522,110 @@ class CMF
 	 */
 	public static function getUrlsForSitemap()
 	{
-		$types = \CMF\Model\URL::select('item.type type')->distinct()->getQuery()->getScalarResult();
+		$types = \CMF\Model\URL::select('item.type type')->distinct()->where('item.item_id IS NOT NULL')->getQuery()->getScalarResult();
 		$types = array_map('current', $types);
 		$urls = array();
 		
 		foreach ($types as $type)
 		{
+			if (!is_subclass_of($type, 'CMF\\Model\\Base'))
+				continue;
+
 			if ($type::showInSitemap() === false)
 				continue;
-			
-			$items = $type::select('item');
-			if (!$type::_static()) $items->where('item.visible = true');
-			$items = $items->getQuery()->getResult();
-			
-			if (property_exists($type, 'url')) {
-				foreach ($items as $item) {
-					
-					$item_url = '/';
-					$updated_at = $item->updated_at;
-					$item_class = get_class($item);
 
-					if ($item_class::showInSitemap() === false)
-						continue;
-					
-					if (!is_null($item->url)) {
-						$item_url = $item->url->url;
-						$urls[] = array( 'url' => $item_url, 'updated_at' => $updated_at );
-					}
-					
-					if (method_exists($item, 'childUrls') && ($child_urls = $item->childUrls()))
-					{
-						if (!empty($child_urls)) {
-							foreach ($child_urls as $child_url) {
-								$urls[] = array( 'url' => $item_url.'/'.$child_url, 'updated_at' => $updated_at );
-							}
-						}
-					}
-				}
+			$items = $type::getItemsForSitemap();
+			if (empty($items) || !is_array($items))
+				continue;
+
+			foreach ($items as $item)
+			{
+			    if ($item->showItemInSitemap() === false)
+			        continue;
+
+			    $item_url = '/';
+			    $updated_at = $item->updated_at;
+			    
+			    if (!empty($item->url)) {
+			        $item_url = $item->url->url;
+			        $urls[] = array( 'url' => $item_url, 'updated_at' => $updated_at );
+			    }
+			    
+			    if (method_exists($item, 'childUrls') && ($child_urls = $item->childUrls()))
+			    {
+			        if (!empty($child_urls)) {
+			            foreach ($child_urls as $child_url) {
+			                $urls[] = array( 'url' => $item_url.'/'.$child_url, 'updated_at' => $updated_at );
+			            }
+			        }
+			    }
 			}
-			
 		}
-		
 		return $urls;
-		
+	}
+
+	/**
+	 * Adds a URL that will redirect to another by ID
+	 */
+	public static function addRedirectUrl($url, $parentId, $type = 301, $limit = 2)
+	{
+		if (empty($url)) return;
+		if (empty($parentId)) return;
+
+		// Don't bother if the parent doesn't exist
+		$parentCount = intval(\CMF\Model\URL::select("count(item.id)")
+			->where('item.id = :parentid')
+			->setParameter('parentid', intval($parentId))
+			->getQuery()->getSingleScalarResult());
+		if ($parentCount === 0) return;
+
+		// Standardise the passed URL
+		$url = trim($url, '/');
+		if (stripos($url, 'http') === 0 && ($urlInfo = parse_url($url)))
+		    $url = trim($url['path'], '/');
+
+		$parts = explode('/', $url);
+		if (empty($parts)) return;
+
+		// Get existing redirects
+		$existing = \CMF\Model\URL::select('item')
+			->where('item.parent_id = :parentid')
+			->setParameter('parentid', intval($parentId))
+			->orderBy('item.updated_at', 'ASC')
+			->getQuery()->getResult();
+
+		// Check for redirects with the same URL
+		foreach ($existing as $existingUrl)
+		{
+			if ($existingUrl->url == '/'.$url)
+			{
+				$existingUrl->set('updated_at', new \DateTime());
+				$existingUrl->set('type', strval($type));
+				\D::manager()->persist($existingUrl);
+				\D::manager()->flush($existingUrl);
+				return $existingUrl;
+			}
+		}
+
+		// Create the url unless the limit has been reached
+		if (count($existing) >= $limit) {
+			$redirect = $existing[0];
+		} else {
+			$redirect = new \CMF\Model\URL();
+		}
+
+		// Populate, save and return the new url object
+		$redirect->populate(array(
+			'parent_id' => intval($parentId),
+		    'item_id' => null,
+		    'url' => '/'.$url,
+		    'slug' => array_pop($parts),
+		    'prefix' => '/'.implode('/', $parts).(count($parts) ? '/' : ''),
+		    'type' => strval($type)
+		));
+		\D::manager()->persist($redirect);
+		\D::manager()->flush($redirect);
+		return $redirect;
 	}
 	
 	public static function currentModule($default = null)

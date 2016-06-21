@@ -82,7 +82,7 @@ class Link extends Object {
         $filters = \Arr::get($settings, 'filters', array());
         $tree_types = array();
 
-        $types = $target_class::select('item.type')->distinct()->orderBy('item.type', 'ASC');
+        $types = $target_class::select('item.type')->distinct()->where('item.item_id IS NOT NULL')->orderBy('item.type', 'ASC');
 
         // Allow certain types
         $allow_types = \Arr::get($settings, 'allow_types', array());
@@ -218,7 +218,7 @@ class Link extends Object {
         $target_class = 'CMF\\Model\\URL';
         $filters = array();
         $tree_types = array();
-        $types = $target_class::select('item.type')->distinct()->orderBy('item.type', 'ASC')->getQuery()->getScalarResult();
+        $types = $target_class::select('item.type')->distinct()->where('item.item_id IS NOT NULL')->orderBy('item.type', 'ASC')->getQuery()->getScalarResult();
         
         foreach ($types as $type)
         {
@@ -322,7 +322,7 @@ class Link extends Object {
         $target_class = 'CMF\\Model\\URL';
         $filters = array();
         $tree_types = array();
-        $types = $target_class::select('item.type')->distinct()->orderBy('item.type', 'ASC')->getQuery()->getScalarResult();
+        $types = $target_class::select('item.type')->distinct()->where('item.item_id IS NOT NULL')->orderBy('item.type', 'ASC')->getQuery()->getScalarResult();
         
         foreach ($types as $type)
         {
