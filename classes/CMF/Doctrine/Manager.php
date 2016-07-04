@@ -100,9 +100,15 @@ class D extends \Fuel\Doctrine
 		$em = static::$_managers[$connection];
 		$platform = $em->getConnection()->getDatabasePlatform();
 		
-		foreach ($types as $type => $info) {
-			Type::addType($type, $info['class']);
-			if (isset($info['dbtype'])) $platform->registerDoctrineTypeMapping($info['dbtype'], $type);
+		foreach ($types as $type => $info)
+		{
+			if (!Type::hasType($type))
+			{
+				try {
+					Type::addType($type, $info['class']);
+					if (isset($info['dbtype'])) $platform->registerDoctrineTypeMapping($info['dbtype'], $type);
+				} catch (\Exception $e) { }
+			}
 		}
 		
 		// Now initialise any extensions from our config
