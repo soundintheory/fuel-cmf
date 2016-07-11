@@ -119,9 +119,13 @@ class GoogleMap extends Object {
     /** inheritdoc */
     public static function getAssets()
     {
+        $keyQueryString = "";
+        $api_key = \Config::get('google_maps_api_key');
+        if(!empty($api_key))
+            $keyQueryString = "&key=".$api_key;
         return array(
             'js' => array(
-                'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false',
+                'https://maps.googleapis.com/maps/api/js?v=3&sensor=false'.$keyQueryString,
                 '/admin/assets/js/fields/googlemap.js'
             )
         );
