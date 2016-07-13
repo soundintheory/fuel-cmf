@@ -267,6 +267,7 @@ function initTree() {
 			node['href'] = baseUrlId + '/edit';
 			node['update'] = '/admin/' + data['table_name'] + '/' + node.id + '/updatetree';
 			node['delete'] = baseUrlId + '/delete';
+			node['clone'] = baseUrlId + '/duplicate';
 			node['visible'] = (node.visible === 1 || node.visible === true);
 			node['hidden'] = (typeof node.hidden != 'undefined' && (node.hidden === true || node.hidden === 1));
 
@@ -275,7 +276,7 @@ function initTree() {
 				node['href'] += '?alias';
 				node['icon'] = 'link';
 			}
-			
+
 			if (node.hidden || !node.visible) { node.div.addClass('hidden-item'); }
 			if (!node.visible && node.children.length > 0) {
 				var len = node.children.length;
@@ -283,12 +284,12 @@ function initTree() {
 					node.children[i].hidden = true;
 				}
 			}
-			
+
 			// Add the icon
 			if (!$li.hasClass('jqtree-folder')) {
 				node.title.prepend('<span class="fa fa-wrap"><span class="fa fa-' + node.icon + '"></span></span>');
 			}
-			
+
 			var can_edit_item = !(typeof(permissions[node.id]) != 'undefined' && permissions[node.id].length > 0 && $.inArray('edit', permissions[node.id]) == -1);
 			var can_edit = node['can_edit'] = classData['can_edit'] && can_edit_item;
 
@@ -299,23 +300,23 @@ function initTree() {
 				}
 				node.title.append(' &nbsp;<i class="muted">'+importedContent+'</i>');
 			}
-			
+
 			if (can_edit) {
 				node.title.append(' <span class="edit-icon fa fa-pencil"></span>');
 			} else {
 				node.title.append(' <span class="edit-icon fa fa-lock"></span>');
 			}
-			
+
 			var actionsContent = '<div class="actions pull-right">';
 			//actionsContent += '<a href="#" class="show-hide ' + (node.visible ? 'visible' : '') + '"><i class="fa fa-eye-open"></i></a>';
-			
+
 			var childItems = [];
 			var childInfo = [];
 			var allowedChildren = (data['classes'][node['class']] || {}).allowed_children;
 			var disallowedChildren = (data['classes'][node['class']] || {}).disallowed_children;
-			
+
 			if (can_edit) {
-					
+
 				for (var p in data['classes'])
 				{
 					var subclassData = data['classes'][p],
@@ -341,22 +342,24 @@ function initTree() {
 				// An alias type
 				childItems.push('<li><a tabindex="-1" href="/admin/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias"><i class="fa fa-link"></i> Link</a></li>');
 				childInfo.push({ 'edit':'/admin/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias', 'icon':baseClassData['icon'], 'singular':baseClassData['singular'] });
-				
+
 				if (childItems.length > 1) {
-					
+
 					actionsContent += '<a class="btn btn-small btn-icon dropdown-toggle" data-toggle="dropdown" href="#" title="' + _('admin.common.add_child') + '"><i class="fa fa-plus"></i></a>' +
-					'<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' + 
-					'<li class="nav-header">' + _('admin.common.add_child') + '</li>' + 
-					childItems.join('') + 
+					'<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' +
+					'<li class="nav-header">' + _('admin.common.add_child') + '</li>' +
+					childItems.join('') +
 					'</ul>';
-					
+
 				} else if (childItems.length == 1) {
-					
+
 					actionsContent += '<a class="btn btn-small btn-icon" href="' + childInfo[0]['edit'] + '" rel="tooltip" title="' + _('admin.common.add_child_resource', { resource:childInfo[0]['singular'] }) + '"><i class="fa fa-plus"></i></a>';
-					
+
 				}
-				
+
 			}
+
+			actionsContent += '<a class="btn btn-small btn-icon" href="'+ node['clone'] + '" rel="tooltip" title="' + _('admin.common.clone_resource', { resource:childInfo[0]['singular'] }) + '"><i class="fa fa-clone"></i></a>';
 			
 			var can_delete_item = !(typeof(permissions[node.id]) != 'undefined' && permissions[node.id].length > 0 && $.inArray('delete', permissions[node.id]) == -1);
 			var can_delete = node['can_delete'] = classData['can_delete'] && can_delete_item;
