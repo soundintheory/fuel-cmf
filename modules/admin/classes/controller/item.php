@@ -4,13 +4,16 @@ namespace Admin;
 
 use \DoctrineFuel,
 	\CMF\Auth,
-	\CMF\Admin\ModelForm;
+	\CMF\Admin\ModelForm,
+	\DeepCopy\DeepCopy,
+	\DeepCopy\Filter\SetNullFilter,
+	\DeepCopy\Matcher\PropertyNameMatcher;
 
 /**
  * Provides the CRUD actions for models in the admin system
  */
 class Controller_Item extends Controller_Base {
-	
+
 	/**
 	 * Renders the empty form for creating an item
 	 */
@@ -19,16 +22,16 @@ class Controller_Item extends Controller_Base {
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) return $this->show404(null, "type");
-		
+
 		$can_edit = \CMF\Auth::can('edit', $class_name);
-		
+
 		if (!$can_edit) {
 			return $this->show403('action_plural', array( 'action' => \Lang::get('admin.verbs.create'), 'resource' => strtolower($class_name::plural()) ));
 		}
-		
+
 		$metadata = $class_name::metadata();
 		\Admin::setCurrentClass($class_name);
-		
+
 		// Superlock: don't let them create one!!
 		if ($this->superlock = $class_name::superlock()) {
 			$default_redirect = \Uri::base(false)."admin/$table_name";
@@ -37,10 +40,10 @@ class Controller_Item extends Controller_Base {
 
 		$root_class = $metadata->rootEntityName;
 		$root_metadata = $root_class::metadata();
-	    
+
 	    // Create a fresh model
 	    $model = new $class_name();
-	    
+
 	    // Get stuff ready for the template
 	    $this->js['model'] = $class_name;
 	    $this->form = new ModelForm($metadata, $model);
@@ -59,7 +62,7 @@ class Controller_Item extends Controller_Base {
 
 		$this->description = $class_name::formDescription();
 	}
-	
+
 	/**
 	 * Given an ID, renders the form to edit an item.
 	 */
@@ -68,16 +71,16 @@ class Controller_Item extends Controller_Base {
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) return $this->show404(null, "type");
-		
+
 		$metadata = $class_name::metadata();
 		\Admin::setCurrentClass($class_name);
-		
+
 		// Load up the model with the Id
 	    $model = $class_name::find($id);
 	    if (is_null($model)) {
 	    	\Response::redirect(\Uri::base(false)."admin/$table_name", 'location');
 	    }
-	    
+
 	    $can_edit = \CMF\Auth::can('edit', $model);
 		if (!$can_edit) {
 			return $this->show403('action_singular', array( 'action' => \Lang::get('admin.verbs.edit'), 'resource' => strtolower($class_name::singular()) ));
@@ -89,7 +92,7 @@ class Controller_Item extends Controller_Base {
 		if ($url = $model->getURLObject()) {
 			$this->viewLink = $url->url;
 		}
-	    
+
 	   	// Get stuff ready for the template
 	   	$this->actions = $class_name::actions();
 	   	$this->form = new ModelForm($metadata, $model);
@@ -104,7 +107,7 @@ class Controller_Item extends Controller_Base {
 		$this->superlock = $class_name::superlock();
 		$this->template = 'admin/item/edit.twig';
 		$this->qs = \Uri::build_query_string(\Input::get());
-		
+
 		// Permissions
 		$this->can_edit = $can_edit;
 		$this->can_create = \CMF\Auth::can('create', $class_name);
@@ -118,32 +121,35 @@ class Controller_Item extends Controller_Base {
 	public function action_duplicate($table_name, $id = null)
 	{
 		ini_set('memory_limit', '100M');
+
+		ini_set('xdebug.max_nesting_level', 500);
 		set_time_limit(60);
-		
+
 		// Find class name and metadata etc
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) return $this->show404(null, "type");
-		
+
 		$metadata = $class_name::metadata();
 		\Admin::setCurrentClass($class_name);
-		
+
 		//$this->plural = $class_name::plural();
 		//$this->singular = $class_name::singular();
-		
+
 		// Load up the model with the Id
     	$original_model = $class_name::find($id);
-    	
+
 	    if (is_null($original_model)) {
 	    	\Response::redirect(\Uri::base(false)."admin/$table_name", 'location');
 	    }
-	    
+
 	    $error = null;
 	    $model = null;
-	    
+
 	    try {
-	    	$model = clone $original_model;
-	    	$model->set('id', null);
-	    	$model->set('url', null);
+			$deepCopy = new DeepCopy();
+			$deepCopy->addFilter(new SetNullFilter(), new PropertyNameMatcher('id'));
+			$deepCopy->skipUncloneable();
+	    	$model = $deepCopy->copy($original_model);
 	    	\D::manager()->persist($model);
 			\D::manager()->flush();
 	    } catch (\Exception $e) {
