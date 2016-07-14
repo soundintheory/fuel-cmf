@@ -93,7 +93,7 @@ class Base extends \ViewModel
             $current_uri = '/'.trim($_SERVER['REQUEST_URI'], '/');
             $uri = property_exists($model, 'url') ? strval($model->get('url', $current_uri)) : $current_uri;
             
-            if (!empty($canonical_base) && $canonical_base.$uri != $base.$current_uri)
+            if (!empty($canonical_base))
                 return $canonical_base.$uri;
         }
 
