@@ -186,7 +186,8 @@ return array (
             'string',
             'text',
             'richtext',
-            'object'
+            'object',
+            'link'
         )
     ),
     

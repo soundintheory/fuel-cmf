@@ -46,12 +46,27 @@ class Link extends Object {
         $attributes = array( 'class' => 'field-type-link controls control-group'.($has_errors ? ' error' : '') );
         $href_name = $settings['mapping']['fieldName'].'[href]';
         $value['href'] = isset($value['href']) ? $value['href'] : null;
+        $label_text = $settings['title'].($required ? ' *' : '');
+
+        // Translation?
+        if (\CMF::$lang_enabled && !\CMF::langIsDefault() && isset($settings['mapping']['columnName']) && $model->isTranslatable($settings['mapping']['columnName'])) {
+            
+            // If there is no translation
+            if (!$model->hasTranslation($settings['mapping']['columnName'])) {
+                $attributes['class'] .= ' no-translation';
+                $input_attributes['class'] .= ' no-translation';
+                $label_text = '<img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::defaultLang().'.png" />&nbsp; '.$label_text;
+            } else {
+                $label_text = '<img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::lang().'.png" />&nbsp; '.$label_text;
+            }
+            
+        }
         
         // EXTERNAL CHECKBOX
         $external_name = $settings['mapping']['fieldName'].'[external]';
         $external_value = \Arr::get($value, 'external', false);
         $external = \Form::hidden($external_name, '0').html_tag('label', array( 'class' => 'checkbox external-checkbox' ), \Form::checkbox($external_name, '1', $external_value, array()).' custom');
-        $label = \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $href_name, array( 'class' => 'item-label' )).$external.html_tag('div', array( 'class' => 'clear' ), '&nbsp;');
+        $label = \Form::label($label_text.($has_errors ? ' - '.$errors[0] : ''), $href_name, array( 'class' => 'item-label' )).$external.html_tag('div', array( 'class' => 'clear' ), '&nbsp;');
         
         if ($external_value) {
             $attributes['class'] .= ' external';
