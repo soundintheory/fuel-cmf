@@ -85,7 +85,8 @@ return array(
 		'move'						=> 'Move',
 		'upload'					=> 'Upload',
 		'cancel'					=> 'Cancel',
-		'retry'						=> 'Retry'
+		'retry'						=> 'Retry',
+		'clone'						=> 'Clone'
 	),
 
 	'messages' => array(
@@ -93,6 +94,7 @@ return array(
 		'item_delete_success'		=> ':resource deleted successfully',
 		'item_create_success'		=> ':resource created successfully',
 		'item_updated'				=> ':resource updated successfully',
+		'item_duplicate_success'	=> ':resource duplicated successfully',
 		'num_items_updated'			=> ':num items were updated',
 		'num_type_deleted'			=> ':num :type were deleted',
 		'save_all_success'			=> 'All items were saved',

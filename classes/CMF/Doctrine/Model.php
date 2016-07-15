@@ -697,6 +697,63 @@ abstract class Model
 
         return $class;
     }
+
+    public function isTreeNode()
+    {
+        $class = get_class($this);
+        return ($class::repository() instanceof \Gedmo\Tree\Entity\Repository\NestedTreeRepository);
+    }
+
+    /**
+     * Returns a new duplicate copy of the entity
+     */
+    public function duplicate()
+    {
+        $metadata = $this->metadata();
+        $class = $metadata->getName();
+        $fieldNames = $metadata->getFieldNames();
+        $associationNames = $metadata->getAssociationNames();
+        $duplicate = new $class();
+        $isTree = $this->isTreeNode();
+
+        // Copy field names across
+        foreach ($fieldNames as $fieldName)
+        {
+            $value = $this->get($fieldName);
+            $duplicate->set($fieldName, $value);
+        }
+
+        // Copy associations across
+        foreach ($associationNames as $associationName)
+        {
+            $associationMapping = $metadata->getAssociationMapping($associationName);
+            $value = $this->get($associationName);
+            $shouldCopy = ($associationMapping['orphanRemoval'] || $associationMapping['isCascadeRemove']);
+            $isTreeChildren = ($isTree && $associationName == 'children');
+
+            if (!empty($value) && ($shouldCopy || $isTreeChildren))
+            {
+                if ($metadata->isCollectionValuedAssociation($associationName))
+                {
+                    $duplicateCollection = array();
+                    foreach ($value as $item)
+                    {
+                        $duplicateCollection[] = $item->duplicate();
+                    }
+                    $value = $duplicateCollection;
+                }
+                else
+                {
+                    $value = $value->duplicate();
+                }
+            }
+
+            $duplicate->set($associationName, $value);
+        }
+
+        \D::manager()->persist($duplicate);
+        return $duplicate;
+    }
     
     /**
      * Magic methods for getProperty(), setProperty(), addAssociation(), removeAssociation()

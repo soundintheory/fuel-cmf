@@ -892,6 +892,16 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         $called_class = get_called_class();
         return $called_class::$_static;
     }
+
+    /**
+     * @see \CMF\Model\Base::$_static
+     * @return bool
+     */
+    public function isStatic()
+    {
+        $called_class = get_class($this);
+        return $called_class::$_static;
+    }
     
     /**
      * @see \CMF\Model\Base::$_icon

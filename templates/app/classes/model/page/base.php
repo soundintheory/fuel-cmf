@@ -31,7 +31,7 @@ class Model_Page_Base extends PageNode
     protected $parent;
     
     /**
-     * @ORM\OneToMany(targetEntity="Model_Page_Base", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="Model_Page_Base", mappedBy="parent", orphanRemoval=true)
      * @ORM\OrderBy({"lft" = "ASC"})
      */
     protected $children;

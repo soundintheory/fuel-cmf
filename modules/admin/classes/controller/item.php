@@ -120,49 +120,43 @@ class Controller_Item extends Controller_Base {
 	 */
 	public function action_duplicate($table_name, $id = null)
 	{
-		ini_set('memory_limit', '100M');
+		// Sometimes this is a complex operation
+		ini_set('memory_limit', '256M');
+		ini_set('xdebug.max_nesting_level', 1000);
+		set_time_limit(0);
 
-		ini_set('xdebug.max_nesting_level', 500);
-		set_time_limit(60);
-
-		// Find class name and metadata etc
+		// Find class name and metadata
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) return $this->show404(null, "type");
-
 		$metadata = $class_name::metadata();
-		\Admin::setCurrentClass($class_name);
 
-		//$this->plural = $class_name::plural();
-		//$this->singular = $class_name::singular();
+		// Find entity
+		$model = $class_name::find($id);
+		if (empty($model)) return $this->show404(null, "type");
+		$message = \Lang::get('admin.messages.item_duplicate_success', array( 'resource' => $class_name::singular() ));
+		$success = true;
 
-		// Load up the model with the Id
-    	$original_model = $class_name::find($id);
-
-	    if (is_null($original_model)) {
-	    	\Response::redirect(\Uri::base(false)."admin/$table_name", 'location');
-	    }
-
-	    $error = null;
-	    $model = null;
-
-	    try {
-			$deepCopy = new DeepCopy();
-			$deepCopy->addFilter(new SetNullFilter(), new PropertyNameMatcher('id'));
-			$deepCopy->skipUncloneable();
-	    	$model = $deepCopy->copy($original_model);
-	    	\D::manager()->persist($model);
+		try {
+			$duplicate = $model->duplicate();
 			\D::manager()->flush();
-	    } catch (\Exception $e) {
-	    	$error = $e->getMessage();
-	    }
-    	
-	    if ($error !== null) {
-	    	$default_redirect = \Uri::base(false)."admin/$table_name";
-			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => \Lang::get('admin.errors.actions.duplicate', array( 'message' => $error )) ));
-			\Response::redirect(\Input::referrer($default_redirect), 'location');
-	    }
+		} catch (\Exception $e) {
+			$message = $e->getMessage();;
+			$success = false;
+		}
+
+		try {
+			if (is_subclass_of($class_name, 'CMF\\Model\\Node'))
+			{
+				$repo = \D::manager()->getRepository($class_name);
+				$repo->recover();
+				\D::manager()->flush();
+			}
+		} catch (\Exception $e) { }
+
+		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => ($success ? 'alert-success' : 'alert-danger') ), 'msg' => $message ));		
 		
-		\Response::redirect(\Uri::base(false)."admin/$table_name/{$model->id}/edit");
+		$next = \Input::param('next', "/admin/$table_name/{$model->id}/edit");
+		\Response::redirect($next);
 	}
 	
 	/**
@@ -354,7 +348,7 @@ class Controller_Item extends Controller_Base {
 	    	default:
 	    		$default_redirect = \Uri::base(false)."admin/$table_name";
 			    
-			    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => \Lang::get('admin.errors.actions.delete', array( 'resource' => strtolower($singular) )) ));
+			    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => \Lang::get('admin.messages.item_delete_success', array( 'resource' => ucfirst($singular) )) ));
 			    \Response::redirect(\Input::referrer($default_redirect), 'location');
 	    		break;
 	    	
