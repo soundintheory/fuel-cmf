@@ -75,7 +75,9 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     	'created_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
     	'updated_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
         'visible' => array( 'visible' => false ),
-        'settings' => array( 'visible' => false ),
+        'settings' => array( 'visible' => false, 'fields' => array(
+            'original_id' => array( 'type' => 'integer' )
+        ) ),
         'pos' => array( 'visible' => false )
     );
 
@@ -1251,8 +1253,10 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         }
 
         $orig = '%s:11:"original_id";i:%';
-        $ids = \DB::query("SELECT id FROM ".$metadata->table['name']." WHERE settings LIKE :orig")
+        $orig_empty = '%s:11:"original_id";i:0%';
+        $ids = \DB::query("SELECT id FROM ".$metadata->table['name']." WHERE settings LIKE :orig AND settings NOT LIKE :origempty")
             ->bind('orig', $orig)
+            ->bind('origempty', $orig_empty)
             ->execute();
         
         return array_map(function($item) {

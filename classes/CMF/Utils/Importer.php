@@ -162,7 +162,7 @@ class Importer
         {
             // Add original ID to the settings
             if (!isset($data['settings'])) $data['settings'] = array();
-            $data['settings']['original_id'] = $data['id'];
+            $data['settings']['original_id'] = intval($data['id']);
             $data['_oid_'] = $data['id'];
             unset($data['id']);
 
