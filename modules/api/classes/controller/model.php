@@ -26,9 +26,8 @@ class Controller_Model extends Controller_Resource
 	public function router($resource, $arguments)
 	{
 		$id = array_values(array_filter($this->expand(\Input::param('id', \Arr::get($arguments, 'id'))), 'is_numeric'));
-		$single = count($id) == 1;
 
-		$this->unique = \Arr::get($arguments, 'unique') || $single;
+		$this->unique = $single = (count($id) == 1);
 		$this->model = \Arr::get($arguments, 'model');
 		$this->singular = \Arr::get($arguments, 'singular');
 		$this->plural = \Arr::get($arguments, 'plural');

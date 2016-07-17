@@ -85,7 +85,8 @@ class Controller_Resource extends \Controller_Rest
 		$name = \Inflector::friendly_title($name, '_');
 		$singular = \Inflector::singularize($name);
 		$plural = \Inflector::pluralize($singular);
-		$model = \Admin::getClassForTable($plural);
+		$model = \Admin::getClassForTable($name);
+		if (!empty($model)) $model = \Admin::getClassForTable($plural);
 		$controller = null;
 
 		// If there isn't a custom controller for this, it must be a model, no?
@@ -113,7 +114,7 @@ class Controller_Resource extends \Controller_Rest
 		// Treat model controllers a little bit differently...
 		if ($controller instanceof Controller_Model) {
 			$response = $controller_refl->getMethod('router')->invoke($controller, $action, array(
-				'unique' => $name == $singular,
+				'name' => $name,
 				'singular' => $singular,
 				'plural' => $plural,
 				'model' => $model,
