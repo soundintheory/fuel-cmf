@@ -488,6 +488,16 @@ abstract class Model
     }
 
     /**
+     * Basic way to set values with no 'magic' happening in the background
+     */
+    public function setValue($field, $value)
+    {
+        if (property_exists($this, $field)) {
+            $this->$field = $value;
+        }
+    }
+
+    /**
      * Add an object to a collection
      *
      * @param string $field
@@ -707,7 +717,7 @@ abstract class Model
     /**
      * Returns a new duplicate copy of the entity
      */
-    public function duplicate()
+    public function duplicate($flushdb = true, &$translations = array(), &$entityMap = array(), $excludeFields = array())
     {
         $metadata = $this->metadata();
         $class = $metadata->getName();
@@ -716,9 +726,15 @@ abstract class Model
         $duplicate = new $class();
         $isTree = $this->isTreeNode();
 
+        if ($class::_static()) {
+            throw new \Exception($class::singular().' is a static type and cannot be duplicated');
+        }
+
         // Copy field names across
         foreach ($fieldNames as $fieldName)
         {
+            if (in_array($fieldName, $excludeFields)) continue;
+
             $value = $this->get($fieldName);
             $duplicate->set($fieldName, $value);
         }
@@ -726,10 +742,13 @@ abstract class Model
         // Copy associations across
         foreach ($associationNames as $associationName)
         {
+            if (in_array($associationName, $excludeFields)) continue;
+
             $associationMapping = $metadata->getAssociationMapping($associationName);
             $value = $this->get($associationName);
             $shouldCopy = ($associationMapping['orphanRemoval'] || $associationMapping['isCascadeRemove']);
             $isTreeChildren = ($isTree && $associationName == 'children');
+            $targetPropName = $associationMapping['isOwningSide'] ? @$associationMapping['inversedBy'] : @$associationMapping['mappedBy'];
 
             if (!empty($value) && ($shouldCopy || $isTreeChildren))
             {
@@ -738,21 +757,138 @@ abstract class Model
                     $duplicateCollection = array();
                     foreach ($value as $item)
                     {
-                        $duplicateCollection[] = $item->duplicate();
+                        $itemClass = $item->metadata()->name;
+                        if (!$itemClass::_static()) {
+                            $duplicateItem = $item->duplicate(false, $translations, $entityMap, array($targetPropName));
+                            if (!empty($duplicateItem)) {
+                                $duplicateCollection[] = $duplicateItem;
+                            }
+                        }
                     }
                     $value = $duplicateCollection;
                 }
                 else
                 {
-                    $value = $value->duplicate();
+                    $itemClass = $value->metadata()->name;
+                    if (!$itemClass::_static()) {
+                        $value = $value->duplicate(false, $translations, $entityMap, array($targetPropName));
+                    } else {
+                        $value = null;
+                    }
                 }
             }
 
             $duplicate->set($associationName, $value);
         }
 
-        \D::manager()->persist($duplicate);
+        if (!$flushdb) {
+            \D::manager()->persist($duplicate);
+        }
+
+        // If languages are enabled, add its translations to the array reference using the new oid
+        if ($this->id && \CMF::langEnabled())
+        {
+            $oid = spl_object_hash($duplicate);
+            $entityMap[$oid] = $duplicate;
+
+            if (!isset($translations[$oid]))
+            {
+                $translations[$oid] = \DB::query("SELECT * FROM ext_translations WHERE object_class = '{$metadata->rootEntityName}' AND foreign_key = '{$this->id}'")->execute()->as_array();
+            }
+        }
+
+        if ($flushdb)
+        {
+            // Persist the item
+            if ($isTree) {
+                $class::repository()->persistAsNextSiblingOf($duplicate, $this);
+            } else {
+                \D::manager()->persist($duplicate);
+            }
+
+            $displayField = $this->findFieldUsedInDisplay();
+            if (!empty($displayField)) {
+                $duplicate->setUniqueValueForField($displayField);
+            }
+            \D::manager()->flush();
+
+            // Add translations after all the entities have been committed to the db
+            if (!empty($translations))
+            {
+                foreach ($translations as $objectHash => $objectTranslations)
+                {
+                    $entity = isset($entityMap[$objectHash]) ? $entityMap[$objectHash] : null;
+                    if (empty($entity) || empty($entity->id) || empty($objectTranslations)) continue;
+                    $cols = null;
+                    $qb = \DB::insert('ext_translations');
+
+                    foreach ($objectTranslations as $translation)
+                    {
+                        unset($translation['id']);
+                        $translation['foreign_key'] = strval($entity->id);
+                        
+                        if (is_null($cols)) {
+                            $cols = array_keys($translation);
+                            $qb->columns($cols);
+                        }
+
+                        // Insert the new translations
+                        $qb->values($translation);
+                    }
+
+                    $qb->execute();
+                }
+            }
+
+            try {
+                if (is_subclass_of($class, 'CMF\\Model\\Node'))
+                {
+                    $repo = \D::manager()->getRepository($class);
+                    $repo->recover();
+                    \D::manager()->flush();
+                }
+            } catch (\Exception $e) { }
+        }
+
         return $duplicate;
+    }
+
+    public function setUniqueValueForField($fieldName)
+    {
+        $metadata = $this->metadata();
+        $class = $metadata->name;
+        if (!$metadata->hasField($fieldName)) return null;
+
+        $fieldMapping = $metadata->getFieldMapping($fieldName);
+        if (!isset($fieldMapping['type']) || $fieldMapping['type'] != 'string') return null;
+        
+        $value = $newValue = $this->get($fieldName);
+        if (empty($value)) $value = $newValue = $class::singular();
+        $value_no_suffix = preg_replace('/ \(\d+\)$/', '', $value);
+        preg_match('/ \((\d+)\)$/', $value, $start_num_matches);
+
+        $dupes = intval($class::select('COUNT(item.id)')->where("item.$fieldName = :value")->setParameter('value', $value)->getQuery()->getSingleScalarResult()) ?: 0;
+        $i = (!empty($start_num_matches) && isset($start_num_matches[1])) ? intval($start_num_matches[1])+1 : 2;
+
+        while ($dupes > 0)
+        {
+            $newValue = "$value_no_suffix ($i)";
+            $dupes = intval($class::select('COUNT(item.id)')->where("item.$fieldName = :value")->setParameter('value', $newValue)->getQuery()->getSingleScalarResult()) ?: 0;
+            $i++;
+        }
+
+        $fields = $metadata->getFieldNames();
+        foreach ($fields as $otherFieldName)
+        {
+            $fieldValue = $this->get($otherFieldName);
+            if (!empty($fieldValue) && is_string($fieldValue) && strtolower($fieldValue) == strtolower($value))
+            {
+                $this->set($otherFieldName, $newValue);
+            }
+        }
+
+        $this->set($fieldName, $newValue);
+        return $newValue;
     }
     
     /**

@@ -44,7 +44,19 @@ class Translatable extends Extension
 
 	public static function enabled()
 	{
-		return !is_null(static::$listener);
+		return !empty(static::$listener);
+	}
+
+	public static function disableListener()
+	{
+		if (empty(static::$listener)) return;
+		\D::manager()->getEventManager()->removeEventSubscriber(static::$listener);
+	}
+
+	public static function enableListener()
+	{
+		if (empty(static::$listener)) return;
+		\D::manager()->getEventManager()->addEventSubscriber(static::$listener);
 	}
 	
 }

@@ -48,7 +48,7 @@ class Controller_Model extends Controller_Resource
 
 		// Check whether a relationship is being requested
 		$class = $class = @$arguments['model'];
-		if ($single && $resource)
+		if ($single && $resource && !method_exists($this, "action_$resource"))
 		{
 			if (!$class::metadata()->hasAssociation($resource)) {
 				throw new \HttpException('You can only request relationships separately, not normal fields', \HttpException::BAD_REQUEST);
@@ -99,6 +99,35 @@ class Controller_Model extends Controller_Resource
 			$this->query = new Rest_Query($this->model, $this->plural, 'data', \Arr::merge($this->params, $params), $this->field);
 		}
 		return $this->query;
+	}
+
+	/**
+	 * Duplicate an item
+	 */
+	public function action_duplicate()
+	{
+		$class_name = $this->model;
+		$message = \Lang::get('admin.messages.item_duplicate_success', array( 'resource' => $class_name::singular() ));
+		$success = true;
+
+		try {
+			$duplicate = \CMF::duplicateItem($class_name, $this->id);
+		} catch (\Exception $e) {
+			$message = $e->getMessage();
+			$success = false;
+		}
+
+		$output = array(
+			'success' => $success,
+			'message' => $message
+		);
+
+		if (!empty($duplicate)) {
+			$output['id'] = $duplicate->id;
+			$output['label'] = $duplicate->display();
+		}
+
+		return $output;
 	}
 
 	/**

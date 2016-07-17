@@ -67,6 +67,7 @@ class PopupInline extends Multiselect {
         $templates_content = array();
         $assets = array();
         $add_types = array();
+        $edit_qs = '?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
         
         foreach ($types as $type)
         {
@@ -77,11 +78,12 @@ class PopupInline extends Multiselect {
                 'icon' => $type::icon(),
                 'singular' => $type::singular(),
                 'prefix' => $prefix,
-                'edit_link' => '/admin/'.$metadata->table['name'].'/__ID__/edit?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : ''),
+                'can_duplicate' => !$type::_static(),
+                'edit_link' => '/admin/'.$metadata->table['name'].'/__ID__/edit'.$edit_qs,
                 'hidden_fields' => array(
                     'id' => \Form::hidden($prefix.'[id]', '', array( 'class' => 'item-id', 'data-field-name' => 'id' )),
                     'pos' => \Form::hidden($prefix.'[pos]', '', array( 'data-field-name' => 'pos' )),
-                    '__type__' => \Form::hidden($prefix.'[__type__]', $type)
+                    '__type__' => \Form::hidden($prefix.'[__type__]', $type, array( 'class' => 'item-type' ))
                 )
             );
             $add_types[] = array(
@@ -89,7 +91,7 @@ class PopupInline extends Multiselect {
                 'singular' => $type::singular(),
                 'plural' => $type::plural(),
                 'icon' => $type::icon(),
-                'add_link' => '/admin/'.$metadata->table['name'].'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '')
+                'add_link' => '/admin/'.$metadata->table['name'].'/create'.$edit_qs
             );
         }
         
@@ -106,11 +108,12 @@ class PopupInline extends Multiselect {
             $row = array(
                 '_icon_' => $type::icon(),
                 '_title_' => $item->display(),
-                'edit_link' => '/admin/'.$metadata->table['name'].'/'.$item->id.'/edit?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : ''),
+                'edit_link' => '/admin/'.$metadata->table['name'].'/'.$item->id.'/edit'.$edit_qs,
+                'can_duplicate' => !$type::_static(),
                 'hidden_fields' => array(
                     'id' => \Form::hidden($prefix.'[id]', $item->id, array( 'class' => 'item-id', 'data-field-name' => 'id' )),
                     'pos' => \Form::hidden($prefix.'[pos]', $item->pos, array( 'data-field-name' => 'pos' )),
-                    '__type__' => \Form::hidden($prefix.'[__type__]', $type)
+                    '__type__' => \Form::hidden($prefix.'[__type__]', $type, array( 'class' => 'item-type' ))
                 )
             );
             
@@ -122,7 +125,8 @@ class PopupInline extends Multiselect {
             'add_types' => $add_types,
             'save_all' => $save_all,
             'sortable' => $sortable,
-            'cid' => $settings['cid']
+            'cid' => $settings['cid'],
+            'edit_qs' => $edit_qs
         );
         
         return array(

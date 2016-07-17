@@ -882,6 +882,30 @@ class CMF
 		return preg_replace(array("/^\<\!DOCTYPE.*?<html>.*<body>/si", "!</body></html>$!si"), "", $doc->saveHTML());
 		
 	}
+
+	public static function duplicateItem($class, $id)
+	{
+		// Sometimes this is a complex operation
+		ini_set('memory_limit', '256M');
+		ini_set('xdebug.max_nesting_level', 1000);
+		set_time_limit(0);
+
+		// Disable translatable listener
+		\CMF\Doctrine\Extensions\Translatable::disableListener();
+
+		// Find entity
+		$model = $class::find($id);
+		if (empty($model))
+			throw new \Exception('Could not find '.$class::singular().' with an id of '.$id);
+
+		// Create the duplicate
+		$duplicate = $model->duplicate();
+		
+		// Enable translatable listener again
+		\CMF\Doctrine\Extensions\Translatable::enableListener();
+
+		return $duplicate;
+	}
 	
 	public static function getUrl($image, $cropid, $w, $h)
 	{

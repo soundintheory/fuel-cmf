@@ -8,6 +8,7 @@
 	{{ template_content.hidden_fields.__type__ }}
 	{% if sortable %}{{ template_content.hidden_fields.pos }}{% endif %}
 	<div class="item-actions-top">
+		{% if template_content.can_duplicate %}<a href="#" class="item-action icon btn-duplicate" title="{{ _('admin.verbs.clone') }}"><i class="fa fa-clone"></i></a>{% endif %}
 		<a href="#" class="item-action icon btn-remove" title="Remove {{ template_content.singular|lower }}"><i class="fa fa-remove"></i></a>
 	</div>
 </div>
@@ -25,6 +26,7 @@
 	{{ row.hidden_fields.__type__ }}
 	{% if sortable %}{{ row.hidden_fields.pos }}{% endif %}
 	<div class="item-actions-top">
+		{% if row.can_duplicate %}<a href="#" class="item-action icon btn-duplicate" title="{{ _('admin.verbs.clone') }}"><i class="fa fa-clone"></i></a>{% endif %}
 		<a href="#" class="item-action icon btn-remove" title="{{ _('admin.verbs.remove') }}"><i class="fa fa-remove"></i></a>
 	</div>
 </div>

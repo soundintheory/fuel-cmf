@@ -1368,6 +1368,47 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         return strval($this->id);
     }
     
+    public function findFieldUsedInDisplay()
+    {
+        $metadata = $this->metadata();
+        $fields = $metadata->getFieldNames();
+        $display = strtolower($this->display());
+
+        if (property_exists($this, 'menu_title') && !empty($this->menu_title) && strtolower($this->menu_title) == $display)
+            return 'menu_title';
+
+        if (property_exists($this, 'title') && !empty($this->title) && strtolower($this->title) == $display)
+            return 'title';
+
+        if (property_exists($this, 'name') && !empty($this->name) && strtolower($this->name) == $display)
+            return 'name';
+
+        foreach ($fields as $fieldName)
+        {
+            $value = $this->get($fieldName);
+            if (!empty($value) && is_string($value) && strtolower($value) == $display)
+                return $fieldName;
+        }
+
+        if (property_exists($this, 'menu_title') && !empty($this->menu_title) && strpos($display, strtolower($this->menu_title)) !== false)
+            return 'menu_title';
+
+        if (property_exists($this, 'title') && !empty($this->title) && strpos($display, strtolower($this->title)) !== false)
+            return 'title';
+
+        if (property_exists($this, 'name') && !empty($this->name) && strpos($display, strtolower($this->name)) !== false)
+            return 'name';
+
+        foreach ($fields as $fieldName)
+        {
+            $value = $this->get($fieldName);
+            if (!empty($value) && is_string($value) && strpos($display, strtolower($value)) !== false)
+                return $fieldName;
+        }
+
+        return null;
+    }
+
     /**
      * Returns a relative path from the document root to an image to use as a thumbnail.
      * This should be the original source image, with no transformations applied

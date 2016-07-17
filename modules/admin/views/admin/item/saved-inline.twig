@@ -8,10 +8,10 @@
 	    
 	    $(document).ready(function() {
 	    	
-	    	var modelId = {{ model.id }},
+	    	var modelId = {{ model.id|json_encode() }},
 	    	modelTitle = {{ model.display()|json_encode() }},
 	    	type = {{ className|json_encode() }},
-	    	cid = '{{ cid }}',
+	    	cid = {{ cid|json_encode() }},
 	    	hasParent = (typeof(parent) != 'undefined' && parent != null);
 	    	
 	    	// Try and make the callback to the field in the parent, if it exists...

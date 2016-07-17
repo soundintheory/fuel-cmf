@@ -120,42 +120,24 @@ class Controller_Item extends Controller_Base {
 	 */
 	public function action_duplicate($table_name, $id = null)
 	{
-		// Sometimes this is a complex operation
-		ini_set('memory_limit', '256M');
-		ini_set('xdebug.max_nesting_level', 1000);
-		set_time_limit(0);
-
 		// Find class name and metadata
 		$class_name = \Admin::getClassForTable($table_name);
 		if ($class_name === false) return $this->show404(null, "type");
-		$metadata = $class_name::metadata();
 
-		// Find entity
-		$model = $class_name::find($id);
-		if (empty($model)) return $this->show404(null, "type");
+		// Set message etc
 		$message = \Lang::get('admin.messages.item_duplicate_success', array( 'resource' => $class_name::singular() ));
 		$success = true;
 
 		try {
-			$duplicate = $model->duplicate();
-			\D::manager()->flush();
+			$duplicate = \CMF::duplicateItem($class_name, $id);
 		} catch (\Exception $e) {
-			$message = $e->getMessage();;
+			$message = $e->getMessage();
 			$success = false;
 		}
 
-		try {
-			if (is_subclass_of($class_name, 'CMF\\Model\\Node'))
-			{
-				$repo = \D::manager()->getRepository($class_name);
-				$repo->recover();
-				\D::manager()->flush();
-			}
-		} catch (\Exception $e) { }
-
+		// Send user back
 		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => ($success ? 'alert-success' : 'alert-danger') ), 'msg' => $message ));		
-		
-		$next = \Input::param('next', "/admin/$table_name/{$model->id}/edit");
+		$next = \Input::param('next', \Input::referrer("/admin/$table_name"));
 		\Response::redirect($next);
 	}
 	

@@ -56,7 +56,8 @@
 				return false;
 			}
 			
-			$items.find('.btn-remove').click(removeButtonHandler);
+			$wrap.on('click', '.btn-remove', removeButtonHandler);
+			$wrap.on('click', '.btn-duplicate', cloneButtonHandler);
 			
 			if (sortable) { initSorting(); }
 			update();
@@ -87,7 +88,7 @@
 				$item.find('.title-value').text(title);
 			}
 			
-			function addItem(type) {
+			function addItem(type, $insertAfter) {
 				
 				type = type.replace("\\", "\\\\");
 				var $item = $wrap.find('> .item-template[data-type="' + type + '"]').eq(0).clone();
@@ -117,14 +118,18 @@
 					}
 					
 				});
-				
-				if ($items.length == 0) {
-					$itemsWrap.append($item);
+
+				if (!!$insertAfter)
+				{
+					$item.insertAfter($insertAfter);
 				} else {
-					$item.insertAfter($items.last());
+					if ($items.length == 0) {
+						$itemsWrap.append($item);
+					} else {
+						$item.insertAfter($items.last());
+					}
 				}
 				
-				$item.find('.btn-remove').click(removeButtonHandler);
 				$items = $itemsWrap.find('> .item');
 				inc++;
 				
@@ -136,11 +141,71 @@
 				return $item;
 				
 			}
-			
-			function removeButtonHandler() {
+
+			function cloneButtonHandler(e) {
+
+				var $item = $(e.currentTarget).parents('.item').eq(0);
+				if ($item.hasClass('loading')) {
+					return false;
+				}
+
+				var id = $item.find('input.item-id').val();
+				var type = $item.find('input.item-type').val();
+				if (!id || !type) { return false; }
+
+				var table = getTableFromType(type);
+				if (!table) { return false; }
+
+				// Add a row showing loading
+				var $newItem = addItem(type, $item).addClass('loading');
+				$newItem.find('input.item-id').val('');
+				$newItem.find('.title-value').html('Cloning item...');
+				$newItem.insertAfter($item);
+
+				$.ajax({
+					url: '/api/'+table+'/'+id+'/duplicate',
+					dataType: 'json',
+					cache: false,
+
+					// Successful retrieval
+					success: $.proxy(function(data) {
+						
+						if (data.success) {
+							$newItem.find('input.item-id').val(data.id);
+							$newItem.find('.title-value').html(data.label);
+							$newItem.find('.btn-edit').attr('href', '/admin/'+table+'/'+data.id+'/edit'+(settings.edit_qs || '?_mode=inline&_cid='+cid));
+							$newItem.removeClass('loading');
+						} else {
+							$newItem.remove();
+						}
+
+						$items = $itemsWrap.find('> .item');
+						update();
+
+					}, this),
+
+					// If server borks
+					error: $.proxy(function(data) {
+						
+						$newItem.remove();
+						$items = $itemsWrap.find('> .item');
+						update();
+
+					}, this)
+				});
 				
+				return false;
+			}
+			
+			function removeButtonHandler(e) {
+
+				var $item = $(e.currentTarget).parents('.item').eq(0);
+				if ($item.hasClass('loading')) {
+					return false;
+				}
+
 				if (!confirm(_('admin.messages.item_delete_confirm'))) { return false; }
-				var $item = $(this).parents('.item').eq(0);
+
 				$item.remove();
 				$items = $itemsWrap.find('> .item');
 				
@@ -209,6 +274,14 @@
 				
 				updatePositions();
 				
+			}
+
+			function getTableFromType(type) {
+
+				if (!!settings && !!settings.target_tables && !!settings.target_tables[type]) {
+					return settings.target_tables[type];
+				}
+				return null;
 			}
 			
 			function onListSaved(result) {

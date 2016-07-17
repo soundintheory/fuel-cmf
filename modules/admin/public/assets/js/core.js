@@ -360,7 +360,7 @@ function initTree() {
 			}
 
 			if (classData['can_create'] && !classData['static']) {
-				actionsContent += '<a class="btn btn-small btn-icon" href="'+ node['clone'] + '" rel="tooltip" title="' + _('admin.common.clone_resource', { resource:childInfo[0]['singular'] }) + '"><i class="fa fa-clone"></i></a>';
+				actionsContent += '<a class="btn btn-small btn-icon" href="'+ node['clone'] + '" rel="tooltip" title="' + _('admin.verbs.clone') + '"><i class="fa fa-clone"></i></a>';
 			}
 			
 			var can_delete_item = !(typeof(permissions[node.id]) != 'undefined' && permissions[node.id].length > 0 && $.inArray('delete', permissions[node.id]) == -1);

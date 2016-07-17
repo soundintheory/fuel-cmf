@@ -1904,6 +1904,27 @@ select option {
 			}
 			
 		}
+
+		&.loading {
+			
+			.item-title h3,
+			.item-title i {
+				color: #aaa;
+			}
+
+			h3 .fa {
+				-webkit-animation: fa-spin 2s infinite linear;
+				animation: fa-spin 2s infinite linear;
+
+				&:before {
+					content: "\f1ce";
+				}
+			}
+
+			.item-actions-top {
+				opacity: 0.5;
+			}
+		}
 		
 	}
 	
