@@ -86,7 +86,7 @@ class Controller_Resource extends \Controller_Rest
 		$singular = \Inflector::singularize($name);
 		$plural = \Inflector::pluralize($singular);
 		$model = \Admin::getClassForTable($name);
-		if (!empty($model)) $model = \Admin::getClassForTable($plural);
+		if (empty($model)) $model = \Admin::getClassForTable($plural);
 		$controller = null;
 
 		// If there isn't a custom controller for this, it must be a model, no?
