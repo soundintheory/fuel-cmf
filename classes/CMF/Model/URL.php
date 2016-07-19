@@ -113,5 +113,11 @@ class URL extends Base
      * @ORM\Column(type="string"))
      **/
     protected $type = '';
+
+    public function isExternal(){
+        if($this->type == 'External')
+            return true;
+        return false;
+    }
 	
 }

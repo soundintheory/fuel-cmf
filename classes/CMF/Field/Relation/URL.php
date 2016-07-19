@@ -2,6 +2,8 @@
 
 namespace CMF\Field\Relation;
 
+use MyProject\Proxies\__CG__\stdClass;
+
 class URL extends OneToOne {
 	
 	/** inheritdoc */
@@ -9,16 +11,32 @@ class URL extends OneToOne {
     {
 		return array(
 			'js' => array(
-				'/admin/assets/js/fields/url.js'
-			)
+				'/admin/assets/js/fields/url.js',
+                '/admin/assets/select2/select2.min.js',
+                '/admin/assets/js/fields/link.js'
+			),
+            'css' => array(
+                '/admin/assets/select2/select2.css'
+            )
 		);
+    }
+
+    public static function preProcess($value, $settings, $model)
+    {
+        $url = new \CMF\Model\URL();
+        if(isset($value['href']) && is_numeric($value['href'])) {
+            $url = \CMF\Model\URL::select('item')->where('item.id = ' . $value['href'])->getQuery()->getResult();
+            if(count($url))
+                return $url[0];
+            else
+                return $value;
+        }
     }
 
     /** @inheritdoc */
     public static function process($value, $settings, $model)
     {
         if ($value instanceof \CMF\Model\URL) {
-
             $alias = $value->alias;
             if ($alias instanceof \CMF\Model\URL) {
 
@@ -43,11 +61,17 @@ class URL extends OneToOne {
 
         // Show a simple alias form if the input var is set
         if (\Input::param('alias', false) !== false) {
+            $linkValue = array();
+            if(!empty($value)) {
+                $linkValue = array('href' => $value->isExternal()?$value->url:strval($value->id),'external'=> $value->isExternal());
+            }
 
-            $alias = $value->alias;
+            return \CMF\Field\Object\Link::displayForm($linkValue,$settings,$model);
+
+            /*$alias = $value->alias;
             $label = \Form::label(\Arr::get($settings, 'title', ucfirst($settings['mapping']['fieldName'])), $settings['mapping']['fieldName'].'[alias]', array( 'class' => 'item-label' ));
             $options = \CMF\Field\Object\Link::getOptions($settings, $model);
-            $select = \Form::select($settings['mapping']['fieldName'].'[alias]', ($alias instanceof \CMF\Model\URL) ? $alias->id : null, $options, array( 'class' => 'input input-xlarge select2' ));
+            $select = \CMF\::select($settings['mapping']['fieldName'].'[alias]', ($alias instanceof \CMF\Model\URL) ? $alias->id : null, $options, array( 'class' => 'input input-xlarge select2' ));
 
             return array(
                 'content' => html_tag('div', array( 'class' => 'controls control-group field-type-url-alias' ), $label.$select),
@@ -56,7 +80,7 @@ class URL extends OneToOne {
                     'css' => array('/admin/assets/select2/select2.css'),
                     'js' => array('/admin/assets/select2/select2.min.js')
                 )
-            );
+            );*/
 
         }
     	
@@ -90,6 +114,6 @@ class URL extends OneToOne {
         if (isset($settings['wrap']) && $settings['wrap'] === false) return $label.$input;
     	
     	return html_tag('div', $attributes, $label.$input).$clear;
+
     }
-	
 }
