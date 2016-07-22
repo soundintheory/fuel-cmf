@@ -26,6 +26,8 @@ class URL extends Base
     );
     
     protected static $_has_permissions = false;
+
+    const TYPE_EXTERNAL = 'External';
     
     /**
      * Returns an instance of the item this url is associated with.
@@ -114,10 +116,9 @@ class URL extends Base
      **/
     protected $type = '';
 
-    public function isExternal(){
-        if($this->type == 'External')
-            return true;
-        return false;
+    public function isExternal()
+    {
+        return $this->type == static::TYPE_EXTERNAL;
     }
 	
 }

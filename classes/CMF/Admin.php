@@ -223,7 +223,8 @@ class Admin
 
 						$title_fields = array('menu_title', 'title', 'name', 'label');
 						$title_field = null;
-						foreach ($title_fields as $title_field) {
+						foreach ($title_fields as $title_field)
+                        {
 							if ($metadata->hasField($title_field)) {
 								$fields[$title_field]['visible'] = true;
 								$fields[$title_field]['before'] = $urlFieldName;
@@ -232,10 +233,19 @@ class Admin
 								$visibleFields[] = $title_field;
 								break;
 							}
+                            $i++;
 						}
 
-						$alias = true;
+                        foreach ($title_fields as $title_field2)
+                        {
+                            if ($title_field2 == $title_field) continue;
+                            if ($metadata->hasField($title_field2))
+                            {
+                                $fields[$title_field2]['template'] = '{{'.$title_field.'}}';
+                            }
+                        }
 
+						$alias = true;
 						break;
 
 					}

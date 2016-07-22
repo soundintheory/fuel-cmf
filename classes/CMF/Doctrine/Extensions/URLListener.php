@@ -191,6 +191,11 @@ class URLListener implements EventSubscriber
             if (!is_null($alias) && !empty($alias)) {
                 return;
             }
+
+            // Don't run if this is an external link...
+            if ($url_item->isExternal()) {
+                return;
+            }
             
             $prefix = $this->getPrefix($entity);
             $slug = '';
@@ -332,6 +337,11 @@ class URLListener implements EventSubscriber
             // Don't run if this is an alias...
             $alias = $url_item->alias;
             if (!is_null($alias) && !empty($alias)) {
+                return;
+            }
+
+            // Don't run if this is an external link...
+            if ($url_item->isExternal()) {
                 return;
             }
             

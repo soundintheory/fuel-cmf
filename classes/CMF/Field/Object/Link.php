@@ -80,6 +80,17 @@ class Link extends Object {
         // INTERNAL DROPDOWN CONTENT
         $options = static::getOptions($settings, $model);
         $href_value_int = ($external_value) ? '' : $value['href'];
+
+        // Check if the value is actually an alias
+        if (!empty($href_value_int))
+        {
+            $url_value = \CMF\Model\URL::find($href_value_int);
+            if ($url_value && $alias = $url_value->alias)
+            {
+                $href_value_int = $alias->id;
+            }
+        }
+
         $input = \Form::select($href_name, $href_value_int, $options, $input_attributes);
         $int_content = html_tag('div', array( 'class' => 'internal-link' ), $input);
 

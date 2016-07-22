@@ -483,7 +483,7 @@ class CMF
 				}
 			}
 			
-			if (empty($type) || is_null($url_item['item_id'])) return null;
+			if (empty($type) || $type == \CMF\Model\URL::TYPE_EXTERNAL || !class_exists($type) || is_null($url_item['item_id'])) return null;
 			$item = $type::select('item')->where('item.id = '.$url_item['item_id'])->getQuery()->getResult();
 		}
 		

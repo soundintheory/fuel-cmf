@@ -23,14 +23,40 @@ class URL extends OneToOne {
 
     public static function preProcess($value, $settings, $model)
     {
-        $url = new \CMF\Model\URL();
-        if(isset($value['href']) && is_numeric($value['href'])) {
-            $url = \CMF\Model\URL::select('item')->where('item.id = ' . $value['href'])->getQuery()->getResult();
-            if(count($url))
-                return $url[0];
-            else
-                return $value;
+        if (is_array($value))
+        {
+            if (!empty($model)) $model->changed = true;
+
+            if (isset($value['href']) && is_numeric($value['href']))
+            {
+                $url = \CMF\Model\URL::find(intval($value['href']));
+                if (!empty($url))
+                {
+                    $value = new \CMF\Model\URL();
+                    $value->populate(array(
+                        'alias' => $url
+                    ));
+                }
+            }
+            else if (isset($value['external']) && intval($value['external']))
+            {
+                $url = $model->get($settings['mapping']['fieldName']);
+                if (empty($url)) $url = new \CMF\Model\URL();
+
+                $url->populate(array(
+                    'url' => @$value['href'],
+                    'slug' => '',
+                    'prefix' => '',
+                    'item_id' => null,
+                    'type' => \CMF\Model\URL::TYPE_EXTERNAL,
+                    'alias' => null
+                ));
+
+                return $url;
+            }
         }
+
+        return $value;
     }
 
     /** @inheritdoc */
@@ -60,28 +86,15 @@ class URL extends OneToOne {
         if (is_null($value) || !$value instanceof $target_class) $value = new $target_class();
 
         // Show a simple alias form if the input var is set
-        if (\Input::param('alias', false) !== false) {
+        if (\Input::param('alias', false) !== false)
+        {
             $linkValue = array();
-            if(!empty($value)) {
-                $linkValue = array('href' => $value->isExternal()?$value->url:strval($value->id),'external'=> $value->isExternal());
+            if (!empty($value))
+            {
+                $linkValue['href'] = $value->isExternal() ? $value->url : strval($value->id);
+                $linkValue['external'] = $value->isExternal();
             }
-
-            return \CMF\Field\Object\Link::displayForm($linkValue,$settings,$model);
-
-            /*$alias = $value->alias;
-            $label = \Form::label(\Arr::get($settings, 'title', ucfirst($settings['mapping']['fieldName'])), $settings['mapping']['fieldName'].'[alias]', array( 'class' => 'item-label' ));
-            $options = \CMF\Field\Object\Link::getOptions($settings, $model);
-            $select = \CMF\::select($settings['mapping']['fieldName'].'[alias]', ($alias instanceof \CMF\Model\URL) ? $alias->id : null, $options, array( 'class' => 'input input-xlarge select2' ));
-
-            return array(
-                'content' => html_tag('div', array( 'class' => 'controls control-group field-type-url-alias' ), $label.$select),
-                'widget' => false,
-                'assets' => array(
-                    'css' => array('/admin/assets/select2/select2.css'),
-                    'js' => array('/admin/assets/select2/select2.min.js')
-                )
-            );*/
-
+            return \CMF\Field\Object\Link::displayForm($linkValue, $settings, $model);
         }
     	
     	$model_class = get_class($model);

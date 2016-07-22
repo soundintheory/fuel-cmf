@@ -272,7 +272,7 @@ function initTree() {
 			node['hidden'] = (typeof node.hidden != 'undefined' && (node.hidden === true || node.hidden === 1));
 
 			// If this item is an alias, append ?alias to the edit URL
-			if (node['url'] && node['url']['alias']) {
+			if (node['url'] && (node['url']['alias'] || node['url']['type'] == 'External')) {
 				node['href'] += '?alias';
 				node['icon'] = 'link';
 			}
