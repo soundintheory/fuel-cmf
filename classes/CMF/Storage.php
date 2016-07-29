@@ -3,6 +3,7 @@
 namespace CMF;
 
 use \League\Flysystem;
+use MyProject\Proxies\__CG__\stdClass;
 
 class Storage
 {
@@ -48,9 +49,7 @@ class Storage
 	 */
 	public static function getCDNAssetUrl($path)
 	{
-		if (!empty($base = \Config::get('cmf.cdn.base_url')))
-			return $base . ltrim($path, '/');
-
+		$path = ltrim($path, '/');
 		$info = parse_url($path);
 		$q = !empty($info['query']) ? '?'.$info['query'] : '';
 
@@ -59,12 +58,51 @@ class Storage
 			switch (get_class($filesystem->getAdapter())) {
 				case 'League\\Flysystem\\AwsS3v3\\AwsS3Adapter':
 					$client = $filesystem->getAdapter()->getClient();
-					return $client->getObjectUrl($filesystem->getAdapter()->getBucket(), ltrim(@$info['path'] ?: '', '/')).$q;
-				break;
+					$url = $client->getObjectUrl($filesystem->getAdapter()->getBucket(), ltrim(@$info['path'] ?: '', '/')).$q;
+					if($filesystem->has($url))
+						return $url;
+					break;
 			}
 
+			$files = \DB::select()->from('_files')->where('path', $path)->as_object()->execute();
+			$file = null;
+			if(!count($files))
+				$file = \CMF\Storage::uploadAssetToCdn($path,$filesystem,null );
+			elseif(strtotime($files[0]->updated_at) < filemtime(DOCROOT.$path))
+				$file = \CMF\Storage::uploadAssetToCdn($path,$filesystem,$files[0]);
+			else
+				$file = $files[0];
+			if(!empty($file))
+				return $file->url;
 		}
 		return $path;
+	}
+
+	public static function uploadAssetToCdn($path,&$filesystem,$file)
+	{
+		$content = file_get_contents(DOCROOT.$path);
+		$fileNameToUpload = md5($content).'.'.(@pathinfo(DOCROOT.$path, PATHINFO_EXTENSION) ?: '');
+		$pathToUpload = (@pathinfo($path, PATHINFO_DIRNAME)?@pathinfo($path, PATHINFO_DIRNAME)."/": '').$fileNameToUpload;
+
+		if (!$filesystem->has($pathToUpload))
+			$filesystem->write($pathToUpload, $content, array( 'visibility' => 'public' ));
+
+
+		$url = \Config::get("base_assets_url", "/").$pathToUpload;
+		if(!empty($file))
+			\DB::update('_files')->set(array("url"=>$url,'updated_at'=>date('Y-m-d H:i:s')))->where('id', '=', $file->id)->execute();
+		else {
+			$file = new \stdClass();
+			\DB::insert('_files')->set(array(
+				'url' => $url,
+				'path' => $path,
+				'storage' => 'cdn',
+				'created_at' => date('Y-m-d H:i:s'),
+				'updated_at' => date('Y-m-d H:i:s'),
+			))->execute();
+		}
+		$file->url = $url;
+		return $file;
 	}
 
 	/**

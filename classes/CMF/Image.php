@@ -3,6 +3,7 @@
 namespace CMF;
 
 use Fuel\Core\Input;
+use League\Flysystem\Exception;
 use League\Glide;
 
 class Image
@@ -100,10 +101,14 @@ class Image
 			// Generate a resized copy of the image locally
 			if (isset($params['path'])) {
 				unset($params['path']);
-				$resized = $remote = static::server()->makeImage($original, $params);
-				$sourceAdapter = static::server()->getCache();
-				$ext = @pathinfo(DOCROOT.$original, PATHINFO_EXTENSION) ?: '';
-				if (!empty($ext)) $remote .= '.'.$ext;
+				try {
+					$resized = $remote = static::server()->makeImage($original, $params);
+					$sourceAdapter = static::server()->getCache();
+					$ext = @pathinfo(DOCROOT . $original, PATHINFO_EXTENSION) ?: '';
+					if (!empty($ext)) $remote .= '.' . $ext;
+				}catch(\Exception $e){
+					return "#";
+				}
 			} else {
 				$resized = $original;
 				$remote = $original.'/'.pathinfo(DOCROOT.$original, PATHINFO_BASENAME);
