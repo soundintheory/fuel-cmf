@@ -93,7 +93,7 @@ class Image
 		unset($params['url']);
 
 		// Do some CDN magic if needed
-		if ($cdn = \CMF\Storage::getCDNAdapter())
+		if (\Config::get('cmf.cdn.enabled') && $cdn = \CMF\Storage::getCDNAdapter())
 		{
 			$original = isset($params['path']) ? $params['path'] : ltrim($url, '/');
 			$ext = '';
@@ -170,8 +170,9 @@ class Image
 
 				$url = $resizedInfo['url'];
 			}
+			return rtrim(\Config::get('cmf.cdn.base_url', ''), '/').$url;
 		}
-		return rtrim(\Config::get('cmf.cdn.base_url', ''), '/').$url;
+		return $url;
 	}
 
 	/**
