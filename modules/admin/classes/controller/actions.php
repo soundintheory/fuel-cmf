@@ -67,7 +67,7 @@ class Controller_Actions extends Controller_Base {
 	 */
 	public function action_sync_files_table()
 	{	
-		\CMF\Storage::syncFiles();
+		\CMF\Storage::syncFileFields();
 		$this->heading = 'All files were synced';
 		$this->template = 'admin/generic.twig';
 	}
