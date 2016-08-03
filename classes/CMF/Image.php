@@ -3,6 +3,7 @@
 namespace CMF;
 
 use Fuel\Core\Input;
+use League\Flysystem\Exception;
 use League\Glide;
 
 class Image
@@ -100,10 +101,14 @@ class Image
 			// Generate a resized copy of the image locally
 			if (isset($params['path'])) {
 				unset($params['path']);
-				$resized = $remote = static::server()->makeImage($original, $params);
-				$sourceAdapter = static::server()->getCache();
-				$ext = @pathinfo(DOCROOT.$original, PATHINFO_EXTENSION) ?: '';
-				if (!empty($ext)) $remote .= '.'.$ext;
+				try {
+					$resized = $remote = static::server()->makeImage($original, $params);
+					$sourceAdapter = static::server()->getCache();
+					$ext = @pathinfo(DOCROOT . $original, PATHINFO_EXTENSION) ?: '';
+					if (!empty($ext)) $remote .= '.' . $ext;
+				} catch (\Exception $e) {
+					return $url;
+				}
 			} else {
 				$resized = $original;
 				$remote = $original.'/'.pathinfo(DOCROOT.$original, PATHINFO_BASENAME);
@@ -133,7 +138,7 @@ class Image
 				// Write the file to CDN if it doesn't exist there
 				if (!$cdn->has($remote))
 					$cdn->write($remote, $sourceAdapter->read($resized), array( 'visibility' => 'public' ));
-				$url = \CMF\Storage::getCDNAssetUrl($remote);
+				$url = '/'.$remote;
 
 				// Write a file entry to the database
 				\DB::insert('_files')->set(array(
@@ -166,7 +171,7 @@ class Image
 				$url = $resizedInfo['url'];
 			}
 		}
-		return $url;
+		return rtrim(\Config::get('cmf.cdn.base_url', ''), '/').$url;
 	}
 
 	/**
