@@ -228,7 +228,7 @@ class Controller_Item extends Controller_Base {
 
 	        // Sync file fields to DB
 	        try {
-	        	\CMF\Storage::syncFilesFor($model);
+	        	\CMF\Storage::syncFileFieldsFor($model);
 	        } catch (\Exception $e) { }
 	        
 	        // Do something depending on what mode we're in...

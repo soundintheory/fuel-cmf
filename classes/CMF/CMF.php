@@ -377,8 +377,8 @@ class CMF
 	 */
 	public static function asset($url = null)
 	{
-		if (empty($url)) return '#';
-		if (strpos($url, 'http://') !== 0 && \Config::get('cmf.cdn.enabled'))
+		if (empty($url)) return '';
+		if (stripos($url, 'http://') !== 0 && \Config::get('cmf.cdn.enabled'))
 		{
 			return \CMF\Storage::getCDNAssetUrl($url);
 		}
