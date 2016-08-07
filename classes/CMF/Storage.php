@@ -264,6 +264,8 @@ class Storage
 	 */
 	public static function syncFileFields()
 	{
+		if (!\Config::get('cmf.cdn.enabled')) return;
+
 		try {
 		    set_time_limit(0);
 		    ini_set('memory_limit', '512M');
@@ -381,10 +383,13 @@ class Storage
 	 */
 	public static function syncFileFieldsFor($model)
 	{
+		if (!\Config::get('cmf.cdn.enabled')) return;
+
 		$metadata = $model->metadata();
 		$fields = $metadata->fieldMappings;
 		$staticFiles = array();
 		$localAdaper = static::adapter();
+		$cdn = static::getCDNAdapter();
 		
 		foreach ($fields as $field_name => $field)
 		{
@@ -462,7 +467,10 @@ class Storage
 		    			} else {
 		    				$cachedFileId = intval($cachedFiles->get('id'));
 		    			}
-		    			\Cli::write($field_value['src']);
+
+		    			if (\Fuel::$is_cli) {
+		    				\Cli::write($field_value['src']);
+		    			}
 
 		    			if (!empty($cachedFileId))
 		    			{
