@@ -564,6 +564,9 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
             
             foreach ($field_settings as $field_name => $field)
             {
+                if (!is_array($field))
+                    continue;
+
                 if ($field_name == 'id' || ($fields !== null && !in_array($field_name, $fields)) || ($exclude_fields !== null && in_array($field_name, $exclude_fields)))
                     continue;
 
@@ -572,6 +575,9 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
 
                 $value = $this->get($field_name);
                 $field_class = $field['field'];
+                if (empty($field_class) || !class_exists($field_class))
+                    continue;
+
                 $field_class::validate($value, $field, $this);
             }
             
@@ -1352,7 +1358,9 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         }
         
         if (is_array($this->settings)) {
-            return $this->settings;
+            return array_filter($this->settings, function($setting) {
+                return is_array($setting);
+            });
         }
         return $this->settings = array();
     }
