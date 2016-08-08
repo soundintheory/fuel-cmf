@@ -54,10 +54,6 @@
         "psr-0": {
             "CMF\\": "classes/"
         },
-        "psr-4": {
-            "League\\Glide\\": "classes/Glide/",
-            "Intervention\\Image\\": "classes/Intervention/Image"
-        },
         "classmap": [
             "classes/CMF/Doctrine/Manager.php",
             "classes/CMF/Twig/Twig_Loader_Filesystem.php",
@@ -65,7 +61,9 @@
             "classes/Symfony/Component/Validator/Constraints/UniqueEntity.php",
             "classes/Symfony/Component/Validator/Constraints/UniqueEntityValidator.php",
             "classes/CMF/Doctrine/Extensions/TranslatableAnnotationDriver.php",
-            "classes/CMF/Doctrine/Extensions/TranslatableListener.php"
+            "classes/CMF/Doctrine/Extensions/TranslatableListener.php",
+            "classes/Intervention/Image/Gd/Commands/CropCommand.php",
+            "classes/Intervention/Image/Imagick/Commands/CropCommand.php"
         ]
     },
     "minimum-stability": "dev",

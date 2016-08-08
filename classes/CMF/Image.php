@@ -49,7 +49,7 @@ class Image
 		{
 			$api = new Glide\Api\Api(\CMF\Image::manager(), array(
 			    new Glide\Manipulators\Orientation(),
-			    new Glide\Manipulators\Crop(),
+			    new \CMF\Glide\Manipulators\Crop(),
 			    new Glide\Manipulators\Size(2000*2000),
 			    new Glide\Manipulators\Brightness(),
 			    new Glide\Manipulators\Contrast(),
