@@ -1,13 +1,14 @@
 <?php
 
-namespace League\Glide\Manipulators;
+namespace CMF\Glide\Manipulators;
 
 use Intervention\Image\Image;
+use League\Glide;
 
 /**
  * @property string $crop
  */
-class Crop extends BaseManipulator
+class Crop extends Glide\Manipulators\BaseManipulator
 {
     /**
      * Perform crop image manipulation.
