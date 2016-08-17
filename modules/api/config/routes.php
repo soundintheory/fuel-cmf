@@ -10,6 +10,7 @@ return array(
 
 	// A welcome message, possibly in future an API playground
 	'_root_' => 'resource/index',
+	'_lang-canonicals_' => 'resource/languageCanonicals',
 
 	// Resources
 	'(:segment)' => 'resource/render/$1',

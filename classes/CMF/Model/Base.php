@@ -1445,5 +1445,39 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     {
         return $this->toArray();
     }
+
+    public function exportLanguageCanonical()
+    {
+        $language =  \Config::get('language');
+        $main_language =  \Config::get('main_site_language');
+        if(!empty($language) && !empty($main_language) && $language != $main_language)
+        {
+            if( \Config::get(intval($this->settings['original_id'])) > 0 && !empty($this->settings['imported_from']))
+            {
+                $urlParsed = parse_url($this->settings['imported_from']);
+                $url = $urlParsed['scheme']."://".$urlParsed['host'].(isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '')."/api/_lang-canonicals_";
+                $curl = Request::forge($url, 'curl');
+                $curl->set_method('post');
+                $curl->set_header('Content-Type', 'application/json');
+                $curl->set_params($this->getJsonLanguageData());
+            }
+        }
+    }
+
+
+
+    private function getJsonLanguageData()
+    {
+        $tableName = \Admin::getTableForClass(get_class($this));
+        $jsonObject = new \stdClass();
+        $jsonObject->data = new \stdClass();
+        $jsonObject->data->$tableName = array();
+        $jsonObject->data->$tableName[0]  = new \stdClass();
+        $jsonObject->data->$tableName[0]->id = $this->settings['original_id'];
+        $jsonObject->data->$tableName[0]->language = \Config::get('language');
+        $jsonObject->data->$tableName[0]->url = \Uri::base(false).$this->getUrl();
+
+        return $jsonObject;
+    }
 	
 }
