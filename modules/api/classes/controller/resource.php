@@ -73,6 +73,29 @@ class Controller_Resource extends \Controller_Rest
 		));
 	}
 
+	public function action_languageCanonicals(){
+		$jsonObject = null;
+		try {
+			$jsonObject = json_decode(file_get_contents('php://input'));
+		}
+		catch(\Exception $e){}
+
+		if(!empty($jsonObject) && !empty($jsonObject->data))
+		{
+			foreach($jsonObject->data as $table => $items)
+			{
+				foreach($items as $item)
+				{
+					$id = $item->id;
+					$language = $item->language;
+					$canonical = $item->canonical;
+					//TODO get Model From Table Update settings language link
+				}
+			}
+		}
+		exit(true);
+	}
+
 	/**
 	 * Takes a resource name, works out whether it is a model and determines if it's singular or plural
 	 */
