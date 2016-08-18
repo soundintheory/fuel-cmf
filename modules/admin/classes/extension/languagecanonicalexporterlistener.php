@@ -51,8 +51,8 @@ class Extension_Languagecanonicalexporterlistener implements EventSubscriber
             $this->jsonObject = new \stdClass();
             $this->jsonObject->data = new \stdClass();
         }
-        if(empty( $this->jsonObject->data->$tableName))
-            $this->jsonObject->data->$tableName = array();
+        if(empty($this->jsonObject->data->{$tableName}))
+            $this->jsonObject->data->{$tableName} = array();
         $object = $entity->jsonLanguageDataObject();
         if(!in_array($object,$this->jsonObject->data->{$tableName}))
             $this->jsonObject->data->{$tableName}[] = $object;
@@ -60,11 +60,11 @@ class Extension_Languagecanonicalexporterlistener implements EventSubscriber
 
     private function exportLanguageCanonical()
     {
-        $urlParsed = parse_url($this->settings['imported_from']);
-        $url = $urlParsed['scheme']."://".$urlParsed['host'].(isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '')."/api/_lang-canonicals_";
-        $curl = Request::forge($url, 'curl');
+        $url = \Config::get('main_site_url')."/api/_lang-canonicals_";
+        $curl = \Request::forge($url, 'curl');
         $curl->set_method('post');
         $curl->set_header('Content-Type', 'application/json');
-        $curl->set_params($this->jsonObject);
+        $curl->set_params(json_encode($this->jsonObject));
+        $curl->execute();
     }
 }
