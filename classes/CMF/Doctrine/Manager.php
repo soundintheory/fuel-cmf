@@ -118,9 +118,15 @@ class D extends \Fuel\Doctrine
 
 		// Add custom DQL functions
 		$em->getConfiguration()->addCustomStringFunction('TYPE', 'CMF\\Doctrine\\Functions\\TypeFunction');
-
 		// Ensure UTF-8 support
 		$em->getEventManager()->addEventSubscriber(new MysqlSessionInit("utf8", "utf8_unicode_ci"));
+
+		//Add Event Listener For exporting language canonicals
+		$language =  \Config::get('language');
+		$main_language =  \Config::get('main_site_language');
+		if(!empty($language) && !empty($main_language) && $language != $main_language) {
+			$em->getEventManager()->addEventSubscriber(new \Admin\Extension_Languagecanonicalexporterlistener());
+		}
 		
 		foreach ($extensions as $extension_class) {
 			if (!is_subclass_of($extension_class, 'CMF\\Doctrine\\Extensions\\Extension'))
