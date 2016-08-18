@@ -88,7 +88,8 @@ class Controller_Resource extends \Controller_Rest
 				{
 					$id = $item->id;
 					$language = $item->language;
-					$canonical = $item->url;
+					$url = $item->url;
+					exit($url);
 					//TODO get Model From Table Update settings language link
 				}
 			}
