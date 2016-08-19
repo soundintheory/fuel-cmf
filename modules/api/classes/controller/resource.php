@@ -23,6 +23,10 @@ class Controller_Resource extends \Controller_Rest
 	{
 		parent::__construct($request);
 		$this->config = \Config::load('api', true);
+
+		//if There is a language add set header language
+		if(!empty(\Config::get('language')))
+			$this->response->set_header('Content-Language', \Config::get('language'), true);
 	}
 
 	public function cache($param = 'something')

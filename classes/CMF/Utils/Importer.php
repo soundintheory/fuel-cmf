@@ -18,7 +18,7 @@ class Importer
     /**
      * Imports data to the specified model
      */
-    public static function importData($data, $model, $auto_backup = true)
+    public static function importData($data, $model, $auto_backup = true,$lang = null)
     {
         // Allow ourselves some room, this could take a while!
         try {
@@ -38,7 +38,7 @@ class Importer
             // Loop through and import each external entity
             foreach ($data['data'] as $entity)
             {
-                $entity = static::createOrUpdateEntity($entity, $model, $data);
+                $entity = static::createOrUpdateEntity($entity, $model, $data,$lang);
                 \D::manager()->flush();
             }
 
@@ -102,7 +102,7 @@ class Importer
     /**
      * Given some data, tries either update an existing entry in the local DB or creates a new one
      */
-    public static function createOrUpdateEntity($data, $model, &$context = null)
+    public static function createOrUpdateEntity($data, $model, &$context = null,$lang = null)
     {
         if (!is_array($data)) return null;
 
@@ -119,7 +119,10 @@ class Importer
         // We need to resolve the link if this is some sort of API-ish reference to another object somewhere
         if (static::isObjectReference($data)) {
             if (is_null($data['id'])) return null;
-            $data = static::resolveObjectReference($data, $context);
+            $dataAll = static::resolveObjectReference($data, $context);
+            $data = $dataAll['data'];
+            if(isset($dataAll['lang']))
+                $lang = $dataAll['lang'];
         }
 
         // Make sure the class is in line with the discriminator attribute
@@ -165,6 +168,14 @@ class Importer
             $data['settings']['original_id'] = intval($data['id']);
             $data['_oid_'] = $data['id'];
             unset($data['id']);
+            if(!empty($lang) && is_subclass_of($entity,'CMF\Model\PageNode'))
+            {
+                $base_url = \CMF\Model\DevSettings::instance()->parent_site;
+                if(empty($data['settings']['language']))
+                    $data['settings']['language'] = array();
+                $data['settings']['language'][$lang] = $base_url.$entity->url;
+            }
+
 
             if (!$entity)
             {
@@ -369,11 +380,18 @@ class Importer
         // As a last resort, we will try and load it from the 'href' location
         if (!empty($data['href'])) {
             try {
-                $loaded = static::getDataFromUrl($data['href']);
+                $data = static::getDataFromUrl($data['href']);
+                $loaded = null;
+                $lang = null;
+                if(is_array($data) && isset($data['body'])) {
+                    $loaded = $data['body'];
+                    if(isset($data['lang']))
+                        $lang = $data['lang'];
+                }
                 if (is_array(@$loaded['included'])) {
                     $context['included'] = \Arr::merge(\Arr::get($context, 'included', array()), $loaded['included']);
                 }
-                if (isset($loaded['data'])) return $loaded['data'];
+                if (isset($loaded['data'])) return array('data'=>$loaded['data'],'lang'=>$lang);
             } catch (\Exception $e) {}
         }
 
@@ -418,7 +436,10 @@ class Importer
         if (count($found) < count($data['ids']) && !empty($data['href']))
         {
             try {
-                $loaded = static::getDataFromUrl($data['href']);
+                $data = static::getDataFromUrl($data['href']);
+                $loaded = null;
+                if(is_array($data) && isset($data['body']))
+                    $loaded = $data['body'];
                 if (isset($loaded['data'])) {
                     foreach ($loaded['data'] as $value)
                     {
@@ -573,13 +594,21 @@ class Importer
         }
 
         try {
-            $data = static::getDataFromUrl($url);
+            $loaded = static::getDataFromUrl($url);
         } catch (\Exception $e) {
 
             return array(
                 'success' => false,
                 'message' => $e->getMessage()
             );
+        }
+
+        $data = null;
+        $lang = null;
+        if(is_array($loaded) && isset($loaded['body'])) {
+            $data = $loaded['body'];
+            if(isset($loaded['lang']))
+                $lang = $loaded['lang'];
         }
 
         // Standardise the root level meta object
@@ -591,7 +620,7 @@ class Importer
         if (!isset($data['links']['self'])) $data['links']['self'] = $url;
 
         // Import the data
-        return static::importData($data, $model, false);
+        return static::importData($data, $model, false,$lang);
     }
 
     protected static function getDataFromUrl($url)
@@ -615,8 +644,13 @@ class Importer
 
             throw new \Exception($message, $request->response()->status);
         }
-
-        return $request->response()->body;
+        $reponse = $request->response();
+        $language = $reponse->get_header('Content-Language');
+        $returnValue = array();
+        $returnValue['body'] = $reponse->body;
+        if(!empty($language))
+            $returnValue['lang'] = $language;
+        return $returnValue;
     }
 
     /**
