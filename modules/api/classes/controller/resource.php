@@ -23,10 +23,6 @@ class Controller_Resource extends \Controller_Rest
 	{
 		parent::__construct($request);
 		$this->config = \Config::load('api', true);
-
-		//if There is a language add set header language
-		if(!empty(\Config::get('language')))
-			$this->response->set_header('Content-Language', \Config::get('language'), true);
 	}
 
 	public function cache($param = 'something')
@@ -166,6 +162,14 @@ class Controller_Resource extends \Controller_Rest
 		}
 
 		$controller_refl->hasMethod('after') and $response = $controller_refl->getMethod('after')->invoke($controller, $response);
+
+		//if There is a language add set header language
+		if(!empty(\Config::get('language'))) {
+			if ($response instanceof \Fuel\Core\Response)
+				$response->set_header('Content-Language', \Config::get('language'), true);
+			else
+				$this->response->set_header('Content-Language', \Config::get('language'), true);
+		}
 
 		return $response;
 	}
