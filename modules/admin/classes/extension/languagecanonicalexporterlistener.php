@@ -31,7 +31,7 @@ class Extension_Languagecanonicalexporterlistener implements EventSubscriber
         // Process the aliases after the other stuff
         $x = 0;
         foreach ($uow->getScheduledEntityInsertions() AS $entity) {
-            if(!empty($entity->settings) && !isset($entity->settings['original_id']) && $entity->settings['original_id'] > 0){
+            if(!empty($entity->settings) && !isset($entity->settings['original_id']) && $entity->settings['original_id'] > 0 && is_subclass_of($entity,'CMF\Model\PageNode')){
                 $this->toProcessPostFush[$x] = new \stdClass();
                 $this->toProcessPostFush[$x]->id  = $entity->id;
                 $this->toProcessPostFush[$x]->class  = get_class($entity);
