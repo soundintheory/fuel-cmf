@@ -176,7 +176,6 @@ class Importer
                 $data['settings']['language'][$lang] = $base_url.$entity->url;
             }
 
-
             if (!$entity)
             {
                 // Find the ID of the existing record
