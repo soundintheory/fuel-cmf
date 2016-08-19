@@ -3,6 +3,7 @@
 namespace Admin;
 
 use Doctrine\ORM\Event\OnFlushEventArgs,
+    Doctrine\ORM\Event\PostFlushEventArgs,
     Doctrine\Common\EventSubscriber;
 
 class Extension_Languagecanonicalexporterlistener implements EventSubscriber
@@ -59,8 +60,6 @@ class Extension_Languagecanonicalexporterlistener implements EventSubscriber
                 $y++;
             }
         }
-
-
     }
 
     public function postFlush(PostFlushEventArgs $args)
@@ -105,7 +104,5 @@ class Extension_Languagecanonicalexporterlistener implements EventSubscriber
         $curl->set_header('Content-Type', 'application/json');
         $curl->set_params(json_encode($this->jsonObject));
         $curl->execute();
-        /*var_dump($curl->response());
-        exit();*/
     }
 }
