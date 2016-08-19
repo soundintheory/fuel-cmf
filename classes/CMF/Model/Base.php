@@ -1447,12 +1447,14 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     }
 
 
-    public function jsonLanguageDataObject()
+    public function jsonLanguageDataObject($delete = false)
     {
         $elem  = new \stdClass();
         $elem->id = $this->settings['original_id'];
+        $elem->class = get_class($this);
         $elem->language = \Config::get('language');
-        $elem->url = \Uri::base(false).$this->getUrl();
+        if(!$delete)
+            $elem->url = \Uri::base(false).$this->getUrl();
         return $elem;
     }
 

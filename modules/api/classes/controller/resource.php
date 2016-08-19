@@ -74,6 +74,11 @@ class Controller_Resource extends \Controller_Rest
 	}
 
 	public function action_languageCanonicals(){
+		$lang = \Config::get('language');
+		$em = \D::manager();
+		if(empty($lang))
+			throw new \Exception("You do not have set any language for this site , this action is not available");
+
 		$jsonObject = null;
 		try {
 			$jsonObject = json_decode(file_get_contents('php://input'));
@@ -84,16 +89,24 @@ class Controller_Resource extends \Controller_Rest
 		{
 			foreach($jsonObject->data as $table => $items)
 			{
-				foreach($items as $item)
+				foreach($items as $canonical)
 				{
-					$id = $item->id;
-					$language = $item->language;
-					$url = $item->url;
-					exit($url);
-					//TODO get Model From Table Update settings language link
+					$class = $canonical->class;
+					$item = $class::find($canonical->id);
+					if(!isset($item->settings['languages'])) {
+						$item->settings['languages'] = array();
+					}
+
+					if(!isset($item->settings['languages'][$lang]))
+						$item->settings['languages'][$lang] = \Uri::base(false).$item->url;
+
+					$item->settings['languages'][$canonical->language] = $canonical->url;
+
+					$em->persist($item);
 				}
 			}
 		}
+		$em->flush();
 		exit(true);
 	}
 
