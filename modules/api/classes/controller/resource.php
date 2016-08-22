@@ -80,7 +80,7 @@ class Controller_Resource extends \Controller_Rest
 			throw new \Exception("You do not have set any language for this site , this action is not available");
 
 		$canonicalLanguage = "";
-		foreach (getallheaders() as $name => $value) {
+		foreach (\getallheaders() as $name => $value) {
 			if($name == 'Content-Language'){
 				$canonicalLanguage = $value;
 				break;
