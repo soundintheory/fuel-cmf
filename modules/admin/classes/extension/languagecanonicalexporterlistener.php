@@ -78,8 +78,8 @@ class Extension_Languagecanonicalexporterlistener implements EventSubscriber
             $item = $className::find($anItem->id);
             $this->processItem($item,true);*/
         }
-
-        $this->exportLanguageCanonical();
+        if(!empty($this->jsonObject))
+            $this->exportLanguageCanonical();
     }
 
 
