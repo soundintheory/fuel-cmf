@@ -196,10 +196,6 @@ class Controller_Item extends Controller_Base {
 		// Validate the model
 	    if ($model->validate(null, null, array('id', 'pos'))) {
 
-			//Export Url If changed to parent site for different languages
-			if($old_url->url != $model->url->url && method_exists($model,'exportLanguageCanonical'))
-				$model->exportLanguageCanonical();
-
 	    	$em = \D::manager();
 	    	$em->persist($model);
 	        $em->flush();

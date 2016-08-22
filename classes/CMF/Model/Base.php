@@ -1452,7 +1452,6 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         $elem  = new \stdClass();
         $elem->id = $this->settings['original_id'];
         $elem->class = get_class($this);
-        $elem->language = \Config::get('language');
         if(!$delete)
             $elem->url = \Uri::base(false).trim($this->getUrl(),"/");
         return $elem;
