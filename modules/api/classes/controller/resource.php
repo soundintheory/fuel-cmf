@@ -74,24 +74,18 @@ class Controller_Resource extends \Controller_Rest
 	}
 
 	public function action_languageCanonicals(){
-		var_dump($this->response);
-		exit();
 		$lang = \Config::get('language');
 		$em = \D::manager();
 		if(empty($lang))
 			throw new \Exception("You do not have set any language for this site , this action is not available");
 
 		$canonicalLanguage = "";
-		foreach (\getallheaders() as $name => $value) {
-			if($name == 'Content-Language'){
-				$canonicalLanguage = $value;
-				break;
-			}
-		}
-		if($canonicalLanguage == $lang)
-			throw new \Exception("Canonical Language id the same as Main site language");
-		if(empty($canonicalLanguage))
-			throw new \Exception("The Request has got not langauge set");
+		if(isset($_SERVER["CONTENT_LANGUAGE"])) {
+			$canonicalLanguage = $_SERVER["CONTENT_LANGUAGE"];
+			if ($canonicalLanguage == $lang)
+				throw new \Exception("Canonical Language id the same as Main site language");
+		}else
+			throw new \Exception("The Request has got not language set");
 
 		$jsonObject = null;
 		try {

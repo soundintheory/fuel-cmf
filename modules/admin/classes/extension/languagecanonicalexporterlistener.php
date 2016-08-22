@@ -112,6 +112,7 @@ class Extension_Languagecanonicalexporterlistener implements EventSubscriber
 
             $curl->set_params(json_encode($this->jsonObject));
             $curl->execute();
+            $response = $curl->response();
         }
     }
 }
