@@ -119,10 +119,7 @@ class Importer
         // We need to resolve the link if this is some sort of API-ish reference to another object somewhere
         if (static::isObjectReference($data)) {
             if (is_null($data['id'])) return null;
-            $dataAll = static::resolveObjectReference($data, $context);
-            $data = $dataAll['data'];
-            if(isset($dataAll['lang']))
-                $lang = $dataAll['lang'];
+            $data = static::resolveObjectReference($data, $context);
         }
 
         // Make sure the class is in line with the discriminator attribute
@@ -168,13 +165,6 @@ class Importer
             $data['settings']['original_id'] = intval($data['id']);
             $data['_oid_'] = $data['id'];
             unset($data['id']);
-            if(!empty($lang) && is_subclass_of($entity,'CMF\Model\PageNode'))
-            {
-                $base_url = \CMF\Model\DevSettings::instance()->parent_site;
-                if(empty($data['settings']['language']))
-                    $data['settings']['language'] = array();
-                $data['settings']['language'][$lang] = $base_url.$entity->url;
-            }
 
             if (!$entity)
             {
@@ -262,16 +252,18 @@ class Importer
                 $assocValue = array();
                 foreach ($value as $assoc)
                 {
-                    $assocValue[] = static::createOrUpdateEntity($assoc, $assocClass, $context);
+                    $assocValue[] = static::createOrUpdateEntity($assoc, $assocClass, $context,$lang);
                 }
             } else {
-                $assocValue = static::createOrUpdateEntity($value, $assocClass, $context);
+                $assocValue = static::createOrUpdateEntity($value, $assocClass, $context,$lang);
             }
 
             if ($assocValue) {
                 $entity->set($field, $assocValue);
             }
         }
+
+
 
         // Sometimes field values rely on associations being present, so populate again!
         if ($changed) {
@@ -282,6 +274,16 @@ class Importer
         // Download any referenced files if we haven't done so already
         if ($changed && !$processed)
             static::downloadFilesForEntity($entity, $model, \Arr::get($context, 'links.self'));
+
+        if(!empty($lang) && !empty($entity->url) && $entity->url instanceof \CMF\Model\URL )
+        {
+            $base_url = \CMF\Model\DevSettings::instance()->parent_site;
+            $settings = $entity->settings;
+            if(!isset($settings['language']))
+                $settings['language'] = array();
+            $settings['language'][$lang] = $base_url.$entity->url->url;
+            $entity->set('settings',$settings);
+        }
 
         return $entity;
     }
@@ -390,7 +392,7 @@ class Importer
                 if (is_array(@$loaded['included'])) {
                     $context['included'] = \Arr::merge(\Arr::get($context, 'included', array()), $loaded['included']);
                 }
-                if (isset($loaded['data'])) return array('data'=>$loaded['data'],'lang'=>$lang);
+                if (isset($loaded['data'])) return $loaded['data'];
             } catch (\Exception $e) {}
         }
 
@@ -565,7 +567,9 @@ class Importer
         if ($auto_backup) {
             try {
                 $result = Project::backupDatabase('pre_import', true);
-            } catch (\Exception $e) { }
+            } catch (\Exception $e) {
+                $test = "";
+            }
         }
 
         // Base URL fallback
@@ -629,6 +633,7 @@ class Importer
         $api_key = \CMF\Model\DevSettings::instance()->parent_site_api_key;
         if (!empty($api_key)) $request->set_header('Authorization', 'bearer '.\CMF\Model\DevSettings::instance()->parent_site_api_key);
 
+        $request->set_option('HEADER', true);
         try {
             $request->execute();
         } catch (\Exception $e) {
@@ -643,6 +648,7 @@ class Importer
 
             throw new \Exception($message, $request->response()->status);
         }
+
         $reponse = $request->response();
         $language = $reponse->get_header('Content-Language');
         $returnValue = array();

@@ -79,6 +79,18 @@ class Controller_Resource extends \Controller_Rest
 		if(empty($lang))
 			throw new \Exception("You do not have set any language for this site , this action is not available");
 
+		$canonicalLanguage = "";
+		foreach (getallheaders() as $name => $value) {
+			if($name == 'Content-Language'){
+				$canonicalLanguage = $value;
+				break;
+			}
+		}
+		if($canonicalLanguage == $lang)
+			throw new \Exception("Canonical Language id the same as Main site language");
+		if(empty($canonicalLanguage))
+			throw new \Exception("The Request has got not langauge set");
+
 		$jsonObject = null;
 		try {
 			$jsonObject = json_decode(file_get_contents('php://input'));
@@ -93,16 +105,19 @@ class Controller_Resource extends \Controller_Rest
 				{
 					$class = $canonical->class;
 					$item = $class::find($canonical->id);
-					if(!isset($item->settings['languages'])) {
-						$item->settings['languages'] = array();
+					if(!empty($item) && !empty($item->settings)) {
+						$settings = $item->settings;
+						if (!isset($settings['languages'])) {
+							$settings['languages'] = array();
+						}
+
+						if (!isset($settings['languages'][$lang]))
+							$settings['languages'][$lang] = \Uri::base(false) . $item->url;
+
+						$settings['languages'][$canonical->language] = $canonical->url;
+						$item->set('settings',$settings);
+						$em->persist($item);
 					}
-
-					if(!isset($item->settings['languages'][$lang]))
-						$item->settings['languages'][$lang] = \Uri::base(false).$item->url;
-
-					$item->settings['languages'][$canonical->language] = $canonical->url;
-
-					$em->persist($item);
 				}
 			}
 		}
