@@ -74,6 +74,8 @@ class Controller_Resource extends \Controller_Rest
 	}
 
 	public function action_languageCanonicals(){
+		var_dump($this->response);
+		exit();
 		$lang = \Config::get('language');
 		$em = \D::manager();
 		if(empty($lang))
