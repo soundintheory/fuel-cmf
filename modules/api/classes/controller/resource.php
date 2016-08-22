@@ -80,8 +80,8 @@ class Controller_Resource extends \Controller_Rest
 			throw new \Exception("You do not have set any language for this site , this action is not available");
 
 		$canonicalLanguage = "";
-		if(isset($_SERVER["CONTENT_LANGUAGE"])) {
-			$canonicalLanguage = $_SERVER["CONTENT_LANGUAGE"];
+		if(isset($_SERVER["HTTP_CONTENT_LANGUAGE"])) {
+			$canonicalLanguage = $_SERVER["HTTP_CONTENT_LANGUAGE"];
 			if ($canonicalLanguage == $lang)
 				throw new \Exception("Canonical Language id the same as Main site language");
 		}else
@@ -107,10 +107,10 @@ class Controller_Resource extends \Controller_Rest
 							$settings['languages'] = array();
 						}
 
-						if (!isset($settings['languages'][$lang]))
-							$settings['languages'][$lang] = \Uri::base(false) . $item->url;
+						if (!isset($settings['languages'][$canonicalLanguage]))
+							$settings['languages'][$canonicalLanguage] = \Uri::base(false) . $item->url;
 
-						$settings['languages'][$canonical->language] = $canonical->url;
+						$settings['languages'][$canonicalLanguage] = $canonical->url;
 						$item->set('settings',$settings);
 						$em->persist($item);
 					}
