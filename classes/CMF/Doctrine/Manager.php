@@ -70,7 +70,7 @@ class D extends \Fuel\Doctrine
 		static::$_managers[$connection] = \Doctrine\ORM\EntityManager::create($settings['connection'], $config, $EventManager);
 
 		if (!empty($settings['profiling']))
-			static::$_managers[$connection]->getConnection()->getConfiguration()->setSQLLogger(new Doctrine\Logger($connection));
+			static::$_managers[$connection]->getConnection()->getConfiguration()->setSQLLogger(new \CMF\Doctrine\QueryLogger());
 
 		// Connection init callback
 		if (!empty($settings['init_callback']))
