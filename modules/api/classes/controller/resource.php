@@ -106,12 +106,17 @@ class Controller_Resource extends \Controller_Rest
 						if (!isset($settings['languages'])) {
 							$settings['languages'] = array();
 						}
+						if (!empty($canonical->url)){
+							if (!isset($settings['languages'][$canonicalLanguage]))
+								$settings['languages'][$canonicalLanguage] = \Uri::base(false) . $item->url;
 
-						if (!isset($settings['languages'][$canonicalLanguage]))
-							$settings['languages'][$canonicalLanguage] = \Uri::base(false) . $item->url;
-
-						$settings['languages'][$canonicalLanguage] = $canonical->url;
-						$item->set('settings',$settings);
+							$settings['languages'][$canonicalLanguage] = $canonical->url;
+							$item->set('settings', $settings);
+						}
+						else{
+							if (isset($settings['languages'][$canonicalLanguage]))
+								unset($settings['languages'][$canonicalLanguage]);
+						}
 						$em->persist($item);
 					}
 				}
