@@ -179,6 +179,11 @@ class Importer
                 }
             }
         }
+        $original_url = "";
+        if(isset($data['original_url']))
+        {
+            $original_url = $data['original_url'];
+        }
 
         // Find out whether the remote item has been updated since the last import
         if ($entity && !empty($entity->id) && !empty($data['updated_at']))
@@ -277,7 +282,7 @@ class Importer
 
         if(!empty($lang) && !empty($entity->url) && $entity->url instanceof \CMF\Model\URL )
         {
-            if (!empty($data['href'])) {
+            if (!empty($original_url)) {
                 $base_url = \CMF\Model\DevSettings::instance()->parent_site;
                 $settings = $entity->settings;
                 if (!isset($settings['languages']))
@@ -285,7 +290,7 @@ class Importer
                 $ownLang = \Config::get('language');
                 if (!empty($ownLang) && isset($settings['languages'][$ownLang]))
                     unset($settings['languages'][$ownLang]);
-                $settings['languages'][$lang] = $base_url . $entity->url->url;
+                $settings['languages'][$lang] = $original_url;
                 $entity->set('settings', $settings);
             }
         }
