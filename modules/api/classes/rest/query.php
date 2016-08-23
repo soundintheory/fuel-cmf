@@ -602,7 +602,8 @@ class Rest_Query
 				$output[$assoc] = array(
 					'ids' => array(),
 					'type' => $type,
-					'href' => \Uri::base(false)."api/$root_type/$output_id/$assoc"
+					'href' => \Uri::base(false)."api/$root_type/$output_id/$assoc",
+					'original_url' => (!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:""),
 				);
 
 				if (empty($entity->$assoc)) continue;
