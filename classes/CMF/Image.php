@@ -3,6 +3,7 @@
 namespace CMF;
 
 use Fuel\Core\Input;
+use League\Flysystem\Exception;
 use League\Glide;
 
 class Image
@@ -48,7 +49,7 @@ class Image
 		{
 			$api = new Glide\Api\Api(\CMF\Image::manager(), array(
 			    new Glide\Manipulators\Orientation(),
-			    new Glide\Manipulators\Crop(),
+			    new \CMF\Glide\Manipulators\Crop(),
 			    new Glide\Manipulators\Size(2000*2000),
 			    new Glide\Manipulators\Brightness(),
 			    new Glide\Manipulators\Contrast(),
@@ -92,7 +93,7 @@ class Image
 		unset($params['url']);
 
 		// Do some CDN magic if needed
-		if ($cdn = \CMF\Storage::getCDNAdapter())
+		if (\Config::get('cmf.cdn.enabled') && $cdn = \CMF\Storage::getCDNAdapter())
 		{
 			$original = isset($params['path']) ? $params['path'] : ltrim($url, '/');
 			$ext = '';
@@ -100,10 +101,14 @@ class Image
 			// Generate a resized copy of the image locally
 			if (isset($params['path'])) {
 				unset($params['path']);
-				$resized = $remote = static::server()->makeImage($original, $params);
-				$sourceAdapter = static::server()->getCache();
-				$ext = @pathinfo(DOCROOT.$original, PATHINFO_EXTENSION) ?: '';
-				if (!empty($ext)) $remote .= '.'.$ext;
+				try {
+					$resized = $remote = static::server()->makeImage($original, $params);
+					$sourceAdapter = static::server()->getCache();
+					$ext = @pathinfo(DOCROOT . $original, PATHINFO_EXTENSION) ?: '';
+					if (!empty($ext)) $remote .= '.' . $ext;
+				} catch (\Exception $e) {
+					return $url;
+				}
 			} else {
 				$resized = $original;
 				$remote = $original.'/'.pathinfo(DOCROOT.$original, PATHINFO_BASENAME);
@@ -133,7 +138,7 @@ class Image
 				// Write the file to CDN if it doesn't exist there
 				if (!$cdn->has($remote))
 					$cdn->write($remote, $sourceAdapter->read($resized), array( 'visibility' => 'public' ));
-				$url = \CMF\Storage::getCDNAssetUrl($remote);
+				$url = '/'.$remote;
 
 				// Write a file entry to the database
 				\DB::insert('_files')->set(array(
@@ -165,6 +170,7 @@ class Image
 
 				$url = $resizedInfo['url'];
 			}
+			return rtrim(\Config::get('cmf.cdn.base_url', ''), '/').$url;
 		}
 		return $url;
 	}

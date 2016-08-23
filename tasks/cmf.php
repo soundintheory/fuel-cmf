@@ -3,7 +3,8 @@
 namespace Fuel\Tasks;
 
 use CMF\Utils\Installer,
-    CMF\Utils\Project;
+    CMF\Utils\Project,
+    CMF\Storage;
 
 class Cmf
 {
