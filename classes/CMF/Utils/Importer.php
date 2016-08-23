@@ -279,9 +279,9 @@ class Importer
         {
             $base_url = \CMF\Model\DevSettings::instance()->parent_site;
             $settings = $entity->settings;
-            if(!isset($settings['language']))
-                $settings['language'] = array();
-            $settings['language'][$lang] = $base_url.$entity->url->url;
+            if(!isset($settings['languages']))
+                $settings['languages'] = array();
+            $settings['languages'][$lang] = $base_url.$entity->url->url;
             $entity->set('settings',$settings);
         }
 

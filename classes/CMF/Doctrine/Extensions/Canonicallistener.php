@@ -1,12 +1,12 @@
 <?php
 
-namespace Admin;
+namespace CMF\Doctrine\Extensions;
 
 use Doctrine\ORM\Event\OnFlushEventArgs,
     Doctrine\ORM\Event\PostFlushEventArgs,
     Doctrine\Common\EventSubscriber;
 
-class Extension_Languagecanonicalexporterlistener implements EventSubscriber
+class Canonicallistener implements EventSubscriber
 {
     private $jsonObject;
     private $toProcessPostFush;
@@ -50,15 +50,13 @@ class Extension_Languagecanonicalexporterlistener implements EventSubscriber
                 $x++;
             }
         }
-        $y = 0;
         foreach ($uow->getScheduledEntityDeletions() AS $entity) {
             $metadata = $em->getClassMetadata(get_class($entity));
 
             if ($metadata->name == 'CMF\\Model\\URL') {
-                $this->toProcessPostFushDelete[$x] = new \stdClass();
-                $this->toProcessPostFushDelete[$x]->id  = $entity->item_id;
-                $this->toProcessPostFushDelete[$x]->class  = $entity->type;
-                $y++;
+                $className = $entity->type;
+                $item = $className::find($entity->item_id);
+                $this->processItem($item,true);
             }
         }
     }
@@ -72,12 +70,6 @@ class Extension_Languagecanonicalexporterlistener implements EventSubscriber
             $this->processItem($item);
         }
 
-        foreach($this->toProcessPostFushDelete as $anItem)
-        {
-            /*$className = $anItem->class;
-            $item = $className::find($anItem->id);
-            $this->processItem($item,true);*/
-        }
         if(!empty($this->jsonObject))
             $this->exportLanguageCanonical();
     }
