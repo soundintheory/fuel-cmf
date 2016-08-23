@@ -183,7 +183,9 @@ class Importer
         if(isset($data['original_url']))
         {
             $original_url = $data['original_url'];
+            unset($data['original_url']);
         }
+
 
         // Find out whether the remote item has been updated since the last import
         if ($entity && !empty($entity->id) && !empty($data['updated_at']))
