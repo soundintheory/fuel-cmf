@@ -628,7 +628,8 @@ class Rest_Query
 				$output[$assoc] = array(
 					'id' => $assoc_id,
 					'type' => $type,
-					'href' => \Uri::base(false)."api/$type/$assoc_id"
+					'href' => \Uri::base(false)."api/$type/$assoc_id",
+					'original_url' => (!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:""),
 				);
 
 				if (!isset($this->output['included'][$type][$assoc_id]) && !($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($entity->$assoc, $results)) )) {

@@ -277,12 +277,17 @@ class Importer
 
         if(!empty($lang) && !empty($entity->url) && $entity->url instanceof \CMF\Model\URL )
         {
-            $base_url = \CMF\Model\DevSettings::instance()->parent_site;
-            $settings = $entity->settings;
-            if(!isset($settings['languages']))
-                $settings['languages'] = array();
-            $settings['languages'][$lang] = $base_url.$entity->url->url;
-            $entity->set('settings',$settings);
+            if (!empty($data['href'])) {
+                $base_url = \CMF\Model\DevSettings::instance()->parent_site;
+                $settings = $entity->settings;
+                if (!isset($settings['languages']))
+                    $settings['languages'] = array();
+                $ownLang = \Config::get('language');
+                if (!empty($ownLang) && isset($settings['languages'][$ownLang]))
+                    unset($settings['languages'][$ownLang]);
+                $settings['languages'][$lang] = $base_url . $entity->url->url;
+                $entity->set('settings', $settings);
+            }
         }
 
         return $entity;
