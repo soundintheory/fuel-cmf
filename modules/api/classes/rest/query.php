@@ -588,6 +588,7 @@ class Rest_Query
 		$output_type = $resultMeta->name;
 		$output_id = $entity->id;
 		$this->addDiscriminator($entity, $output);
+		$entity->set('original_url_canonical',(!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:""));
 
 		// Put the associations into their respective sideloaded arrays
 		foreach ($associations as $assoc)
@@ -603,7 +604,6 @@ class Rest_Query
 					'ids' => array(),
 					'type' => $type,
 					'href' => \Uri::base(false)."api/$root_type/$output_id/$assoc",
-					'original_url' => (!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:""),
 				);
 
 				if (empty($entity->$assoc)) continue;
@@ -629,8 +629,7 @@ class Rest_Query
 				$output[$assoc] = array(
 					'id' => $assoc_id,
 					'type' => $type,
-					'href' => \Uri::base(false)."api/$type/$assoc_id",
-					'original_url' => (!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:""),
+					'href' => \Uri::base(false)."api/$type/$assoc_id"
 				);
 
 				if (!isset($this->output['included'][$type][$assoc_id]) && !($type == $this->root && (isset($this->output[$this->rootOutput][$assoc_id]) || $this->entityInResultSet($entity->$assoc, $results)) )) {
