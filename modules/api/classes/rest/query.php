@@ -583,12 +583,12 @@ class Rest_Query
 		$associations = array_intersect($field_list, $resultMeta->getAssociationNames());
 		$fields = array_intersect($field_list, $resultMeta->getFieldNames());
 
+		$entity->original_url_canonical = (!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:"test");
 		// Create a simple array version of the result
 		$output = $entity->toArray($fields);
 		$output_type = $resultMeta->name;
 		$output_id = $entity->id;
 		$this->addDiscriminator($entity, $output);
-		$entity->original_url_canonical = (!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:"test");
 
 		// Put the associations into their respective sideloaded arrays
 		foreach ($associations as $assoc)
