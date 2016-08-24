@@ -697,7 +697,7 @@ abstract class Model
 
         $publicProperties = $this->getPublicProperties();
         foreach($publicProperties as $prop){
-            if(!$metadata->hasField($prop) && !$metadata->hasAssociation($prop) && isset($this->$prop)){
+            if(substr($prop, 0, 2) == "__" && !$metadata->hasField($prop) && !$metadata->hasAssociation($prop) && isset($this->$prop)){
                 $value = $this->$prop;
                 if(!is_array($value) && !is_object($value)){
                     $output[$prop] = $value;
