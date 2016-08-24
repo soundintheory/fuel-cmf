@@ -588,7 +588,7 @@ class Rest_Query
 		$output_type = $resultMeta->name;
 		$output_id = $entity->id;
 		$this->addDiscriminator($entity, $output);
-		$entity->set('original_url_canonical',(!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:""));
+		$entity->original_url_canonical = (!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:"");
 
 		// Put the associations into their respective sideloaded arrays
 		foreach ($associations as $assoc)
