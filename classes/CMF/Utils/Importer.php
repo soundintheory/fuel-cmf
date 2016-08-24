@@ -180,10 +180,10 @@ class Importer
             }
         }
         $original_url = "";
-        if(isset($data['original_url_canonical']))
+        if(isset($data['__original_url_canonical']))
         {
-            $original_url = $data['original_url_canonical'];
-            unset($data['original_url_canonical']);
+            $original_url = $data['__original_url_canonical'];
+            unset($data['__original_url_canonical']);
         }
 
 
