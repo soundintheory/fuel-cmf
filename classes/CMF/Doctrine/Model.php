@@ -948,7 +948,7 @@ abstract class Model
     function getPublicProperties() {
         $reflect = new \ReflectionObject($this);
         $publicProperties = array();
-        foreach ($reflect->getProperties(ReflectionProperty::IS_PUBLIC) as $prop)
+        foreach ($reflect->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop)
         {
             $propName = $prop->getName();
             $publicProperties[$propName] = $this->$propName;
