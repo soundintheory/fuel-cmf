@@ -76,17 +76,19 @@ class Canonicallistener implements EventSubscriber
 
 
     protected function processItem(&$entity,$delete = false){
-        if (!empty($entity->settings) && isset($entity->settings['original_id']) && $entity->settings['original_id'] > 0) {
-            $tableName = \Admin::getTableForClass(get_class($entity));
-            if (empty($this->jsonObject)) {
-                $this->jsonObject = new \stdClass();
-                $this->jsonObject->data = new \stdClass();
+        if(!empty($entity)) {
+            if (!empty($entity->settings) && isset($entity->settings['original_id']) && $entity->settings['original_id'] > 0) {
+                $tableName = \Admin::getTableForClass(get_class($entity));
+                if (empty($this->jsonObject)) {
+                    $this->jsonObject = new \stdClass();
+                    $this->jsonObject->data = new \stdClass();
+                }
+                if (empty($this->jsonObject->data->{$tableName}))
+                    $this->jsonObject->data->{$tableName} = array();
+                $object = $entity->jsonLanguageDataObject($delete);
+                if (!in_array($object, $this->jsonObject->data->{$tableName}))
+                    $this->jsonObject->data->{$tableName}[] = $object;
             }
-            if (empty($this->jsonObject->data->{$tableName}))
-                $this->jsonObject->data->{$tableName} = array();
-            $object = $entity->jsonLanguageDataObject($delete);
-            if (!in_array($object, $this->jsonObject->data->{$tableName}))
-                $this->jsonObject->data->{$tableName}[] = $object;
         }
     }
 
@@ -104,7 +106,6 @@ class Canonicallistener implements EventSubscriber
 
             $curl->set_params(json_encode($this->jsonObject));
             $curl->execute();
-            $response = $curl->response();
         }
     }
 }
