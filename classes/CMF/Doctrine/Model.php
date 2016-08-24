@@ -696,7 +696,14 @@ abstract class Model
         }
 
         $publicProperties = $this->getPublicProperties();
-        $output = array_merge($output,$publicProperties);
+        foreach($publicProperties as $prop){
+            if(!$metadata->hasField($prop) && !$metadata->hasAssociation($prop) && isset($this->$prop)){
+                $value = $this->$prop;
+                if(!is_array($value) && !is_object($value)){
+                    $output[$prop] = $value;
+                }
+            }
+        }
         
         return $this->array_data = $output;
     }
@@ -951,7 +958,7 @@ abstract class Model
         foreach ($reflect->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop)
         {
             $propName = $prop->getName();
-            $publicProperties[$propName] = $this->$propName;
+            $publicProperties[] = $propName;
         }
         return $publicProperties;
     }
