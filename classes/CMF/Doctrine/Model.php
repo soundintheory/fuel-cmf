@@ -694,6 +694,9 @@ abstract class Model
                 $output[$assoc_name] = $value->toArray(false);
             }
         }
+
+        $publicProperties = $this->getPublicProperties();
+        $output = array_merge($output,$publicProperties);
         
         return $this->array_data = $output;
     }
@@ -940,5 +943,16 @@ abstract class Model
     public function __isset($name)
     {
         return isset($this->$name);
+    }
+
+    function getPublicProperties() {
+        $reflect = new ReflectionObject($this);
+        $publicProperties = array();
+        foreach ($reflect->getProperties(ReflectionProperty::IS_PUBLIC) as $prop)
+        {
+            $propName = $prop->getName();
+            $publicProperties[$propName] = $this->$propName;
+        }
+        return $publicProperties;
     }
 }
