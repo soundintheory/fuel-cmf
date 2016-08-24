@@ -106,7 +106,7 @@ class Controller_Resource extends \Controller_Rest
 						if (!isset($settings['languages'])) {
 							$settings['languages'] = array();
 						}
-						if (!empty($canonical->url)){
+						if (isset($canonical->url)){
 							if (!isset($settings['languages'][$canonicalLanguage]))
 								$settings['languages'][$canonicalLanguage] = \Uri::base(false) . $item->url;
 

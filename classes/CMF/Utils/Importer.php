@@ -199,11 +199,23 @@ class Importer
             }
         }
 
+
         // Create a new one if not found
         if (!$entity) {
             $entity = new $model();
         }
         \D::manager()->persist($entity);
+
+        //Check if local has been updated since last sync (if configurated) and do not updated if it is the case
+        if(\Config::get('local_changes_ignore_import',false) && new \DateTime($entity->settings['imported_at']) <= $entity->updated_at)
+            $changed = false;
+
+        //we will do the languages at the end
+        $languages = array();
+        if(isset($data['settings']['languages'])) {
+            $languages = $data['settings']['languages'];
+            unset($data['settings']['languages']);
+        }
 
         // Store the entity so we can reference later if needed
         if (isset($data['_oid_'])) {
@@ -282,19 +294,23 @@ class Importer
         if ($changed && !$processed)
             static::downloadFilesForEntity($entity, $model, \Arr::get($context, 'links.self'));
 
-        if(!empty($lang) && !empty($entity->url) && $entity->url instanceof \CMF\Model\URL )
+        //Do That anyway even if set unchanged in case local has been updated, we still need to update the languages url
+        $ownLang = \Config::get('language');
+        if(!empty($ownLang) && !empty($lang) && !empty($entity->url) && $entity->url instanceof \CMF\Model\URL)
         {
-            if (!empty($original_url)) {
-                $base_url = \CMF\Model\DevSettings::instance()->parent_site;
-                $settings = $entity->settings;
-                if (!isset($settings['languages']))
-                    $settings['languages'] = array();
-                $ownLang = \Config::get('language');
-                if (!empty($ownLang) && isset($settings['languages'][$ownLang]))
-                    unset($settings['languages'][$ownLang]);
-                $settings['languages'][$lang] = $original_url;
-                $entity->set('settings', $settings);
+            $settings = $entity->settings;
+
+            //reset the languages array in case one has been deleted
+            $settings['languages'] = array();
+
+            foreach($languages as $key=>$aLang){
+                if($key != $ownLang)
+                    $settings['languages'][$key] = $aLang;
             }
+            if (!empty($original_url)) {
+                $settings['languages'][$lang] = $original_url;
+            }
+            $entity->set('settings', $settings);
         }
 
         return $entity;
