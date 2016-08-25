@@ -111,12 +111,12 @@ class Controller_Resource extends \Controller_Rest
 								$settings['languages'][$canonicalLanguage] = \Uri::base(false) . $item->url;
 
 							$settings['languages'][$canonicalLanguage] = $canonical->url;
-							$item->set('settings', $settings);
 						}
 						else{
 							if (isset($settings['languages'][$canonicalLanguage]))
 								unset($settings['languages'][$canonicalLanguage]);
 						}
+						$item->set('settings', $settings);
 						$em->persist($item);
 					}
 				}
