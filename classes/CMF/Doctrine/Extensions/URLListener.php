@@ -210,6 +210,7 @@ class URLListener implements EventSubscriber
             if ($url != '/') $url = rtrim($url, '/');
             $current_url = $url_item->url;
             $entity_id = $entity->id;
+            $url_id = $url_item->get('id');
             
             // Check for duplicates, only if this is an already existing item
             if (!empty($entity_id) && !is_null($entity_id)) {
@@ -233,13 +234,13 @@ class URLListener implements EventSubscriber
                 }
                 
                 $slug_orig = $slug;
-                $unique = $this->checkUnique($url, $entity_id);
+                $unique = $this->checkUnique($url, $entity_id, $url_id);
                 $counter = 2;
                 
                 while (!$unique) {
                     $slug = $slug_orig.'-'.$counter;
                     $url = $prefix.$slug;
-                    $unique = $this->checkUnique($url, $entity_id);
+                    $unique = $this->checkUnique($url, $entity_id, $url_id);
                     $counter++;
                 }
                 
@@ -289,7 +290,7 @@ class URLListener implements EventSubscriber
         
     }
     
-    protected function checkUnique($url, $item_id)
+    protected function checkUnique($url, $item_id, $url_id = null)
     {
         if (isset($this->savedUrls[$url])) {
             if ($this->savedUrls[$url] === $item_id) {
@@ -299,7 +300,7 @@ class URLListener implements EventSubscriber
             }
         }
         
-        if (\DB::query("SELECT url FROM urls WHERE url = '$url' AND item_id <> $item_id AND alias_id IS NULL", \DB::SELECT)->execute()->count() > 0) {
+        if (\DB::query("SELECT url FROM urls WHERE url = '$url' AND item_id <> $item_id".(!empty($url_id) ? " AND id <> $url_id" : "")." AND alias_id IS NULL", \DB::SELECT)->execute()->count() > 0) {
             $this->savedUrls[$url] = $item_id;
             return false;
         }
@@ -329,6 +330,7 @@ class URLListener implements EventSubscriber
             if ($url_field == null) return;
             
             $url_item = $entity->get($url_field);
+            $url_id = $url_item->get('id');
             $entity_id = $entity->get('id');
             $prefix = $url_item->get('prefix');
             $slug = $url_item->get('slug');
@@ -364,13 +366,13 @@ class URLListener implements EventSubscriber
             }
             
             $slug_orig = $slug;
-            $unique = $this->checkUnique($url, $entity_id);
+            $unique = $this->checkUnique($url, $entity_id, $url_id);
             $counter = 2;
             
             while (!$unique) {
                 $slug = $slug_orig.'-'.$counter;
                 $url = $prefix.$slug;
-                $unique = $this->checkUnique($url, $entity_id);
+                $unique = $this->checkUnique($url, $entity_id, $url_id);
                 $counter++;
             }
             

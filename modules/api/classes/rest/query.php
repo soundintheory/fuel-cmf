@@ -582,8 +582,8 @@ class Rest_Query
 
 		$associations = array_intersect($field_list, $resultMeta->getAssociationNames());
 		$fields = array_intersect($field_list, $resultMeta->getFieldNames());
-
-		$entity->__original_url_canonical = (!empty($entity->url) && $entity->url instanceof \CMF\Model\URL? \Uri::base(false).$entity->url->url:"test");
+		$entity->__original_url_canonical = (!empty($entity->url) && $entity->url instanceof \CMF\Model\URL ? rtrim(\Uri::base(false), '/').'/'.ltrim($entity->url->url, '/') : "");
+		
 		// Create a simple array version of the result
 		$output = $entity->toArray($fields);
 		$output_type = $resultMeta->name;
