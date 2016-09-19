@@ -188,13 +188,14 @@ class Controller_Item extends Controller_Base {
 		}
 		$create_new = (\Input::post('create_new', false) !== false);
 		$save_and_close = (\Input::post('saveAndClose', false) !== false);
-		
+
+		$old_url = $model->url;
 		// Populate the model with posted data
 		$model->populate(\Input::post());
-		
+
 		// Validate the model
 	    if ($model->validate(null, null, array('id', 'pos'))) {
-	    	
+
 	    	$em = \D::manager();
 	    	$em->persist($model);
 	        $em->flush();

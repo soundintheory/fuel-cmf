@@ -73,6 +73,59 @@ class Controller_Resource extends \Controller_Rest
 		));
 	}
 
+	public function action_languageCanonicals(){
+		$lang = \Config::get('language');
+		$em = \D::manager();
+		if(empty($lang))
+			throw new \Exception("You do not have set any language for this site , this action is not available");
+
+		$canonicalLanguage = "";
+		if(isset($_SERVER["HTTP_CONTENT_LANGUAGE"])) {
+			$canonicalLanguage = $_SERVER["HTTP_CONTENT_LANGUAGE"];
+			if ($canonicalLanguage == $lang)
+				throw new \Exception("Canonical Language id the same as Main site language");
+		}else
+			throw new \Exception("The Request has got not language set");
+
+		$jsonObject = null;
+		try {
+			$jsonObject = json_decode(file_get_contents('php://input'));
+		}
+		catch(\Exception $e){}
+
+		if(!empty($jsonObject) && !empty($jsonObject->data))
+		{
+			foreach($jsonObject->data as $table => $items)
+			{
+				foreach($items as $canonical)
+				{
+					$class = $canonical->class;
+					$item = $class::find($canonical->id);
+					if(!empty($item) && !empty($item->settings)) {
+						$settings = $item->settings;
+						if (!isset($settings['languages'])) {
+							$settings['languages'] = array();
+						}
+						if (isset($canonical->url)){
+							if (!isset($settings['languages'][$canonicalLanguage]))
+								$settings['languages'][$canonicalLanguage] = \Uri::base(false) . $item->url;
+
+							$settings['languages'][$canonicalLanguage] = $canonical->url;
+						}
+						else{
+							if (isset($settings['languages'][$canonicalLanguage]))
+								unset($settings['languages'][$canonicalLanguage]);
+						}
+						$item->set('settings', $settings);
+						$em->persist($item);
+					}
+				}
+			}
+		}
+		$em->flush();
+		exit(true);
+	}
+
 	/**
 	 * Takes a resource name, works out whether it is a model and determines if it's singular or plural
 	 */
@@ -125,6 +178,14 @@ class Controller_Resource extends \Controller_Rest
 		}
 
 		$controller_refl->hasMethod('after') and $response = $controller_refl->getMethod('after')->invoke($controller, $response);
+
+		//if There is a language add set header language
+		if(!empty(\Config::get('language'))) {
+			if ($response instanceof \Fuel\Core\Response)
+				$response->set_header('Content-Language', \Config::get('language'), true);
+			else
+				$this->response->set_header('Content-Language', \Config::get('language'), true);
+		}
 
 		return $response;
 	}

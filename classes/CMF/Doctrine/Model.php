@@ -694,6 +694,16 @@ abstract class Model
                 $output[$assoc_name] = $value->toArray(false);
             }
         }
+
+        $publicProperties = $this->getPublicProperties();
+        foreach($publicProperties as $prop){
+            if(substr($prop, 0, 2) == "__" && !$metadata->hasField($prop) && !$metadata->hasAssociation($prop) && isset($this->$prop)){
+                $value = $this->$prop;
+                if(!is_array($value) && !is_object($value)){
+                    $output[$prop] = $value;
+                }
+            }
+        }
         
         return $this->array_data = $output;
     }
@@ -940,5 +950,16 @@ abstract class Model
     public function __isset($name)
     {
         return isset($this->$name);
+    }
+
+    function getPublicProperties() {
+        $reflect = new \ReflectionObject($this);
+        $publicProperties = array();
+        foreach ($reflect->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop)
+        {
+            $propName = $prop->getName();
+            $publicProperties[] = $propName;
+        }
+        return $publicProperties;
     }
 }

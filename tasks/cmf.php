@@ -48,6 +48,54 @@ class Cmf
             Project::ensureMinimumSettings();
         }
     }
+
+    /**
+     * Sync the database to the model classes
+     */
+    public function import()
+    {
+        $tables = func_get_args();
+
+        if (empty($tables))
+            throw new \Exception("No table was specified for import");
+
+        foreach ($tables as $table_name)
+        {
+            // Find class name and metadata etc
+            $class_name = \Admin::getClassForTable($table_name);
+            if ($class_name === false) {
+                $this->writeAndLog("Import error: Class could not be found for table '$table_name'", "error");
+                continue;
+            }
+
+            // Import the data
+            \Cli::write("Importing $table_name...");
+            try {
+                $import_result = \CMF\Utils\Importer::importUrl($class_name, \Input::post('import_url'));
+
+                if (@$import_result['success']) {
+                    $this->writeAndLog("Successfully imported $table_name", "info", "green");
+                } else {
+                    $this->writeAndLog("Error importing $table_name: ".@$import_result['message'] ?: "Unknown error importing $table_name", "error");
+                }
+
+            } catch (\Exception $e) {
+                $this->writeAndLog("Error importing $table_name: ".$e->getMessage(), "error");
+            }
+
+        }
+    }
+
+    protected function writeAndLog($message, $level = "info", $color = null)
+    {
+        switch ($level) {
+            case "error":
+                //\Cli::error($message);
+            default:
+                \Cli::write($message, $color);
+        }
+        logger($level == 'info' ? 'alert' : $level, $message);
+    }
     
     /**
      * Sync the database to the model classes

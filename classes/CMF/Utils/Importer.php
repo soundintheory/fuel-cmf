@@ -18,7 +18,7 @@ class Importer
     /**
      * Imports data to the specified model
      */
-    public static function importData($data, $model, $auto_backup = true)
+    public static function importData($data, $model, $auto_backup = true,$lang = null)
     {
         // Allow ourselves some room, this could take a while!
         try {
@@ -38,7 +38,7 @@ class Importer
             // Loop through and import each external entity
             foreach ($data['data'] as $entity)
             {
-                $entity = static::createOrUpdateEntity($entity, $model, $data);
+                $entity = static::createOrUpdateEntity($entity, $model, $data,$lang);
                 \D::manager()->flush();
             }
 
@@ -102,7 +102,7 @@ class Importer
     /**
      * Given some data, tries either update an existing entry in the local DB or creates a new one
      */
-    public static function createOrUpdateEntity($data, $model, &$context = null)
+    public static function createOrUpdateEntity($data, $model, &$context = null,$lang = null)
     {
         if (!is_array($data)) return null;
 
@@ -179,6 +179,13 @@ class Importer
                 }
             }
         }
+        $original_url = "";
+        if(isset($data['__original_url_canonical']))
+        {
+            $original_url = $data['__original_url_canonical'];
+            unset($data['__original_url_canonical']);
+        }
+
 
         // Find out whether the remote item has been updated since the last import
         if ($entity && !empty($entity->id) && !empty($data['updated_at']))
@@ -192,11 +199,23 @@ class Importer
             }
         }
 
+
         // Create a new one if not found
         if (!$entity) {
             $entity = new $model();
         }
         \D::manager()->persist($entity);
+
+        //Check if local has been updated since last sync (if configurated) and do not updated if it is the case
+        if(\Config::get('local_changes_ignore_import',false) && new \DateTime($entity->settings['imported_at']) <= $entity->updated_at)
+            $changed = false;
+
+        //we will do the languages at the end
+        $languages = array();
+        if(isset($data['settings']['languages'])) {
+            $languages = $data['settings']['languages'];
+            unset($data['settings']['languages']);
+        }
 
         // Store the entity so we can reference later if needed
         if (isset($data['_oid_'])) {
@@ -252,16 +271,18 @@ class Importer
                 $assocValue = array();
                 foreach ($value as $assoc)
                 {
-                    $assocValue[] = static::createOrUpdateEntity($assoc, $assocClass, $context);
+                    $assocValue[] = static::createOrUpdateEntity($assoc, $assocClass, $context,$lang);
                 }
             } else {
-                $assocValue = static::createOrUpdateEntity($value, $assocClass, $context);
+                $assocValue = static::createOrUpdateEntity($value, $assocClass, $context,$lang);
             }
 
             if ($assocValue) {
                 $entity->set($field, $assocValue);
             }
         }
+
+
 
         // Sometimes field values rely on associations being present, so populate again!
         if ($changed) {
@@ -272,6 +293,25 @@ class Importer
         // Download any referenced files if we haven't done so already
         if ($changed && !$processed)
             static::downloadFilesForEntity($entity, $model, \Arr::get($context, 'links.self'));
+
+        //Do That anyway even if set unchanged in case local has been updated, we still need to update the languages url
+        $ownLang = \Config::get('language');
+        if(!empty($ownLang) && !empty($lang) && !empty($entity->url) && $entity->url instanceof \CMF\Model\URL)
+        {
+            $settings = $entity->settings;
+
+            //reset the languages array in case one has been deleted
+            $settings['languages'] = array();
+
+            foreach($languages as $key=>$aLang){
+                if($key != $ownLang)
+                    $settings['languages'][$key] = $aLang;
+            }
+            if (!empty($original_url)) {
+                $settings['languages'][$lang] = $original_url;
+            }
+            $entity->set('settings', $settings);
+        }
 
         return $entity;
     }
@@ -369,7 +409,14 @@ class Importer
         // As a last resort, we will try and load it from the 'href' location
         if (!empty($data['href'])) {
             try {
-                $loaded = static::getDataFromUrl($data['href']);
+                $data = static::getDataFromUrl($data['href']);
+                $loaded = null;
+                $lang = null;
+                if(is_array($data) && isset($data['body'])) {
+                    $loaded = $data['body'];
+                    if(isset($data['lang']))
+                        $lang = $data['lang'];
+                }
                 if (is_array(@$loaded['included'])) {
                     $context['included'] = \Arr::merge(\Arr::get($context, 'included', array()), $loaded['included']);
                 }
@@ -418,7 +465,10 @@ class Importer
         if (count($found) < count($data['ids']) && !empty($data['href']))
         {
             try {
-                $loaded = static::getDataFromUrl($data['href']);
+                $data = static::getDataFromUrl($data['href']);
+                $loaded = null;
+                if(is_array($data) && isset($data['body']))
+                    $loaded = $data['body'];
                 if (isset($loaded['data'])) {
                     foreach ($loaded['data'] as $value)
                     {
@@ -517,6 +567,7 @@ class Importer
     {
         // Try to back up the DB first
         if ($auto_backup) {
+            static::clearAutoBackups();
             try {
                 $result = Project::backupDatabase('pre_import', true);
             } catch (\Exception $e) { }
@@ -536,6 +587,25 @@ class Importer
         return static::importData($data, $model, false);
     }
 
+    protected static function clearAutoBackups()
+    {
+        $dir = realpath(APPPATH.'../..').'/db/backups';
+        if (!is_dir($dir)) return;
+
+        $backups = glob($dir.'/pre_import*');
+        $maxBackups = 10;
+
+        if (count($backups) > $maxBackups) {
+            $backups = array_slice($backups, 0, count($backups) - $maxBackups);
+        }
+
+        foreach ($backups as $backupFilename) {
+            try {
+                unlink($backupFilename);
+            } catch (\Exception $e) {}
+        }
+    }
+
     /**
      * Attempts to import data from a file
      */
@@ -543,6 +613,7 @@ class Importer
     {
         // Try to back up the DB first
         if ($auto_backup) {
+            static::clearAutoBackups();
             try {
                 $result = Project::backupDatabase('pre_import', true);
             } catch (\Exception $e) { }
@@ -573,13 +644,21 @@ class Importer
         }
 
         try {
-            $data = static::getDataFromUrl($url);
+            $loaded = static::getDataFromUrl($url);
         } catch (\Exception $e) {
 
             return array(
                 'success' => false,
                 'message' => $e->getMessage()
             );
+        }
+
+        $data = null;
+        $lang = null;
+        if(is_array($loaded) && isset($loaded['body'])) {
+            $data = $loaded['body'];
+            if(isset($loaded['lang']))
+                $lang = $loaded['lang'];
         }
 
         // Standardise the root level meta object
@@ -591,7 +670,7 @@ class Importer
         if (!isset($data['links']['self'])) $data['links']['self'] = $url;
 
         // Import the data
-        return static::importData($data, $model, false);
+        return static::importData($data, $model, false,$lang);
     }
 
     protected static function getDataFromUrl($url)
@@ -601,6 +680,7 @@ class Importer
         $api_key = \CMF\Model\DevSettings::instance()->parent_site_api_key;
         if (!empty($api_key)) $request->set_header('Authorization', 'bearer '.\CMF\Model\DevSettings::instance()->parent_site_api_key);
 
+        $request->set_option('HEADER', true);
         try {
             $request->execute();
         } catch (\Exception $e) {
@@ -616,7 +696,13 @@ class Importer
             throw new \Exception($message, $request->response()->status);
         }
 
-        return $request->response()->body;
+        $reponse = $request->response();
+        $language = $reponse->get_header('Content-Language');
+        $returnValue = array();
+        $returnValue['body'] = $reponse->body;
+        if(!empty($language))
+            $returnValue['lang'] = $language;
+        return $returnValue;
     }
 
     /**
