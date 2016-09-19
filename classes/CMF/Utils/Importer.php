@@ -567,6 +567,7 @@ class Importer
     {
         // Try to back up the DB first
         if ($auto_backup) {
+            static::clearAutoBackups();
             try {
                 $result = Project::backupDatabase('pre_import', true);
             } catch (\Exception $e) { }
@@ -586,6 +587,25 @@ class Importer
         return static::importData($data, $model, false);
     }
 
+    protected static function clearAutoBackups()
+    {
+        $dir = realpath(APPPATH.'../..').'/db/backups';
+        if (!is_dir($dir)) return;
+
+        $backups = glob($dir.'/pre_import*');
+        $maxBackups = 10;
+
+        if (count($backups) > $maxBackups) {
+            $backups = array_slice($backups, 0, count($backups) - $maxBackups);
+        }
+
+        foreach ($backups as $backupFilename) {
+            try {
+                unlink($backupFilename);
+            } catch (\Exception $e) {}
+        }
+    }
+
     /**
      * Attempts to import data from a file
      */
@@ -593,11 +613,10 @@ class Importer
     {
         // Try to back up the DB first
         if ($auto_backup) {
+            static::clearAutoBackups();
             try {
                 $result = Project::backupDatabase('pre_import', true);
-            } catch (\Exception $e) {
-                $test = "";
-            }
+            } catch (\Exception $e) { }
         }
 
         // Base URL fallback

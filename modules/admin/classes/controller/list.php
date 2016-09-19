@@ -49,7 +49,7 @@ class Controller_List extends Controller_Base {
 		$metadata = $class_name::metadata();
 		$query_fields = $class_name::query_fields();
 		$pagination = $class_name::pagination();
-		$sortable = !$pagination && $class_name::sortable();
+		$sortable = $class_name::sortable();
 		$per_page = $class_name::per_page();
 		$sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
 		$sort_process = $class_name::sortProcess();
@@ -243,14 +243,19 @@ class Controller_List extends Controller_Base {
 
 					$filter_class = $metadata->getAssociationTargetClass($filter_field);
 					$filter_name = \Arr::get($fields, "$filter_field.title", '');
-					$filter_options = $filter_class::options();
+					$filter_options = array( '' => 'All '.$filter_class::plural() ) + $filter_class::options();
 					$filter_val = \Input::get($filter_field);
+                    $filter_is_tree = (is_subclass_of($filter_class, 'CMF\\Model\\Node'));
 
-					if ($filter_field != $sort_group) {
-						$filter_options = array( '' => 'All' ) + $filter_options;
-					} else if (!$filter_val) {
-						$filter_val = key($filter_options);
-					}
+                    if (!empty($filter_val) && $filter_is_tree && ($filterEntity = $filter_class::find($filter_val)))
+                    {
+                        $filter_val = $filterEntity->getChildrenIds(false, null, 'ASC', true);
+                    }
+
+                    if (empty($filter_val) && $filter_field == $sort_group)
+                    {
+                        $sortable = false;
+                    }
 
 					$filters[$filter_field] = array(
 						'label' => 'Show '.strtolower($filter_name).':',
@@ -264,7 +269,18 @@ class Controller_List extends Controller_Base {
 
 					
 					if (!empty($filter_val)) {
-						$qb->andWhere("$filter_field = ".$filter_val);
+                        $paramName = $filter_name.'filter';
+                        if (is_array($filter_val)) {
+
+                            if (count($filter_val) > 1 && $filter_field == $sort_group) {
+                                $sortable = false;
+                            }
+
+                            $qb->andWhere("$filter_field IN(:$paramName)");
+                        } else {
+                            $qb->andWhere("$filter_field = :$paramName");
+                        }
+                        $qb->setParameter($paramName, $filter_val);
 					}
 				}
 			}
@@ -301,12 +317,13 @@ class Controller_List extends Controller_Base {
 		
 		// Make the list drag and drop, if editing is possible
 		if ($sortable && $can_edit) {
+            $pagination = false;
 			array_unshift($columns, array( 'name' => '', 'type' => 'handle', 'heading' => '' ));
 		}
 		
 		// Add the sortable ordering
 		if ($sortable) {
-			
+
 			$has_group = !is_null($sort_group) && property_exists($class_name, $sort_group);
 			
 			if ($has_group) {
@@ -366,8 +383,8 @@ class Controller_List extends Controller_Base {
 
 			/* PAGINATION */
 			$countquery = clone $qb;
-			$countquery->select('COUNT(item.id)');
-			$count = intval($countquery->getQuery()->getSingleScalarResult());
+            $countPaginator = new Paginator($countquery, true);
+			$count = $countPaginator->count();
 
 			$config = array(
 			    'pagination_url' => 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
@@ -388,7 +405,7 @@ class Controller_List extends Controller_Base {
 			    'next-marker' => 'Next &gt;'
 			);
 			$pagination = \Pagination::forge('default', $config);
-			
+
 			$qb->setMaxResults($pagination->per_page);
 			$qb->setFirstResult($pagination->offset);
 			$this->pagination = $pagination->render();
