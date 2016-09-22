@@ -201,13 +201,13 @@ class Importer
 
 
         // Create a new one if not found
-        if (!$entity) {
+        if ($isNew = empty($entity)) {
             $entity = new $model();
         }
         \D::manager()->persist($entity);
 
         //Check if local has been updated since last sync (if configurated) and do not updated if it is the case
-        if(\Config::get('local_changes_ignore_import',false) && new \DateTime($entity->settings['imported_at']) <= $entity->updated_at)
+        if(!$isNew && \Config::get('local_changes_ignore_import',false) && isset($entity->settings['imported_at']) && new \DateTime($entity->settings['imported_at']) <= $entity->updated_at)
             $changed = false;
 
         //we will do the languages at the end
