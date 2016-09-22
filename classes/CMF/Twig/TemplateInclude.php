@@ -23,6 +23,11 @@ class TemplateInclude extends Twig_Template
     {
         return 'nocache';
     }
+
+    public function getDebugInfo()
+    {
+        return array();
+    }
     
     protected function doDisplay(array $context, array $blocks = array())
     {
