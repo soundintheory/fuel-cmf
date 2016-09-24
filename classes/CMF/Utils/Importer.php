@@ -476,10 +476,10 @@ class Importer
         if (count($found) < count($data['ids']) && !empty($data['href']))
         {
             try {
-                $data = static::getDataFromUrl($data['href']);
+                $hrefData = static::getDataFromUrl($data['href']);
                 $loaded = null;
-                if(is_array($data) && isset($data['body']))
-                    $loaded = $data['body'];
+                if(is_array($hrefData) && isset($hrefData['body']))
+                    $loaded = $hrefData['body'];
                 if (isset($loaded['data'])) {
                     foreach ($loaded['data'] as $value)
                     {
