@@ -32,7 +32,7 @@ class Canonicallistener implements EventSubscriber
         $x = 0;
         foreach ($uow->getScheduledEntityInsertions() AS $entity) {
             $metadata = $em->getClassMetadata(get_class($entity));
-            if ($metadata->name == 'CMF\\Model\\URL') {
+            if ($metadata->name == 'CMF\\Model\\URL' && !empty($entity->type) && class_exists($entity->type)) {
                 $this->toProcessPostFush[$x] = new \stdClass();
                 $this->toProcessPostFush[$x]->id  = $entity->item_id;
                 $this->toProcessPostFush[$x]->class  = $entity->type;
@@ -43,7 +43,7 @@ class Canonicallistener implements EventSubscriber
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
             $metadata = $em->getClassMetadata(get_class($entity));
             //if change of Url
-            if ($metadata->name == 'CMF\\Model\\URL') {
+            if ($metadata->name == 'CMF\\Model\\URL' && !empty($entity->type) && class_exists($entity->type)) {
                 $this->toProcessPostFush[$x] = new \stdClass();
                 $this->toProcessPostFush[$x]->id  = $entity->item_id;
                 $this->toProcessPostFush[$x]->class  = $entity->type;
@@ -53,7 +53,7 @@ class Canonicallistener implements EventSubscriber
         foreach ($uow->getScheduledEntityDeletions() AS $entity) {
             $metadata = $em->getClassMetadata(get_class($entity));
 
-            if ($metadata->name == 'CMF\\Model\\URL') {
+            if ($metadata->name == 'CMF\\Model\\URL' && !empty($entity->type) && class_exists($entity->type)) {
                 $className = $entity->type;
                 $item = $className::find($entity->item_id);
                 $this->processItem($item,true);
