@@ -38,8 +38,8 @@ class Importer
             // Loop through and import each external entity
             foreach ($data['data'] as $entity)
             {
-                $entity = static::createOrUpdateEntity($entity, $model, $data,$lang);
-                \D::manager()->flush();
+                $entity = static::createOrUpdateEntity($entity, $model, $data, $lang);
+                if (!empty($entity)) \D::manager()->flush();
             }
 
             static::processDeletions($model);
@@ -127,6 +127,15 @@ class Importer
             $model = \Arr::get($metadata->discriminatorMap, $data[$typeField], $model);
             if ($model != $metadata->name) $metadata = $model::metadata();
             unset($data[$typeField]);
+        }
+
+        // Make sure we're allowed to import the model based on its import parameters
+        $importParams = $model::importParameters();
+        if (!empty($importParams) && is_array($importParams)) {
+            foreach ($importParams as $paramName => $paramValue) {
+                if (isset($data[$paramName]) && $data[$paramName] != $paramValue)
+                    return null;
+            }
         }
 
         // If we're using inheritance, make sure we have the base table name
@@ -271,10 +280,12 @@ class Importer
                 $assocValue = array();
                 foreach ($value as $assoc)
                 {
-                    $assocValue[] = static::createOrUpdateEntity($assoc, $assocClass, $context,$lang);
+                    if ($assocItem = static::createOrUpdateEntity($assoc, $assocClass, $context, $lang))
+                        $assocValue[] = $assocItem;
                 }
             } else {
-                $assocValue = static::createOrUpdateEntity($value, $assocClass, $context,$lang);
+                if ($assocItem = static::createOrUpdateEntity($value, $assocClass, $context, $lang))
+                    $assocValue[] = $assocItem;
             }
 
             if ($assocValue) {

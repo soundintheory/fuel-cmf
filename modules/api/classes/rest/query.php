@@ -415,6 +415,13 @@ class Rest_Query
 			$fields = array_diff($fields, $exclude);
 		}
 
+		$importParams = $model::importParameters();
+		if (!empty($importParams) && is_array($importParams)) {
+		    foreach ($importParams as $paramName => $paramValue) {
+		        if (!in_array($paramName, $fields)) $fields[] = $paramName;
+		    }
+		}
+
 		if (!in_array('id', $fields)) array_unshift($fields, 'id');
 
 		return $fields;
