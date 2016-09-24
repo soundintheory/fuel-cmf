@@ -30,7 +30,7 @@ class Importer
         static::$_updatedEntities = array();
         
         // Normalise the data so we always have a collection
-        if (is_array($data['data']) && \Arr::is_assoc($data['data'])) {
+        if (is_array($data) && is_array(@$data['data']) && \Arr::is_assoc($data['data'])) {
             $data['data'] = array($data['data']);
         }
 
@@ -133,7 +133,7 @@ class Importer
         $importParams = $model::importParameters();
         if (!empty($importParams) && is_array($importParams)) {
             foreach ($importParams as $paramName => $paramValue) {
-                if (isset($data[$paramName]) && $data[$paramName] != $paramValue)
+                if (array_key_exists($paramName, $data) && $data[$paramName] != $paramValue)
                     return null;
             }
         }
