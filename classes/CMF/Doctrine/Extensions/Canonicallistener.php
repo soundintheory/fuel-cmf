@@ -31,8 +31,7 @@ class Canonicallistener implements EventSubscriber
         // Process the aliases after the other stuff
         $x = 0;
         foreach ($uow->getScheduledEntityInsertions() AS $entity) {
-            $metadata = $em->getClassMetadata(get_class($entity));
-            if ($metadata->name == 'CMF\\Model\\URL' && !empty($entity->type) && class_exists($entity->type)) {
+            if (($entity instanceof \CMF\Model\URL) && !empty($entity->type) && class_exists($entity->type)) {
                 $this->toProcessPostFush[$x] = new \stdClass();
                 $this->toProcessPostFush[$x]->id  = $entity->item_id;
                 $this->toProcessPostFush[$x]->class  = $entity->type;
@@ -41,9 +40,7 @@ class Canonicallistener implements EventSubscriber
         }
 
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
-            $metadata = $em->getClassMetadata(get_class($entity));
-            //if change of Url
-            if ($metadata->name == 'CMF\\Model\\URL' && !empty($entity->type) && class_exists($entity->type)) {
+            if (($entity instanceof \CMF\Model\URL) && !empty($entity->type) && class_exists($entity->type)) {
                 $this->toProcessPostFush[$x] = new \stdClass();
                 $this->toProcessPostFush[$x]->id  = $entity->item_id;
                 $this->toProcessPostFush[$x]->class  = $entity->type;
@@ -51,9 +48,7 @@ class Canonicallistener implements EventSubscriber
             }
         }
         foreach ($uow->getScheduledEntityDeletions() AS $entity) {
-            $metadata = $em->getClassMetadata(get_class($entity));
-
-            if ($metadata->name == 'CMF\\Model\\URL' && !empty($entity->type) && class_exists($entity->type)) {
+            if (($entity instanceof \CMF\Model\URL) && !empty($entity->type) && class_exists($entity->type)) {
                 $className = $entity->type;
                 $item = $className::find($entity->item_id);
                 $this->processItem($item,true);
@@ -78,7 +73,7 @@ class Canonicallistener implements EventSubscriber
     protected function processItem(&$entity,$delete = false){
         if(!empty($entity)) {
             if (!empty($entity->settings) && isset($entity->settings['original_id']) && $entity->settings['original_id'] > 0) {
-                $tableName = \Admin::getTableForClass(get_class($entity));
+                $tableName = \Admin::getTableForClass($entity->getEntityClass());
                 if (empty($this->jsonObject)) {
                     $this->jsonObject = new \stdClass();
                     $this->jsonObject->data = new \stdClass();

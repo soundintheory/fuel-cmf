@@ -604,6 +604,16 @@ abstract class Model
         $called_class = get_called_class();
         return \D::manager()->getClassMetadata($called_class);
     }
+
+    /**
+     * Get the entity class
+     */
+    public function getEntityClass()
+    {
+        $metadata = $this->metadata();
+        if (!empty($metadata)) return $metadata->name;
+        return get_class($this);
+    }
     
     /**
      * @see \CMF\Doctrine\Model::$_order
