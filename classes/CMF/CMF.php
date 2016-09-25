@@ -11,11 +11,13 @@ namespace CMF;
 class CMF
 {
 	public static $model;
+	protected static $currentUrl;
 	protected static $uri = null;
 	protected static $lang = null;
 	protected static $lang_default = null;
 	protected static $lang_prefix = '';
 	protected static $languages = null;
+	protected static $languageUrls = null;
 	
 	public static $lang_enabled = false;
 	public static $static_urls = array();
@@ -328,13 +330,47 @@ class CMF
 		if (!static::$lang_enabled) return static::$languages = array(\Lang::get_lang());
 		
 		try {
-			return \DB::query("SELECT id, code, top_level_domain FROM languages WHERE visible = 1 ORDER BY pos ASC")->execute()->as_array();
+			return static::$languages = \DB::query("SELECT id, code, top_level_domain FROM languages WHERE visible = 1 ORDER BY pos ASC")->execute()->as_array();
 		} catch (\Exception $e) {
 			return array(
 				array(
 					'id' => 0,
 					'code' => \Lang::get_lang(),
 					'top_level_domain' => ''
+				)
+			);
+		}
+	}
+
+	/**
+	 * Gets a list of the active languages that have been configured
+	 */
+	public static function languageUrls()
+	{
+		if (static::$languageUrls !== null) return static::$languageUrls;
+		if (!static::$lang_enabled) return static::$languageUrls = array(\Lang::get_lang());
+
+		$url = static::original_uri();
+		if (empty($url)) $url = '/';
+		else $url = '/'.trim($url, '/');
+		
+		try {
+			$currentUrl = static::currentUrl();
+			$languages = \DB::query("SELECT l.id, l.code, l.top_level_domain, u.url url, t.content url_translated FROM languages AS l LEFT JOIN urls AS u ON (u.id = ".(!empty($currentUrl) ? $currentUrl->id : '0').") LEFT JOIN ext_translations AS t ON (t.locale = l.code AND t.object_class = 'CMF\\\Model\\\URL' AND t.field = 'url' AND t.foreign_key = ".(!empty($currentUrl) ? $currentUrl->id : "0").") WHERE l.visible = 1 ORDER BY l.pos ASC")->execute()->as_array();
+            foreach ($languages as &$language)
+			{
+				$language['url'] = static::link(!empty($language['url_translated']) ? $language['url_translated'] : $language['url'], $language['code']);
+                unset($language['url_translated']);
+			}
+			return static::$languageUrls = $languages;
+
+		} catch (\Exception $e) {
+			return array(
+				array(
+					'id' => 0,
+					'code' => \Lang::get_lang(),
+					'top_level_domain' => '',
+					'url' => $url
 				)
 			);
 		}
@@ -424,6 +460,31 @@ class CMF
 		
 		return static::setCurrentModel($model);
 	}
+
+	/**
+	 * The URL item matching the current URL
+	 * @return \CMF\Model\URL
+	 */
+	public static function currentUrl()
+	{
+		if (!isset(static::$currentUrl))
+		{
+			// Try and get the url item from the current model
+			if (isset(static::$model) && property_exists(static::$model, 'url') && ($urlItem = static::$model->get('url')))
+				return static::$currentUrl = $urlItem;
+
+			// Query the DB for the URL
+			$url = static::original_uri();
+			if (empty($url)) $url = '/';
+			else $url = '/'.trim($url, '/');
+
+			$urlItem = \CMF\Model\URL::select('item')->where('item.url = :url')->andWhere('item.alias IS NULL')->setParameter('url', $url)->getQuery()->getResult();
+			if (count($urlItem) > 0) return static::$currentUrl = $urlItem[0];
+
+			return static::$currentUrl = null;
+		}
+		return static::$currentUrl;
+	}
 	
 	/**
 	 * Sets the current model, so \CMF::currentModel() will return this one.
@@ -434,6 +495,10 @@ class CMF
 	{
 		$model_class = get_class($model);
 		static::$template = $model_class::template();
+
+		if (property_exists($model, 'url') && ($urlItem = $model->get('url')))
+			static::$currentUrl = $urlItem;
+
 		return static::$model = $model;
 	}
 	
