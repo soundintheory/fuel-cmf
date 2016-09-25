@@ -39,7 +39,7 @@ class Importer
             foreach ($data['data'] as $entity)
             {
                 $entity = static::createOrUpdateEntity($entity, $model, $data, $lang);
-                if (!empty($entity)) \D::manager()->flush();
+                \D::manager()->flush();
             }
 
             static::processDeletions($model);
@@ -285,7 +285,7 @@ class Importer
                 }
             } else {
                 if ($assocItem = static::createOrUpdateEntity($value, $assocClass, $context, $lang))
-                    $assocValue[] = $assocItem;
+                    $assocValue = $assocItem;
             }
 
             if ($assocValue) {
