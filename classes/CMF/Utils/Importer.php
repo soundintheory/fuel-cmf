@@ -255,12 +255,15 @@ class Importer
             }
         }
 
+        $now = new \DateTime();
+        $dateTimeImported = $now->format('Y-m-d H:i:s');
+
         // Populate the entity
         if ($changed) {
             if (!isset($data['settings'])) $data['settings'] = array();
-            $now = new \DateTime();
+
             $data['settings']['imported_from'] = \Arr::get($context, 'links.self');
-            $data['settings']['imported_at'] = $now->format('Y-m-d H:i:s');
+            $data['settings']['imported_at'] = $dateTimeImported
             $entity->populate($data);
             $entity->changed = false;
         }
@@ -293,6 +296,7 @@ class Importer
             }
         }
 
+        $entity->set('updated_at',$dateTimeImported);
 
 
         // Sometimes field values rely on associations being present, so populate again!
