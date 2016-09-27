@@ -305,8 +305,10 @@ class Importer
         }
 
         // Download any referenced files if we haven't done so already
-        if ($changed && !$processed)
+        if ($changed && !$processed) {
             static::downloadFilesForEntity($entity, $model, \Arr::get($context, 'links.self'));
+            $entity->changed = false;
+        }
 
         //Do That anyway even if set unchanged in case local has been updated, we still need to update the languages url
         $ownLang = \Config::get('language');
@@ -325,6 +327,7 @@ class Importer
                 $settings['languages'][$lang] = $original_url;
             }
             $entity->set('settings', $settings);
+            $entity->changed = false;
         }
 
         return $entity;
