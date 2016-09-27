@@ -2,6 +2,7 @@
 
 namespace CMF\Utils;
 
+use CMF\Field\DateTime;
 use Doctrine\ORM\Tools\SchemaTool,
     Fuel\Core\Migrate,
     Oil\Generate;
@@ -261,10 +262,10 @@ class Importer
         // Populate the entity
         if ($changed) {
             if (!isset($data['settings'])) $data['settings'] = array();
-
             $data['settings']['imported_from'] = \Arr::get($context, 'links.self');
             $data['settings']['imported_at'] = $dateTimeImported;
             $entity->populate($data);
+            $entity->set('updated_at',new \DateTime($dateTimeImported));
             $entity->changed = false;
         }
 
@@ -296,12 +297,10 @@ class Importer
             }
         }
 
-        $entity->set('updated_at',$dateTimeImported);
-
-
         // Sometimes field values rely on associations being present, so populate again!
         if ($changed) {
             $entity->populate($data);
+            $entity->set('updated_at',new \DateTime($dateTimeImported));
             $entity->changed = false;
         }
 
