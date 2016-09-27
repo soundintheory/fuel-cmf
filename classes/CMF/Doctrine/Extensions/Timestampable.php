@@ -7,13 +7,27 @@ namespace CMF\Doctrine\Extensions;
  */
 class Timestampable extends Extension
 {
+	protected static $listener = null;
 	
 	/** @override */
 	public static function init($em, $reader)
 	{
-		$listener = new \Gedmo\Timestampable\TimestampableListener();
+		static::$listener = $listener = new \Gedmo\Timestampable\TimestampableListener();
+
 		$listener->setAnnotationReader($reader);
 		$em->getEventManager()->addEventSubscriber($listener);
+	}
+
+	public static function disableListener()
+	{
+		if (empty(static::$listener)) return;
+		\D::manager()->getEventManager()->removeEventSubscriber(static::$listener);
+	}
+
+	public static function enableListener()
+	{
+		if (empty(static::$listener)) return;
+		\D::manager()->getEventManager()->addEventSubscriber(static::$listener);
 	}
 	
 }
