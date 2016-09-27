@@ -123,7 +123,7 @@ class D extends \Fuel\Doctrine
 
 		//Add Event Listener For exporting language canonicals
 		$language =  \Config::get('language');
-		if(!empty(\CMF\Model\DevSettings::instance()->parent_site) && !empty($language)) {
+		if(!empty(\CMF\Model\DevSettings::instance()->parent_site) && !empty($language) && \Config::get('update_language_canonical',false)) {
 			$em->getEventManager()->addEventSubscriber(new \CMF\Doctrine\Extensions\Canonicallistener());
 		}
 		
