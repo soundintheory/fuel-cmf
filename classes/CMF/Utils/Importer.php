@@ -263,7 +263,7 @@ class Importer
             if (!isset($data['settings'])) $data['settings'] = array();
 
             $data['settings']['imported_from'] = \Arr::get($context, 'links.self');
-            $data['settings']['imported_at'] = $dateTimeImported
+            $data['settings']['imported_at'] = $dateTimeImported;
             $entity->populate($data);
             $entity->changed = false;
         }
