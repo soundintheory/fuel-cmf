@@ -21,6 +21,8 @@ class Importer
      */
     public static function importData($data, $model, $auto_backup = true,$lang = null)
     {
+        \CMF\Doctrine\Extensions\Timestampable::disableListener();
+
         // Allow ourselves some room, this could take a while!
         try {
             set_time_limit(0);
@@ -48,8 +50,10 @@ class Importer
 
             // Try and repair any trees that may have been corrupted during the import
             static::repairTrees(array_keys(static::$_updatedEntities));
+            \CMF\Doctrine\Extensions\Timestampable::enableListener();
 
         } catch (\Exception $e) {
+            \CMF\Doctrine\Extensions\Timestampable::enableListener();
             return array(
                 'success' => false,
                 'message' => $e->getMessage()
@@ -256,16 +260,13 @@ class Importer
             }
         }
 
-        $now = new \DateTime();
-        $dateTimeImported = $now->format('Y-m-d H:i:s');
-
         // Populate the entity
         if ($changed) {
             if (!isset($data['settings'])) $data['settings'] = array();
+            $now = new \DateTime();
             $data['settings']['imported_from'] = \Arr::get($context, 'links.self');
-            $data['settings']['imported_at'] = $dateTimeImported;
+            $data['settings']['imported_at'] = $now->format('Y-m-d H:i:s');
             $entity->populate($data);
-            $entity->set('updated_at',new \DateTime($dateTimeImported));
             $entity->changed = false;
         }
 
@@ -300,7 +301,6 @@ class Importer
         // Sometimes field values rely on associations being present, so populate again!
         if ($changed) {
             $entity->populate($data);
-            $entity->set('updated_at',new \DateTime($dateTimeImported));
             $entity->changed = false;
         }
 
