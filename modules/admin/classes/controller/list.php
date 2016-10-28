@@ -302,12 +302,20 @@ class Controller_List extends Controller_Base {
 			if($query){
 				$query_parts = array_map('trim', explode(' ', $query));
 				$query_str = array();
+                $query_val = array();
+                $x = 0;
 				foreach ($query_fields as $field) {
 					foreach ($query_parts as $query_part) {
-						$query_str[] = "item.".$field." LIKE '%".$query_part."%'";	
+						$query_str[$x] = "item.".$field." LIKE ?".$x;
+                        $query_val[$x] = "%$query_part%";
+                        $x++;
 					}
 				}
 				$qb->andWhere(implode(' OR ', $query_str));
+                foreach ($query_val as $key=>$val)
+                {
+                    $qb->setParameter($key,$val);
+                }
 			}
 		}
 		
