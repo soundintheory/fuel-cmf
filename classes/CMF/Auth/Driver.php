@@ -175,7 +175,7 @@ class Driver
                             $resource_permissions++;
                         }
                     }
-                    // if ($resource_permissions === 0) $role_passed = count($action);
+                    if ($resource_permissions === 0) $role_passed = count($action);
                     $passed += $role_passed;
                     
                 }
