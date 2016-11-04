@@ -22,7 +22,7 @@
             multiple: false,
             debug: false,
             request: {
-                endpoint: '/admin/upload/video',
+                endpoint: CMF.baseUrl + '/admin/upload/video',
                 params: { 'path':settings['path'], 'fieldName':fieldName },
                 paramsInBody: false
             },
@@ -177,7 +177,7 @@
                 // The poster is defined - we have a converted video!
                 var pathParts = src.split('/'),
                 displayName = pathParts[pathParts.length-1];
-                $filePreview.html('<a href="/' + converted['mp4'] + '" target="_blank"><img src="/image/1/0/200/' + poster + '" /></a>');
+                $filePreview.html('<a href="' + CMF.baseUrl + '/' + converted['mp4'] + '" target="_blank"><img src="' + CMF.baseUrl + '/image/1/0/200/' + poster + '" /></a>');
                 $el.addClass('populated');
                 
             } else {

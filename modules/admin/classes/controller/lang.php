@@ -19,7 +19,7 @@ class Controller_Lang extends Controller_Base {
 		
 		// Don't bother if it's not an active language
 		$languages = \Admin::languages();
-		if (!isset($languages[$code]))  return \Response::redirect($referrer);
+		if (!isset($languages[$code])) return \Response::redirect($referrer);
 		
 		// Got this far, set the session!
 		\Session::set('cmf.admin.language', $code);

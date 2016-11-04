@@ -23,7 +23,8 @@ if (\Config::get('cmf.languages.enabled')) {
 }
 
 // Check if custom module urls have been set
-if (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), 'admin') === 0) {
+$isAdmin = (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), trim(\Uri::create('admin'), '/')) === 0);
+if ($isAdmin) {
 	\Config::set('security.uri_filter', array_merge( array('\Admin::module_url_filter'), \Config::get('security.uri_filter') ));
 } else if (\Config::get('cmf.module_urls', false) !== false) {
 	\Config::set('security.uri_filter', array_merge( array('\CMF::module_url_filter'), \Config::get('security.uri_filter') ));
@@ -64,3 +65,7 @@ if (isset($_GET['debug']) && !\Fuel::$profiling) {
 $module_paths = Config::get('module_paths');
 $module_paths[] = CMFPATH.'modules/';
 Config::set('module_paths', $module_paths);
+
+if ($isAdmin) {
+	\Admin::initialize();
+}

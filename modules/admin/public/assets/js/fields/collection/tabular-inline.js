@@ -172,7 +172,7 @@
 						updatePositions();
 						
 						var cRequest = $.ajax({
-							'url': '/admin/' + tableName + '/populate',
+							'url': CMF.baseUrl + '/admin/' + tableName + '/populate',
 							'data': positions,
 							'dataType': 'json',
 							'async': true,
@@ -193,7 +193,7 @@
 						updatePositions();
 						
 						var cRequest = $.ajax({
-							'url': '/admin/' + tableName + '/' + id + '/populate',
+							'url': CMF.baseUrl + '/admin/' + tableName + '/' + id + '/populate',
 							'data': { 'pos':pos },
 							'dataType': 'json',
 							'async': true,

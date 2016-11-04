@@ -78,7 +78,7 @@ class Controller_Item extends Controller_Base {
 		// Load up the model with the Id
 	    $model = $class_name::find($id);
 	    if (is_null($model)) {
-	    	\Response::redirect(\Uri::base(false)."admin/$table_name", 'location');
+	    	\Response::redirect("/admin/$table_name", 'location');
 	    }
 
 	    $can_edit = \CMF\Auth::can('edit', $model);
@@ -90,7 +90,7 @@ class Controller_Item extends Controller_Base {
 		$root_metadata = $root_class::metadata();
 
 		if ($url = $model->getURLObject()) {
-			$this->viewLink = $url->url;
+			$this->viewLink = strval($url);
 		}
 
 	   	// Get stuff ready for the template
@@ -240,12 +240,12 @@ class Controller_Item extends Controller_Base {
 	        		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => $message ));
 
 	        		if ($create_new)
-	        			\Response::redirect(\Uri::base(false)."admin/$table_name/create$qs", 'location');
+	        			\Response::redirect("/admin/$table_name/create$qs", 'location');
 
 	        		if ($save_and_close)
-	        			\Response::redirect(\Uri::base(false)."admin/$list_page_segment".$qs, 'location');
+	        			\Response::redirect("/admin/$list_page_segment".$qs, 'location');
 
-	        		\Response::redirect(\Uri::base(false)."admin/$table_name/".$model->get('id')."/edit$qs", 'location');
+	        		\Response::redirect("/admin/$table_name/".$model->get('id')."/edit$qs", 'location');
 	        		break;
 	        	
 	        }
@@ -313,7 +313,7 @@ class Controller_Item extends Controller_Base {
 	    }
 	    
 	    if (!empty($error)) {
-	    	$default_redirect = \Uri::base(false)."admin/$table_name";
+	    	$default_redirect = "/admin/$table_name";
 			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => \Lang::get('admin.errors.actions.delete', array( 'message' => $error )) ));
 			\Response::redirect(\Input::referrer($default_redirect), 'location');
 	    }
@@ -329,7 +329,7 @@ class Controller_Item extends Controller_Base {
 	    		break;
 	    	
 	    	default:
-	    		$default_redirect = \Uri::base(false)."admin/$table_name";
+	    		$default_redirect = "/admin/$table_name";
 			    
 			    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => \Lang::get('admin.messages.item_delete_success', array( 'resource' => ucfirst($singular) )) ));
 			    \Response::redirect(\Input::referrer($default_redirect), 'location');
@@ -461,7 +461,7 @@ class Controller_Item extends Controller_Base {
 		// Load up the model with the Id
 	    $model = $class_name::find($id);
 	    if (is_null($model)) {
-	    	\Response::redirect(\Uri::base(false)."admin/$table_name", 'location');
+	    	\Response::redirect("/admin/$table_name", 'location');
 	    }
 		
 		$actions = $class_name::actions();
@@ -493,7 +493,7 @@ class Controller_Item extends Controller_Base {
 					\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => $result ));
 				}
 				
-				$redirect = \Input::referrer(\Uri::base(false)."admin/$table_name/$id");
+				$redirect = \Input::referrer("/admin/$table_name/$id");
 				\Response::redirect($redirect, 'location');
 				
 			break;

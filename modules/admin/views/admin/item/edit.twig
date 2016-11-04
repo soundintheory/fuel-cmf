@@ -9,7 +9,7 @@
 
 {% macro action_method(action_id, action, model, table, context) %}
     {{ include(template_from_string(action.content|default("
-    <a class=\"btn {{ action.class|default('btn-info') }}\" href=\"/admin/{{ table }}/{{ model.id }}/{{ action_id }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
+    <a class=\"btn {{ action.class|default('btn-info') }}\" href=\"{{ url('/admin/'~table~'/'~model.id~'/'~action_id) }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
         <i class=\"fa fa-{{ action.icon|default('cog') }}\"></i>
     </a>"))) }}
 {% endmacro %}
@@ -132,7 +132,7 @@
 {% block breadcrumb %}
 
 <li><a href="{{ base_url }}">{{ dashboard_title }}</a> <span class="divider">/</span></li>
-<li><a href="/admin/{{ root_table_name }}">{{ root_plural }}</a> <span class="divider">/</span></li>
+<li><a href="{{ url('/admin/'~root_table_name) }}">{{ root_plural }}</a> <span class="divider">/</span></li>
 <li class="active">{{ model.display() }}</li>
 
 {% endblock %}
@@ -140,14 +140,14 @@
 {% block admin_css %}
     {{ parent() }}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{{ css }}{% if 'http://' not in css and 'https://' not in css %}{{ ('?' in css) ? '&' : '?' }}v=26{% endif %}">
+        <link rel="stylesheet" type="text/css" href="{% if 'http://' not in css and 'https://' not in css %}{{ url(css) }}{{ ('?' in css) ? '&' : '?' }}v=26{% else %}{{ css }}{% endif %}">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}{% if 'http://' not in js and 'https://' not in js %}{{ ('?' in js) ? '&' : '?' }}v=26{% endif %}"></script>
+        <script type="text/javascript" src="{% if 'http://' not in js and 'https://' not in js %}{{ url(js) }}{{ ('?' in js) ? '&' : '?' }}v=26{% else %}{{ js }}{% endif %}"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

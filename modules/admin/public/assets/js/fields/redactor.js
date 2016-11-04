@@ -26,9 +26,9 @@
 		/*
 		var opts = {
 			buttons: ['html', '|', 'formatting', '|', 'bold', 'italic', 'deleted', '|', 'unorderedlist', 'orderedlist', 'outdent', 'indent', '|', 'image', 'video', 'file', 'table', 'link', '|', 'fontcolor', 'backcolor', '|', 'alignment', '|', 'horizontalrule'],
-			imageUpload: '/admin/redactor/imageupload',
-			fileUpload: '/admin/redactor/fileupload',
-			imageGetJson: '/admin/redactor/getimages',
+			imageUpload: CMF.baseUrl + '/admin/redactor/imageupload',
+			fileUpload: CMF.baseUrl + '/admin/redactor/fileupload',
+			imageGetJson: CMF.baseUrl + '/admin/redactor/getimages',
 			minHeight: settings['minHeight'],
 			convertDivs: false,
 			autoresize: true,
@@ -40,9 +40,9 @@
 		 */
 		
 		var opts = {
-			imageGetJson: '/admin/redactor/getimages',
-			imageUpload: '/admin/redactor/imageupload',
-			fileUpload: '/admin/redactor/fileupload',
+			imageGetJson: CMF.baseUrl + '/admin/redactor/getimages',
+			imageUpload: CMF.baseUrl + '/admin/redactor/imageupload',
+			fileUpload: CMF.baseUrl + '/admin/redactor/fileupload',
 			minHeight: settings['minHeight']
 		}
 		

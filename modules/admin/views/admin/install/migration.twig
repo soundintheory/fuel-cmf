@@ -17,16 +17,16 @@
 		<div id="login-content" class="clearfix">
 			{% if status == true %} 
 			<p>Excellent! All migrations completed.</p>
-			<p><a class="btn btn-success span6 offset3" href="/admin/install/createuser">Create Admin User</a></p>
+			<p><a class="btn btn-success span6 offset3" href="{{ url('/admin/install/createuser') }}">Create Admin User</a></p>
 			{% else %}
 				{% if error is defined %}
 				<p>{{error}}</p>
-				<p><a class="btn btn-success span6 offset3" href="/admin/install/createuser">Create Admin User</a></p>
+				<p><a class="btn btn-success span6 offset3" href="{{ url('/admin/install/createuser') }}">Create Admin User</a></p>
 				{% else %}
 				<p>Now we need to do a migration to setup the database.</p>
-				<p><a class="btn btn-primary span6 offset3" href="/admin/install/migration/go">Migrate</a></p>
+				<p><a class="btn btn-primary span6 offset3" href="{{ url('/admin/install/migration/go') }}">Migrate</a></p>
 				{% endif %}
 			{% endif %} 
-	<a class="offset10 btn btn-mini" href="/admin/install/createuser">Skip</a>
+	<a class="offset10 btn btn-mini" href="{{ url('/admin/install/createuser') }}">Skip</a>
 	</div> <!-- #login-container -->
 {% endblock %}

@@ -19,7 +19,7 @@
 		
 		<div id="login-content" class="clearfix">
 			
-			<form method="post" action="/admin/login">
+			<form method="post" action="{{ url('/admin/login') }}">
 				
 				<input type="hidden" value="{{ form_val('next', 'admin') }}" name="next" />
 				

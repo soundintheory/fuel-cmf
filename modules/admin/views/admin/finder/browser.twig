@@ -10,8 +10,8 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
 
 		<!-- elFinder CSS (REQUIRED) -->
-		<link rel="stylesheet" type="text/css" href="/admin/assets/elfinder/css/elfinder.min.css">
-		<link rel="stylesheet" type="text/css" href="/admin/assets/elfinder/css/theme.css">
+		<link rel="stylesheet" type="text/css" href="{{ url('/admin/assets/elfinder/css/elfinder.min.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url('/admin/assets/elfinder/css/theme.css') }}">
 
 		<style type="text/css">
 
@@ -35,10 +35,17 @@
 		</style>
 
 		<!-- elFinder JS (REQUIRED) -->
-		<script src="/admin/assets/elfinder/js/elfinder.min.js"></script>
+		<script src="{{ url('/admin/assets/elfinder/js/elfinder.min.js') }}"></script>
 
 		<!-- elFinder initialization (REQUIRED) -->
 		<script type="text/javascript" charset="utf-8">
+
+			current_lang = {{ current_lang|json_encode }};
+			fallback_lang = {{ fallback_lang|json_encode }};
+			lang = {{ lang_lines|json_encode }};
+			CMF = {
+				baseUrl: {{ base()|rtrim('/')|json_encode }}
+			};
 
 			// Helper function to get parameters from the query string.
 			function getUrlParam(paramName) {
@@ -62,7 +69,7 @@
 				}
 
 				var elf = $('#elfinder').elfinder({
-					url : '/admin/finder?start={{ start }}',
+					url : CMF.baseUrl + '/admin/finder?start={{ start }}',
 					rememberLastDir: false,
 					width: '100%',
 					height: '100%',

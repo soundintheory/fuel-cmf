@@ -37,7 +37,7 @@
 				preload : false,
 				helpers : {
 					overlay: {
-						css: { 'background' : "url('/admin/assets/fancybox/fancybox_overlay.png')" }
+						css: { 'background' : "url('" + CMF.baseUrl + "/admin/assets/fancybox/fancybox_overlay.png')" }
 					}
 				}
 			});

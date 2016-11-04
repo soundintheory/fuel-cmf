@@ -51,7 +51,7 @@
             multiple: true,
             debug: false,
             request: {
-                endpoint: '/admin/upload',
+                endpoint: CMF.baseUrl + '/admin/upload',
                 params: { 'path':'uploads/' },
                 paramsInBody: false
             },
@@ -176,7 +176,7 @@
 			var info = _data['info'] || [0,0],
 			imgWidth = Math.round(90 * (info[0] / info[1]));
 			
-			var html = '<span class="img"><img class="gallery-thumb" src="/image/1/0/90/' + _data['path'] + '" style="width:' + imgWidth + 'px;height:90px;" /></span>' +
+			var html = '<span class="img"><img class="gallery-thumb" src="' + CMF.baseUrl + '/image/1/0/90/' + _data['path'] + '" style="width:' + imgWidth + 'px;height:90px;" /></span>' +
 			'<label class="gallery-label"><span><input type="checkbox" /></span></label>' +
 			'<div class="item-form">';
 			

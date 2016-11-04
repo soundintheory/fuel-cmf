@@ -9,7 +9,7 @@
     <div class="inner">
 
         <div class="actions-top-right">
-            <a href="/admin/{{ table_name }}" class="btn btn-medium btn-inverse btn-permissions" title="{{ singular }} {{ list_name }}"><i class="fa fa-arrow-left"></i> &nbsp; {{ _('admin.common.back_to_resource', { resource:plural|lower }) }}</a>
+            <a href="{{ url('/admin/'~table_name) }}" class="btn btn-medium btn-inverse btn-permissions" title="{{ singular }} {{ list_name }}"><i class="fa fa-arrow-left"></i> &nbsp; {{ _('admin.common.back_to_resource', { resource:plural|lower }) }}</a>
         </div>
 
         <div class="row-fluid">
@@ -26,7 +26,7 @@
                     <h3><i class="fa fa-chevron-down"></i> {{ _('admin.import.select_a_file') }} </h3>
                 </div>
                 <div class="widget-content">
-                    <form class="form" action="/admin/{{ table_name }}/import/file" method="post" enctype="multipart/form-data">
+                    <form class="form" action="{{ url('/admin/'~table_name~'/import/file') }}" method="post" enctype="multipart/form-data">
                         <div class="controls controls-row">
                             <input type="file" name="importdata" data-filename-placement="inside" class="fileinput-button" title="{{ _('admin.verbs.browse') }}" />
                         </div>
@@ -51,7 +51,7 @@
                     <h3><i class="fa fa-chevron-down"></i> {{ _('admin.import.import_from_url') }}</h3>
                 </div>
                 <div class="widget-content">
-                    <form class="form" action="/admin/{{ table_name }}/import/url" method="post">
+                    <form class="form" action="{{ url('/admin/'~table_name~'/import/url') }}" method="post">
                         <div class="controls controls-row">
                             <label>{{ _('admin.common.url') }}</label>
                             {% if importUrl %}
