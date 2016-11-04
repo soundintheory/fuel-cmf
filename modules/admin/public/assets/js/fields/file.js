@@ -27,7 +27,7 @@
             multiple: false,
             debug: false,
             request: {
-                endpoint: '/admin/upload',
+                endpoint: CMF.baseUrl + '/admin/upload',
                 params: { 'path':settings['path'], 'fieldName':fieldName, 'model':(settings.model || '') },
                 paramsInBody: false
             },
@@ -155,7 +155,7 @@
 
                 var pathParts = val.split('/'),
                 displayName = pathParts[pathParts.length-1];
-                $filePreview.html('<a href="/' + val + '" target="_blank">' + fileNameFormat(displayName) + '</a>');
+                $filePreview.html('<a href="' + CMF.baseUrl + '/' + val + '" target="_blank">' + fileNameFormat(displayName) + '</a>');
                 $el.addClass('populated');
                 if ($wrap.find('.click-copy-field').length > 0) {
                     $wrap.find('.click-copy-field').removeClass('hide').val($wrap.find('.click-copy-field').attr('data-base')+val);

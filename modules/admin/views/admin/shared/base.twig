@@ -10,49 +10,46 @@
 	<meta name="author" content="Sound in Theory">
 
     <!--[if lt IE 9]>
-        <script src="/admin/assets/js/html5.js"></script>
+        <script src="{{ url('/admin/assets/js/html5.js') }}"></script>
 	<![endif]-->
 	
-	<link href="/admin/assets/css/bootstrap.min.css?v=26" rel="stylesheet" type="text/css">
-	<link href="/admin/assets/css/bootstrap-responsive.min.css?v=26" rel="stylesheet" type="text/css">
-	<link href="/admin/assets/css/bootstrap-modal.css?v=26" rel="stylesheet" type="text/css">
-	<link href="/admin/assets/css/ui-theme/jquery-ui-1.8.16.custom.css?v=26" rel="stylesheet" type="text/css">
-	<link href="/admin/assets/less/core.less?v=26" rel="stylesheet" type="text/css">
-	<link href="/admin/assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-	<link href="/admin/assets/less/print.less?v=26" rel="stylesheet" type="text/css" media="print">
+	<link href="{{ url('/admin/assets/css/bootstrap.min.css?v=26') }}" rel="stylesheet" type="text/css">
+	<link href="{{ url('/admin/assets/css/bootstrap-responsive.min.css?v=26') }}" rel="stylesheet" type="text/css">
+	<link href="{{ url('/admin/assets/css/bootstrap-modal.css?v=26') }}" rel="stylesheet" type="text/css">
+	<link href="{{ url('/admin/assets/css/ui-theme/jquery-ui-1.8.16.custom.css?v=26') }}" rel="stylesheet" type="text/css">
+	<link href="{{ url('/admin/assets/less/core.less?v=26') }}" rel="stylesheet" type="text/css">
+	<link href="{{ url('/admin/assets/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+	<link href="{{ url('/admin/assets/less/print.less?v=26" rel="stylesheet') }}" type="text/css" media="print">
 	{% block admin_css %}{% endblock %}
 	
 	<!--[if lt IE 8]>
-        <link href="/admin/assets/css/font-awesome-ie7.css" rel="stylesheet" type="text/css">
+        <link href="{{ url('/admin/assets/css/font-awesome-ie7.css') }}" rel="stylesheet" type="text/css">
 	<![endif]-->
 	
 	<!--[if lt IE 9]>
-        <link href="/admin/assets/css/ui-theme/jquery.ui.1.8.16.ie.css" rel="stylesheet" type="text/css">
+        <link href="{{ url('/admin/assets/css/ui-theme/jquery.ui.1.8.16.ie.css') }}" rel="stylesheet" type="text/css">
 	<![endif]-->
-	
-    <!-- Le fav and touch icons -->
-    <!-- link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png" -->
     
-    <script src="/admin/assets/js/jquery-1.8.3.min.js?v=26"></script>
-	<script src="/admin/assets/js/php.min.js?v=26"></script>
-	<script src="/admin/assets/js/jquery.cookie.js?v=26"></script>
-	<script src="/admin/assets/js/tree.jquery.js?v=26"></script>
-	<script src="/admin/assets/js/jquery-ui-1.8.22.custom.min.js?v=26"></script>
+    <script src="{{ url('/admin/assets/js/jquery-1.8.3.min.js?v=26') }}"></script>
+	<script src="{{ url('/admin/assets/js/php.min.js?v=26') }}"></script>
+	<script src="{{ url('/admin/assets/js/jquery.cookie.js?v=26') }}"></script>
+	<script src="{{ url('/admin/assets/js/tree.jquery.js?v=26') }}"></script>
+	<script src="{{ url('/admin/assets/js/jquery-ui-1.8.22.custom.min.js?v=26') }}"></script>
 
 	<!-- Nice UI Addons -->
-	<script type="text/javascript" src="/admin/assets/js/jquery-ui-timepicker-addon.js?v=26"></script>
-	<script type="text/javascript" src="/admin/assets/js/jquery-ui-sliderAccess.js?v=26"></script>
-    <script src="/admin/assets/js/bootstrap.min.js?v=26"></script>
-    <script src="/admin/assets/js/bootstrap-modal.js?v=26"></script>
-    <script src="/admin/assets/js/bootstrap-modalmanager.js?v=26"></script>
+	<script type="text/javascript" src="{{ url('/admin/assets/js/jquery-ui-timepicker-addon.js?v=26') }}"></script>
+	<script type="text/javascript" src="{{ url('/admin/assets/js/jquery-ui-sliderAccess.js?v=26') }}"></script>
+    <script src="{{ url('/admin/assets/js/bootstrap.min.js?v=26') }}"></script>
+    <script src="{{ url('/admin/assets/js/bootstrap-modal.js?v=26') }}"></script>
+    <script src="{{ url('/admin/assets/js/bootstrap-modalmanager.js?v=26') }}"></script>
 
     <script type="text/javascript">
     	current_lang = {{ current_lang|json_encode }};
     	fallback_lang = {{ fallback_lang|json_encode }};
     	lang = {{ lang_lines|json_encode }};
+    	CMF = {
+    		baseUrl: {{ base()|rtrim('/')|json_encode }}
+    	};
     </script>
     
 	{% block admin_js %}
@@ -61,7 +58,7 @@
 	</script>
 	{% endblock %}
 	
-	<script src="/admin/assets/js/core.js?v=26"></script>
+	<script src="{{ url('/admin/assets/js/core.js?v=26') }}"></script>
 	
 	
 	

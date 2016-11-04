@@ -16,7 +16,7 @@
     	</div>
     	{% endif %}
 		<div id="login-content" class="clearfix">
-			<form method="post" action="/admin/install/createuser">
+			<form method="post" action="{{ url('/admin/install/createuser') }}">
 				
 				<fieldset>
 					<div class="control-group">
@@ -54,7 +54,7 @@
 				</div>
 				
 			</form>
-	<a class="offset10 btn btn-mini" href="/admin/install/finishing">Skip</a>
+	<a class="offset10 btn btn-mini" href="{{ url('/admin/install/finishing') }}">Skip</a>
 	</div> <!-- #login-container -->
 	
 {% endblock %}

@@ -72,9 +72,9 @@ class Base {
             if (!$model->hasTranslation($settings['mapping']['columnName'])) {
                 $attributes['class'] .= ' no-translation';
                 $input_attributes['class'] .= ' no-translation';
-                $label_text = '<img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::defaultLang().'.png" />&nbsp; '.$label_text;
+                $label_text = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$label_text;
             } else {
-                $label_text = '<img class="lang-flag" src="/admin/assets/img/lang/'.\CMF::lang().'.png" />&nbsp; '.$label_text;
+                $label_text = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$label_text;
             }
             
         }

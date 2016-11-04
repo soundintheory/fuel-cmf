@@ -20,7 +20,7 @@
 	<div class="gallery-item selectable">
 		{{ row.hidden_fields.id }}
 		{% if sortable %}{{ row.hidden_fields.pos }}{% endif %}
-		<span class="img"><img src="/image/1/0/90/{{ row._model_.get(settings.image_field).src }}" class="gallery-thumb" /></span>
+		<span class="img"><img src="{{ url('/image/1/0/90/'~row._model_.get(settings.image_field).src) }}" class="gallery-thumb" /></span>
 		<label class="gallery-label"><span><input type="checkbox" /></span></label>
 		<div class="item-form">
 			{% for field_name, field in row.fields %}

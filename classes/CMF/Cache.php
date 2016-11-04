@@ -34,11 +34,19 @@ class Cache {
 		
 		// Check for excluded URLS
 		$uri = '/'.str_replace(array('?debug', '&debug'), '', trim($_SERVER['REQUEST_URI'], '/'));
+        if ($uriPath = parse_url($uri, PHP_URL_PATH)) {
+            $uri = $uriPath;
+        }
+
         $jq = \Input::get('_', null);
         if ($jq !== null) $uri = str_replace(array("?_=$jq", "&_=$jq"), '', $uri);
         
 		$excluded_urls = $config['excluded_urls'];
 		foreach ($excluded_urls as $url) {
+            $url = \Uri::create($url);
+            if ($urlPath = parse_url($url, PHP_URL_PATH)) {
+                $url = $urlPath;
+            }
 			if (strpos($url, '*') !== false && strpos($uri.'/', str_replace('*', '', $url)) === 0) {
 				return;
 			}

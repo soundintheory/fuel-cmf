@@ -402,7 +402,7 @@ class CMF
 		if ($url === null) $url = \Input::uri();
 		if (is_array($url)) return static::getLink($url);
 		if ($url instanceof \CMF\Model\URL) $url = strval($url);
-		if (!static::$lang_enabled) return $url;
+		if (!static::$lang_enabled) return \Uri::create($url);
 
 		$use_tld = \Config::get('cmf.languages.use_tld', false);
 		$url = $url == '/' || $url == '' ? '/' : rtrim($url, '/');
@@ -413,7 +413,7 @@ class CMF
 			substr($url, 0, 1) != '/' ||
 			(strlen($url) > 3 && strpos($url, $prefix.'/') === 0)) return $url;
 		
-		return $url == $prefix ? $url : '/'.trim($prefix.$url, '/');
+		return \Uri::create($url == $prefix ? $url : '/'.trim($prefix.$url, '/'));
 	}
 
 	/**
@@ -426,7 +426,7 @@ class CMF
 		{
 			return \CMF\Storage::getCDNAssetUrl($url);
 		}
-		return $url;
+		return \Uri::create($url);
 	}
 	
 	/**
@@ -896,8 +896,12 @@ class CMF
 			$output = strval($data);
 		}
 
-		// Empty links, anchor links or static internal links
-		if (empty($output) || substr($output, 0, 1) == '#' || substr($output, 0, 1) == '/')
+		// Internal links
+		if (substr($output, 0, 1) == '/' && strpos($output, '//') !== 0)
+			return \Uri::create($output);
+
+		// Empty links or anchor links
+		if (empty($output) || substr($output, 0, 1) == '#')
 			return $output;
 		
 		// Query the urls table if it's an ID
@@ -912,10 +916,10 @@ class CMF
 			}
 			$link = $link->getArrayResult();
 			$output = (count($link) > 0) ? static::link($link[0]['url']) : null;
-		} else {
+		} else if (strpos($output, 'http') !== 0 && strpos($output, '//') !== 0) {
 			$output = "http://" . $output;
 		}
-		return $output;
+		return strval($output);
 	}
 	
 	/**

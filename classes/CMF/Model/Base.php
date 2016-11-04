@@ -1111,7 +1111,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
                 $display = $result->display();
                 $val = !empty($display) ? $display : '-';
                 if ($thumbnail !== false && $allow_html)
-                    $val = '<img src="/image/2/40/40/'.$thumbnail.'" style="width:40px;height:40px;" /> '.$val;
+                    $val = '<img src="'.\Uri::create('/image/2/40/40/'.$thumbnail).'" style="width:40px;height:40px;" /> '.$val;
 
                 $group_key = null;
 
@@ -1143,7 +1143,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
                 $thumbnail = $result->thumbnail();
                 $display = $result->display();
                 $val = !empty($display) ? $display : '-';
-                if ($thumbnail !== false && $allow_html) $val = '<img src="/image/2/40/40/'.$thumbnail.'" style="width:40px;height:40px;" /> '.$val;
+                if ($thumbnail !== false && $allow_html) $val = '<img src="'.\Uri::create('/image/2/40/40/'.$thumbnail).'" style="width:40px;height:40px;" /> '.$val;
                 $options[strval($result->get('id'))] = $val;
             }
 

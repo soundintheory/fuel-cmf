@@ -70,6 +70,11 @@ class Admin
     	ClassMetadataInfo::ONE_TO_MANY => 'onetomany',
     	ClassMetadataInfo::MANY_TO_MANY => 'manytomany'
     );
+
+    public static function initialize()
+    {
+    	static::$base = \Uri::create('/admin');
+    }
     
     /**
      * Gets a list of the active languages that have been configured
@@ -402,7 +407,7 @@ class Admin
 	
 	public static function activateModule($module)
 	{
-		static::$base = '/admin/'.$module;
+		static::$base = \Uri::create('/admin/'.$module);
 		static::$current_module = $module;
 		static::$sidebar_config_path = "cmf.admin.modules.$module.sidebar";
 	}

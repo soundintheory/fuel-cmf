@@ -63,7 +63,7 @@ class Multiselect extends \CMF\Field\Base {
         $has_errors = count($errors) > 0;
         $settings['title'] = $settings['title'].($settings['required'] ? ' *' : '').($has_errors ? ' - '.$errors[0] : '');
         $settings['cid'] = 'field_'.md5($settings['mapping']['fieldName'].static::type());
-        $settings['add_link'] = '/admin/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : '');
+        $settings['add_link'] = \Uri::create('/admin/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : ''));
         $settings['singular'] = $target_class::singular();
         $settings['icon'] = $target_class::icon();
         $settings['is_select2'] = false;

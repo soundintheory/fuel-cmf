@@ -51,7 +51,7 @@
             multiple: false,
             debug: false,
             request: {
-                endpoint: '/admin/upload',
+                endpoint: CMF.baseUrl + '/admin/upload',
                 params: { 'path':settings['path'], 'fieldName':fieldName, 'model':(settings.model || '') },
                 paramsInBody: false
             },
@@ -207,7 +207,7 @@
             
             if (isNull(val) || isNull(val['src']) || val['src'] == '') {
                 
-                $filePreview.html('<img style="height:' + settings['thumb_size']['height'] + 'px;" src="/image/2/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/assets/images/placeholder.png" class="thumbnail" />');
+                $filePreview.html('<img style="height:' + settings['thumb_size']['height'] + 'px;" src="' + CMF.baseUrl + '/image/2/' + settings['thumb_size']['width'] + '/' + settings['thumb_size']['height'] + '/assets/images/placeholder.png" class="thumbnail" />');
                 setStatus(_('admin.upload.no_file_selected'));
                 $el.removeClass('populated');
                 $label.html(title);
@@ -219,7 +219,7 @@
                 cropMode = (settings['crop'] === true) ? 2 : 1,
                 thumbW = (cropMode === 1) ? 0 : settings['thumb_size']['width'];
                 
-                var img = '<img style="height:'+settings['thumb_size']['height']+'px;" src="/image/' + cropMode + '/' + thumbW + '/' + settings['thumb_size']['height'] + '/' + val['src'] + '" />';
+                var img = '<img style="height:'+settings['thumb_size']['height']+'px;" src="' + CMF.baseUrl + '/image/' + cropMode + '/' + thumbW + '/' + settings['thumb_size']['height'] + '/' + val['src'] + '" />';
                 var icon = '<span class="hover-icon"><i class="fa fa-cog"></i></span>';
                 
                 $filePreview.html('<div></div>');
@@ -418,7 +418,7 @@
                     var cropOption = cropTabs[i];
                     cropOptions[cropOption['id']] = cropOption;
                     rightCol += '<div id="' + fieldId + '-crop-' + cropOption['id'] + '" data-cropid="'+cropOption['id']+'" class="img tab-pane"><div class="crop-canvas">';
-                    rightCol += '<img src="/image/3/565/390/' + cValue['src'] + '" />';
+                    rightCol += '<img src="' + CMF.baseUrl + '/image/3/565/390/' + cValue['src'] + '" />';
                     rightCol += '</div></div>'; // .img
                 }
                 
@@ -426,7 +426,7 @@
                 
             } else {
                 
-                rightCol += '<img class="main-img" src="/image/3/565/390/' + cValue['src'] + '" />';
+                rightCol += '<img class="main-img" src="' + CMF.baseUrl + '/image/3/565/390/' + cValue['src'] + '" />';
                 
             }
             

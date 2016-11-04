@@ -46,7 +46,7 @@ class Extension extends Twig_Extension
 			'phpinfo' => new Twig_Function_Function('phpinfo'),
 			'basename' => new Twig_Function_Function('basename'),
 			'uri' => new Twig_Function_Method($this, 'uri'),
-			'base' => new Twig_Function_Function('Uri::base'),
+			'base' => new Twig_Function_Method($this, 'base'),
 			'image' => new Twig_Function_Function('CMF\\Image::getUrl'),
 			'crop_url' => new Twig_Function_Function('CMF\\Image::getUrl'),
 			'asset' => new Twig_Function_Function('CMF::asset'),
@@ -69,11 +69,6 @@ class Extension extends Twig_Extension
 			'array_as_hidden_inputs' => new Twig_Function_Function('CMF::arrayAsHiddenInputs')
 		);
 	}
-
-	public function uri()
-	{
-		return '/'.trim(\Input::uri(), '/');
-	}
 	
 	public function getFilters()
     {
@@ -85,6 +80,26 @@ class Extension extends Twig_Extension
         	'rtrim' => new Twig_Filter_Function('rtrim'),
         	'delimiter' => new Twig_Filter_Method($this, 'delimiterFilter')
         );
+    }
+
+    public function uri($includeBaseUrl = false)
+    {
+    	$base = \Uri::base(false);
+    	$baseUrl = $this->generateBaseUrl();
+    	if ($includeBaseUrl && strpos($base, $baseUrl) === false && strpos($base, 'http') !== 0 && strpos($base, '//') !== 0) {
+    		$base = $baseUrl.trim($base, '/');
+    	}
+    	return rtrim($base, '/').'/'.trim(\Input::uri(), '/');
+    }
+
+    public function base()
+    {
+    	$base = \Uri::base(false);
+    	$baseUrl = $this->generateBaseUrl();
+    	if (strpos($base, $baseUrl) === false && strpos($base, 'http') !== 0 && strpos($base, '//') !== 0) {
+    		$base = $baseUrl.trim($base, '/');
+    	}
+    	return $base;
     }
 
     public function delimiterFilter($value, $tag = 'b', $delimiter_start = '{', $delimiter_end = '}')
@@ -182,6 +197,25 @@ class Extension extends Twig_Extension
 		$class_name = @$settings['field'];
 		if (!$class_name) $class_name = 'CMF\\Field\\Text';
 		return $class_name::displayList($value, $edit_link, $settings, $model);
+	}
+
+	/**
+	 * Generates a base url.
+	 *
+	 * @return  string  the base url
+	 */
+	protected $_base_url = null;
+	protected function generateBaseUrl()
+	{
+		if ($this->_base_url === null)
+		{
+			$base_url = '';
+			if (\Input::server('http_host')) {
+				$base_url .= \Input::protocol().'://'.\Input::server('http_host');
+			}
+			$this->_base_url = rtrim($base_url, '/').'/';
+		}
+		return $this->_base_url;
 	}
 	
 }

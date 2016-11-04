@@ -24,9 +24,9 @@ class Controller_List extends Controller_Base {
 	    	$static_item = $class_name::select('item')->setMaxResults(1)->getQuery()->getResult();
 	    	if (count($static_item) > 0) {
 	    		$static_item = $static_item[0];
-	    		\Response::redirect(\Uri::base(false)."admin/$table_name/".$static_item->id."/edit", 'location');
+	    		\Response::redirect("/admin/$table_name/".$static_item->id."/edit", 'location');
 	    	} else {
-	    		\Response::redirect(\Uri::base(false)."admin/$table_name/create", 'location');
+	    		\Response::redirect("/admin/$table_name/create", 'location');
 	    	}
 	    }
 	    
@@ -150,9 +150,9 @@ class Controller_List extends Controller_Base {
 			                $rev = ($dir == 'asc') ? 'desc' : 'asc';
 			                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
 			                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
-			                $join_heading = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_colons=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$join_heading.' '.$verbose ), $join_heading.' '.$arrows);
+			                $join_heading = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=$rev"), 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$join_heading.' '.$verbose ), $join_heading.' '.$arrows);
 			            } else {
-			                $join_heading = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_colons=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$join_heading.' ascending' ), $join_heading);
+			                $join_heading = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=asc"), 'class' => 'sort-link', 'title' => 'Sort by '.$join_heading.' ascending' ), $join_heading);
 			            }
 					}
 
@@ -179,9 +179,9 @@ class Controller_List extends Controller_Base {
 		                $rev = ($dir == 'asc') ? 'desc' : 'asc';
 		                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
 		                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
-		                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_name=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$column['heading'].' '.$verbose ), $column['heading'].' '.$arrows);
+		                $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_name=$rev"), 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$column['heading'].' '.$verbose ), $column['heading'].' '.$arrows);
 		            } else {
-		                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_name=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$column['heading'].' ascending' ), $column['heading']);
+		                $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_name=asc"), 'class' => 'sort-link', 'title' => 'Sort by '.$column['heading'].' ascending' ), $column['heading']);
 		            }
 		            */
 		            
@@ -216,9 +216,9 @@ class Controller_List extends Controller_Base {
 	                $rev = ($dir == 'asc') ? 'desc' : 'asc';
 	                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
 	                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
-	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_colons=$rev", 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$fields[$field]['title'].' '.$verbose ), $fields[$field]['title'].' '.$arrows);
+	                $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=$rev"), 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$fields[$field]['title'].' '.$verbose ), $fields[$field]['title'].' '.$arrows);
 	            } else {
-	                $column['heading'] = html_tag('a', array( 'href' => "/admin/$table_name/list/order?$field_colons=asc", 'class' => 'sort-link', 'title' => 'Sort by '.$fields[$field]['title'].' ascending' ), $fields[$field]['title']);
+	                $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=asc"), 'class' => 'sort-link', 'title' => 'Sort by '.$fields[$field]['title'].' ascending' ), $fields[$field]['title']);
 	            }
 	            
 	        } else {
@@ -573,9 +573,9 @@ class Controller_List extends Controller_Base {
 	    	$static_item = $class_name::select('item')->setMaxResults(1)->getQuery()->getResult();
 	    	if (count($static_item) > 0) {
 	    		$static_item = $static_item[0];
-	    		\Response::redirect(\Uri::base(false)."admin/$table_name/".$static_item->id."/edit", 'location');
+	    		\Response::redirect("/admin/$table_name/".$static_item->id."/edit", 'location');
 	    	} else {
-	    		\Response::redirect(\Uri::base(false)."admin/$table_name/create", 'location');
+	    		\Response::redirect("/admin/$table_name/create", 'location');
 	    	}
 	    }
 	    
@@ -723,7 +723,7 @@ class Controller_List extends Controller_Base {
 		$plural = $class_name::plural();
 		$class_name::saveAll();
 		
-		$default_redirect = \Uri::base(false)."admin/$table_name";
+		$default_redirect = "/admin/$table_name";
 		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => "All ".strtolower($plural)." were saved" ));
 	    \Response::redirect(\Input::referrer($default_redirect), 'location');
 	}
@@ -828,7 +828,7 @@ class Controller_List extends Controller_Base {
 	public function action_order($table_name)
 	{
 	    \Session::set("$table_name.list.order", \Input::get());
-	    \Response::redirect(\Input::referrer());
+	    \Response::redirect(\Input::referrer("/admin"));
 	}
 
 	public function action_recover_tree($table_name)
@@ -863,7 +863,7 @@ class Controller_List extends Controller_Base {
 		}
 
 		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => $msg_class ), 'msg' => $msg ));
-		\Response::redirect(\Input::referrer());
+		\Response::redirect(\Input::referrer("/admin"));
 	}
 	
 	/**

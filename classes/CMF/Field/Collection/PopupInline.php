@@ -79,7 +79,7 @@ class PopupInline extends Multiselect {
                 'singular' => $type::singular(),
                 'prefix' => $prefix,
                 'can_duplicate' => !$type::_static(),
-                'edit_link' => '/admin/'.$metadata->table['name'].'/__ID__/edit'.$edit_qs,
+                'edit_link' => \Uri::create('/admin/'.$metadata->table['name'].'/__ID__/edit'.$edit_qs),
                 'hidden_fields' => array(
                     'id' => \Form::hidden($prefix.'[id]', '', array( 'class' => 'item-id', 'data-field-name' => 'id' )),
                     'pos' => \Form::hidden($prefix.'[pos]', '', array( 'data-field-name' => 'pos' )),
@@ -91,7 +91,7 @@ class PopupInline extends Multiselect {
                 'singular' => $type::singular(),
                 'plural' => $type::plural(),
                 'icon' => $type::icon(),
-                'add_link' => '/admin/'.$metadata->table['name'].'/create'.$edit_qs
+                'add_link' => \Uri::create('/admin/'.$metadata->table['name'].'/create'.$edit_qs)
             );
         }
         
@@ -108,7 +108,7 @@ class PopupInline extends Multiselect {
             $row = array(
                 '_icon_' => $type::icon(),
                 '_title_' => $item->display(),
-                'edit_link' => '/admin/'.$metadata->table['name'].'/'.$item->id.'/edit'.$edit_qs,
+                'edit_link' => \Uri::create('/admin/'.$metadata->table['name'].'/'.$item->id.'/edit'.$edit_qs),
                 'can_duplicate' => !$type::_static(),
                 'hidden_fields' => array(
                     'id' => \Form::hidden($prefix.'[id]', $item->id, array( 'class' => 'item-id', 'data-field-name' => 'id' )),
