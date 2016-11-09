@@ -14,7 +14,8 @@ class Settings extends Base
 {
     
     protected static $_fields = array(
-        'start_page' => array( 'super' => true, 'after' => 'site_title', 'field' => 'CMF\\Field\\Admin\\StartPage' )
+        'start_page' => array( 'super' => true, 'after' => 'site_title', 'field' => 'CMF\\Field\\Admin\\StartPage' ),
+        'htaccess'  => array('visible'=>false),
     );
     
     protected static $_singular = 'Settings';
@@ -31,6 +32,11 @@ class Settings extends Base
      * @ORM\JoinColumn(onDelete="SET NULL")
      */
     protected $start_page;
+
+    /**
+     * @ORM\Column(type="htaccess", nullable=true)
+     */
+    protected $htaccess;
     
     /** inheritdoc */
     public function get($field, $default_value = null)
