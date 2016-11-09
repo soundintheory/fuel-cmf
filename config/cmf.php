@@ -125,6 +125,7 @@ return array (
         'text' => 'CMF\\Field\\Textarea',
         'color' => 'CMF\\Field\\Color',
         'richtext' => 'CMF\\Field\\CKEditor',
+        'htaccess' => 'CMF\\Field\\Htaccess',
         'object' => 'CMF\\Field\\Object\\Object',
         'array' => 'CMF\\Field\\Object\\ArrayField',
         'float' => 'CMF\\Field\\Base',

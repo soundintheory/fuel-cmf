@@ -41,6 +41,7 @@ return array(
 		'types' => array(
 			'random_key' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'richtext' => array( 'class' => 'Doctrine\\DBAL\\Types\\TextType' ),
+            'htaccess' => array( 'class' => 'Doctrine\\DBAL\\Types\\TextType' ),
 			'color' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'enum' => array( 'class' => 'Doctrine\\DBAL\\Types\\StringType' ),
 			'enum_integer' => array( 'class' => 'Doctrine\\DBAL\\Types\\IntegerType' ),

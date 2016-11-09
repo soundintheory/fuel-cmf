@@ -1,0 +1,65 @@
+<table class="table table-striped table-hover table-bordered{{ rows|length == 0 ? '' : ' populated' }} sortable" style="min-width:{{ 3 * 160 }}px;" data-field-name="{{ settings.mapping.fieldName }}">
+	<thead>
+		<tr >
+			<th class="handle first"></th>
+			{% for col in cols %}
+				<th>{{ col|capitalize }}</th>
+			{% endfor %}
+			<th class="actions"></th>
+		</tr>
+	</thead>
+	<tbody>
+
+		<tr class="item-template">
+			<td class="handle first"><i class="fa fa-arrows"></i></td>
+			{% for col in cols %}
+				<td class="col-type-{{ fields[col].field_type }}">{{ fields[col].display }}</td>
+			{% endfor %}
+			<td class="actions">
+				<a href="#" class="btn btn-small btn-remove"><i class="fa fa-remove"></i></a>
+			</td>
+		</tr>
+		{% for row in rows %}
+			<tr class="item draggable">
+				<td class="handle first"><i class="fa fa-arrows"></i></td>
+				{% for field_name, field in row.fields %}
+					<td class="col-type-{{ form.fields[field_name].field_type }}">{{ field.display }}</td>
+				{% endfor %}
+				<td class="actions">
+					{{ row.hidden_fields.id }}
+					{{ row.hidden_fields.pos }}
+					<a href="#" class="btn btn-small btn-remove"><i class="fa fa-remove"></i></a>
+				</td>
+			</tr>
+		{% endfor %}
+		<tr class="no-items-row">
+	        <td class="no-items" colspan="{{ cols|length + 2 }}">
+	            <p>{{ _('admin.messages.no_items_added', { resource:plural|lower }) }}</p>
+	            {% if not superlock %}
+	            <a href="#" class="btn-add btn btn-medium"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_resource', { resource:singular }) }}</a>
+	            {% endif %}
+	        
+	        </td>
+	    </tr>
+	</tbody>
+</table>
+<div class="widget-actions-top">
+	<a href="#" class="widget-action icon btn-add" title="{{ _('admin.common.add_resource', { resource:singular|lower }) }}"><i class="fa fa-plus"></i></a>
+</div>
+<div class="widget-footer">
+	<div class="widget-actions-bottom">
+		<a href="#" class="widget-action btn-add last"><i class="fa fa-plus"></i> {{ _('admin.common.add_resource', { resource:singular|lower }) }}</a>
+	</div>
+</div>
+<!--table class="table table-striped table-hover table-bordered-populated'}" style="min-width: 160px;" data-field-name="{{ settings.mapping.fieldName }}-extra-rules">
+	<thead>
+	<tr >
+		<th>Extra Rules</th>
+	</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><textarea name="{-- settings['mapping']['fieldName'] --}[extrarules]" id="form_{-- settings['mapping']['fieldName'] --}[extrarules]"></textarea></td>
+		</tr>
+	</tbody>
+</table-->
