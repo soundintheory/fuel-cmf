@@ -10,7 +10,7 @@ class Storage
 
 	public static function getDocumentRoot()
 	{
-		return \Fuel::$is_cli ? DOCROOT.'public/' : DOCROOT;
+		return DOCROOT;
 	}
 
 	/**
