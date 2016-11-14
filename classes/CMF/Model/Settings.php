@@ -15,7 +15,12 @@ class Settings extends Base
     
     protected static $_fields = array(
         'start_page' => array( 'super' => true, 'after' => 'site_title', 'field' => 'CMF\\Field\\Admin\\StartPage' ),
-        'htaccess'  => array('visible'=>false),
+        'htaccess'  => array( 'visible' => false ),
+    );
+
+    protected static $_groups = array(
+        'main' => array( 'title' => 'Info' ),
+        'field_htaccess' => array( 'title' => 'Manual redirects' )
     );
     
     protected static $_singular = 'Settings';

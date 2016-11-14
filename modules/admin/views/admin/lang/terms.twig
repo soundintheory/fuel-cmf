@@ -47,14 +47,14 @@
 {% block admin_css %}
     {{ parent() }}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{% if 'http://' not in css and 'https://' not in css %}{{ url(css) }}{{ ('?' in css) ? '&' : '?' }}v=26{% else %}{{ css }}{% endif %}">
+        <link rel="stylesheet" type="text/css" href="{% if 'http://' not in css and 'https://' not in css %}{{ url(css) }}{{ ('?' in css) ? '&' : '?' }}v=27{% else %}{{ css }}{% endif %}">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{% if 'http://' not in js and 'https://' not in js %}{{ url(js) }}{{ ('?' in js) ? '&' : '?' }}v=26{% else %}{{ js }}{% endif %}"></script>
+        <script type="text/javascript" src="{% if 'http://' not in js and 'https://' not in js %}{{ url(js) }}{{ ('?' in js) ? '&' : '?' }}v=27{% else %}{{ js }}{% endif %}"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};
