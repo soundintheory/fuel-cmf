@@ -1,3 +1,11 @@
+{% if errors|length %}
+	<div class="alert alert-widget alert-danger">
+		{% for error in errors %}
+			{{ error }}{{ (not loop.last) ? '<br>' : '' }}
+		{% endfor %}
+		<button class="close" data-dismiss="alert">×</button>
+	</div>
+{% endif %}
 <table class="table table-striped table-hover table-bordered{{ rows|length == 0 ? '' : ' populated' }} sortable" style="min-width:{{ 3 * 160 }}px;" data-field-name="{{ settings.mapping.fieldName }}">
 	<thead>
 		<tr >
@@ -23,11 +31,9 @@
 			<tr class="item draggable">
 				<td class="handle first"><i class="fa fa-arrows"></i></td>
 				{% for field_name, field in row.fields %}
-					<td class="col-type-{{ form.fields[field_name].field_type }}">{{ field.display }}</td>
+					<td class="col-type-{{ fields[field_name].field_type }}">{{ field.display }}</td>
 				{% endfor %}
 				<td class="actions">
-					{{ row.hidden_fields.id }}
-					{{ row.hidden_fields.pos }}
 					<a href="#" class="btn btn-small btn-remove"><i class="fa fa-remove"></i></a>
 				</td>
 			</tr>

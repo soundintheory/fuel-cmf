@@ -5,10 +5,22 @@ namespace CMF\Field;
 use CMF\Admin\ModelForm;
 
 class Htaccess extends Textarea {
+
+    const BEGIN_TOKEN = "### BEGIN CMF RULES";
+    const END_TOKEN = "### END CMF RULES";
+    const MSG = "(do not edit!!)";
+    const ARG_SEPARATOR = "\t";
+    const NEWLINE = "\r\n";
     
     protected static $defaults = array(
-
+        'disallowed_prefixes' => array(
+            '',
+            '/',
+            '/admin',
+            '/image',
+        )
     );
+    protected static $errors = array();
     
     public function get_type()
     {
@@ -31,53 +43,59 @@ class Htaccess extends Textarea {
     /** inheritdoc */
     public static function displayForm($value, &$settings, $model)
     {
-        $fields = array();
-        $fields['from'] = array();
-        $fields['to'] = array();
-        $fields['action'] = array();
-        $fields['from']['field_type'] = $fields['to']['field_type'] = "link";
-        $fromSettings = $settings;
-        $fromSettings['mapping']['fieldName'] = '__TEMP__'.$settings['mapping']['fieldName'].'[__NUM__][from]';
-        $toSettings = $settings;
-        $toSettings['mapping']['fieldName'] = '__TEMP__'.$settings['mapping']['fieldName'].'[__NUM__][to]';
-        $fields['from']['display'] = \CMF\Field\Text::displayForm(null,$fromSettings, $model);
-        $fields['to']['display'] = \CMF\Field\Text::displayForm(null,$toSettings, $model);
-        $selectSettings = $settings;
-        $selectSettings['title'] = 'Action';
-        $selectSettings['options'] = array('301'=>'Permanent Redirect(301)','302'=>'Temporary Redirect(302)');
-        $selectSettings['mapping']['fieldName'] = '__TEMP__'.$settings['mapping']['fieldName'].'[__NUM__][action]';
-        $fields['action']['display']  = \CMF\Field\Select::displayForm(null,$selectSettings, $model);
+        $name = $settings['mapping']['fieldName'];
+        $fields = array(
+            'from' => array( 'field_type' => 'text' ),
+            'to' => array( 'field_type' => 'text' ),
+            'action' => array( 'field_type' => 'select' )
+        );
+        $fromAttributes = array(
+            'class' => 'input-xxlarge',
+            'data-name' => "__TEMP__{$name}[__NUM__][from]"
+        );
+        $toAttributes = array(
+            'class' => 'input-xxlarge',
+            'data-name' => "__TEMP__{$name}[__NUM__][to]"
+        );
 
+        // From / to text inputs
+        $fields['from']['display'] = \Form::input("__TEMP__{$name}[__NUM__][from]", null, $fromAttributes);
+        $fields['to']['display'] = \Form::input("__TEMP__{$name}[__NUM__][to]", null, $toAttributes);
+
+        // Action dropdown
+        $actionOptions = array( '301' => '301 (permanent)', '302' => '302 (temporary)' );
+        $actionAttributes = array( 'class' => 'input-xxlarge', 'data-name' => "__TEMP__{$name}[__NUM__][action]" );
+        $fields['action']['display'] = \Form::select("__TEMP__{$name}[__NUM__][action]", null, $actionOptions, $actionAttributes);
+
+        // Parsing the rows
         $rows = array();
-        $values = explode("\r\n",$value);
-        foreach ($values as $key=>$val){
-            if(self::startsWith($val,"Redirect")) {
-                $rows[$key] = array();
-                $rows[$key]['fields'] = array();
-                $rows[$key]['fields']['from'] = array();
-                $rows[$key]['fields']['to'] = array();
-                $rows[$key]['fields']['action'] = array();
-                $fromSettings = $settings;
-                $fromSettings['mapping']['fieldName'] = $settings['mapping']['fieldName'] . '[' . $key . '][from]';
-                $toSettings = $settings;
-                $toSettings['mapping']['fieldName'] = $settings['mapping']['fieldName'] . '[' . $key . '][to]';
 
-                $items = explode(" ", $val);
+        foreach (static::parseHtaccessRedirects($value) as $key => $value)
+        {
+            $rows[$key] = array(
+                'fields' => array(
+                    'from' => array(),
+                    'to' => array(),
+                    'action' => array()
+                )
+            );
 
-                $rows[$key]['fields']['from']['display'] = \CMF\Field\Text::displayForm($items[2], $fromSettings, $model);
-                $rows[$key]['fields']['to']['display'] = \CMF\Field\Text::displayForm($items[3], $toSettings, $model);
-
-                $selectSettings = $settings;
-                $selectSettings['title'] = 'Action';
-                $selectSettings['options'] = array('301' => 'Permanent Redirect(301)', '302' => 'Temporary Redirect(302)');
-                $selectSettings['mapping']['fieldName'] = $settings['mapping']['fieldName'] . '[' . $key . '][action]';
-                $rows[$key]['fields']['action']['display'] = \CMF\Field\Select::displayForm($items[1], $selectSettings, $model);
-            }
+            $rows[$key]['fields']['from']['display'] = \Form::input("{$name}[{$key}][from]", $value['from'], $fromAttributes);
+            $rows[$key]['fields']['to']['display'] = \Form::input("{$name}[{$key}][to]", $value['to'], $toAttributes);
+            $rows[$key]['fields']['action']['display'] = \Form::select("{$name}[{$key}][action]", $value['action'], $actionOptions, $actionAttributes);
         }
 
         return array(
-            'assets' => \CMF\Field\Htaccess::getAssets(),
-            'content' => strval(\View::forge('admin/fields/htaccess.twig', array( 'settings' => $settings, 'singular' => 'rule', 'plural' => 'rules', 'rows' => $rows, 'cols' =>  array('from','to','action'),'fields'=> $fields), false)),
+            'assets' => static::getAssets(),
+            'content' => strval(\View::forge('admin/fields/htaccess.twig', array(
+                'settings' => $settings,
+                'singular' => 'rule',
+                'plural' => 'rules',
+                'rows' => $rows,
+                'cols' =>  array('from', 'to', 'action'),
+                'fields' => $fields,
+                'errors' => !empty($model) ? $model->getErrorsForField($name) : array()
+            ), false)),
             'widget' => true,
             'widget_class' => ''
         );
@@ -85,46 +103,118 @@ class Htaccess extends Textarea {
 
     public static function process($value, $settings, $model)
     {
+        $settings = static::settings($settings);
+        $disallowed = \Arr::get($settings, 'disallowed_prefixes');
+        static::$errors = array();
+        $rules = "";
         /*$extraRules = $value['extrarules'];
         unset($value['extrarules']);*/
-        $rules = "";
+
+        if (empty($value)) {
+            return '';
+        }
+
         foreach ($value as $val)
         {
-            $valid = true;
-            $from = \CMF\Field\Text::process($val['from'], $settings, $model);
-            if(self::startsWith($from,"/"))
-                $valid = preg_match('|^/[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $from);
-            else{
-                if(!self::startsWith($from,"http://") && !self::startsWith($from,"https://"))
-                    $from = "http://".$from;
-                $valid = preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $from);
+            if (!is_array($val)) continue;
+
+            $action = @$val['action'] ?: 301;
+            $rules .= implode(static::ARG_SEPARATOR, array('RewriteRule', $val['from'], $val['to'], "[R=$action,L]\r\n"));
+
+            if (!($fromValid = static::isValidRewriteArgument($val['from']))) {
+                static::$errors[] = "An error was found in the syntax of '{$val['from']}'";
             }
-            if($valid) {
-                $to = \CMF\Field\Text::process($val['to'], $settings, $model);
-                if(self::startsWith($to,"/"))
-                    $valid = preg_match('|^/[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $to);
-                else{
-                    if(!self::startsWith($to,"http://") && !self::startsWith($to,"https://"))
-                        $to = "http://".$to;
-                    $valid = preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $to);
+            if (!($toValid = static::isValidRewriteArgument($val['to']))) {
+                static::$errors[] = "An error was found in the syntax of '{$val['to']}'";
+            }
+            if ($fromValid && is_array($disallowed)) {
+                foreach ($disallowed as $disallow) {
+                    if (static::matchesPrefix($disallow, $val['from'])) {
+                        static::$errors[] = "Cannot add a rule that matches '$disallow'";
+                        break;
+                    }
                 }
-                $action = ($val['action'] ? $val['action'] : 301);
-                if($valid)
-                    $rules .= "Redirect " . $action . " " . $from . " " . $to . "\r\n";
             }
         }
-        self::insertToHtaccess($rules/*.$extraRules*/."\r\n");
-        $value = $rules/*.$extraRules*/;
-        return parent::process($value, $settings, $model);
+
+        // Only insert if all the syntax is valid
+        if (!count(static::$errors)) {
+            self::insertToHtaccess($rules);
+        }
+
+        return $rules;
     }
 
-    private static function startsWith($haystack, $needle)
+    /**
+     * Logs any errors added during processing
+     */
+    public static function validate($value, $settings, $model)
     {
-        $length = strlen($needle);
-        return (substr($haystack, 0, $length) === $needle);
+        foreach (static::$errors as $msg) {
+            $model->addErrorForField($settings['mapping']['fieldName'], $msg);
+        }
     }
 
-    private static function insertToHtaccess($text){
+    private static function parseHtaccessRedirects($input)
+    {
+        $lines = explode("\r\n", $input ?: '');
+        $output = array();
+
+        foreach ($lines as $key => $value)
+        {
+            $parts = array_map('trim', explode(static::ARG_SEPARATOR, $value));
+            if ($parts[0] != 'RewriteRule') continue;
+
+            preg_match('/\[R=(\d+)/', $value, $action);
+            $output[] = array(
+                'from' => $parts[1],
+                'to' => $parts[2],
+                'action' => @$action[1] ?: '301'
+            );
+        }
+
+        return $output;
+    }
+
+    private static function matchesPrefix($prefix, $pattern)
+    {
+        $prefix = rtrim($prefix, '/');
+        $regex = '~'.str_replace("~", "\~", $pattern).'~';
+        $segments = 10;
+
+        if (!empty($prefix) && preg_match('~'.str_replace("~", "\~", $prefix).'/.*~', $pattern)) {
+            return true;
+        }
+
+        if (!empty($prefix) && preg_match('~'.str_replace("~", "\~", trim($prefix, '/')).'/.*~', $pattern)) {
+            return true;
+        }
+
+        for ($i=0; $i < $segments; $i++) { 
+            if (preg_match($regex, $prefix.str_repeat('/segment', $i))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function isValidRewriteArgument($value)
+    {
+        if (empty(trim($value))) {
+            return false;
+        }
+        if (preg_match('/\s/', $value)) {
+            return false;
+        }
+        if (@preg_match('~'.str_replace("~", "\~", $value).'~', null) === false) {
+            return false;
+        }
+        return true;
+    }
+
+    private static function insertToHtaccess($text)
+    {
         $filePath = $_SERVER['DOCUMENT_ROOT'] . DS .'.htaccess';
 
         if (!file_exists($filePath))
@@ -135,27 +225,32 @@ class Htaccess extends Textarea {
         file_put_contents($filePath,implode("",$parts['before']).$text.implode("",$parts['after']));
     }
 
-    private static function getHtaccessParts($filePath){
+    private static function getHtaccessParts($filePath)
+    {
         $lines = file($filePath);
         $parts = array();
         $firstPartEnd = 0;
-        for($x = 0;$x < count($lines);$x++)
+
+        for ($x = 0; $x < count($lines); $x++)
         {
-            if(strpos ($lines[$x],"# BEGIN CMF Rules") !== false) {
-                $parts['before'] = array_slice($lines, 0, ($x + 1));
+            if (strpos($lines[$x], static::BEGIN_TOKEN) !== false) {
+                $parts['before'] = array_slice($lines, 0, $x);
                 $firstPartEnd = $x;
             }
-            if(strpos ($lines[$x],"# END CMF Rules") !== false) {
-                $parts['middle'] = array_slice($lines, ($firstPartEnd + 1),($x - ($firstPartEnd+1)));
-                $parts['after'] = array_slice($lines, $x);
+            if (strpos($lines[$x], static::END_TOKEN) !== false) {
+                $parts['after'] = count($lines) > ($x + 2) ? array_slice($lines, $x + 2) : (count($lines) > ($x + 1) ? array_slice($lines, $x + 1) : array());
                 break;
             }
         }
-        if(!isset($parts['before']) && !isset($parts['after'])) {
+
+        if (!isset($parts['before']) && !isset($parts['after'])) {
             $parts['before'] = array();
-            $parts['middle'] = array();
             $parts['after'] = $lines;
         }
+
+        array_push($parts['before'], static::BEGIN_TOKEN.' '.static::MSG.static::NEWLINE.'RewriteEngine on'.static::NEWLINE);
+        array_unshift($parts['after'], static::END_TOKEN.' '.static::MSG.static::NEWLINE.static::NEWLINE);
+
         return $parts;
     }
     

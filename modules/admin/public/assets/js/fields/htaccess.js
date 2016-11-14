@@ -35,42 +35,12 @@
 
                 var $item = $template.clone();
 
-                $item.addClass('item'+(sortable ? ' draggable' : '')).removeClass('item-template').find('*[name], *[data-field-name]').each(function() {
+                $item.addClass('item'+(sortable ? ' draggable' : '')).removeClass('item-template').find('[data-name]').each(function() {
 
-                    var $el = $(this),
-                        origName = $el.attr('name'),
-                        origId = $el.attr('id');
+                    var $el = $(this);
+                    var dataName = $el.data('name');
 
-                    var isData = origName === undefined || origName === false || origName == '';
-                    if (isData) { origName = $el.attr('data-field-name'); }
-                    if (origName.indexOf('__TEMP__') === -1) { return; }
-
-                    var lastName = origName.replace('__TEMP__', '').replace('__NUM__', inc-1),
-                        name = origName.replace('__TEMP__', '').replace('__NUM__', inc);
-
-                    if (origId != undefined && origId != '') {
-
-                        var newId = origId.replace('__TEMP__', '').replace('__NUM__', inc);
-                        $label = $item.find('label[for="' + origId + '"]');
-                        $el.attr('id', newId);
-
-                        if ($label.length > 0) {
-                            $label.attr('for', newId);
-                        }
-
-                    }
-
-                    if (typeof(field_settings[lastName]) != 'undefined') {
-                        field_settings[name] = field_settings[lastName];
-                    } else if (typeof(field_settings[origName]) != 'undefined') {
-                        field_settings[name] = field_settings[origName];
-                    }
-
-                    if (isData) {
-                        $el.attr('data-field-name', name);
-                    } else {
-                        $el.attr('name', name);
-                    }
+                    $el.attr('name', dataName.replace('__TEMP__', '').replace('__NUM__', inc));
 
                 });
 
@@ -89,7 +59,6 @@
 
                 update();
                 return false;
-
             }
 
             function removeButtonHandler() {
@@ -113,15 +82,7 @@
                     $table.removeClass('populated');
                 }
 
-                var value = [];
-                $items.each(function(i) {
-                    var id = $(this).find('input.item-id').val();
-                    if (typeof(id) != 'undefined') { value.push(id+''); }
-                });
-                setFieldValue(name, value);
-
                 updatePositions();
-
             }
 
             function updatePositions() {
@@ -130,16 +91,12 @@
 
                 $items = $table.find('> tbody > tr.item');
 
-                $items.each(function(i) {
-
-                    var $el = $(this),
-                        $pos = $el.find('input[data-field-name="pos"]').val(i+''),
-                        id = $el.find('input.item-id').val();
-
-                    positions[id] = { 'pos':i };
-
+                $items.each(function(i, el) {
+                    $(el).find('[data-name]').each(function(j, el) {
+                        var dataName = $(el).data('name') || '';
+                        $(el).attr('name', dataName.replace('__TEMP__', '').replace('__NUM__', i));
+                    });
                 });
-
             }
 
             function initSorting() {
@@ -151,69 +108,19 @@
                     saveAll = settings['save_all'];
 
                 $tableBody.sortable({ helper:fixHelper, handle:'.handle' });
-                $tableBody.sortable('option', 'start', function (evt, ui) {
 
+                $tableBody.sortable('option', 'start', function (evt, ui) {
                     ui.item.trigger('cmf.dragstart');
                     $body.addClass('sorting');
-
                 });
-                $tableBody.sortable('option', 'stop', function(evt, ui) {
 
+                $tableBody.sortable('option', 'stop', function(evt, ui) {
                     ui.item.trigger('cmf.dragstop');
                     $body.removeClass('sorting');
-
-                    var id = ui.item.find('input.item-id').val(),
-                        pos = 0;
-
-                    if (typeof(id) == 'undefined') { return; }
-
-                    if (saveAll) {
-
-                        updatePositions();
-
-                        var cRequest = $.ajax({
-                            'url': CMF.baseUrl + '/admin/' + tableName + '/populate',
-                            'data': positions,
-                            'dataType': 'json',
-                            'async': true,
-                            'type': 'POST',
-                            'success': onListSaved,
-                            'cache': false
-                        });
-
-                    } else {
-
-                        $tableBody.find('> tr.item').each(function(i) {
-                            if ($(this).find('input.item-id').val() == id) {
-                                pos = i;
-                                return false;
-                            }
-                        });
-
-                        updatePositions();
-
-                        var cRequest = $.ajax({
-                            'url': CMF.baseUrl + '/admin/' + tableName + '/' + id + '/populate',
-                            'data': { 'pos':pos },
-                            'dataType': 'json',
-                            'async': true,
-                            'type': 'POST',
-                            'success': onListSaved,
-                            'cache': false
-                        });
-
-                    }
-
+                    updatePositions();
                 });
 
                 updatePositions()
-
-            }
-
-            function onListSaved(result) {
-
-                //console.log(result);
-
             }
 
         });
