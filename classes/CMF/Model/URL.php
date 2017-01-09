@@ -35,7 +35,7 @@ class URL extends Base
      */
     public function item()
     {
-        if (empty($this->type) || is_null($this->item_id)) return null;
+        if (empty($this->type) || is_null($this->item_id) || !class_exists($this->type)) return null;
         
         $type = $this->type;
         return $type::select('item')->where('item.id = '.$this->item_id)->getQuery()->getResult();
@@ -50,6 +50,16 @@ class URL extends Base
     {
         return $this->url;
     }
+
+    public function isExternal()
+    {
+        return $this->type == static::TYPE_EXTERNAL;
+    }
+
+    public function isRedirect()
+    {
+        return !empty($this->type) && is_numeric($this->type);
+    }
     
     public function __toString()
     {
@@ -61,7 +71,11 @@ class URL extends Base
         $urls = \CMF\Model\URL::select('item')->getQuery()->getResult();
         $deleted = 0;
         
-        foreach ($urls as $url) {
+        foreach ($urls as $url)
+        {
+            if ($url->isExternal() || $url->isRedirect()) {
+                continue;
+            }
             $item = $url->item();
             if (empty($item)) {
                 \D::manager()->remove($url);
@@ -116,9 +130,4 @@ class URL extends Base
      **/
     protected $type = '';
 
-    public function isExternal()
-    {
-        return $this->type == static::TYPE_EXTERNAL;
-    }
-	
 }
