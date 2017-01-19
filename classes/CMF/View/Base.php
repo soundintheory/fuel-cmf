@@ -91,9 +91,17 @@ class Base extends \ViewModel
             }
 
             $current_uri = '/'.trim($_SERVER['REQUEST_URI'], '/');
-            $uri = property_exists($model, 'url') ? strval($model->get('url', $current_uri)) : $current_uri;
-            
-            if (!empty($canonical_base))
+            $uri = $current_uri;
+
+            if (property_exists($model, 'url')) {
+                $url = $model->url;
+                if (!empty($url) && !empty($url->url)) {
+                    $uri = $url->url;
+                }
+            }
+
+            // Only give canonical if it's different to the current URL
+            if (!empty($canonical_base) && ($canonical_base != $base || $uri != $current_uri))
                 return $canonical_base.$uri;
         }
 
