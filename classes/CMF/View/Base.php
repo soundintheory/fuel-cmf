@@ -90,8 +90,7 @@ class Base extends \ViewModel
                 $canonical_base = $base;
             }
 
-            $current_uri = '/'.trim($_SERVER['REQUEST_URI'], '/');
-            $uri = $current_uri;
+            $current_uri = $uri = '/'.trim(\CMF::original_uri(), '/');
 
             if (property_exists($model, 'url')) {
                 $url = $model->url;
@@ -156,7 +155,7 @@ class Base extends \ViewModel
     
     public function before()
     {
-        $uri = trim($_SERVER['REQUEST_URI'], '/');
+        $uri = '/'.trim(\CMF::original_uri(), '/');
         $this->uri = empty($uri) ? '/' : $uri;
         $this->view = $this;
 
