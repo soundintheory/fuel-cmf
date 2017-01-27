@@ -239,6 +239,7 @@ class Admin
 		$sidebar_config = \Config::get('cmf.admin.sidebar');
 		$current_group = 0;
 		$output = array( array( 'heading' => false, 'items' => array() ) );
+        $currentUser = Auth::current_user();
 		
 		// Check if the first item is a heading
 		if (isset($sidebar_config[0]['heading'])) {
@@ -247,6 +248,11 @@ class Admin
 		}
 		
 		foreach ($sidebar_config as $item) {
+
+            // Items that only super users can see
+            if (isset($item['super']) && $item['super'] === true && (empty($currentUser) || !$currentUser->super_user)) {
+                continue;
+            }
 			
 			if (isset($item['heading'])) {
 				
