@@ -158,6 +158,7 @@ class Admin
 		$field_mappings = $metadata->fieldMappings;
 		$association_mappings = $metadata->associationMappings;
 		$field_list = array_keys(\Arr::merge($fields, $metadata->reflFields));
+        $currentUser = Auth::current_user();
 		
 		foreach ($field_list as $key) {
 			
@@ -168,6 +169,11 @@ class Admin
 			} else if ($field === false) {
 				$field = array( 'visible' => false );
 			}
+
+            // Fields that only super users can see
+			if (is_array($field) && @$field['super'] === true && (empty($currentUser) || !$currentUser->super_user)) {
+                $field['visible'] = false;
+            }
 			
 			if (isset($field_mappings[$key])) {
 				

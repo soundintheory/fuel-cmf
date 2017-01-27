@@ -33,6 +33,11 @@ class Checkbox extends Multiselect {
     	}, $value);
     	
     	$target_class = $settings['mapping']['targetEntity'];
+
+        if (!\CMF\Auth::can('view', $target_class) || !\CMF\Auth::can('edit', $target_class)) {
+            return '';
+        }
+
     	$targets = $target_class::findAll();
     	$checkboxes = array();
     	
