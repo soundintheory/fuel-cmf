@@ -69,9 +69,6 @@
     "minimum-stability": "dev",
     "extra": {
         "installer-name": "cmf",
-        "installer-path": "fuel/packages/cmf",
-        "branch-alias": {
-            "dev-master": "1.0.x-dev"
-        }
+        "installer-path": "fuel/packages/cmf"
     }
 }
