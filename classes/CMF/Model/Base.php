@@ -219,6 +219,13 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     protected static $_sort_process = true;
 
     /**
+     * Whether or not the url listener should run on these items
+     * @see \CMF\Model\Base::urlProcess()
+     * @var bool
+     */
+    protected static $_url_process = true;
+
+    /**
      * Which types of import are available for the model eg. array('file', 'url')
      * @see \CMF\Model\Base::importMethods()
      * @var array
@@ -805,6 +812,17 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         $called_class = get_called_class();
         if ($value !== null) $called_class::$_sort_process = $value;
         return $called_class::$_sort_process;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_url_process
+     * @return bool
+     */
+    public static function urlProcess($value = null)
+    {
+        $called_class = get_called_class();
+        if ($value !== null) $called_class::$_url_process = $value;
+        return $called_class::$_url_process;
     }
     
     /**

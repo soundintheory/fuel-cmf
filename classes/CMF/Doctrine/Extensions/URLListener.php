@@ -157,13 +157,16 @@ class URLListener implements EventSubscriber
      */
     protected function process(&$entity, &$em, &$uow)
     {
-        $entity_class = get_class($entity);
-        $entity_namespace = trim(\CMF::slug(str_replace('\\', '/', \Inflector::get_namespace($entity_class))), '/');
-    	$metadata = $em->getClassMetadata($entity_class);
+        if (!($entity instanceof \CMF\Model\Base)) return;
+        
+    	$metadata = $em->getClassMetadata(get_class($entity));
+        $entity_class = $metadata->name;
+        if ($entity_class::urlProcess() !== true) return;
 
         // Ignore URL entities themselves
         if ($metadata->name == 'CMF\\Model\\URL') return;
 
+        $entity_namespace = trim(\CMF::slug(str_replace('\\', '/', \Inflector::get_namespace($entity_class))), '/');
     	$url_associations = $metadata->getAssociationsByTargetClass('CMF\\Model\\URL');
         
     	if (!empty($url_associations)) {
@@ -310,7 +313,11 @@ class URLListener implements EventSubscriber
     
     protected function processNew(&$entity, &$em, &$uow)
     {
+        if (!($entity instanceof \CMF\Model\Base)) return;
+
         $metadata = $em->getClassMetadata(get_class($entity));
+        $entity_class = $metadata->name;
+        if ($entity_class::urlProcess() !== true) return;
 
         $url_associations = $metadata->getAssociationsByTargetClass('CMF\\Model\\URL');
         
