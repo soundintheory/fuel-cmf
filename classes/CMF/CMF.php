@@ -356,9 +356,11 @@ class CMF
 		
 		try {
 			$currentUrl = static::currentUrl();
+			$urlId = !empty($currentUrl) ? intval($currentUrl->id) : 0;
+			$urlIdStr = strval($urlId);
 			$languages = \DB::query("SELECT l.id, l.code, l.top_level_domain, u.url url, t.content url_translated FROM languages AS l LEFT JOIN urls AS u ON (u.id = :urlid) LEFT JOIN ext_translations AS t ON (t.locale = l.code AND t.object_class = 'CMF\\\Model\\\URL' AND t.field = 'url' AND t.foreign_key = :urlidstr) WHERE l.visible = 1 ORDER BY l.pos ASC")
-			->bind('urlid', !empty($currentUrl) ? intval($currentUrl->id) : 0)
-			->bind('urlidstr', !empty($currentUrl) ? strval($currentUrl->id) : '0')
+			->bind('urlid', $urlId)
+			->bind('urlidstr', $urlIdStr)
 			->execute()
 			->as_array();
 
@@ -531,9 +533,10 @@ class CMF
 			->bind('content', $url)
 			->execute()
 			->get('foreign_key');
+			$item_id = intval($item_id);
 
 			if ($item_id) {
-				$url_item = \DB::query("SELECT type, item_id FROM urls WHERE id = :id")->bind('id', intval($item_id))->execute();
+				$url_item = \DB::query("SELECT type, item_id FROM urls WHERE id = :id")->bind('id', $item_id)->execute();
 			}
 		}
 
@@ -550,7 +553,8 @@ class CMF
 			// Redirect
 			if (!empty($url_item['parent_id']))
 			{
-				$parentUrl = \DB::query("SELECT url FROM urls WHERE id = :id")->bind('id', intval($url_item['parent_id']))->execute()->get('url');
+				$parentId = intval($url_item['parent_id']);
+				$parentUrl = \DB::query("SELECT url FROM urls WHERE id = :id")->bind('id', $parentId)->execute()->get('url');
 				if (!empty($parentUrl))
 				{
 					$uri = '/'.ltrim(\Input::uri(), '/');
