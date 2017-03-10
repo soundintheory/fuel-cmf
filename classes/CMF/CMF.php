@@ -356,7 +356,12 @@ class CMF
 		
 		try {
 			$currentUrl = static::currentUrl();
-			$languages = \DB::query("SELECT l.id, l.code, l.top_level_domain, u.url url, t.content url_translated FROM languages AS l LEFT JOIN urls AS u ON (u.id = ".(!empty($currentUrl) ? $currentUrl->id : '0').") LEFT JOIN ext_translations AS t ON (t.locale = l.code AND t.object_class = 'CMF\\\Model\\\URL' AND t.field = 'url' AND t.foreign_key = ".(!empty($currentUrl) ? $currentUrl->id : "0").") WHERE l.visible = 1 ORDER BY l.pos ASC")->execute()->as_array();
+			$languages = \DB::query("SELECT l.id, l.code, l.top_level_domain, u.url url, t.content url_translated FROM languages AS l LEFT JOIN urls AS u ON (u.id = :urlid) LEFT JOIN ext_translations AS t ON (t.locale = l.code AND t.object_class = 'CMF\\\Model\\\URL' AND t.field = 'url' AND t.foreign_key = :urlidstr) WHERE l.visible = 1 ORDER BY l.pos ASC")
+			->bind('urlid', !empty($currentUrl) ? intval($currentUrl->id) : 0)
+			->bind('urlidstr', !empty($currentUrl) ? strval($currentUrl->id) : '0')
+			->execute()
+			->as_array();
+
             foreach ($languages as &$language)
 			{
 				$language['url'] = static::link(!empty($language['url_translated']) ? $language['url_translated'] : $language['url'], $language['code']);
@@ -512,14 +517,23 @@ class CMF
 	public static function getItemByUrl($url, $type = null)
 	{
 		// Plain query for the urls table to avoid initialising Doctrine for 404s
-		$url_item = \DB::query("SELECT type, item_id, parent_id FROM urls WHERE url = '$url' AND alias_id IS NULL ".($type !== null ? "AND type = '$type' " : "")."ORDER BY item_id DESC")->execute();
+		$url_item = \DB::query("SELECT type, item_id, parent_id FROM urls WHERE url = :url AND alias_id IS NULL ".($type !== null ? "AND type = :type " : "")."ORDER BY item_id DESC")
+		->bind('url', $url)
+		->bind('type', $type)
+		->execute();
 
 		// If multilingual is enabled, we need to check the ext_translations table too
 		if (count($url_item) === 0 && static::langEnabled())
 		{
 			$lang = static::$lang ?: static::$lang_default;
-			if ($item_id = \DB::query("SELECT foreign_key FROM ext_translations WHERE locale = '$lang' AND field = 'url' AND object_class = 'CMF\\\Model\\\URL' AND content = '$url'")->execute()->get('foreign_key')) {
-				$url_item = \DB::query("SELECT type, item_id FROM urls WHERE id = $item_id")->execute();
+			$item_id = \DB::query("SELECT foreign_key FROM ext_translations WHERE locale = :lang AND field = 'url' AND object_class = 'CMF\\\Model\\\URL' AND content = :content")
+			->bind('lang', $lang)
+			->bind('content', $url)
+			->execute()
+			->get('foreign_key');
+
+			if ($item_id) {
+				$url_item = \DB::query("SELECT type, item_id FROM urls WHERE id = :id")->bind('id', intval($item_id))->execute();
 			}
 		}
 
@@ -536,7 +550,7 @@ class CMF
 			// Redirect
 			if (!empty($url_item['parent_id']))
 			{
-				$parentUrl = \DB::query("SELECT url FROM urls WHERE id = ".$url_item['parent_id'])->execute()->get('url');
+				$parentUrl = \DB::query("SELECT url FROM urls WHERE id = :id")->bind('id', intval($url_item['parent_id']))->execute()->get('url');
 				if (!empty($parentUrl))
 				{
 					$uri = '/'.ltrim(\Input::uri(), '/');
@@ -549,7 +563,7 @@ class CMF
 			}
 			
 			if (empty($type) || $type == \CMF\Model\URL::TYPE_EXTERNAL || !class_exists($type) || is_null($url_item['item_id'])) return null;
-			$item = $type::select('item')->where('item.id = '.$url_item['item_id'])->getQuery()->getResult();
+			$item = $type::select('item')->where('item.id = :id')->setParameter('id', intval($url_item['item_id']))->getQuery()->getResult();
 		}
 		
 		if (is_array($item) && count($item) > 0) {

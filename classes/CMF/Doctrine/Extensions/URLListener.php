@@ -303,7 +303,14 @@ class URLListener implements EventSubscriber
             }
         }
         
-        if (\DB::query("SELECT url FROM urls WHERE url = '$url' AND item_id <> $item_id".(!empty($url_id) ? " AND id <> $url_id" : "")." AND alias_id IS NULL", \DB::SELECT)->execute()->count() > 0) {
+        $found = \DB::query("SELECT url FROM urls WHERE url = :url AND item_id <> :itemid".(!empty($url_id) ? " AND id <> :urlid" : "")." AND alias_id IS NULL", \DB::SELECT)
+        ->bind('url', $url)
+        ->bind('itemid', intval($item_id))
+        ->bind('urlid', intval($url_id))
+        ->execute()
+        ->count();
+
+        if ($found > 0) {
             $this->savedUrls[$url] = $item_id;
             return false;
         }
