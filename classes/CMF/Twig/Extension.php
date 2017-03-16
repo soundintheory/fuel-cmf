@@ -3,10 +3,8 @@
 namespace CMF\Twig;
 
 use Twig_Extension,
-	Twig_Function_Function,
-	Twig_Function_Method,
-	Twig_Filter_Function,
-	Twig_Filter_Method;
+	Twig_SimpleFunction,
+	Twig_SimpleFilter;
 
 /**
  * Provides Twig support for commonly used FuelPHP classes and methods.
@@ -31,54 +29,54 @@ class Extension extends Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			'field_list_value' => new Twig_Function_Method($this, 'fieldListValue'),
-			'get_flash' => new Twig_Function_Function('Session::get_flash'),
-			'get_link' => new Twig_Function_Function('CMF::getLink'),
-			'video_embed' => new Twig_Function_Function('CMF\\Field\\Object\\VideoEmbed::getEmbedCode'),
-			'get_route' => new Twig_Function_Function('Router::get'),
-			'get_setting' => new Twig_Function_Method($this, 'settings'),
-			'static_url' => new Twig_Function_Function('CMF::getStaticUrl'),
-			'pluralize' => new Twig_Function_Function('Inflector::pluralize'),
-			'singularize' => new Twig_Function_Function('Inflector::singularize'),
-			'ordinalize' => new Twig_Function_Function('Inflector::ordinalize'),
-			'str_repeat' => new Twig_Function_Function('str_repeat'),
-			'array_to_attr' => new Twig_Function_Function('array_to_attr'),
-			'phpinfo' => new Twig_Function_Function('phpinfo'),
-			'basename' => new Twig_Function_Function('basename'),
-			'uri' => new Twig_Function_Method($this, 'uri'),
-			'base' => new Twig_Function_Method($this, 'base'),
-			'image' => new Twig_Function_Function('CMF\\Image::getUrl'),
-			'crop_url' => new Twig_Function_Function('CMF\\Image::getUrl'),
-			'asset' => new Twig_Function_Function('CMF::asset'),
-			'link' => new Twig_Function_Function('CMF::link'),
-			'lang_enabled' => new Twig_Function_Function('CMF::langEnabled'),
-			'language' => new Twig_Function_Function('CMF::lang'),
-			'default_language' => new Twig_Function_Function('CMF::defaultLang'),
-			'languages' => new Twig_Function_Function('CMF::languages'),
-			'languageUrls' => new Twig_Function_Function('CMF::languageUrls'),
-			'all_languages' => new Twig_Function_Function('Admin::languages'),
-			'_' => new Twig_Function_Function('Lang::get'),
-			'session_set' => new Twig_Function_Function('Session::set'),
-			'session_get' => new Twig_Function_Function('Session::get'),
-			'get_content' => new Twig_Function_Function('file_get_contents'),
-			'module_url' => new Twig_Function_Function('CMF::moduleUrl'),
-			'current_module' => new Twig_Function_Function('CMF::currentModule'),
-			'get_options' => new Twig_Function_Function('CMF::getOptions'),
-			'get_options_select' => new Twig_Function_Method($this, 'getOptionsSelect'),
-			'get_hostname' => new Twig_Function_Method($this, 'getHostname'),
-			'array_as_hidden_inputs' => new Twig_Function_Function('CMF::arrayAsHiddenInputs')
+			new Twig_SimpleFunction('field_list_value', array($this, 'fieldListValue')),
+			new Twig_SimpleFunction('get_flash', 'Session::get_flash'),
+			new Twig_SimpleFunction('get_link', 'CMF::getLink'),
+			new Twig_SimpleFunction('video_embed', 'CMF\\Field\\Object\\VideoEmbed::getEmbedCode'),
+			new Twig_SimpleFunction('get_route', 'Router::get'),
+			new Twig_SimpleFunction('get_setting', array($this, 'settings')),
+			new Twig_SimpleFunction('static_url', 'CMF::getStaticUrl'),
+			new Twig_SimpleFunction('pluralize', 'Inflector::pluralize'),
+			new Twig_SimpleFunction('singularize', 'Inflector::singularize'),
+			new Twig_SimpleFunction('ordinalize', 'Inflector::ordinalize'),
+			new Twig_SimpleFunction('str_repeat', 'str_repeat'),
+			new Twig_SimpleFunction('array_to_attr', 'array_to_attr'),
+			new Twig_SimpleFunction('phpinfo', 'phpinfo'),
+			new Twig_SimpleFunction('basename', 'basename'),
+			new Twig_SimpleFunction('uri', array($this, 'uri')),
+			new Twig_SimpleFunction('base', array($this, 'base')),
+			new Twig_SimpleFunction('image', 'CMF\\Image::getUrl'),
+			new Twig_SimpleFunction('crop_url', 'CMF\\Image::getUrl'),
+			new Twig_SimpleFunction('asset', 'CMF::asset'),
+			new Twig_SimpleFunction('link' , 'CMF::link'),
+			new Twig_SimpleFunction('lang_enabled', 'CMF::langEnabled'),
+			new Twig_SimpleFunction('language', 'CMF::lang'),
+			new Twig_SimpleFunction('default_language', 'CMF::defaultLang'),
+			new Twig_SimpleFunction('languages', 'CMF::languages'),
+			new Twig_SimpleFunction('languageUrls', 'CMF::languageUrls'),
+			new Twig_SimpleFunction('all_languages', 'Admin::languages'),
+			new Twig_SimpleFunction('_', 'Lang::get'),
+			new Twig_SimpleFunction('session_set', 'Session::set'),
+			new Twig_SimpleFunction('session_get', 'Session::get'),
+			new Twig_SimpleFunction('get_content', 'file_get_contents'),
+			new Twig_SimpleFunction('module_url', 'CMF::moduleUrl'),
+			new Twig_SimpleFunction('current_module', 'CMF::currentModule'),
+			new Twig_SimpleFunction('get_options', 'CMF::getOptions'),
+			new Twig_SimpleFunction('get_options_select', array($this, 'getOptionsSelect')),
+			new Twig_SimpleFunction('get_hostname', array($this, 'getHostname')),
+			new Twig_SimpleFunction('array_as_hidden_inputs', 'CMF::arrayAsHiddenInputs')
 		);
 	}
 	
 	public function getFilters()
     {
         return array(
-        	'time_ago' => new Twig_Filter_Function('Date::time_ago'),
-        	'item_links' => new Twig_Filter_Method($this, 'itemLinks'),
-        	'placeholder' => new Twig_Filter_Method($this, 'placeholder'),
-        	'slug' => new Twig_Filter_Function('CMF::slug'),
-        	'rtrim' => new Twig_Filter_Function('rtrim'),
-        	'delimiter' => new Twig_Filter_Method($this, 'delimiterFilter')
+        	new Twig_SimpleFilter('time_ago', 'Date::time_ago'),
+        	new Twig_SimpleFilter('item_links', array($this, 'itemLinks')),
+        	new Twig_SimpleFilter('placeholder', array($this, 'placeholder')),
+        	new Twig_SimpleFilter('slug', 'CMF::slug'),
+        	new Twig_SimpleFilter('rtrim', 'rtrim'),
+        	new Twig_SimpleFilter('delimiter', array($this, 'delimiterFilter'))
         );
     }
 
