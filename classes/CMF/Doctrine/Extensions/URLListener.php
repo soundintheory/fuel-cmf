@@ -302,11 +302,13 @@ class URLListener implements EventSubscriber
                 return false;
             }
         }
-        
+
+        $item_id = intval($item_id);
+        $url_id = intval($url_id);
         $found = \DB::query("SELECT url FROM urls WHERE url = :url AND item_id <> :itemid".(!empty($url_id) ? " AND id <> :urlid" : "")." AND alias_id IS NULL", \DB::SELECT)
         ->bind('url', $url)
-        ->bind('itemid', intval($item_id))
-        ->bind('urlid', intval($url_id))
+        ->bind('itemid', $item_id)
+        ->bind('urlid', $url_id)
         ->execute()
         ->count();
 
