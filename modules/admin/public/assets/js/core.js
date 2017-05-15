@@ -704,6 +704,14 @@ function initItemForm() {
 			
 		});
 
+        $(this).find('.field-type-time').each(function() {
+
+            $(this).find('input').not('[name*="__TEMP__"]').timepicker({
+                timeFormat: "hh:mm",
+            });
+
+        });
+
 	}
 
 	$('body').each(dateTimePickers);

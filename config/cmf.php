@@ -121,7 +121,7 @@ return array (
         'decimal' => 'CMF\\Field\\Decimal',
         'datetime' => 'CMF\\Field\\DateTime',
         'date' => 'CMF\\Field\\Date',
-        'time' =>'CMF\\Field\\DateTime',
+        'time' => 'CMF\\Field\\Time',
         'text' => 'CMF\\Field\\Textarea',
         'color' => 'CMF\\Field\\Color',
         'richtext' => 'CMF\\Field\\CKEditor',
