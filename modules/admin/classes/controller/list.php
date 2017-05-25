@@ -53,7 +53,8 @@ class Controller_List extends Controller_Base {
 		$per_page = $class_name::per_page();
 		$sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
 		$sort_process = $class_name::sortProcess();
-		
+
+        $original_tab_id = $tab_id;
 		$excluded_ids = array();
 		$fields = \Admin::getFieldSettings($class_name);
 		$list_tabs = $class_name::listTabs();
@@ -63,6 +64,7 @@ class Controller_List extends Controller_Base {
 		$columns = array();
 		$joins = array();
 		$methods = array();
+        $allFilters = array();
 
 		// See if we have any imported models
 		// $importedIds = $class_name::getImportedIds();
@@ -269,6 +271,7 @@ class Controller_List extends Controller_Base {
 
 					
 					if (!empty($filter_val)) {
+					    $allFilters[$filter_field] = \Input::get($filter_field);
                         $paramName = $filter_name.'filter';
                         if (is_array($filter_val)) {
 
@@ -300,6 +303,7 @@ class Controller_List extends Controller_Base {
 			$query = \Input::get('query');
 			$this->query = $query;
 			if($query){
+			    $allFilters['query'] = $query;
 				$query_parts = array_map('trim', explode(' ', $query));
 				$query_str = array();
                 $query_val = array();
@@ -495,6 +499,7 @@ class Controller_List extends Controller_Base {
 		
 		// Actions
 		$this->actions = $class_name::actions();
+		$this->listActions = $class_name::listActions();
 		\Admin::setCurrentClass($class_name);
 		$this->class_lang_enabled = $class_name::langEnabled();
 		$this->plural = $class_name::plural();
@@ -512,6 +517,8 @@ class Controller_List extends Controller_Base {
 		$this->sort_group = $sort_group;
 		$this->tabs = $list_tabs;
 		$this->sort_process = $sort_process;
+        $this->filterQuery = http_build_query($allFilters);
+        $this->originalTab = $original_tab_id;
 
 		// Find all possible types that can be added
 		$classes = array();
@@ -558,6 +565,273 @@ class Controller_List extends Controller_Base {
 		$this->js['singular'] = $this->singular;
 		
 	}
+
+	protected function getListData($table_name, $tab_id = null)
+    {
+        $class_name = \Admin::getClassForTable($table_name);
+        if ($class_name === false) {
+            return null;
+        }
+
+        // Get the data for the query builder
+        $metadata = $class_name::metadata();
+        $query_fields = $class_name::query_fields();
+        $sortable = $class_name::sortable();
+        $sort_group = is_callable($class_name.'::sortGroup') ? $class_name::sortGroup() : null;
+
+        $fields = \Admin::getFieldSettings($class_name);
+        $list_tabs = $class_name::listTabs();
+        $list_fields = $class_name::listFields();
+        $list_filters = array();
+        if (empty($list_fields)) $list_fields = array_keys($fields);
+        $columns = array();
+        $joins = array();
+        $methods = array();
+        $filters = array();
+        $query = null;
+
+        // Find out the tab we're on
+        if (count($list_tabs) > 0)
+        {
+            $default_tab = key($list_tabs);
+            if ($tab_id === null || !isset($list_tabs[$tab_id])) $tab_id = $default_tab;
+            $tab = \Arr::get($list_tabs, $tab_id, array());
+            $list_fields = \Arr::get($tab, 'fields', $list_fields);
+            $list_filters = \Arr::get($tab, 'filters', $list_filters);
+        }
+
+        // See if the list order has been set in the session. If not, try and use the model's default order
+        $order = \Session::get($metadata->table['name'].".list.order", null);
+        if (is_null($order)) {
+            $order = $class_name::order();
+        } else {
+            $order = $order + $class_name::order();
+        }
+
+        // Start the query builder...
+        $qb = $class_name::select('item', 'item', 'item.id');
+
+        // Retrieve any custom joins from config on the model
+        $manual_joins = $class_name::joins();
+        foreach ($manual_joins as $join_alias => $manual_join) {
+            $joins[] = $join_alias;
+            $qb->leftJoin($manual_join, $join_alias)->addSelect($join_alias);
+        }
+
+        // Add any joins to the query builder (prevents the query buildup that comes from accessing lazily loaded associations)
+        foreach ($list_fields as $num => $field) {
+
+            if ($field == 'id') continue;
+
+            // If there is a dot notation try and locate the field
+            if (strpos($field, ".") !== false) {
+                $parts = explode(".", $field);
+                $field_name = array_shift($parts);
+
+                // If this dot notation refers to an association, we need to find the field data for the target type!
+                if ($metadata->isSingleValuedAssociation($field_name)) {
+                    $target_class = $metadata->getAssociationTargetClass($field_name);
+                    $target_fields = \Admin::getFieldSettings($target_class);
+
+                    foreach ($target_fields as $target_field => $target_field_settings) {
+                        $target_field_settings['title'] = $target_class::singular().' '.$target_field_settings['title'];
+                        $fields[$field_name.'.'.$target_field] = $target_field_settings;
+                    }
+                }
+
+            } else {
+                $field_name = $field;
+            }
+
+            // This could be a method on the model
+            if (!isset($fields[$field])) {
+
+                if (array_key_exists($field_name, $manual_joins)) {
+
+                    $join_heading = \Inflector::humanize(\Inflector::underscore($field_name));
+                    $parts = explode(".", $field);
+
+                    $columns[$field_name] = array(
+                        'type' => 'join',
+                        'title' => $join_heading
+                    );
+
+                } else if (method_exists($class_name, $field_name)) {
+
+                    $methods[] = $field_name;
+                    $columns[$field_name] = array(
+                        'type' => 'method',
+                        'title' => \Inflector::humanize(\Inflector::underscore($field_name))
+                    );
+                }
+
+                continue;
+            }
+
+            if ($metadata->isSingleValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists($field_name, $manual_joins)) {
+                $qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
+                $joins[] = $field_name;
+            } else if ($metadata->isCollectionValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists($field_name, $manual_joins)) {
+                $qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
+                $joins[] = $field_name;
+            }
+
+
+            // Get the field class and type
+            $field_class = $fields[$field]['field'];
+            $field_type = $field_class::type();
+            $column = array(
+                'type' => $field_type,
+                'title' => $fields[$field]['title']
+            );
+
+            $columns[$field] = $column;
+        }
+
+        // Add dropdown list filters
+        $filter_by = $class_name::list_filters();
+        if (is_array($filter_by) && count($filter_by) > 0) {
+
+            foreach ($filter_by as $filter_field) {
+
+                if ($metadata->hasAssociation($filter_field)) {
+
+                    $filter_class = $metadata->getAssociationTargetClass($filter_field);
+                    $filter_name = \Arr::get($fields, "$filter_field.title", '');
+                    $filter_options = array( '' => 'All '.$filter_class::plural() ) + $filter_class::options();
+                    $filter_val = \Input::get($filter_field);
+                    $filter_is_tree = (is_subclass_of($filter_class, 'CMF\\Model\\Node'));
+
+                    if (!empty($filter_val) && $filter_is_tree && ($filterEntity = $filter_class::find($filter_val)))
+                    {
+                        $filter_val = $filterEntity->getChildrenIds(false, null, 'ASC', true);
+                    }
+
+                    if (empty($filter_val) && $filter_field == $sort_group)
+                    {
+                        $sortable = false;
+                    }
+
+                    $filters[$filter_field] = array(
+                        'label' => 'Show '.strtolower($filter_name).':',
+                        'options' => $filter_options
+                    );
+
+                    if (!in_array($filter_field, $joins) && !array_key_exists($filter_field, $manual_joins)) {
+                        $qb->leftJoin('item.'.$filter_field, $filter_field)->addSelect($filter_field);
+                        $joins[] = $filter_field;
+                    }
+
+
+                    if (!empty($filter_val)) {
+                        $paramName = $filter_name.'filter';
+                        if (is_array($filter_val)) {
+
+                            if (count($filter_val) > 1 && $filter_field == $sort_group) {
+                                $sortable = false;
+                            }
+
+                            $qb->andWhere("$filter_field IN(:$paramName)");
+                        } else {
+                            $qb->andWhere("$filter_field = :$paramName");
+                        }
+                        $qb->setParameter($paramName, $filter_val);
+                    }
+                }
+            }
+        }
+
+        // Add list filters
+        foreach ($list_filters as $num => $filter) {
+            $filter_str = is_array($filter) ? 'item.'.implode(' OR item.', $filter) : 'item.'.$filter;
+            $qb->andWhere($filter_str);
+        }
+
+        if(!empty($query_fields) && count($query_fields) > 0){
+            //if query string then search the fields provided
+            $query = \Input::get('query');
+            if($query){
+                $query_parts = array_map('trim', explode(' ', $query));
+                $query_str = array();
+                $query_val = array();
+                $x = 0;
+                foreach ($query_fields as $field) {
+                    foreach ($query_parts as $query_part) {
+                        $query_str[$x] = "item.".$field." LIKE ?".$x;
+                        $query_val[$x] = "%$query_part%";
+                        $x++;
+                    }
+                }
+                $qb->andWhere(implode(' OR ', $query_str));
+                foreach ($query_val as $key=>$val)
+                {
+                    $qb->setParameter($key,$val);
+                }
+            }
+        }
+
+        // Add the sortable ordering
+        if ($sortable) {
+
+            $has_group = !is_null($sort_group) && property_exists($class_name, $sort_group);
+
+            if ($has_group) {
+
+                if (!in_array($sort_group, $joins)) {
+                    $qb->leftJoin('item.'.$sort_group, $sort_group)->addSelect($sort_group);
+                    $joins[] = $sort_group;
+                }
+
+                if ($metadata->hasAssociation($sort_group)) {
+                    $assoc_class = $metadata->getAssociationTargetClass($sort_group);
+                    $assoc_field = property_exists($assoc_class, 'name') ? 'name' : (property_exists($assoc_class, 'title') ? 'title' : 'id');
+                    $qb->addOrderBy("$sort_group.$assoc_field", 'ASC');
+                } else {
+                    $qb->addOrderBy("item.$sort_group", 'ASC');
+                }
+
+            }
+
+            $qb->addOrderBy('item.pos', 'ASC');
+
+        } else {
+
+            // Add the ordering to the query builder
+            foreach ($order as $field => $direction)
+            {
+                if (in_array($field, $methods)) continue;
+
+                $field_name = $field;
+                $assoc_field = 'title';
+
+                // If there is a dot notation (or colon) try and locate the field
+                if (strpos($field, ".") !== false) {
+                    $parts = explode(".", $field);
+                    $field_name = array_shift($parts);
+                    $assoc_field = array_shift($parts);
+                } else if (strpos($field, ":") !== false) {
+                    $parts = explode(":", $field);
+                    $field_name = array_shift($parts);
+                    $assoc_field = array_shift($parts);
+                }
+
+                if (array_key_exists($field_name, $manual_joins)) {
+                    $qb->addOrderBy("$field_name.$assoc_field", $direction);
+                } else if ($metadata->hasAssociation($field_name)) {
+                    $assoc_class = $metadata->getAssociationTargetClass($field_name);
+                    if (!property_exists($assoc_class, $assoc_field)) $assoc_field = property_exists($assoc_class, 'title') ? 'title' : 'id';
+                    $qb->addOrderBy("$field_name.$assoc_field", $direction);
+                } else {
+                    $qb->addOrderBy("item.$field_name", $direction);
+                }
+            }
+        }
+
+        return [
+            'columns' => $columns,
+            'rows' => $qb->getQuery()->getResult()
+        ];
+    }
 	
 	public function action_permissions($table_name, $role_id=null)
 	{
@@ -831,6 +1105,27 @@ class Controller_List extends Controller_Base {
 	    
 	    return \Response::forge(json_encode(array( "result" => "success", "target" => $target->display(), "position" => $position )), $this->status, $this->headers);
 	    
+	}
+
+	/**
+	 * Handles list actions
+	 */
+	public function action_action($table_name, $action_id, $tab_id = null)
+	{
+		$class_name = \Admin::getClassForTable($table_name);
+        if ($class_name === false) {
+            return $this->show404(null, 'action');
+        }
+
+        $controller_class = preg_replace('/^Model_/', 'Controller_Admin_', $class_name).'_List';
+
+        if ($this->canRouteToController($controller_class, $action_id))
+        {
+            $data = $this->getListData($table_name, $tab_id);
+            return $this->routeToController($controller_class, $action_id, [@$data['rows'] ?: null, @$data['columns'] ?: null]);
+        }
+
+        return $this->show404(null, 'action');
 	}
 	
 	public function action_order($table_name)

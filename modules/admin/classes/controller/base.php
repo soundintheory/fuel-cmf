@@ -113,6 +113,56 @@ class Controller_Base extends \Controller {
 	    if (!in_array($src, $current)) $current[] = $src;
 	    $this->assets[$type] = $current;
 	}
+
+    protected function canRouteToController($controller, $action)
+    {
+        $action = str_replace('-', '_', $action);
+        $method = strtolower(\Input::method());
+
+        if (\Admin::$current_module && \Admin::$current_module != '_root_') {
+            $controller = ucfirst(\Admin::$current_module).'\\'.$controller;
+        }
+        if (!class_exists($controller)) {
+            return false;
+        }
+
+        $class = new \ReflectionClass($controller);
+
+        if (!$class->hasMethod($method."_".$action)) {
+            $method = 'action';
+        }
+        return $class->hasMethod($method."_".$action);
+    }
+
+	protected function routeToController($controller, $action, $params = [])
+    {
+        if (!$this->canRouteToController($controller, $action)) {
+            return $this->show404();
+        }
+        if (\Admin::$current_module && \Admin::$current_module != '_root_') {
+            $controller = ucfirst(\Admin::$current_module).'\\'.$controller;
+        }
+
+        $action = str_replace('-', '_', $action);
+        $method = strtolower(\Input::method());
+        $class = new \ReflectionClass($controller);
+        $controller_instance = new $controller(\Request::active());
+
+        if (!$class->hasMethod($method."_".$action)) {
+            $method = 'action';
+        }
+
+        // Run through the before > action > after process
+        $action_method = $class->getMethod($method."_".$action);
+        $class->hasMethod('before') and $class->getMethod('before')->invoke($controller_instance);
+        $response = $action_method->invokeArgs($controller_instance, $params);
+        $class->hasMethod('after') and $response = $class->getMethod('after')->invoke($controller_instance, $response);
+
+        if (!($response instanceof \Response)) {
+            return \Response::forge($response, $controller_instance->status, $controller_instance->headers);
+        }
+        return $response;
+    }
     
     protected function customPageOr404($segments, $resource)
     {

@@ -111,10 +111,36 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     );
     
     /**
-     * TODO: Actions functionality
      * @var array
      */
     protected static $_actions = array();
+
+    /**
+     * Adds action buttons to the list view in admin site. For example:
+     * 
+     * array(
+     *     'export' => array(
+     *         'title' => 'Export as CSV',
+     *         'icon' => 'file',
+     *         'class' => 'btn-info'
+     *     )
+     * )
+     *
+     * When the action button is clicked, it will route to a custom controller with the
+     * format "Controller_Admin_{Model}_List", and the method "action_{name}". For example:
+     *
+     * Action Name:                 "export"
+     * Model Class:                 "Model_Product"
+     * Action Controller / Method:  "Controller_Admin_Product_List::action_export($rows, $columns)"
+     *
+     * The action method accepts two parameters:
+     *
+     * $rows:    (array) The rows from the list view
+     * $columns: (array) The columns from the list view
+     * 
+     * @var array
+     */
+    protected static $_list_actions = array();
 
     /**
      * The module for the entity, to override the default
@@ -1091,6 +1117,16 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     {
         $called_class = get_called_class();
         return $called_class::$_actions;
+    }
+
+    /**
+     * Gets this model's actions for the list
+     * @return array
+     */
+    public static function listActions()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_list_actions;
     }
     
     /**
