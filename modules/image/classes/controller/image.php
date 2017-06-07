@@ -51,6 +51,7 @@ class Controller_Image extends \Controller {
 	{
 		try {
 			// Output the image using glide server
+			ob_clean();
 			\CMF\Image::server()->outputImage($path, $this->getImageParams($params));
 		} catch (\Exception $e) {
 			// Output a placeholder - exception could mean file doesn't exist, or some other environment issue
