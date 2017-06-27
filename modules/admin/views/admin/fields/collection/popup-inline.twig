@@ -9,7 +9,7 @@
 	{% if sortable %}{{ template_content.hidden_fields.pos }}{% endif %}
 	<div class="item-actions-top">
 		{% if template_content.can_duplicate %}<a href="#" class="item-action icon btn-duplicate" title="{{ _('admin.verbs.clone') }}"><i class="fa fa-clone"></i></a>{% endif %}
-		<a href="#" class="item-action icon btn-remove" title="Remove {{ template_content.singular|lower }}"><i class="fa fa-remove"></i></a>
+		{% if settings.delete %}<a href="#" class="item-action icon btn-remove" title="Remove {{ template_content.singular|lower }}"><i class="fa fa-remove"></i></a>{% endif %}
 	</div>
 </div>
 {% endfor %}
@@ -48,6 +48,7 @@
 </div>
 </div>
 
+{% if (settings.create) %}
 <div class="widget-actions-top">
 	
 	{% if add_types|length > 1 %}
@@ -65,7 +66,9 @@
 	{% endif %}
 	
 </div>
+{% endif %}
 
+{% if (settings.create) %}
 <div class="widget-footer">
 	
 	<div class="widget-actions-bottom">
@@ -87,3 +90,4 @@
 	</div>
 	
 </div>
+{% endif %}

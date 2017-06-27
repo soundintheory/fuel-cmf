@@ -78,7 +78,7 @@ class PopupInline extends Multiselect {
                 'icon' => $type::icon(),
                 'singular' => $type::singular(),
                 'prefix' => $prefix,
-                'can_duplicate' => !$type::_static(),
+                'can_duplicate' => !$type::_static() && @$settings['create'],
                 'edit_link' => \Uri::create('/admin/'.$metadata->table['name'].'/__ID__/edit'.$edit_qs),
                 'hidden_fields' => array(
                     'id' => \Form::hidden($prefix.'[id]', '', array( 'class' => 'item-id', 'data-field-name' => 'id' )),
@@ -109,7 +109,7 @@ class PopupInline extends Multiselect {
                 '_icon_' => $type::icon(),
                 '_title_' => $item->display(),
                 'edit_link' => \Uri::create('/admin/'.$metadata->table['name'].'/'.$item->id.'/edit'.$edit_qs),
-                'can_duplicate' => !$type::_static(),
+                'can_duplicate' => !$type::_static() && @$settings['create'],
                 'hidden_fields' => array(
                     'id' => \Form::hidden($prefix.'[id]', $item->id, array( 'class' => 'item-id', 'data-field-name' => 'id' )),
                     'pos' => \Form::hidden($prefix.'[pos]', $item->pos, array( 'data-field-name' => 'pos' )),

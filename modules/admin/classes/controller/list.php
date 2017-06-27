@@ -65,21 +65,6 @@ class Controller_List extends Controller_Base {
 		$joins = array();
 		$methods = array();
         $allFilters = array();
-
-		// See if we have any imported models
-		// $importedIds = $class_name::getImportedIds();
-		// if (count($importedIds)) {
-		// 	if (!count($list_tabs)) {
-		// 		$list_tabs['main'] = array(
-		// 			'title' => 'Main',
-		// 			'filters' => array('id NOT IN ('.implode(',',$importedIds).')')
-		// 		);
-		// 	}
-		// 	$list_tabs['imported'] = array(
-		// 		'title' => 'Imported ('.count($importedIds).')',
-		// 		'filters' => array('id IN ('.implode(',',$importedIds).')')
-		// 	);
-		// }
 		
 		// Find out the tab we're on
 		if (count($list_tabs) > 0) {
@@ -103,6 +88,7 @@ class Controller_List extends Controller_Base {
 		}
 		
 		// Start the query builder...
+        /** @var \Doctrine\ORM\QueryBuilder $qb */
 		$qb = $class_name::select('item', 'item', 'item.id');
 
 		// Retrieve any custom joins from config on the model
@@ -110,6 +96,12 @@ class Controller_List extends Controller_Base {
 		foreach ($manual_joins as $join_alias => $manual_join) {
 			$qb->leftJoin($manual_join, $join_alias)->addSelect($join_alias);
 		}
+
+		// Add any custom columns
+        $custom_columns = $class_name::customColumns();
+        foreach ($custom_columns as $column_alias => $column_query) {
+            $qb->addSelect($column_query);
+        }
 		
 		// Add any joins to the query builder (prevents the query buildup that comes from accessing lazily loaded associations)
 		foreach ($list_fields as $num => $field) {
@@ -154,7 +146,7 @@ class Controller_List extends Controller_Base {
 			                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
 			                $join_heading = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=$rev"), 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$join_heading.' '.$verbose ), $join_heading.' '.$arrows);
 			            } else {
-			                $join_heading = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=asc"), 'class' => 'sort-link', 'title' => 'Sort by '.$join_heading.' ascending' ), $join_heading);
+			                $join_heading = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=asc"), 'class' => 'sort-link', 'title' => 'Sort by '.$join_heading.' ascending' ), $join_heading.'&nbsp;&#x2195');
 			            }
 					}
 
@@ -174,23 +166,34 @@ class Controller_List extends Controller_Base {
 						'name' => $field_name,
 						'heading' => \Inflector::humanize(\Inflector::underscore($field_name))
 					);
-					
-					/*
-					if (isset($order[$field_name])) {
-		                $dir = strtolower($order[$field_name]);
-		                $rev = ($dir == 'asc') ? 'desc' : 'asc';
-		                $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
-		                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
-		                $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_name=$rev"), 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$column['heading'].' '.$verbose ), $column['heading'].' '.$arrows);
-		            } else {
-		                $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_name=asc"), 'class' => 'sort-link', 'title' => 'Sort by '.$column['heading'].' ascending' ), $column['heading']);
-		            }
-		            */
 		            
 		            $methods[] = $field_name;
 		            $columns[] = $column; 
 		            				
-				}
+				} else if (array_key_exists($field_name, $custom_columns)) {
+
+				    $title = \Inflector::humanize($field_name);
+				    $column = array(
+				        'num' => $num,
+                        'type' => 'text',
+                        'name' => $field_name,
+                        'heading' => $title
+                    );
+
+                    $field_colons = str_replace('.', ':', $field);
+
+                    if (isset($order[$field_colons])) {
+                        $dir = strtolower($order[$field_colons]);
+                        $rev = ($dir == 'asc') ? 'desc' : 'asc';
+                        $arrows = html_tag('span', array( 'class' => 'arrow-down' ), '&#x25BC;').html_tag('span', array( 'class' => 'arrow-up' ), '&#x25B2;');
+                        $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
+                        $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=$rev"), 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$title.' '.$verbose ), $title.' '.$arrows);
+                    } else {
+                        $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=asc"), 'class' => 'sort-link', 'title' => 'Sort by '.$title.' ascending' ), $title.'&nbsp;&#x2195');
+                    }
+
+                    $columns[] = $column;
+                }
 
 				continue;
 			}
@@ -220,7 +223,7 @@ class Controller_List extends Controller_Base {
 	                $verbose = ($dir == 'asc') ? 'descending' : 'ascending';
 	                $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=$rev"), 'class' => 'sort-link '.$dir, 'title' => 'Sort by '.$fields[$field]['title'].' '.$verbose ), $fields[$field]['title'].' '.$arrows);
 	            } else {
-	                $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=asc"), 'class' => 'sort-link', 'title' => 'Sort by '.$fields[$field]['title'].' ascending' ), $fields[$field]['title']);
+	                $column['heading'] = html_tag('a', array( 'href' => \Uri::create("/admin/$table_name/list/order?$field_colons=asc"), 'class' => 'sort-link', 'title' => 'Sort by '.$fields[$field]['title'].' ascending' ), $fields[$field]['title'].'&nbsp;&#x2195');
 	            }
 	            
 	        } else {
@@ -230,7 +233,6 @@ class Controller_List extends Controller_Base {
 	        }
             
             $columns[] = $column;
-			
 		}
 
 		// Add dropdown list filters
@@ -380,7 +382,9 @@ class Controller_List extends Controller_Base {
 		    	
 		        if (array_key_exists($field_name, $manual_joins)) {
 		        	$qb->addOrderBy("$field_name.$assoc_field", $direction);
-		        } else if ($metadata->hasAssociation($field_name)) {
+		        } else if (array_key_exists($field_name, $custom_columns)) {
+                    $qb->addOrderBy("$field_name", $direction);
+                } else if ($metadata->hasAssociation($field_name)) {
 		            $assoc_class = $metadata->getAssociationTargetClass($field_name);
 		            if (!property_exists($assoc_class, $assoc_field)) $assoc_field = property_exists($assoc_class, 'title') ? 'title' : 'id';
 		            $qb->addOrderBy("$field_name.$assoc_field", $direction);
@@ -438,28 +442,21 @@ class Controller_List extends Controller_Base {
 			$ids = array_keys($rows);
 		}
 		
-	    // Another pass at the ordering for methods
-	    /*
-		foreach ($order as $field => $direction) {
-			
-	    	if (!in_array($field, $methods)) continue;
-	    	
-	    	if ($direction == 'asc') {
-	    		uasort($rows, function($a, $b) use($field) {
-	    		    return strcmp(strtolower($a->$field()), strtolower($b->$field()));
-	    		});
-	    	} else {
-	    		uasort($rows, function($a, $b) use($field) {
-	    		    return strcmp(strtolower($b->$field()), strtolower($a->$field()));
-	    		});
-	    	}
-	    	
-	    }
-	    */
-		
 		// Item-specific permissions
 		$user = \CMF\Auth::current_user();
 		$item_permissions = array();
+
+        // Inject custom columns back into objects if needed
+        if (count($custom_columns) && count($rows) && is_array(current($rows)))
+        {
+            foreach ($rows as $i => $row) {
+                $item = isset($row[0]) ? $row[0] : $row;
+                foreach ($custom_columns as $col => $select) {
+                    $item->set($col, @$row[$col] ?: null);
+                }
+                $rows[$i] = $item;
+            }
+        }
 		
 		if (!$user->super_user) {
 			
@@ -609,6 +606,7 @@ class Controller_List extends Controller_Base {
         }
 
         // Start the query builder...
+        /** @var \Doctrine\ORM\QueryBuilder $qb */
         $qb = $class_name::select('item', 'item', 'item.id');
 
         // Retrieve any custom joins from config on the model
@@ -616,6 +614,12 @@ class Controller_List extends Controller_Base {
         foreach ($manual_joins as $join_alias => $manual_join) {
             $joins[] = $join_alias;
             $qb->leftJoin($manual_join, $join_alias)->addSelect($join_alias);
+        }
+
+        // Add any custom columns
+        $custom_columns = $class_name::customColumns();
+        foreach ($custom_columns as $column_alias => $column_query) {
+            $qb->addSelect($column_query);
         }
 
         // Add any joins to the query builder (prevents the query buildup that comes from accessing lazily loaded associations)
@@ -662,6 +666,13 @@ class Controller_List extends Controller_Base {
                     $columns[$field_name] = array(
                         'type' => 'method',
                         'title' => \Inflector::humanize(\Inflector::underscore($field_name))
+                    );
+                } else if (array_key_exists($field_name, $custom_columns)) {
+
+                    $title = \Inflector::humanize($field_name);
+                    $columns[$field_name] = array(
+                        'type' => 'text',
+                        'title' => $title
                     );
                 }
 
@@ -817,6 +828,8 @@ class Controller_List extends Controller_Base {
 
                 if (array_key_exists($field_name, $manual_joins)) {
                     $qb->addOrderBy("$field_name.$assoc_field", $direction);
+                } else if (array_key_exists($field_name, $custom_columns)) {
+                    $qb->addOrderBy("$field_name", $direction);
                 } else if ($metadata->hasAssociation($field_name)) {
                     $assoc_class = $metadata->getAssociationTargetClass($field_name);
                     if (!property_exists($assoc_class, $assoc_field)) $assoc_field = property_exists($assoc_class, 'title') ? 'title' : 'id';
@@ -827,9 +840,24 @@ class Controller_List extends Controller_Base {
             }
         }
 
+        // Get the result
+        $rows = $qb->getQuery()->getResult();
+
+        // Inject custom columns back into objects if needed
+        if (count($custom_columns) && count($rows) && is_array(current($rows)))
+        {
+            foreach ($rows as $i => $row) {
+                $item = isset($row[0]) ? $row[0] : $row;
+                foreach ($custom_columns as $col => $select) {
+                    $item->set($col, @$row[$col] ?: null);
+                }
+                $rows[$i] = $item;
+            }
+        }
+
         return [
             'columns' => $columns,
-            'rows' => $qb->getQuery()->getResult()
+            'rows' => $rows
         ];
     }
 	

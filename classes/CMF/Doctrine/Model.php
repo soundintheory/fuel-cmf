@@ -19,6 +19,13 @@ abstract class Model
      * @var \Doctrine\Common\Persistence\Mapping\ClassMetadata
      */
     protected static $metadata = null;
+
+    /**
+     * Dynamic data store
+     *
+     * @var array
+     */
+    protected $_data = [];
     
     /**
      * Stores errors for the model after validating.
@@ -320,9 +327,10 @@ abstract class Model
                 return $this->$field_name->$assoc_field;
             }
             return $default_value;
-        } else {
-            return $default_value;
+        } else if (array_key_exists($field, $this->_data)) {
+            return $this->_data[$field];
         }
+        return $default_value;
     }
 
     /**
@@ -481,6 +489,9 @@ abstract class Model
                 
             }
             
+        } else {
+            $this->_data[$field] = $value;
+            return;
         }
         
         throw new \BadMethodCallException("no field with name '".$field."' exists on '".$metadata->getName()."'");

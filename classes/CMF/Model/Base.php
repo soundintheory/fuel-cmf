@@ -85,6 +85,11 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
      * Associations to join automatically when rendering the list
      */
     protected static $_joins = array();
+
+    /**
+     * Custom column sub selects used in the list
+     */
+    protected static $_custom_columns = array();
     
     /**
      * Fields to search on this model when performing full text searches.
@@ -899,6 +904,16 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     {
         $called_class = get_called_class();
         return $called_class::$_joins;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_custom_columns
+     * @return array
+     */
+    public static function customColumns()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_custom_columns;
     }
 
     /**

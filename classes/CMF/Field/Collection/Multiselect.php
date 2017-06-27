@@ -10,6 +10,7 @@ class Multiselect extends \CMF\Field\Base {
         'widget' => false,
         'edit' => true,
         'create' => true,
+        'delete' => true,
         'input_attributes' => array(
             'class' => '',
             'multiple' => 'multiple',
