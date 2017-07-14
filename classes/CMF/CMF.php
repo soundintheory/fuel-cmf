@@ -1110,6 +1110,9 @@ class CMF
 					$rest = array_slice($path, 1);
 					$name .= '['.implode('][', $rest).']';
 				}
+				if ($value instanceof \DateTime) {
+					continue;
+				}
 				try {
 					$value = strval($value);
 				} catch (\Exception $e) {
