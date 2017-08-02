@@ -151,6 +151,7 @@ return array(
 	),
 
 	'image' => array(
+	    'alt'                       => 'Alternative Text',
 		'reset_crop'				=> 'Reset crop',
 		'scale'						=> 'Scale',
 		'edit_crop_info'			=> 'Select an option above to edit the different crops for this image'

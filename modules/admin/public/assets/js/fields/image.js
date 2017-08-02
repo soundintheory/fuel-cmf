@@ -34,6 +34,7 @@
         $el = $wrap.find('.async-upload'),
         $inputs = {
             'src': $wrap.find('input[name="' + fieldName + '[src]"]'),
+            'alt': $wrap.find('input[name="' + fieldName + '[alt]"]'),
             'width': $wrap.find('input[name="' + fieldName + '[width]"]'),
             'height': $wrap.find('input[name="' + fieldName + '[height]"]')
         },
@@ -116,6 +117,7 @@
         } else {
             originalValue = {
                 'src': $inputs['src'].val(),
+                'alt': $inputs['alt'].val(),
                 'width': $inputs['width'].val(),
                 'height': $inputs['height'].val()
             };
@@ -346,8 +348,11 @@
             
             modalContent += '</div>' + // .left-col
             */
-           
-            modalContent += '<div class="right-col ' + (cropTabs.length > 1 ? 'tab-content' : '') + '">' +
+
+            modalContent += '<div class=top-col>' +
+            '<div id="field-field-alt" class="field-alt"><label for="field-alt-control">' + _('admin.image.alt') + '</label><input type="text" id="field-alt-control" /></div>' +
+            '</div>' + // .top-col
+            '<div class="right-col ' + (cropTabs.length > 1 ? 'tab-content' : '') + '">' +
             '</div>' + // .right-col
             '<div class="clear"></div>' +
             '</div>' + // .modal-body
@@ -437,6 +442,8 @@
                 
                 var $canvas = $(this).find('.crop-canvas').eq(0),
                 $img = $(this).find('img').eq(0),
+                $alt = $modal.find('#field-alt-control').eq(0),
+                $hiddenAlt = $wrap.find('input[name="' + fieldName + '[alt]"]'),
                 cropId = $(this).attr('data-cropid'),
                 cropOption = cropOptions[cropId],
                 imageWidth = cValue['width'] || 0,
@@ -467,6 +474,12 @@
                 $inputW = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][width]"]'),
                 $inputH = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][height]"]'),
                 $inputS = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][scale]"]');
+
+                $alt.val($hiddenAlt.val());
+
+                $alt.on('change', function(e) {
+                    $hiddenAlt.val(e.target.value);
+                });
                 
                 $modal.find('.crop-nav a[data-cropid="' + cropId + '"]').on('shown', onTabShow);
                 
