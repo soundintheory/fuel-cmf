@@ -693,14 +693,16 @@ function initItemForm() {
 		});
 		
 		$(this).find('.field-type-datetime').each(function() {
-			
-			$(this).find('input').not('[name*="__TEMP__"]').datetimepicker({
-		        dateFormat: "dd/mm/yy",
-		        timeFormat: "hh:mm",
-		        changeMonth: true,
-		        changeYear: true,
-		        yearRange: "c-20:c+20"
-		    });
+
+            var dateOptions = $.parseJSON($(this).find('input').data('options').replace(/'/g, '"'));
+
+            $(this).find('input').not('[name*="__TEMP__"]').datetimepicker({
+                dateFormat: dateOptions.dateFormat?dateOptions.dateFormat:"dd/mm/yy",
+                timeFormat: dateOptions.timeFormat?dateOptions.timeFormat:"hh:mm",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "c-20:c+20"
+            });
 			
 		});
 

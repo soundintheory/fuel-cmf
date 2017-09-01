@@ -1,3 +1,4 @@
 /vendor
 /fuel
 *.cache
+.idea
