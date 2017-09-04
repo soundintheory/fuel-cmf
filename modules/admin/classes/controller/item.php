@@ -169,7 +169,7 @@ class Controller_Item extends Controller_Base {
 		if ($metadata->name != $metadata->rootEntityName)
 		{
 			$rootClass = $metadata->rootEntityName;
-            if(!$rootClass::isListable()) {
+            if($rootClass::isListable()) {
                 $rootMeta = $rootClass::metadata();
                 $list_page_segment = $rootMeta->table['name'];
             }
