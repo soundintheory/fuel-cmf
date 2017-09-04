@@ -169,8 +169,10 @@ class Controller_Item extends Controller_Base {
 		if ($metadata->name != $metadata->rootEntityName)
 		{
 			$rootClass = $metadata->rootEntityName;
-			$rootMeta = $rootClass::metadata();
-			$list_page_segment = $rootMeta->table['name'];
+            if(!$rootClass::isListable()) {
+                $rootMeta = $rootClass::metadata();
+                $list_page_segment = $rootMeta->table['name'];
+            }
 		}
 
 		if (\Input::param('alias', false) !== false) {

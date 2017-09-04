@@ -303,6 +303,12 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
      * @var boolean
      */
     protected static $_superclass = false;
+
+    /**
+     * Is this class listable as items in cmf
+     * @var boolean
+     */
+    protected static $_isListable = true;
     
     /**
      * The icon to use for the model in the admin site.
@@ -1060,6 +1066,16 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     {
         $called_class = get_called_class();
         return $called_class::$_superclass;
+    }
+
+    /**
+     * @see \CMF\Model\Base::$_isListable
+     * @return string
+     */
+    public static function isListable()
+    {
+        $called_class = get_called_class();
+        return $called_class::$_isListable;
     }
     
     /**
