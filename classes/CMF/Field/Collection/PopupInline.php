@@ -29,6 +29,8 @@ class PopupInline extends Multiselect {
     /** inheritdoc */
     public static function displayForm($value, &$settings, $model)
     {
+        $settings = static::settings($settings);
+
     	$target_class = $settings['mapping']['targetEntity'];
     	$target_metadata = $target_class::metadata();
         $settings['cid'] = 'field_'.md5($settings['mapping']['fieldName'].static::type());
