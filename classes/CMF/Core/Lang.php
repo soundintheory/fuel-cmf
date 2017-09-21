@@ -37,12 +37,16 @@ class Lang extends \Fuel\Core\Lang
 
 		($language === null) and $language = static::get_lang();
 
-		$pos = strpos($line, '.');
+		$pos = (strpos($line, ' ') === false) ? strpos($line, '.') : false;
+        if ($pos == strlen($line)-1) {
+            $pos = false;
+        }
+
 		$group = 'common';
 		$basename = $line;
 		if ($pos === false) {
 			if (empty($default)) $default = $line;
-			$line = "$group.$line";
+			$line = "$group.".\Fuel\Core\Inflector::friendly_title($line);
 		} else {
 			$basename = substr($line, $pos+1);
 			if (empty($default)) $default = $basename;

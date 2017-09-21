@@ -5,6 +5,18 @@
 {% block frame_bottom %}</form>{% endblock %}
 
 {% block main_pane %}
+
+    <style type="text/css">
+        .lang-lft,
+        .lang-rgt {
+            width: 50%;
+        }
+        .lang-rgt input {
+            width: 100%;
+            box-sizing: border-box;
+            height: 30px;
+        }
+    </style>
     
     {% include 'admin/shared/alert.twig' %}
     
@@ -21,11 +33,11 @@
 
             {% for key, row in result_lft %}
             <tr>
-                <td>
+                <td class="lang-lft">
                     {{ row }}
                     <input type="hidden" name="terms[{{ lang_lft }}][{{ key }}]" value="{{ row }}" />
                 </td>
-                <td>
+                <td class="lang-rgt">
                     <input type="text" name="terms[{{ lang_rgt }}][{{ key }}]" value="{{ result_rgt[key] }}" />
                 </td>
             </tr>

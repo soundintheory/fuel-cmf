@@ -377,7 +377,7 @@ class CMF
 					'id' => 0,
 					'code' => \Lang::get_lang(),
 					'top_level_domain' => '',
-					'url' => $url
+					'url' => static::link($url)
 				)
 			);
 		}
@@ -416,9 +416,12 @@ class CMF
 		$lang = $lang === null ? static::lang() : $lang;
 		$prefix = $use_tld ? '/' : '/'.$lang;
 		
-		if ($lang == static::$lang_default ||
-			substr($url, 0, 1) != '/' ||
+		if (substr($url, 0, 1) != '/' ||
 			(strlen($url) > 3 && strpos($url, $prefix.'/') === 0)) return $url;
+
+        if ($lang == static::$lang_default) {
+            return \Uri::create($url);
+        }
 		
 		return \Uri::create($url == $prefix ? $url : '/'.trim($prefix.$url, '/'));
 	}
