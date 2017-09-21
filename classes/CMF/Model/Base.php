@@ -57,7 +57,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     
     public $_translated = array();
     
-    protected static $_exclude_translations = array();
+    protected static $_exclude_translations = array('settings');
     protected static $_exclude_autotranslations = array();
 
     protected static $_lang_enabled = true;

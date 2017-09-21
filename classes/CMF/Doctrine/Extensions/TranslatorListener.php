@@ -160,10 +160,19 @@ class TranslatorListener implements EventSubscriber
 
         $used_fields = array();
         $big_fields = array();
+        $array_fields = array();
 
         // Build the query string
         foreach ($fields as $field) {
-            $value = preg_replace('/\s+/m', ' ', $data[$field]);
+
+            $value = $data[$field];
+
+            if (is_array($value)) {
+                $array_fields[$field] = $value;
+                continue;
+            }
+
+            $value = preg_replace('/\s+/m', ' ', $value);
             if (strlen($value) < 500) {
                 $query .= '&q=' . urlencode($value);
                 $used_fields[] = $field;
@@ -203,6 +212,13 @@ class TranslatorListener implements EventSubscriber
             foreach ($big_fields as $field => $big_value) {
                 $translated = $this->translateString($big_value, $from, $to);
                 if ($translated) {
+                    $entity->set($field, $translated);
+                }
+            }
+
+            // Now translate the array fields
+            foreach ($array_fields as $field => $arrayValue) {
+                if ($translated = $this->translateArray($arrayValue, $from, $to)) {
                     $entity->set($field, $translated);
                 }
             }
@@ -277,9 +293,17 @@ class TranslatorListener implements EventSubscriber
         // Build the url
         $url = \Config::get('cmf.languages.google_translate.base_url');
         $query = 'key='.$apiKey.'&source=' . $from . '&target=' . $to;
+        $itemCount = 0;
 
         foreach ($array as $item) {
-            $query .= '&q='.urlencode($item);
+            if (!empty($item)) {
+                $query .= '&q='.urlencode($item);
+                $itemCount++;
+            }
+        }
+
+        if ($itemCount === 0) {
+            return null;
         }
 
         // Execute the request
