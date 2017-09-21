@@ -29,7 +29,10 @@ class Language extends Base
         'update_from' => array(
             'title' => 'Auto Translate From',
             'description' => 'If this is set, this language will be auto translated from the selected language via the Google Translate API',
-            'create' => false
+            'create' => false,
+            'select2' => array(
+                'allowClear' => true
+            )
         )
     );
     

@@ -5,6 +5,7 @@ namespace CMF\Core;
 class Lang extends \Fuel\Core\Lang
 {
 	public static $autosave = true;
+    public static $auto_translated = array();
 	protected static $to_save = array();
 	protected static $loaded = array();
 
@@ -12,6 +13,10 @@ class Lang extends \Fuel\Core\Lang
 
 	public static function save($file, $lang, $language = null)
 	{
+	    if (in_array($file.($language ?: ''), static::$auto_translated)) {
+            return true;
+        }
+
 		$output = parent::save($file, $lang, $language);
 
 		// Fire save event

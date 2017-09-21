@@ -389,6 +389,10 @@ class TranslatorListener implements EventSubscriber
      */
     public function onSaveTerms($file, $lang, $language)
     {
+        if (in_array($file.($language ?: ''), \Lang::$auto_translated)) {
+            return;
+        }
+
         // Try and find child languages
         $childLanguages = \CMF\Model\Language::select('item')
             ->where('update_from IS NOT NULL')
@@ -408,6 +412,7 @@ class TranslatorListener implements EventSubscriber
             if (is_array($terms)) {
                 try {
                     \Lang::save($file, $terms, $childLanguage->code);
+                    \Lang::$auto_translated[] = $file.($childLanguage->code ?: '');
                 } catch (\Exception $e) {  }
             }
         }
