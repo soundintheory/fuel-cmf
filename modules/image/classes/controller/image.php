@@ -73,9 +73,11 @@ class Controller_Image extends \Controller {
 	protected function getImageParams($override)
 	{
 		$output = array(
-			'q' => \Config::get('image.quality', 80),
-			'bg' => \Input::param('bg', 'fff')
+			'q' => \Config::get('image.quality', 80)
 		);
+
+        if ($bg = \Input::param('bg', \Input::param('00000000')))
+            $output['bg'] = $bg;
 
 		if ($format = \Input::param('fm', \Input::param('format')))
 			$output['fm'] = $format;
