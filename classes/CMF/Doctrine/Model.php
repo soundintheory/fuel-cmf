@@ -379,25 +379,30 @@ abstract class Model
                 if (isset($association)) \D::manager()->persist($association);
                 
             } else if ($metadata->isCollectionValuedAssociation($field)) {
-                
+
                 if (is_null($value) || empty($value)) {
                     $value = array();
                 } else if (is_numeric($value) || $value instanceof \CMF\Doctrine\Model) {
                     $value = array($value);
                 } else if ($value instanceof Collection) {
                     $value = $value->toArray();
+                } else if ($value instanceof \stdClass) {
+                    $value = (array)$value;
                 } else if (!is_array($value) && !($value instanceof Collection))  {
                     throw new \InvalidArgumentException("The value '$value' passed to '$field' of '".get_class($this)."' is not a collection or an array");
                 }
-                
+
                 $value = array_values($value);
                 $ids = array();
                 $collection = (!isset($this->$field)) ? new ArrayCollection() : $this->$field;
 
                 $len = count($value);
                 for ($i=0; $i < $len; $i++) {
-                    
+
                     $item = $value[$i];
+                    if ($item instanceof \stdClass) {
+                        $item = (array)$item;
+                    }
                     $item_target_class = $target_class;
                     
                     if (is_numeric($item) || is_string($item)) {
