@@ -559,6 +559,9 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
             $field_class = $field['field'];
             if (!isset($data[$field_name]) || !is_callable($field_class.'::preProcess')) continue;
             try {
+                if($data[$field_name] instanceof \stdClass)
+                    $data[$field_name] = (array)$data[$field_name];
+
                 $data[$field_name] = $field_class::preProcess($data[$field_name], $field, $this);
             } catch (\Exception $e) {
                 $this->_has_processing_errors = true;
