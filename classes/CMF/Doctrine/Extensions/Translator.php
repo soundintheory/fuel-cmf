@@ -13,7 +13,23 @@ class Translator extends Extension
     {
         $listener = new \CMF\Doctrine\Extensions\TranslatorListener();
         $em->getEventManager()->addEventSubscriber($listener);
-        \Lang::$listener = $listener;
+        \Lang::$listener = static::$listener = $listener;
     }
 
+    public static function getListener()
+    {
+        return static::$listener;
+    }
+
+    public static function disableListener()
+    {
+        if (empty(static::$listener)) return;
+        \D::manager()->getEventManager()->removeEventSubscriber(static::$listener);
+    }
+
+    public static function enableListener()
+    {
+        if (empty(static::$listener)) return;
+        \D::manager()->getEventManager()->addEventSubscriber(static::$listener);
+    }
 }
