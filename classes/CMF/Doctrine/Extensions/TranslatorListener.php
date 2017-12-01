@@ -431,10 +431,27 @@ class TranslatorListener implements EventSubscriber
 
         foreach ($childLanguages as $childLanguage)
         {
+            $childTerms = \Fuel\Core\Lang::load('common.db', null, $childLanguage->code);
+            $toTranslate = [];
+
+            foreach ($lang as $key => $val)
+            {
+                if (empty($childTerms[$key])) {
+                    $toTranslate[$key] = $val;
+                }
+            }
+
+            if (empty($toTranslate)) {
+                continue;
+            }
+
             // Translate the terms for each language
-            $terms = $this->translateArray($lang, $language, $childLanguage->code);
-            if (is_array($terms)) {
+            $terms = $this->translateArray($toTranslate, $language, $childLanguage->code);
+
+            if (is_array($terms) && !empty($terms)) {
                 try {
+                    $terms = array_merge($childTerms, $terms);
+
                     \Lang::save($file, $terms, $childLanguage->code);
                     \Lang::$auto_translated[] = $file.($childLanguage->code ?: '');
                 } catch (\Exception $e) {  }
