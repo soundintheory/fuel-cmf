@@ -2,6 +2,6 @@
 	<div><input type="text" readonly="readonly" class="input input-xxlarge click-copy-field {{ value.src ? '' : 'hide' }}" value="{{ base() }}{{ value.src }}" data-base="{{ base() }}" /></div>
 {% endif %}
 
-{% if settings.title %}<label class="item-label">{{ settings.title }}</label>{% endif %}
+{% if settings.label %}<label class="item-label">{{ settings.label }}</label>{% endif %}
 <input type="hidden" name="{{ settings.mapping.fieldName }}[src]" value="{{ value.src }}" />
 <div class="async-upload{{ value.src ? ' populated' : '' }}"></div>

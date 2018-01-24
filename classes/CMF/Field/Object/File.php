@@ -44,14 +44,28 @@ class File extends Object {
         $settings['errors'] = $model->getErrorsForField($settings['mapping']['fieldName']);
         $settings['has_errors'] = count($settings['errors']) > 0;
         $settings['model'] = $metadata->name;
+        $settings['label'] = @$settings['title'] ?: '';
         $preview_value = (isset($value) && isset($value['src'])) ? str_replace($settings['path'], '', $value['src']) : '';
-        $content = strval(\View::forge('admin/fields/file.twig', array( 'settings' => $settings, 'value' => $value, 'preview_value' => $preview_value ), false));
-        
         $attributes = array(
             'class' => 'field-type-file file controls control-group'.($settings['has_errors'] ? ' error' : ''),
             'data-field-name' => $settings['mapping']['fieldName'],
             'id' => 'field_'.\CMF::slug($settings['mapping']['fieldName'])
         );
+
+        // Translation?
+        if (\CMF::$lang_enabled && !\CMF::langIsDefault() && isset($settings['mapping']['columnName']) && $model->isTranslatable($settings['mapping']['columnName'])) {
+
+            // If there is no translation
+            if (!$model->hasTranslation($settings['mapping']['columnName'])) {
+                $attributes['class'] .= ' no-translation';
+                $settings['label'] = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$settings['label'];
+            } else {
+                $settings['label'] = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$settings['label'];
+            }
+
+        }
+
+        $content = strval(\View::forge('admin/fields/file.twig', array( 'settings' => $settings, 'value' => $value, 'preview_value' => $preview_value ), false));
         
         if (!(isset($settings['wrap']) && $settings['wrap'] === false)) $content = html_tag('div', $attributes, $content);
         
