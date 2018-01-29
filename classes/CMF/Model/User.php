@@ -1079,6 +1079,14 @@ class User extends Base
         return $this->username;
     }
     
+    public function setResetPasswordToken($token){
+        $this->reset_password_token = $token;
+    }
+    
+    public function setResetPasswordSentAt($date){
+        $this->reset_password_sent_at = $date;
+    }
+    
 	/////////////////// BEGIN DB PROPERTIES ///////////////////
 	
 	/**
