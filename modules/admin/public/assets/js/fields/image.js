@@ -140,7 +140,17 @@
         setValue(originalValue);
 
         function submitHandler(evt, id, fileName) {
-            
+
+            if (!window.confirm("Quick Check! \n\n By uploading this image you're verifying that you have permission to use it. E.G:\n" +
+                    "\n" +
+                    "\u25CF The owner of the image has given consent for its use\n" +
+                    "\u25CF It's a stock image, and has been purchased with the correct licence\n" +
+                    "\u25CF It's a royalty free image (and attribution is being observed if needed)\n" +
+                    "\n" +
+                    "Not sure? Don't risk it 🙂")) {
+                return false;
+            }
+
             resetCrop();
             var $file = $($el.fineUploader('getItemByFileId', id));
             $topRow.hide();

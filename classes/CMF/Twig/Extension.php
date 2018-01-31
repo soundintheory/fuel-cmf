@@ -64,7 +64,8 @@ class Extension extends Twig_Extension
 			new Twig_SimpleFunction('get_options', 'CMF::getOptions'),
 			new Twig_SimpleFunction('get_options_select', array($this, 'getOptionsSelect')),
 			new Twig_SimpleFunction('get_hostname', array($this, 'getHostname')),
-			new Twig_SimpleFunction('array_as_hidden_inputs', 'CMF::arrayAsHiddenInputs')
+			new Twig_SimpleFunction('array_as_hidden_inputs', 'CMF::arrayAsHiddenInputs'),
+            new Twig_SimpleFunction('get_class', 'get_class')
 		);
 	}
 	
