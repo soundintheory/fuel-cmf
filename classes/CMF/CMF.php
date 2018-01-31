@@ -982,6 +982,7 @@ class CMF
 
 		// Disable translatable listener
 		\CMF\Doctrine\Extensions\Translatable::disableListener();
+		\CMF\Doctrine\Extensions\Translator::disableListener();
 
 		// Find entity
 		$model = $class::find($id);
@@ -993,6 +994,7 @@ class CMF
 		
 		// Enable translatable listener again
 		\CMF\Doctrine\Extensions\Translatable::enableListener();
+		\CMF\Doctrine\Extensions\Translator::enableListener();
 
 		return $duplicate;
 	}
