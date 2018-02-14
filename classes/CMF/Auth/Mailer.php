@@ -2,10 +2,7 @@
 
 namespace CMF\Auth;
 
-use Hautelook\Phpass\PasswordHash,
-    Model\User,
-    Model\Permission,
-    Model\Role;
+use Hautelook\Phpass\PasswordHash;
 
 /**
  * Mailer
@@ -15,10 +12,10 @@ use Hautelook\Phpass\PasswordHash,
  */
 class Mailer
 {
-    public static function __callStatic($method, $arguments)
+    public static function __callStatic($method, $argument)
     {
         $name = str_replace(array('send_', '_instructions'), '', $method);
-        return static::_send_instructions($name, $arguments[0]);
+        return static::_send_instructions($name, $argument[0]);
     }
 
     /**
@@ -29,6 +26,7 @@ class Mailer
     private static function _send_instructions($name, $user)
     {
         $config_key = null;
+        $query = null;
 
         switch ($name) {
             case 'confirmation':
@@ -36,11 +34,15 @@ class Mailer
                 break;
             case 'reset_password':
                 $config_key = 'recoverable';
+                $query = '?token=';
                 break;
             case 'unlock':
                 $config_key = 'lockable';
                 break;
+            case 'warning':
+                break;
             default:
+                exit($name);
                 throw new \InvalidArgumentException("Invalid instruction: $name");
         }
 
@@ -52,11 +54,13 @@ class Mailer
         $token_name = "{$name}_token";
         $mail->html_body(\View::forge("auth/emails/{$name}_instructions", array(
             'username' => $user->username,
-            'uri'      => \Uri::create(':url/:token', array(
+            'uri'      => \Uri::create(':url:query:token', array(
                 'url'   => rtrim(\Config::get("cmf.auth.{$config_key}.url"), '/'),
+                'query' => $query,
                 'token' => $user->{$token_name}
             ))
         )));
+
 
         $mail->priority(\Email::P_HIGH);
 

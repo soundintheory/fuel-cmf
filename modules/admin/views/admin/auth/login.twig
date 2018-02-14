@@ -21,8 +21,7 @@
 			
 			<form method="post" action="{{ url('/admin/login') }}">
 				
-				<input type="hidden" value="{{ form_val('next', 'admin') }}" name="next" />
-				
+				<input type="hidden" value="{{ form_val('next', 'admin') }}" name="next">
 				
 				<fieldset>
 					<div class="control-group">
@@ -42,15 +41,15 @@
 				<div class="pull-right">
 					<button type="submit" class="btn-primary btn-large">{{ _('admin.verbs.login') }}</button>
 				</div>
-				
+
 			</form>
 			
 		</div> <!-- #login-content -->
 		
-		<!-- div id="login-extra">
-			<p><a href="#">Forgotten your password?</a></p>
-		</div --> <!-- #login-extra -->
-		
+		<div id="login-extra">
+			<a href="{{ url('/admin/forgot') }}" role="link" target="_self">Forgotten your username or password?</a>
+		</div>
+
 	</div> <!-- #login-container -->
 	
 {% endblock %}

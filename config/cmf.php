@@ -1,7 +1,7 @@
 <?php
 
-return array (
-    
+return array(
+
     'admin' => array(
         'title' => 'Website Administration',
         'interface_templates' => array(
@@ -26,44 +26,55 @@ return array (
         'attributes' => array(
             array(
                 'pattern' => '/\/\./',
-                'read'    => false,
-                'write'   => false,
+                'read' => false,
+                'write' => false,
                 'hidden' => true
             )
-        )           
+        )
     ),
-    
+
     'auth' => array(
         // Set the remember-me cookie lifetime, in seconds. The default
         // lifetime is two weeks.
         'lifetime' => 1209600,
-        
+
         'default_role' => null,
-        
+
         // Use these on top of the defaults: view, edit, create, delete
         'permissions' => array(''),
-        
+
         // Additional resources to configure access to
         'resources' => array(
             // Whether they are able to log into the admin site
             'admin_site' => 'Admin Site'
         ),
-        
+
         'http_authenticatable' => array(
-            'in_use'   => false,
+            'in_use' => false,
             'method' => 'digest',
-            'realm'  => 'Protected by Sound in Theory',
-            'users' => array(
-                //'user' => 'password'
+            'realm' => 'Protected by Sound in Theory',
+            'users' => array(//'user' => 'password'
             )
-        )
+        ),
+
+        'recoverable' => array(
+            'reset_password_within' => 86400, // 24-hours,
+            'url' => 'admin/reset'
+        ),
+
+        'requirements' => array(
+            'min_length' => 8,
+            'max_length' => 128,
+            'force_symbols' => true,
+            'allowed_symbols' => '!£$%#@?+='
+        ),
     ),
-    
+
     'ffmpeg' => array(
         // These binaries are in varying positions depending on whether we use homebrew etc
         'ffmpeg_binary' => '/usr/local/bin/ffmpeg',
         'ffprobe_binary' => '/usr/local/bin/ffprobe',
-        
+
         'default_framerate' => 25,
         'default_size' => array(
             'width' => 1280,
@@ -85,31 +96,31 @@ return array (
                 '/\.mustache$/'
             )
         ),
-        'adapter' => function() {
+        'adapter' => function () {
             // Return a flysystem adapter here
             return null;
         }
     ),
-    
+
     'cache' => array(
         'enabled' => true,
         'driver' => 'auto',
-        
+
         // Prevent these urls from being cached
         'excluded_urls' => array(
             '/admin/*',
             '/image/*'
         ),
-        
+
         // Also check these files (or all files in a directory) for last modified date
         'check_files' => array(
-            DOCROOT.'assets'
+            DOCROOT . 'assets'
         ),
-        
+
         // Session vars to index the cache by
         'session_index' => array()
     ),
-    
+
     // Maps field types to field classes
     'fields_types' => array(
         'string' => 'CMF\\Field\\Text',
@@ -154,11 +165,11 @@ return array (
         'latlng_bing' => 'CMF\\Field\\Object\\BingMap',
         'latlng_bing_area' => 'CMF\\Field\\Object\\BingMap',
         'google_place' => 'CMF\\Field\\Object\\GooglePlace',
-        
+
         // Associations with specific tables can be mapped...
         'onetoone_urls' => 'CMF\\Field\\Relation\\URL',
         'manytomany_permissions' => 'CMF\\Field\\Auth\\Permissions',
-        
+
         // Associations with orphanRemoval=true can be mapped...
         'manytomany_inline' => 'CMF\\Field\\Collection\\TabularInline',
         'onetomany_inline' => 'CMF\\Field\\Collection\\TabularInline',
@@ -169,7 +180,7 @@ return array (
         'manytomany_inline_popup' => 'CMF\\Field\\Collection\\PopupInline',
         'onetomany_inline_popup' => 'CMF\\Field\\Collection\\PopupInline'
     ),
-    
+
     'languages' => array(
         'enabled' => false,
         'use_tld' => false,
@@ -191,5 +202,5 @@ return array (
             'link'
         )
     ),
-    
+
 );

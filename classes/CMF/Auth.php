@@ -2,7 +2,8 @@
 
 namespace CMF;
 
-use Hautelook\Phpass\PasswordHash,
+use Gedmo\Exception\InvalidArgumentException,
+    Hautelook\Phpass\PasswordHash,
     Admin\Model_User,
     CMF\Model\User,
     CMF\Model\Permission,
@@ -18,7 +19,7 @@ class Auth
     protected static $_default_actions = array('view', 'edit', 'create', 'delete');
     protected static $_all_actions = null;
     protected static $_extra_resources = null;
-    
+
     /**
      * The driver used. Override the default driver and set it via the 'cmf.auth.driver'
      * setting to add custom functionality.
@@ -30,7 +31,9 @@ class Auth
     /**
      * This prevents instantiation.
      */
-    final private function __construct() {}
+    final private function __construct()
+    {
+    }
 
     /**
      * Return a static instance.
@@ -84,8 +87,8 @@ class Auth
      * }
      * </code>
      *
-     * @param mixed $role     The role name (optional)
-     * @param mixed $action   The action permission for the role (optional)
+     * @param mixed $role The role name (optional)
+     * @param mixed $action The action permission for the role (optional)
      * @param mixed $resource The resource permission for the role (optional)
      *
      * @return bool Returns true on success or false on failure
@@ -156,7 +159,7 @@ class Auth
      * }
      * </code>
      *
-     * @param mixed              $role The role name(s) to check
+     * @param mixed $role The role name(s) to check
      * @param \CMF\Model\User $user The user to check against, if no user is given (null)
      *                                 it will check against the currently logged in user
      *
@@ -216,9 +219,9 @@ class Auth
      * </code>
      *
      * @param string $username_or_email The username or email to log in
-     * @param string $password          The password to check against
-     * @param bool   $remember          Whether to set remember-me cookie
-     * 
+     * @param string $password The password to check against
+     * @param bool $remember Whether to set remember-me cookie
+     *
      * @see \CMF\Auth\Driver::http_authenticate_user()
      *
      * @return bool Returns true on success or false on failure
@@ -347,7 +350,7 @@ class Auth
      * }
      * </code>
      *
-     * @param mixed $action   The action for the permission.
+     * @param mixed $action The action for the permission.
      * @param mixed $resource The resource for the permission.
      *
      * @return bool
@@ -382,7 +385,7 @@ class Auth
      * Auth::authorize('read', $article, array('message' => "Not authorized to read {$article->name}"));
      * </code>
      *
-     * @param mixed $action   The action for the permission.
+     * @param mixed $action The action for the permission.
      * @param mixed $resource The resource for the permission.
      * @param array $options
      *
@@ -498,6 +501,23 @@ class Auth
     }
 
     /**
+     * Encrypts a user password using the Bcrpt algorithm (Blowfish internally)
+     *
+     * @param $password
+     * @param $salt
+     * @return bool|string
+     */
+    public static function hash_password($password, $salt)
+    {
+        $ops = array(
+            'cost' => 10,
+            'salt' => $salt
+        );
+
+        return password_hash($password, PASSWORD_BCRYPT, $ops);
+    }
+
+    /**
      * Encrypts a user password using the Blowfish algo
      *
      * @param string $password The plaintext password
@@ -526,9 +546,23 @@ class Auth
         }
 
         $hasher = new PasswordHash(8, false);
-        
+
         return $hasher->CheckPassword($submitted_password, $user_password);
     }
+
+    /**
+     * Generates a secure salt of any given length > 16
+     *
+     * @param $length
+     * @return string
+     */
+    public static function generate_salt($length)
+    {
+        if ($length >= 16) {
+            return \random_bytes($length);
+        }
+    }
+
 
     /**
      * Generate a unique friendly string to be used as a token.
@@ -537,15 +571,15 @@ class Auth
      */
     public static function generate_token()
     {
-        return md5(uniqid().time());
+        return md5(uniqid() . time());
         $token = join(':', array(\Str::random('alnum', 15), time()));
         return str_replace(
-	        array('+', '/', '=', 'l', 'I', 'O', '0'), 
-	        array('p', 'q', 'r', 's', 'x', 'y', 'z'), 
-	        base64_encode($token)
-		);
+            array('+', '/', '=', 'l', 'I', 'O', '0'),
+            array('p', 'q', 'r', 's', 'x', 'y', 'z'),
+            base64_encode($token)
+        );
     }
-    
+
     /**
      * Gets just the core actions that are hard-coded into the system (view,edit,create,delete)
      * @return array
@@ -554,7 +588,7 @@ class Auth
     {
         return static::$_default_actions;
     }
-    
+
     /**
      * Gets all the possible actions, including ones defined in custom resources
      * @return array
@@ -564,7 +598,7 @@ class Auth
         static::extra_resources();
         return static::$_all_actions;
     }
-    
+
     /**
      * Get the extra resources defined in the config
      * @return array
@@ -572,13 +606,13 @@ class Auth
     public static function extra_resources()
     {
         if (!is_null(static::$_extra_resources)) return static::$_extra_resources;
-        
+
         $all_actions = static::$_default_actions;
         $extra_resources = \Config::get('cmf.auth.resources', array());
         $output = array();
-        
+
         foreach ($extra_resources as $resource_id => $extra_resource) {
-            
+
             if (is_string($extra_resource)) {
                 $new_resource = array(
                     'title' => $extra_resource,
@@ -591,53 +625,55 @@ class Auth
                 if (!isset($new_resource['icon'])) $new_resource['icon'] = 'lock';
                 if (!isset($new_resource['title'])) $new_resource['title'] = 'untitled';
             }
-            
+
             // Add any extra actions to all_actions
             foreach ($new_resource['actions'] as $resource_action) {
                 if (!in_array($resource_action, $all_actions)) $all_actions[] = $resource_action;
             }
-            
+
             // Append the resource to the output
             $output[$resource_id] = $new_resource;
-            
+
         }
-        
+
         static::$_all_actions = $all_actions;
         return static::$_extra_resources = $output;
-        
+
     }
-    
+
     /**
      * Attempts to retrieve a permission and creates it if not found
      * @param string $action
      * @param string $resource
      * @return \CMF\Model\Permission
      */
-    public static function get_permission($action, $resource, $item_id=null)
+    public static function get_permission($action, $resource, $item_id = null)
     {
         $qb = Permission::select("item")
-        ->where("item.action = '$action'")
-        ->andWhere("item.resource = '$resource'");
-        
+            ->where("item.action = '$action'")
+            ->andWhere("item.resource = '$resource'");
+
         if ($item_id !== null) {
-            $qb->andWhere("item.item_id = ".$item_id);
+            $qb->andWhere("item.item_id = " . $item_id);
         }
-        
+
         $permission = $qb->setMaxResults(1)->getQuery()->getResult();
-        
+
         if (count($permission) === 0) {
             $em = \D::manager();
             $permission = new Permission();
             $permission->set('action', $action);
             $permission->set('resource', $resource);
-            if ($item_id !== null) { $permission->set('item_id', $item_id); }
+            if ($item_id !== null) {
+                $permission->set('item_id', $item_id);
+            }
             $em->persist($permission);
             return $permission;
         }
-        
+
         return $permission[0];
     }
-    
+
     /**
      * Ensures that there is at least an 'all' permission set for every resource
      * @return void
@@ -648,39 +684,39 @@ class Auth
         $actions[] = 'all';
         $activeClasses = \CMF\Admin::activeClasses();
         $activeClasses['user_defined'] = array_keys(\Config::get('cmf.auth.resources', array()));
-        
+
         $roles = Role::select('item')->getQuery()->getResult();
         $em = \D::manager();
-        
+
         foreach ($activeClasses as $parent_class => $classes) {
-            
+
             foreach ($classes as $class_name) {
-                
+
                 $count = intval(Permission::select("count(item)")
-                ->where("item.resource = '$class_name'")
-                ->andWhere("item.action = 'all'")
-                ->getQuery()->getSingleScalarResult());
-                
+                    ->where("item.resource = '$class_name'")
+                    ->andWhere("item.action = 'all'")
+                    ->getQuery()->getSingleScalarResult());
+
                 if ($count == 0) {
-                    
+
                     $permission = new Permission();
                     $permission->set('action', 'all');
                     $permission->set('resource', $class_name);
                     $em->persist($permission);
-                    
+
                     foreach ($roles as $role) {
                         $role->add('permissions', $permission);
                         $em->persist($role);
                     }
-                    
+
                 }
-                
+
             }
-            
+
         }
-        
+
         $em->flush();
-        
+
     }
 
     /**

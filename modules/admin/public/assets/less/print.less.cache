@@ -1,0 +1,48 @@
+a:4:{s:4:"root";s:132:"/Users/rhys/Desktop/Projects/InProgress/ForgotPassword/starter-project/fuel/packages/cmf/modules/admin/public/assets/less/print.less";s:8:"compiled";s:668:"#sidebar,
+#top-bar,
+#controls-fixed-bot,
+.actions-top-right,
+th.handle,
+td.handle,
+th.actions,
+td.actions,
+.sort-link span,
+#table-fixed-head-wrap,
+.list-filter-form,
+.nav-pills {
+  display: none !important;
+}
+.table {
+  border: none;
+  position: relative;
+}
+.table tr {
+  position: relative;
+}
+.table th,
+.table td {
+  position: relative;
+  border: none;
+  border-bottom: 0.5mm solid #ccc;
+  padding-left: 0px !important;
+  page-break-inside: avoid;
+}
+.table a {
+  display: block;
+  position: relative;
+}
+body,
+#frame,
+#outer,
+#main,
+#content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+@page {
+  margin: 2cm;
+}
+a[href]:after {
+  content: none !important;
+}
+";s:5:"files";a:1:{s:132:"/Users/rhys/Desktop/Projects/InProgress/ForgotPassword/starter-project/fuel/packages/cmf/modules/admin/public/assets/less/print.less";i:1517480362;}s:7:"updated";i:1517480685;}

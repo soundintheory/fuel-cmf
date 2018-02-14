@@ -26,7 +26,10 @@ return array(
 	'admin/logout'            => 'admin/auth/logout',
 	'admin/install/(:any)'    => 'admin/install/$1',
 	'admin/install'           => 'admin/install',
-	
+	'admin/forgot'            => array(array('GET', new Route('admin/auth/forgot')), array('POST', new Route('admin/auth/forgot_password'))),
+    'admin/reset'	          => array(array('GET', new Route('admin/auth/reset')), array('POST', new Route('admin/auth/reset_password'))),
+
+
 	// Routes for actions with models... these are quite dynamic so make sure they stay at the bottom!
 	'admin/(:segment)'                          => 'admin/list/index/$1',
     'admin/(:segment)/saveall'                  => 'admin/list/saveall/$1',

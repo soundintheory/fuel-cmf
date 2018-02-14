@@ -1,0 +1,42 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block content %}
+
+
+
+    <div id="login-container" class="row-fluid">
+
+        <div id="login-content" class="clearfix">
+
+            <p><strong>To Reset Your Password, Enter your email below:</strong></p>
+
+            <form method="post" action="{{ url('/admin/forgot') }}">
+
+                <fieldset>
+                    <div class="control-group">
+                        <label class="control-label" for="form_email">{{ _('admin.common.email_address') }}</label>
+                        <div class="controls-row">
+                            <input type="email" class="span12" id="form_email" name="email"
+                                   value="{{ form_val('username') }}">
+                        </div>
+                    </div>
+                </fieldset>
+
+                {% set main_alert = get_flash('main_alert') %}
+                {% if main_alert %}
+                    <!-- Alert area! -->
+                    <div class="alert {{ main_alert.attributes.class }}">
+                        <button class="close" data-dismiss="alert">×</button>
+                        {{ main_alert.msg }}
+                    </div>
+                {% endif %}
+
+                <div class="pull-right">
+                    <button type="submit" class="btn-primary btn-large">{{ _('admin.verbs.reset') }} Password</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+{% endblock %}
