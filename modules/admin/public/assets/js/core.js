@@ -1121,6 +1121,3 @@ var fixHelper = function(e, ui) {
 	});
 	return ui;
 };
-
-
-

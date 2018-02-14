@@ -63,7 +63,8 @@ return array(
 		'common_term'				=> 'Common term',
 		'common_terms'				=> 'Common terms',
 		'save_all'					=> 'Save all',
-		'clear_all'					=> 'Clear all'
+		'clear_all'					=> 'Clear all',
+        'email_address'             => 'Email Address'
 	),
 
 	'verbs' => array(
@@ -86,7 +87,9 @@ return array(
 		'upload'					=> 'Upload',
 		'cancel'					=> 'Cancel',
 		'retry'						=> 'Retry',
-		'clone'						=> 'Clone'
+		'reset'                     => 'Reset',
+		'clone'						=> 'Clone',
+        'change'                    => 'Change'
 	),
 
 	'messages' => array(

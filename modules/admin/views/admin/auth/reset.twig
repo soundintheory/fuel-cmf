@@ -1,0 +1,45 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block content %}
+    <div id="login-container" class="row-fluid">
+
+        {% set main_alert = get_flash('main_alert') %}
+        {% if main_alert %}
+            <!-- Alert area! -->
+            <div class="alert {{ main_alert.attributes.class }}">
+                <button class="close" data-dismiss="alert">×</button>
+                {{ main_alert.msg }}
+            </div>
+        {% endif %}
+
+        <div id="login-content" class="clearfix">
+
+            <p>
+                <strong>Enter your new password below</strong>
+            </p>
+
+            <form method="post" action="{{ url('/admin/reset') }}">
+
+                <input type="hidden" title="resetToken" name="token" value="{{ token }}">
+
+                <fieldset>
+                    <div class="control-group">
+                        <div class="controls-row">
+                            <div class="input-prepend">
+                                <span id="password-viewer" class="add-on fa fa-eye" style="cursor: pointer"></span>
+                                <input autocomplete="off" required type="password" title="Password" class="input-xlarge" id="form_email" name="password" value="{{ form_val('username') }}">
+                            </div>
+                        </div>
+                        <small>Suggested: 8 characters, Inc. numbers, letters and symbols.</small>
+                    </div>
+                </fieldset>
+
+                <div class="pull-right">
+                    <button type="submit" class="btn-primary btn-large">{{ _('admin.verbs.change') }} Password</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+{% endblock %}

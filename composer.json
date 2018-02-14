@@ -22,9 +22,8 @@
         "twig/twig": "1.26.0",
         "twig/extensions": "~1.0.0",
         "roderik/pwgen-php": "0.1.*",
-        "soundintheory/php-sql-parser": "*",
         "hautelook/phpass": "0.3.*",
-        "soundintheory/php-sql-parser": "1.*",
+        "soundintheory/php-sql-parser": "*",
         "helios-ag/fm-elfinder-php-connector": "1.1.*",
         "leafo/lessphp": "0.4.*",
         "doctrine/orm": "2.4.4",
@@ -37,7 +36,8 @@
         "doctrine/annotations": "1.2.7",
         "league/glide": "~1.2.0",
         "intervention/image": "~2.3.8",
-        "league/flysystem": "1.0.32"
+        "league/flysystem": "1.0.32",
+        "paragonie/random_compat": "^2.0.11"
     },
     "suggest": {
         "phpoffice/phpexcel": "To allow the import of .xls or .xlsx spreadsheets",

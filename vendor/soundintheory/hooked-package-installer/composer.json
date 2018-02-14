@@ -1,0 +1,16 @@
+{
+    "name": "soundintheory/hooked-package-installer",
+    "description": "Installer with sub-package hooks for fuel-cmf",
+    "type": "composer-installer",
+    "keywords": ["installer", "hooks", "scripts"],
+    "homepage": "https://github.com/soundintheory/hooked-package-installer",
+    "license": "MIT",
+    "autoload": {
+        "psr-0": {
+            "CMF\\Composer\\HookedPackageInstaller": "src/"
+        }
+    },
+    "extra": {
+        "class": "\\CMF\\Composer\\HookedPackageInstaller"
+    }
+}

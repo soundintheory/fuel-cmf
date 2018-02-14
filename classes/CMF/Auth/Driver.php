@@ -202,9 +202,7 @@ class Driver
      */
     public function authenticate_user($username_or_email, $password, $type, $remember)
     {
-        if (($user = $type::authenticate($username_or_email)) &&
-             Auth::has_password($user, $password))
-        {
+        if (($user = $type::authenticate($username_or_email)) && Auth::has_password($user, $password)) {
             
             if ($remember === true) {
                 // Set token data
@@ -222,12 +220,6 @@ class Driver
 
             return $this->complete_login($user, $type);
         }
-        
-        /*
-        if (!is_null($user) && $this->config['lockable']['in_use'] === true) {
-            $user->update_attempts(1);
-        }
-        */
 
         // Login failed
         return false;
