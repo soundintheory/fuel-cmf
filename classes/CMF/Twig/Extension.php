@@ -32,6 +32,7 @@ class Extension extends Twig_Extension
 			new Twig_SimpleFunction('field_list_value', array($this, 'fieldListValue')),
 			new Twig_SimpleFunction('get_flash', 'Session::get_flash'),
 			new Twig_SimpleFunction('get_link', 'CMF::getLink'),
+            new Twig_SimpleFunction('get_link', 'CMF::getLink'),
 			new Twig_SimpleFunction('video_embed', 'CMF\\Field\\Object\\VideoEmbed::getEmbedCode'),
 			new Twig_SimpleFunction('get_route', 'Router::get'),
 			new Twig_SimpleFunction('get_setting', array($this, 'settings')),
@@ -65,7 +66,8 @@ class Extension extends Twig_Extension
 			new Twig_SimpleFunction('get_options_select', array($this, 'getOptionsSelect')),
 			new Twig_SimpleFunction('get_hostname', array($this, 'getHostname')),
 			new Twig_SimpleFunction('array_as_hidden_inputs', 'CMF::arrayAsHiddenInputs'),
-            new Twig_SimpleFunction('get_class', 'get_class')
+            new Twig_SimpleFunction('get_class', 'get_class'),
+            new Twig_SimpleFunction('is_subclass_of', 'is_subclass_of'),
 		);
 	}
 	
