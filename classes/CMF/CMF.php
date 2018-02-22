@@ -965,6 +965,29 @@ class CMF
 
         return strval($output);
     }
+
+    /**
+     * Given the value of a link object field (external or internal), will return the correct slug
+     * @param object $data
+     * @return string
+     */
+    public static function getSlug($data)
+    {
+        if ($is_array = is_array($data)) {
+            $output = isset($data['href']) ? $data['href'] : '';
+        } else {
+            $output = strval($data);
+        }
+
+        if((isset($data['external']) && $data['external']) || !is_numeric($output))
+            return null;
+
+        $link = \CMF\Model\URL::select('item.slug')->where('item.id = '.$output)->getQuery();
+        $link = $link->getArrayResult();
+        $output = (count($link) > 0) ? static::link($link[0]['slug']) : null;
+
+        return strval($output);
+    }
 	
 	/**
 	 * Given a string containing item links generated from Redactor, will loop through each and provide
