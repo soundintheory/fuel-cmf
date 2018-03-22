@@ -23,7 +23,7 @@ class Controller_Base extends \Controller {
 	public function before() {
 		
 		if (!\CMF\Auth::check(null, 'view', 'admin_site')) {
-            \CMF::adminRedirect("/login?next=".\Uri::string(), 'location');
+            \CMF::adminRedirect("/login?next=".\CMF::original_uri(), 'location');
         }
 
         \Lang::$autosave = false;
