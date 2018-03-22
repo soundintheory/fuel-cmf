@@ -97,11 +97,11 @@ class Video extends File {
     {
         return array(
             'js' => array(
-                '/admin/assets/fineuploader/jquery.fineuploader-3.2.js',
-                '/admin/assets/js/fields/video.js'
+                '/assets/fineuploader/jquery.fineuploader-3.2.js',
+                '/assets/js/fields/video.js'
             ),
             'css' => array(
-                //'/admin/assets/fineuploader/fineuploader-3.2.css'
+                //'/assets/fineuploader/fineuploader-3.2.css'
             )
         );
     }

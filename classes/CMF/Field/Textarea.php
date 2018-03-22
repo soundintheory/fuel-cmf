@@ -37,9 +37,9 @@ class Textarea extends Base
             // If there is no translation
             if (!$model->hasTranslation($settings['mapping']['columnName'])) {
                 $attributes['class'] .= ' no-translation';
-                $label_text = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$label_text;
+                $label_text = '<img class="lang-flag" src="'.\CMF::adminUrl('/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$label_text;
             } else {
-                $label_text = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$label_text;
+                $label_text = '<img class="lang-flag" src="'.\CMF::adminUrl('/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$label_text;
             }
             
         }
@@ -70,7 +70,7 @@ class Textarea extends Base
             return array(
                 'content' => html_tag('div', $attributes, $label.$description.$input).'<div class="clear"><!-- --></div>',
                 'widget' => false,
-                'assets' => array( 'js' => array('/admin/assets/js/twig.min.js', '/admin/assets/js/fields/template.js') ),
+                'assets' => array( 'js' => array('/assets/js/twig.min.js', '/assets/js/fields/template.js') ),
                 'js_data' => $settings
             );
             

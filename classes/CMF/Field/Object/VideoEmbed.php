@@ -244,11 +244,11 @@ class VideoEmbed extends Object {
     {
         return array(
             'js' => array(
-                '/admin/assets/fineuploader/jquery.fineuploader-3.2.js',
-                '/admin/assets/js/fields/file.js'
+                '/assets/fineuploader/jquery.fineuploader-3.2.js',
+                '/assets/js/fields/file.js'
             ),
             'css' => array(
-                //'/admin/assets/fineuploader/fineuploader-3.2.css'
+                //'/assets/fineuploader/fineuploader-3.2.css'
             )
         );
     }*/

@@ -4,6 +4,7 @@ return array (
     
     'admin' => array(
         'title' => 'Website Administration',
+        'base_url' => 'admin',
         'interface_templates' => array(
             'default' => 'admin/shared/interface.twig',
             'inline' => 'admin/shared/chromeless.twig'

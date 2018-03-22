@@ -141,7 +141,7 @@ class ObjectForm
 		if ($this->settings['dynamic'] === true && $this->settings['array'] !== true) {
 			
 			// Add the necessary JS
-			$this->assets['js'][] = '/admin/assets/js/fields/object.js';
+			$this->assets['js'][] = '/assets/js/fields/object.js';
 			
 			// Get each field's HTML
 			foreach ($this->settings['fields'] as $field_name => $field) {
@@ -173,7 +173,7 @@ class ObjectForm
 		if ($this->settings['dynamic'] === false && $this->settings['array'] === true) {
 			
 			// Add the necessary JS
-			$this->assets['js'][] = '/admin/assets/js/fields/collection/array-inline.js';
+			$this->assets['js'][] = '/assets/js/fields/collection/array-inline.js';
 			
 			// Create the info for the field template
 			$rows = array();

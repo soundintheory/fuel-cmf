@@ -99,21 +99,21 @@
 
 {% block breadcrumb %}
     <li><a href="{{ base_url }}">{{ dashboard_title }}</a> <span class="divider">/</span></li>
-    <li><a href="{{ url('/admin/'~root_table_name~'/list') }}">{{ root_plural}}</a> <span class="divider">/</span></li>
+    <li><a href="{{ admin_url('/'~root_table_name~'/list') }}">{{ root_plural}}</a> <span class="divider">/</span></li>
     <li class="active">{{ form.singular }}</li>
 {% endblock %}
 
 {% block admin_css %}
     {{ parent() }}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{% if 'http://' not in css and 'https://' not in css %}{{ url(css) }}{{ ('?' in css) ? '&' : '?' }}v=28{% else %}{{ css }}{% endif %}">
+        <link rel="stylesheet" type="text/css" href="{% if 'http://' not in css and 'https://' not in css %}{{ admin_url(css) }}{{ ('?' in css) ? '&' : '?' }}v=28{% else %}{{ css }}{% endif %}">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{% if 'http://' not in js and 'https://' not in js %}{{ url(js) }}{{ ('?' in js) ? '&' : '?' }}v=28{% else %}{{ js }}{% endif %}"></script>
+        <script type="text/javascript" src="{% if 'http://' not in js and 'https://' not in js %}{{ admin_url(js) }}{{ ('?' in js) ? '&' : '?' }}v=28{% else %}{{ js }}{% endif %}"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};

@@ -13,8 +13,8 @@ class StartPage extends \CMF\Field\Base {
     public static function getAssets()
     {
         return array(
-            'css' => array('/admin/assets/select2/select2.css'),
-            'js' => array('/admin/assets/select2/select2.min.js', '/admin/assets/js/fields/select2.js')
+            'css' => array('/assets/select2/select2.css'),
+            'js' => array('/assets/select2/select2.min.js', '/assets/js/fields/select2.js')
         );
     }
     

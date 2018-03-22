@@ -11,12 +11,12 @@ class URL extends OneToOne {
     {
 		return array(
 			'js' => array(
-				'/admin/assets/js/fields/url.js',
-                '/admin/assets/select2/select2.min.js',
-                '/admin/assets/js/fields/link.js'
+				'/assets/js/fields/url.js',
+                '/assets/select2/select2.min.js',
+                '/assets/js/fields/link.js'
 			),
             'css' => array(
-                '/admin/assets/select2/select2.css'
+                '/assets/select2/select2.css'
             )
 		);
     }
@@ -108,9 +108,9 @@ class URL extends OneToOne {
             
             if (!$value->hasTranslation('slug')) {
                 $attributes['class'] .= ' no-translation';
-                $label_text = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$label_text;
+                $label_text = '<img class="lang-flag" src="'.\CMF::adminUrl('/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$label_text;
             } else {
-                $label_text = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$label_text;
+                $label_text = '<img class="lang-flag" src="'.\CMF::adminUrl('/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$label_text;
             }
             
         }

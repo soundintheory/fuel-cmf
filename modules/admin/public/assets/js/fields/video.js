@@ -22,7 +22,7 @@
             multiple: false,
             debug: false,
             request: {
-                endpoint: CMF.baseUrl + '/admin/upload/video',
+                endpoint: CMF.adminUrl + '/upload/video',
                 params: { 'path':settings['path'], 'fieldName':fieldName },
                 paramsInBody: false
             },

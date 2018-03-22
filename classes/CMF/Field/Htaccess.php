@@ -16,7 +16,7 @@ class Htaccess extends Textarea {
         'disallowed_prefixes' => array(
             '',
             '/',
-            '/admin',
+            '',
             '/image',
         )
     );
@@ -34,7 +34,7 @@ class Htaccess extends Textarea {
             \CMF\Field\Object\Link::getAssets(),
             array(
                 'js' => array(
-                    '/admin/assets/js/fields/htaccess.js'
+                    '/assets/js/fields/htaccess.js'
                 )
             )
         );

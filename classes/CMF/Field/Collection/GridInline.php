@@ -20,7 +20,7 @@ class GridInline extends Multiselect {
     public static function getAssets()
     {
         return array(
-            'js' => array('/admin/assets/js/fields/collection/grid-inline.js')
+            'js' => array('/assets/js/fields/collection/grid-inline.js')
         );
     }
     

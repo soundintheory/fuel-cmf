@@ -58,9 +58,9 @@ class File extends Object {
             // If there is no translation
             if (!$model->hasTranslation($settings['mapping']['columnName'])) {
                 $attributes['class'] .= ' no-translation';
-                $settings['label'] = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$settings['label'];
+                $settings['label'] = '<img class="lang-flag" src="'.\CMF::adminUrl('/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$settings['label'];
             } else {
-                $settings['label'] = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$settings['label'];
+                $settings['label'] = '<img class="lang-flag" src="'.\CMF::adminUrl('/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$settings['label'];
             }
 
         }
@@ -83,11 +83,11 @@ class File extends Object {
     {
         return array(
             'js' => array(
-                '/admin/assets/fineuploader/jquery.fineuploader-3.2.js',
-                '/admin/assets/js/fields/file.js'
+                '/assets/fineuploader/jquery.fineuploader-3.2.js',
+                '/assets/js/fields/file.js'
             ),
             'css' => array(
-                //'/admin/assets/fineuploader/fineuploader-3.2.css'
+                //'/assets/fineuploader/fineuploader-3.2.css'
             )
         );
     }

@@ -9,9 +9,9 @@
 	<h5>
 		{% if form.showTranslationStatus(model)  %}
 			{% if form.hasTranslation(model) %}
-				<img class="lang-flag" src="{{ url('/admin/assets/img/lang/'~language()~'.png') }}" />
+				<img class="lang-flag" src="{{ admin_url('/assets/img/lang/'~language()~'.png') }}" />
 			{% else %}
-				<img class="lang-flag" src="{{ url('/admin/assets/img/lang/'~default_language()~'.png') }}" />
+				<img class="lang-flag" src="{{ admin_url('/assets/img/lang/'~default_language()~'.png') }}" />
 			{% endif %}
 		{% endif %}&nbsp;{{ form.settings.title }}
 	</h5>

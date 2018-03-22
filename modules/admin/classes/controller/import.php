@@ -37,7 +37,7 @@ class Controller_Import extends Controller_Base {
 		// Don't continue if no files have been uploaded
 		if (!count(\Upload::get_files())) {
 			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => \Lang::get('admin.errors.upload.no_files') ));
-			\Response::redirect_back("/admin/$table_name");
+			\Response::redirect_back(\CMF::adminPath("/$table_name"));
 		}
 
 		// Ensure directory exists
@@ -70,12 +70,12 @@ class Controller_Import extends Controller_Base {
 		// If success, redirect back with message
 		if (isset($this->import_result['success']) && $this->import_result['success']) {
 			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => (isset($this->import_result['message']) ? $this->import_result['message'] : \Lang::get('admin.messages.import_success')) ));
-			\Response::redirect("/admin/$table_name", 'location');
+			\CMF::adminRedirect("/$table_name", 'location');
 		}
 
 		// No success, damn!
 		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => (isset($this->import_result['message']) ? $this->import_result['message'] : \Lang::get('admin.errors.actions.import')) ));
-		\Response::redirect_back("/admin/$table_name");
+		\Response::redirect_back(\CMF::adminPath("/$table_name"));
 	}
 
 	public function action_url($table_name)
@@ -90,11 +90,11 @@ class Controller_Import extends Controller_Base {
 		// If success, redirect back with message
 		if (isset($this->import_result['success']) && $this->import_result['success']) {
 			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => (isset($this->import_result['message']) ? $this->import_result['message'] : \Lang::get('admin.messages.import_success')) ));
-			\Response::redirect("/admin/$table_name", 'location');
+			\CMF::adminRedirect("/$table_name", 'location');
 		}
 
 		// No success, damn!
 		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => (isset($this->import_result['message']) ? $this->import_result['message'] : \Lang::get('admin.errors.actions.import')) ));
-		\Response::redirect_back("/admin/$table_name");
+		\Response::redirect_back(\CMF::adminPath("/$table_name"));
 	}
 }

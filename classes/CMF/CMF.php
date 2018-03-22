@@ -426,6 +426,33 @@ class CMF
 		return \Uri::create($url == $prefix ? $url : '/'.trim($prefix.$url, '/'));
 	}
 
+    /**
+     * Get an admin URI
+     */
+    public static function adminUrl($path = null)
+    {
+        return \Uri::create(static::adminPath($path));
+    }
+
+    /**
+     * Get an admin URI
+     */
+    public static function adminPath($path = null)
+    {
+        $base = trim(\Config::get('cmf.admin.base_url', 'admin'), '/');
+        return !empty($path) ? "/$base/".ltrim(preg_replace('#^/?admin/?#', '', $path), '/') : "/$base";
+    }
+
+    /**
+     * Get an admin URI
+     */
+    public static function adminRedirect($path = null)
+    {
+        $args = func_get_args();
+        $args[0] = static::adminPath(@$args[0] ?: null);
+        return call_user_func_array('Response::redirect', $args);
+    }
+
 	/**
 	 * Get a url to an asset
 	 */

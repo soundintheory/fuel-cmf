@@ -6,16 +6,16 @@ class Controller_Auth extends \Controller {
 	
 	public function action_login()
 	{
-		return \View::forge('admin/auth/login.twig', array( 'next' => \Input::get('next') ));
+		return \View::forge('admin/auth/login.twig');
 	}
 	
 	public function action_perform_login()
 	{
 	    if (\CMF\Auth::authenticate(\Input::post('username'), \Input::post('password'))) {
-            \Response::redirect('/'.ltrim(\Input::post('next', 'admin/'.\Config::get('cmf.admin.default_section')), '/'), 'location');
+            \CMF::adminRedirect(\Input::post('next', \CMF::adminPath(\Config::get('cmf.admin.default_section'))), 'location');
         } else {
         	\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => \Lang::get('admin.errors.account.invalid') ));
-            return \View::forge('admin/auth/login.twig', array( 'next' => \Input::get('next') ));
+            return \View::forge('admin/auth/login.twig');
         }
 	}
 	
@@ -23,7 +23,7 @@ class Controller_Auth extends \Controller {
 	{
 	    if (\CMF\Auth::logout()) {
 	    	\Session::delete('cmf.admin.language');
-            \Response::redirect('/admin/login', 'location');
+            \CMF::adminRedirect('/login', 'location');
         }
 	}
 	

@@ -99,7 +99,7 @@ class BingMap extends Object {
         return array(
             'js' => array(
                 'https://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&s=1&mkt=en-US',
-                '/admin/assets/js/fields/bingmap.js'
+                '/assets/js/fields/bingmap.js'
             )
         );
     }

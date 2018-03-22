@@ -126,7 +126,7 @@ class GoogleMap extends Object {
         return array(
             'js' => array(
                 'https://maps.googleapis.com/maps/api/js?v=3&sensor=false'.$keyQueryString,
-                '/admin/assets/js/fields/googlemap.js'
+                '/assets/js/fields/googlemap.js'
             )
         );
     }

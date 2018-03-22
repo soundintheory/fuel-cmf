@@ -263,7 +263,7 @@
 								$('#'+elem.domId).css('display','none');
 
 								var selectFill = dialog.getContentElement( 'info', 'page_select' );
-								$.get(CMF.baseUrl + "/admin/json_link", function(data){
+								$.get(CMF.adminUrl + "/json_link", function(data){
 								  generic_pages = JSON.parse(data);
 								  var render = '<option value="">Select one ...</option>';
 								  for (var i in generic_pages) {
@@ -279,7 +279,7 @@
 								var first_level;
 								var elem = dialog.getContentElement( 'info', 'int_url' );
 								if(generic_page){
-									$.get(CMF.baseUrl + "/admin/json_link/"+generic_page, function(data){
+									$.get(CMF.adminUrl + "/json_link/"+generic_page, function(data){
 										console.log(data);
 									  first_level = JSON.parse(data);
 

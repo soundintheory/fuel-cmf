@@ -51,7 +51,7 @@
             multiple: true,
             debug: false,
             request: {
-                endpoint: CMF.baseUrl + '/admin/upload',
+                endpoint: CMF.adminUrl + '/upload',
                 params: { 'path':'uploads/' },
                 paramsInBody: false
             },

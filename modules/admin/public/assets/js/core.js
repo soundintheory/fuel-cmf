@@ -128,7 +128,7 @@ function saveData(table, id, _data) {
 	if (isNull(table) || isNull(id) || isNull(_data)) { return false; }
 	
 	// Construct the URL and post the data
-	var url = CMF.baseUrl + '/admin/' + table + '/' + id + '/populate';
+	var url = CMF.adminUrl + '/' + table + '/' + id + '/populate';
 	
 	cItemSaveRequest = $.ajax({
 		'url': url,
@@ -258,14 +258,14 @@ function initTree() {
 			
 			var className = node['class'],
 			classData = data['classes'][className],
-			baseUrl = CMF.baseUrl + '/admin/' + classData['table_name'],
-			baseUrlId = CMF.baseUrl + '/admin/' + classData['table_name'] + '/' + node.id;
+			baseUrl = CMF.adminUrl + '/' + classData['table_name'],
+			baseUrlId = CMF.adminUrl + '/' + classData['table_name'] + '/' + node.id;
 			
 			node['div'] = $li.find('.main');
 			node['title'] = $li.find('.jqtree-title').text(node.menu_title);
 			node['icon'] = classData['icon'];
 			node['href'] = baseUrlId + '/edit';
-			node['update'] = CMF.baseUrl + '/admin/' + data['table_name'] + '/' + node.id + '/updatetree';
+			node['update'] = CMF.adminUrl + '/' + data['table_name'] + '/' + node.id + '/updatetree';
 			node['delete'] = baseUrlId + '/delete';
 			node['clone'] = baseUrlId + '/duplicate';
 			node['visible'] = (node.visible === 1 || node.visible === true);
@@ -320,7 +320,7 @@ function initTree() {
 				for (var p in data['classes'])
 				{
 					var subclassData = data['classes'][p],
-					baseUrl = CMF.baseUrl + '/admin/' + subclassData['table_name'];
+					baseUrl = CMF.adminUrl + '/' + subclassData['table_name'];
 
 					// Check if this allows the class as a child
 					if ((!!allowedChildren && $.inArray(p, allowedChildren) === -1) ||
@@ -340,8 +340,8 @@ function initTree() {
 				}
 
 				// An alias type
-				childItems.push('<li><a tabindex="-1" href="' + CMF.baseUrl + '/admin/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias"><i class="fa fa-link"></i> Link</a></li>');
-				childInfo.push({ 'edit': CMF.baseUrl + '/admin/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias', 'icon':baseClassData['icon'], 'singular':baseClassData['singular'] });
+				childItems.push('<li><a tabindex="-1" href="' + CMF.adminUrl + '/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias"><i class="fa fa-link"></i> Link</a></li>');
+				childInfo.push({ 'edit': CMF.adminUrl + '/' + baseClassData['table_name'] + '/create?parent=' + node.id + '&alias', 'icon':baseClassData['icon'], 'singular':baseClassData['singular'] });
 
 				if (childItems.length > 1) {
 
@@ -491,7 +491,7 @@ function initTree() {
 		for (var p in data['classes'])
 		{
 			var subclassData = data['classes'][p],
-			baseUrl = CMF.baseUrl + '/admin/' + subclassData['table_name'];
+			baseUrl = CMF.adminUrl + '/' + subclassData['table_name'];
 
 			// Check if the class allows root as a parent
 			if ((!!subclassData.allowed_parents && $.inArray('root', subclassData.allowed_parents) === -1) ||
@@ -505,8 +505,8 @@ function initTree() {
 		}
 
 		// An alias type
-		childItems.push('<li><a tabindex="-1" href="' + CMF.baseUrl + '/admin/' + baseClassData['table_name'] + '/create?alias"><i class="fa fa-link"></i> Link</a></li>');
-		childInfo.push({ 'edit':CMF.baseUrl + '/admin/' + baseClassData['table_name'] + '/create?alias', 'icon':baseClassData['icon'], 'singular':baseClassData['singular'] });
+		childItems.push('<li><a tabindex="-1" href="' + CMF.adminUrl + '/' + baseClassData['table_name'] + '/create?alias"><i class="fa fa-link"></i> Link</a></li>');
+		childInfo.push({ 'edit':CMF.adminUrl + '/' + baseClassData['table_name'] + '/create?alias', 'icon':baseClassData['icon'], 'singular':baseClassData['singular'] });
 
 		if (childItems.length > 1) {
 			//group all the items into a dropdown
@@ -584,7 +584,7 @@ function initItemList() {
 				}
 				
 				var cRequest = $.ajax({
-					'url': CMF.baseUrl + '/admin/' + data['table_name'] + '/' + id + '/populate',
+					'url': CMF.adminUrl + '/' + data['table_name'] + '/' + id + '/populate',
 					'data': { 'pos':pos },
 					'dataType': 'json',
 					'async': true,
@@ -603,7 +603,7 @@ function initItemList() {
 				});
 
 				var cRequest = $.ajax({
-					'url': CMF.baseUrl + '/admin/' + data['table_name'] + '/populate',
+					'url': CMF.adminUrl + '/' + data['table_name'] + '/populate',
 					'data': positions,
 					'dataType': 'json',
 					'async': true,
@@ -812,7 +812,7 @@ function initPermissionsList() {
 		//}
 		
 		cRequest = $.ajax({
-			'url': CMF.baseUrl + '/admin/' + data['table_name'] + '/permissions/' + data['role_id'] + '/save',
+			'url': CMF.adminUrl + '/' + data['table_name'] + '/permissions/' + data['role_id'] + '/save',
 			'data': changed,
 			'dataType': 'json',
 			'async': true,

@@ -53,7 +53,7 @@ class Object extends \CMF\Field\Base {
         try {
             return '<a href="'.$edit_link.'" class="item-link">'.strval($value).'</a>';
         } catch (\Exception $e) {
-            return "Error: unkown type";
+            return "Error: unknown type";
         }
     }
     

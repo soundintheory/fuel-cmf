@@ -10,7 +10,7 @@
 
 {% macro action_method(action_id, action, model, table, context) %}
     {{ include(template_from_string(action.content|default("
-    <a class=\"btn btn-small btn-icon {{ action.class|default('btn-info') }}\" href=\"{{ url('/admin/'~table~'/'~model.id~'/'~action_id) }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
+    <a class=\"btn btn-small btn-icon {{ action.class|default('btn-info') }}\" href=\"{{ admin_url('/'~table~'/'~model.id~'/'~action_id) }}\" rel=\"tooltip\" title=\"{{ action.title }}\">
         <i class=\"fa fa-{{ action.icon|default('cog') }}\"></i>
     </a>"))) }}
 {% endmacro %}
@@ -71,7 +71,7 @@
         {% if tabs|length > 1 %}
         <ul class="nav nav-pills">
             {% for tab_id, tab in tabs %}
-            <li class="{{ current_tab == tab_id ? 'active' : '' }}"><a href="{{ url('/admin/'~table_name~(loop.first ? '' : '/'~tab_id)) }}">{{ tab.title }}</a></li>
+            <li class="{{ current_tab == tab_id ? 'active' : '' }}"><a href="{{ admin_url('/'~table_name~(loop.first ? '' : '/'~tab_id)) }}">{{ tab.title }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -79,13 +79,13 @@
             {% if can_manage %}
                 {% if listActions and listActions|length > 0 %}
                     {% for action_id, action in listActions %}
-                        <a class="btn {{ action.title|trim ? '' : 'btn-icon' }} {{ action.class|default('btn-info') }}" href="{{ url('/admin/'~table_name~'/action/'~action_id~(originalTab ? '/'~originalTab : '')) }}{{ filterQuery ? '?'~filterQuery : '' }}">
+                        <a class="btn {{ action.title|trim ? '' : 'btn-icon' }} {{ action.class|default('btn-info') }}" href="{{ admin_url('/'~table_name~'/action/'~action_id~(originalTab ? '/'~originalTab : '')) }}{{ filterQuery ? '?'~filterQuery : '' }}">
                             <i class="fa fa-{{ action.icon|default('cog') }}"></i> {{ action.title }}
                         </a>
                     {% endfor %}
                 {% endif %}
-            {% if can_import %}<a href="{{ url('/admin/'~table_name~'/import') }}" class="btn btn-success btn-permissions" title="{{ _('admin.verbs.import') }}"><i class="fa fa-circle-arrow-down"></i> {{ _('admin.verbs.import') }}</a>{% endif %}
-            <a href="{{ url('/admin/'~table_name~'/permissions') }}" class="btn btn-icon btn-inverse btn-permissions" title="{{ _('admin.common.edit_resource_permissions', { resource:singular|lower }) }}"><i class="fa fa-lock"></i></a>
+            {% if can_import %}<a href="{{ admin_url('/'~table_name~'/import') }}" class="btn btn-success btn-permissions" title="{{ _('admin.verbs.import') }}"><i class="fa fa-circle-arrow-down"></i> {{ _('admin.verbs.import') }}</a>{% endif %}
+            <a href="{{ admin_url('/'~table_name~'/permissions') }}" class="btn btn-icon btn-inverse btn-permissions" title="{{ _('admin.common.edit_resource_permissions', { resource:singular|lower }) }}"><i class="fa fa-lock"></i></a>
             {% endif %}
         </div>
         <div class="clear"></div>
@@ -121,8 +121,8 @@
                         {% endif %}
                             {% set editable = can_edit and (item_permissions[row.id]|length == 0 or 'edit' in item_permissions[row.id]) %}
                             {% set deletable = can_delete and (item_permissions[row.id]|length == 0 or 'delete' in item_permissions[row.id]) %}
-                            {% set edit_link = url("/admin/"~row.metadata().table.name~"/"~row.get('id')~"/edit") %}
-                            {% set duplicate_link = url("/admin/"~row.metadata().table.name~"/"~row.get('id')~"/duplicate") %}
+                            {% set edit_link = admin_url("/"~row.metadata().table.name~"/"~row.get('id')~"/edit") %}
+                            {% set duplicate_link = admin_url("/"~row.metadata().table.name~"/"~row.get('id')~"/duplicate") %}
                             {% set isFirst = true %}
                             {% for column in columns %}
                                 {% set append = '' %}
@@ -143,12 +143,12 @@
                                 {% elseif column.type == 'lang' %}
                                 <td class="col-type-{{ column.type }}">
                                     {% if not has_translations %}
-                                    <img class="lang-flag default" src="{{ url('/admin/assets/img/lang/'~default_language()~'.png') }}" />
+                                    <img class="lang-flag default" src="{{ admin_url('/assets/img/lang/'~default_language()~'.png') }}" />
                                     {% elseif not has_all_translations %}
-                                    <img class="lang-flag" src="{{ url('/admin/assets/img/lang/'~default_language()~'.png') }}" />
-                                    <img class="lang-flag" src="{{ url('/admin/assets/img/lang/'~language()~'.png') }}" />
+                                    <img class="lang-flag" src="{{ admin_url('/assets/img/lang/'~default_language()~'.png') }}" />
+                                    <img class="lang-flag" src="{{ admin_url('/assets/img/lang/'~language()~'.png') }}" />
                                     {% else %}
-                                    <img class="lang-flag" src="{{ url('/admin/assets/img/lang/'~language()~'.png') }}" />
+                                    <img class="lang-flag" src="{{ admin_url('/assets/img/lang/'~language()~'.png') }}" />
                                     {% endif %}
                                 </td>
                                 {% else %}
@@ -158,7 +158,7 @@
                             <td class="actions"><span>
                                 {% for action_id, action in actions if action.list is not defined or action.list != false %}
                                 {{ attribute(this, 'action_'~action.type, [action_id, action, row, table_name, 'list']) }}
-                                {% endfor %}{% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="{{ _('admin.verbs.edit') }}"><i class="fa fa-pencil"></i></a>{% endif %}{% if can_create and not row.isStatic() %}<a class="btn btn-small btn-icon" href="{{ duplicate_link }}" rel="tooltip" title="{{ _('admin.verbs.clone') }}"><i class="fa fa-clone"></i></a>{% endif %}{% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="{{ url('/admin/'~table_name~'/'~row.get('id')~'/delete') }}" rel="tooltip" title="{{ _('admin.verbs.delete') }}" data-singular="{{ singular }}"><i class="fa fa-remove icon-white"></i></a>{% endif %}
+                                {% endfor %}{% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="{{ _('admin.verbs.edit') }}"><i class="fa fa-pencil"></i></a>{% endif %}{% if can_create and not row.isStatic() %}<a class="btn btn-small btn-icon" href="{{ duplicate_link }}" rel="tooltip" title="{{ _('admin.verbs.clone') }}"><i class="fa fa-clone"></i></a>{% endif %}{% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="{{ admin_url('/'~table_name~'/'~row.get('id')~'/delete') }}" rel="tooltip" title="{{ _('admin.verbs.delete') }}" data-singular="{{ singular }}"><i class="fa fa-remove icon-white"></i></a>{% endif %}
                             </span></td>
                             
                         </tr>
@@ -171,7 +171,7 @@
                                 {% else %}
                                 <p>{{ _('admin.messages.no_items_added', { resource:plural|lower }) }}</p>
                                 {% if can_create %}
-                                <a href="{{ url('/admin/'~table_name~'/create') }}" class="btn btn-medium"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_resource', { resource:singular }) }}</a>
+                                <a href="{{ admin_url('/'~table_name~'/create') }}" class="btn btn-medium"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_resource', { resource:singular }) }}</a>
                                 {% endif %}
                                 {% endif %}
                                 
@@ -214,23 +214,23 @@
         </div -->
         
         {% if user.super_user %}
-            <a href="{{ url('/admin/'~table_name~'/saveall') }}" class="btn btn-large btn-info">{{ _('admin.common.save_all') }}</a>
+            <a href="{{ admin_url('/'~table_name~'/saveall') }}" class="btn btn-large btn-info">{{ _('admin.common.save_all') }}</a>
         {% endif %}
         {% if can_create %}
         <div class="actions pull-right">
 
             {% if classes|length %}
                 <div class="dropup pull-right">
-                    <button href="{{ url('/admin/'~table_name~'/create') }}" class="btn btn-large btn-primary dropdown-toggle"><i class="fa fa-plus"></i> Add New {{ singular }} <span class="caret"></span></button>
+                    <button href="{{ admin_url('/'~table_name~'/create') }}" class="btn btn-large btn-primary dropdown-toggle"><i class="fa fa-plus"></i> Add New {{ singular }} <span class="caret"></span></button>
                     <ul class="dropdown-menu" role="menu">
                         <li class="nav-header">Choose a type...</li>
                         {% for className, classInfo in classes %}
-                            <li><a tabindex="-1" href="{{ url('/admin/'~classInfo['table_name']~'/create') }}"><i class="fa fa-{{ classInfo['icon'] }}"></i> {{ classInfo['singular'] }}</a></li>
+                            <li><a tabindex="-1" href="{{ admin_url('/'~classInfo['table_name']~'/create') }}"><i class="fa fa-{{ classInfo['icon'] }}"></i> {{ classInfo['singular'] }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
             {% else %}
-                <a href="{{ url('/admin/'~table_name~'/create') }}" class="btn btn-large btn-primary"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_new_resource', { resource:singular }) }}...</a>
+                <a href="{{ admin_url('/'~table_name~'/create') }}" class="btn btn-large btn-primary"><i class="fa fa-plus icon-white"></i> {{ _('admin.common.add_new_resource', { resource:singular }) }}...</a>
             {% endif %}
 
         </div>

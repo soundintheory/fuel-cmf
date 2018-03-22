@@ -23,9 +23,10 @@ if (\Config::get('cmf.languages.enabled')) {
 }
 
 // Check if custom module urls have been set
-$isAdmin = (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), trim(\Uri::create('admin'), '/')) === 0);
+$originalUri = !\Fuel::$is_cli ? \CMF::original_uri() : '';
+$isAdmin = (!\Fuel::$is_cli && strpos(ltrim($_SERVER['REQUEST_URI'], '/'), trim(\CMF::adminPath(), '/')) === 0);
 if ($isAdmin) {
-	\Config::set('security.uri_filter', array_merge( array('\Admin::module_url_filter'), \Config::get('security.uri_filter') ));
+	\Config::set('security.uri_filter', array_merge( array('\Admin::base_url_filter', '\Admin::module_url_filter'), \Config::get('security.uri_filter') ));
 } else if (\Config::get('cmf.module_urls', false) !== false) {
 	\Config::set('security.uri_filter', array_merge( array('\CMF::module_url_filter'), \Config::get('security.uri_filter') ));
 }
@@ -58,6 +59,13 @@ if (isset($_GET['debug']) && !\Fuel::$profiling) {
 	\Config::set('db.default.profiling', true);
 }
 
+// Clean annoying path out of GET vars
+if (!\Fuel::$is_cli && !empty($_GET)) {
+    if (isset($_GET[$originalUri]) && empty($_GET[$originalUri])) {
+        unset($_GET[$originalUri]);
+    }
+}
+
 // Listen for events at the beginning of the request for caching
 \Event::register('controller_started', 'CMF\\Cache::start');
 
@@ -68,4 +76,6 @@ Config::set('module_paths', $module_paths);
 
 if ($isAdmin) {
 	\Admin::initialize();
+} else if (!\Fuel::$is_cli && strpos($originalUri, '/admin') === 0) {
+    throw new \Fuel\Core\HttpNotFoundException();
 }

@@ -13,11 +13,11 @@ class Color extends Base {
     {
         return array(
             'js' => array(
-                '/admin/assets/js/bootstrap-colorpicker.min.js',
-                '/admin/assets/js/fields/color.js'
+                '/assets/js/bootstrap-colorpicker.min.js',
+                '/assets/js/fields/color.js'
             ),
             'css' => array(
-                '/admin/assets/css/bootstrap-colorpicker.min.css'
+                '/assets/css/bootstrap-colorpicker.min.css'
             )
         );
     }

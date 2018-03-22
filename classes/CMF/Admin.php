@@ -73,7 +73,8 @@ class Admin
 
     public static function initialize()
     {
-    	static::$base = \Uri::create('/admin');
+    	static::$base = \CMF::adminUrl();
+    	\Config::set('cmf.cache.enabled', false);
     }
     
     /**
@@ -383,6 +384,17 @@ class Admin
 
 		return $value;
 	}
+
+    /**
+     * Set as a URI filter when modules are being used
+     * @param  string $uri
+     * @return string
+     */
+    public static function base_url_filter($uri)
+    {
+        $base = trim(\Config::get('cmf.admin.base_url', 'admin'), '/');
+        return preg_replace('#^/'.preg_quote($base, '#').'#', '/admin', $uri);
+    }
 	
 	/**
 	 * Set as a URI filter when modules are being used
@@ -407,7 +419,7 @@ class Admin
 	
 	public static function activateModule($module)
 	{
-		static::$base = \Uri::create('/admin/'.$module);
+		static::$base = \CMF::adminUrl('/'.$module);
 		static::$current_module = $module;
 		static::$sidebar_config_path = "cmf.admin.modules.$module.sidebar";
 	}
@@ -447,7 +459,7 @@ class Admin
 				$output[$current_group]['items'][] = array(
 					'icon' => isset($item['icon']) ? $item['icon'] : $class_name::icon(),
 					'title' => isset($item['title']) ? $item['title'] : $class_name::plural(),
-					'href' => '/admin/'.$metadata->table['name'],
+					'href' => \CMF::adminPath('/'.$metadata->table['name']),
 					'class' => $class_name,
 					'active' => $class_name === static::$current_class
 				);

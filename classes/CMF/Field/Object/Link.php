@@ -55,9 +55,9 @@ class Link extends Object {
             if (!$model->hasTranslation($settings['mapping']['columnName'])) {
                 $attributes['class'] .= ' no-translation';
                 $input_attributes['class'] .= ' no-translation';
-                $label_text = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$label_text;
+                $label_text = '<img class="lang-flag" src="'.\CMF::adminUrl('/assets/img/lang/'.\CMF::defaultLang().'.png').'" />&nbsp; '.$label_text;
             } else {
-                $label_text = '<img class="lang-flag" src="'.\Uri::create('/admin/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$label_text;
+                $label_text = '<img class="lang-flag" src="'.\CMF::adminUrl('/assets/img/lang/'.\CMF::lang().'.png').'" />&nbsp; '.$label_text;
             }
             
         }
@@ -503,11 +503,11 @@ class Link extends Object {
     {
         return array(
             'js' => array(
-                '/admin/assets/select2/select2.min.js',
-                '/admin/assets/js/fields/link.js'
+                '/assets/select2/select2.min.js',
+                '/assets/js/fields/link.js'
             ),
             'css' => array(
-                '/admin/assets/select2/select2.css'
+                '/assets/select2/select2.css'
             )
         );
     }

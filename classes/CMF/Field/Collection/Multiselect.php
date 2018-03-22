@@ -22,8 +22,8 @@ class Multiselect extends \CMF\Field\Base {
     public static function getAssets()
     {
         return array(
-            'js' => array('/admin/assets/fancybox/jquery.fancybox.pack.js'),
-            'css' => array('/admin/assets/fancybox/jquery.fancybox.css')
+            'js' => array('/assets/fancybox/jquery.fancybox.pack.js'),
+            'css' => array('/assets/fancybox/jquery.fancybox.css')
         );
     }
     
@@ -34,7 +34,7 @@ class Multiselect extends \CMF\Field\Base {
         $target_table = \Admin::getTableForClass($target_class);
         
         if ($value instanceof \Doctrine\Common\Collections\Collection && count($value) > 0) {
-            return \Html::anchor("/admin/$target_table", count($value).' &raquo;');
+            return \Html::anchor(\CMF::adminPath("/$target_table"), count($value).' &raquo;');
         } else {
             return '0';
         }
@@ -64,7 +64,7 @@ class Multiselect extends \CMF\Field\Base {
         $has_errors = count($errors) > 0;
         $settings['title'] = $settings['title'].($settings['required'] ? ' *' : '').($has_errors ? ' - '.$errors[0] : '');
         $settings['cid'] = 'field_'.md5($settings['mapping']['fieldName'].static::type());
-        $settings['add_link'] = \Uri::create('/admin/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : ''));
+        $settings['add_link'] = \CMF::adminUrl('/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : ''));
         $settings['singular'] = $target_class::singular();
         $settings['icon'] = $target_class::icon();
         $settings['is_select2'] = false;
@@ -91,11 +91,11 @@ class Multiselect extends \CMF\Field\Base {
                 'widget' => $settings['widget'],
                 'assets' => array(
                     'js' => array(
-                        '/admin/assets/js/bootstrap-transfer.js',
-                        '/admin/assets/js/fields/collection/transfer.js'
+                        '/assets/js/bootstrap-transfer.js',
+                        '/assets/js/fields/collection/transfer.js'
                     ),
                     'css' => array(
-                        '/admin/assets/css/bootstrap-transfer.css'
+                        '/assets/css/bootstrap-transfer.css'
                     )
                 ),
                 'js_data' => array( 'options' => $transfer_options, 'values' => $values, 'edit' => $settings['edit'], 'create' => $settings['create'] )
@@ -118,8 +118,8 @@ class Multiselect extends \CMF\Field\Base {
                 'content' => $content,
                 'widget' => $settings['widget'],
                 'assets' => array(
-                    'css' => array('/admin/assets/select2/select2.css'),
-                    'js' => array('/admin/assets/select2/select2.min.js', '/admin/assets/js/fields/select2.js')
+                    'css' => array('/assets/select2/select2.css'),
+                    'js' => array('/assets/select2/select2.min.js', '/assets/js/fields/select2.js')
                 ),
                 'js_data' => $settings['select2']
             );
@@ -130,7 +130,7 @@ class Multiselect extends \CMF\Field\Base {
         
         return array(
             'content' => strval(\View::forge('admin/fields/collection/multiselect.twig', array( 'settings' => $settings, 'options' => $options, 'values' => $values ), false)),
-            'assets' => array( 'js' => array('/admin/assets/js/fields/collection/multiselect.js') ),
+            'assets' => array( 'js' => array('/assets/js/fields/collection/multiselect.js') ),
             'widget' => false
         );
         

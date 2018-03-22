@@ -289,12 +289,12 @@ class Image extends File {
     {
         return array(
             'js' => array(
-                '/admin/assets/fineuploader/jquery.fineuploader-3.2.js',
-                '/admin/assets/jcrop/jquery.Jcrop.min.js',
-                '/admin/assets/js/fields/image.js'
+                '/assets/fineuploader/jquery.fineuploader-3.2.js',
+                '/assets/jcrop/jquery.Jcrop.min.js',
+                '/assets/js/fields/image.js'
             ),
             'css' => array(
-                '/admin/assets/jcrop/jquery.Jcrop.min.css'
+                '/assets/jcrop/jquery.Jcrop.min.css'
             )
         );
     }

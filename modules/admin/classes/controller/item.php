@@ -34,7 +34,7 @@ class Controller_Item extends Controller_Base {
 
 		// Superlock: don't let them create one!!
 		if ($this->superlock = $class_name::superlock()) {
-			$default_redirect = \Uri::base(false)."admin/$table_name";
+			$default_redirect = \CMF::adminPath("/$table_name");
 			\Response::redirect($default_redirect, 'location');
 		}
 
@@ -81,7 +81,7 @@ class Controller_Item extends Controller_Base {
 		// Load up the model with the Id
 	    $model = $class_name::find($id);
 	    if (is_null($model)) {
-	    	\Response::redirect("/admin/$redirect", 'location');
+	    	\CMF::adminRedirect("/$redirect", 'location');
 	    }
 
 	    $can_edit = \CMF\Auth::can('edit', $model);
@@ -140,7 +140,7 @@ class Controller_Item extends Controller_Base {
 
 		// Send user back
 		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => ($success ? 'alert-success' : 'alert-danger') ), 'msg' => $message ));		
-		$next = \Input::param('next', \Input::referrer("/admin/$table_name"));
+		$next = \Input::param('next', \Input::referrer(\CMF::adminPath("/$table_name")));
 		\Response::redirect($next);
 	}
 	
@@ -245,12 +245,12 @@ class Controller_Item extends Controller_Base {
 	        		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => $message ));
 
 	        		if ($create_new)
-	        			\Response::redirect("/admin/$table_name/create$qs", 'location');
+	        			\CMF::adminRedirect("/$table_name/create$qs", 'location');
 
 	        		if ($save_and_close)
-	        			\Response::redirect("/admin/$list_page_segment".$qs, 'location');
+	        			\CMF::adminRedirect("/$list_page_segment".$qs, 'location');
 
-	        		\Response::redirect("/admin/$table_name/".$model->get('id')."/edit$qs", 'location');
+	        		\CMF::adminRedirect("/$table_name/".$model->get('id')."/edit$qs", 'location');
 	        		break;
 	        	
 	        }
@@ -323,7 +323,7 @@ class Controller_Item extends Controller_Base {
 	    }
 	    
 	    if (!empty($error)) {
-	    	$default_redirect = "/admin/$redirect";
+	    	$default_redirect = \CMF::adminPath("/$redirect");
 			\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-danger' ), 'msg' => \Lang::get('admin.errors.actions.delete', array( 'message' => $error )) ));
 			\Response::redirect(\Input::referrer($default_redirect), 'location');
 	    }
@@ -339,7 +339,7 @@ class Controller_Item extends Controller_Base {
 	    		break;
 	    	
 	    	default:
-	    		$default_redirect = "/admin/$redirect";
+	    		$default_redirect = \CMF::adminPath("/$redirect");
 			    
 			    \Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => \Lang::get('admin.messages.item_delete_success', array( 'resource' => ucfirst($singular) )) ));
 			    \Response::redirect(\Input::referrer($default_redirect), 'location');
@@ -471,7 +471,7 @@ class Controller_Item extends Controller_Base {
 		// Load up the model with the Id
 	    $model = $class_name::find($id);
 	    if (is_null($model)) {
-	    	\Response::redirect("/admin/$table_name", 'location');
+	    	\CMF::adminRedirect("/$table_name", 'location');
 	    }
 		
 		$actions = $class_name::actions();
@@ -503,7 +503,7 @@ class Controller_Item extends Controller_Base {
 					\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => $result ));
 				}
 				
-				$redirect = \Input::referrer("/admin/$table_name/$id");
+				$redirect = \Input::referrer(\CMF::adminPath("/$table_name/$id"));
 				\Response::redirect($redirect, 'location');
 				
 			break;

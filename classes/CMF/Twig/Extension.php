@@ -69,6 +69,7 @@ class Extension extends Twig_Extension
 			new Twig_SimpleFunction('array_as_hidden_inputs', 'CMF::arrayAsHiddenInputs'),
             new Twig_SimpleFunction('get_class', 'get_class'),
             new Twig_SimpleFunction('is_subclass_of', 'is_subclass_of'),
+            new Twig_SimpleFunction('admin_url', 'CMF::adminUrl')
 		);
 	}
 	

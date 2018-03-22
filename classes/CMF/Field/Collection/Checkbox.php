@@ -29,7 +29,7 @@ class Checkbox extends Multiselect {
             $values = $value->toArray();
             $output = '';
             foreach ($values as $val) {
-                $output .= \Html::anchor("/admin/$target_table/".$val->id."/edit", $val->display()).', ';
+                $output .= \Html::anchor(\CMF::adminPath("/$target_table/".$val->id."/edit"), $val->display()).', ';
             }
             return rtrim($output, ', ');
             

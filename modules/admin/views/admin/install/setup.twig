@@ -18,9 +18,9 @@
 
 			{% if status %} 
 			<p>Excellent! All files copies successfully. Next step - database.</p>
-			<p><a class="btn btn-success span6 offset3" href="{{ url('/admin/install/database') }}">Database Setup</a></p>
+			<p><a class="btn btn-success span6 offset3" href="{{ admin_url('/install/database') }}">Database Setup</a></p>
 			{% else %}
-			<form method="post" action="/admin/install/setup/go">
+			<form method="post" action="{{ admin_url('/install/setup/go') }}">
 				<p><em>Enter project info and submit to copy the files and set the project up.</em></p>
 				<fieldset>
 					<div class="control-group">

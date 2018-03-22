@@ -10,7 +10,7 @@ class Permissions extends \CMF\Field\Collection\Multiselect {
     public static function getAssets()
     {
         return array(
-            'js' => array('/admin/assets/js/fields/auth/permissions.js'),
+            'js' => array('/assets/js/fields/auth/permissions.js'),
             'css' => array()
         );
     }

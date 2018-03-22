@@ -38,7 +38,7 @@
 				preload : false,
 				helpers : {
 					overlay: {
-						css: { 'background' : "url('" + CMF.baseUrl + "/admin/assets/fancybox/fancybox_overlay.png')" }
+						css: { 'background' : "url('" + CMF.adminUrl + "/assets/fancybox/fancybox_overlay.png')" }
 					}
 				}
 			});
@@ -173,7 +173,7 @@
 						if (data.success) {
 							$newItem.find('input.item-id').val(data.id);
 							$newItem.find('.title-value').html(data.label);
-							$newItem.find('.btn-edit').attr('href', CMF.baseUrl + '/admin/'+table+'/'+data.id+'/edit'+(settings.edit_qs || '?_mode=inline&_cid='+cid));
+							$newItem.find('.btn-edit').attr('href', CMF.adminUrl + '/'+table+'/'+data.id+'/edit'+(settings.edit_qs || '?_mode=inline&_cid='+cid));
 							$newItem.removeClass('loading');
 						} else {
 							$newItem.remove();

@@ -27,7 +27,7 @@
             multiple: false,
             debug: false,
             request: {
-                endpoint: CMF.baseUrl + '/admin/upload',
+                endpoint: CMF.adminUrl + '/upload',
                 params: { 'path':settings['path'], 'fieldName':fieldName, 'model':(settings.model || '') },
                 paramsInBody: false
             },

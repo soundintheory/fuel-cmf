@@ -13,12 +13,12 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</a>
-				<a class="brand" href="{{ url('/admin') }}">{{ admin_title }}</a>
+				<a class="brand" href="{{ admin_url('') }}">{{ admin_title }}</a>
 				<div class="nav-collapse">
 					{% if modules %}
 						<ul class="nav">
 							{% for module_id, module in modules %}
-							    <li class="{{ module_id == current_module ? 'active' : '' }}"><a href="{{ url('/admin/'~module_id) }}">{{ module.title }}</a></li>
+							    <li class="{{ module_id == current_module ? 'active' : '' }}"><a href="{{ admin_url('/'~module_id) }}">{{ module.title }}</a></li>
 							{% endfor %}
 						</ul>
 					{% endif %}
@@ -26,13 +26,13 @@
 					<ul class="nav pull-right">
 	                    {% if lang_enabled %}
 	                    <li class="dropdown">
-	                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img class="lang-flag" src="{{ url('/admin/assets/img/lang/'~language()~'.png') }}" /> {{ _('languages.'~language()) }} <b class="caret"></b></a>
+	                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img class="lang-flag" src="{{ admin_url('/assets/img/lang/'~language()~'.png') }}" /> {{ _('languages.'~language()) }} <b class="caret"></b></a>
 	                        <ul class="dropdown-menu lang-dropdown">
 	                            {% for lang in all_languages() %}
-	                                <li><a href="{{ url('/admin/lang/set/'~lang.code) }}"><img src="{{ url('/admin/assets/img/lang/'~lang.code~'.png') }}" class="lang-flag" /> {{ _('languages.'~lang.code, [], null) }}</a></li>
+	                                <li><a href="{{ admin_url('/lang/set/'~lang.code) }}"><img src="{{ admin_url('/assets/img/lang/'~lang.code~'.png') }}" class="lang-flag" /> {{ _('languages.'~lang.code, [], null) }}</a></li>
 	                            {% endfor %}
-	                            <li><a href="{{ url('/admin/lang/terms') }}"><i class="fa fa-comment"></i> {{ _('admin.common.edit_resource', { resource:_('admin.common.common_terms') }) }}</a></li>
-	                            <li><a href="{{ url('/admin/languages') }}"><i class="fa fa-globe"></i> {{ _('admin.common.edit_resource', { resource:_('admin.common.languages') }) }}</a></li>
+	                            <li><a href="{{ admin_url('/lang/terms') }}"><i class="fa fa-comment"></i> {{ _('admin.common.edit_resource', { resource:_('admin.common.common_terms') }) }}</a></li>
+	                            <li><a href="{{ admin_url('/languages') }}"><i class="fa fa-globe"></i> {{ _('admin.common.edit_resource', { resource:_('admin.common.languages') }) }}</a></li>
 	                        </ul>
 	                    </li>
 	                    {% endif %}
@@ -40,7 +40,7 @@
 	                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ user.username }} <b class="caret"></b></a>
 	                        <ul class="dropdown-menu">
 	                            <li><a href="{{ url(user.account) }}"><i class="fa fa-pencil"></i> {{ _('admin.common.edit_resource', { resource:_('admin.common.account') }) }}</a></li>
-	                            <li><a href="{{ url('/admin/logout') }}"><i class="fa fa-circle-arrow-right"></i> {{ _('admin.verbs.logout') }}</a></li>
+	                            <li><a href="{{ admin_url('/logout') }}"><i class="fa fa-circle-arrow-right"></i> {{ _('admin.verbs.logout') }}</a></li>
 	                        </ul>
 	                    </li>
 	                </ul>
@@ -52,7 +52,7 @@
 			
 			<ul class="breadcrumb">
 				{% if lang_enabled %}
-				<li><a href="{{ url('/admin/languages') }}"><img src="{{ url('/admin/assets/img/lang/'~language()~'.png') }}" class="lang-flag" /></a></li>
+				<li><a href="{{ admin_url('/languages') }}"><img src="{{ admin_url('/assets/img/lang/'~language()~'.png') }}" class="lang-flag" /></a></li>
 				{% endif %}
 				{% block breadcrumb %}{% endblock %}
 			</ul>

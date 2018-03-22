@@ -27,8 +27,8 @@ class CKEditor extends Textarea {
     {
         return array(
             'js' => array(
-                '/admin/assets/ckeditor/ckeditor.js',
-                '/admin/assets/js/fields/ckeditor.js'
+                '/assets/ckeditor/ckeditor.js',
+                '/assets/js/fields/ckeditor.js'
             )
         );
     }

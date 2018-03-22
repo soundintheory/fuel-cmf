@@ -23,7 +23,7 @@ class Controller_Base extends \Controller {
 	public function before() {
 		
 		if (!\CMF\Auth::check(null, 'view', 'admin_site')) {
-            \Response::redirect("/admin/login?next=".\Uri::string(), 'location');
+            \CMF::adminRedirect("/login?next=".\Uri::string(), 'location');
         }
 
         \Lang::$autosave = false;
@@ -72,7 +72,7 @@ class Controller_Base extends \Controller {
         // Info about the user
         $user = \CMF\Auth::current_user();
         $this->user = array(
-            'account' => '/admin/users/'.$user->id.'/edit',
+            'account' => \CMF::adminUrl('/users/'.$user->id.'/edit'),
             'username' => $user->username,
             'super_user' => $user->super_user
         );

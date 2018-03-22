@@ -9,10 +9,6 @@
 (function($) {
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/elFinder.js
- */
-
 /**
  * @class elFinder - file manager for web
  *
@@ -2912,10 +2908,6 @@ elFinder.prototype = {
 }
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/elFinder.version.js
- */
-
 /**
  * Application version
  *
@@ -2923,11 +2915,6 @@ elFinder.prototype = {
  **/
 elFinder.prototype.version = '2.0.2';
 
-
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/jquery.elfinder.js
- */
 
 $.fn.elfinder = function(o) {
 	
@@ -2974,10 +2961,6 @@ $.fn.getElFinder = function() {
 	return instance;
 }
 
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/elFinder.options.js
- */
 
 /**
  * Default elFinder config
@@ -3462,10 +3445,6 @@ elFinder.prototype._options = {
 }
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/elFinder.history.js
- */
-
 /**
  * @class elFinder.history
  * Store visited folders
@@ -3579,9 +3558,6 @@ elFinder.prototype.history = function(fm) {
 	
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/elFinder.command.js
- */
 
 /**
  * elFinder command prototype
@@ -3856,12 +3832,6 @@ elFinder.prototype.command = function(fm) {
 }
 
 
-
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/elFinder.resources.js
- */
-
 /**
  * elFinder resources registry.
  * Store shared data
@@ -4009,11 +3979,6 @@ elFinder.prototype.resources = {
 }
 
 
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/jquery.dialogelfinder.js
- */
-
 /**
  * @class dialogelfinder - open elFinder in dialog window
  *
@@ -4105,11 +4070,6 @@ $.fn.dialogelfinder = function(opts) {
 	return this;
 }
 
-
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/i18n/elfinder.en.js
- */
 
 /**
  * English translation
@@ -4451,11 +4411,6 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 }
 
 
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/button.js
- */
-
 /**
  * @class  elFinder toolbar button widget.
  * If command has variants - create menu
@@ -4532,10 +4487,6 @@ $.fn.elfinderbutton = function(cmd) {
 	});
 }
 
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/contextmenu.js
- */
 
 /**
  * @class  elFinder contextmenu
@@ -4682,10 +4633,6 @@ $.fn.elfindercontextmenu = function(fm) {
 	
 }
 
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/cwd.js
- */
 
 /**
  * elFinder current working directory ui.
@@ -5764,10 +5711,6 @@ $.fn.elfindercwd = function(fm, options) {
 }
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/dialog.js
- */
-
 /**
  * @class  elFinder dialog
  *
@@ -5982,9 +5925,6 @@ $.fn.elfinderdialog.defaults = {
 	minHeight : 110
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/navbar.js
- */
 
 /**
  * @class elfindernav - elFinder container for diretories tree and places
@@ -6039,10 +5979,6 @@ $.fn.elfindernavbar = function(fm, opts) {
 };
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/overlay.js
- */
-
 
 $.fn.elfinderoverlay = function(opts) {
 	
@@ -6091,9 +6027,6 @@ $.fn.elfinderoverlay = function(opts) {
 	return this;
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/panel.js
- */
 
 $.fn.elfinderpanel = function(fm) {
 	
@@ -6112,9 +6045,6 @@ $.fn.elfinderpanel = function(fm) {
 	})
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/path.js
- */
 
 /**
  * @class elFinder ui
@@ -6149,9 +6079,6 @@ $.fn.elfinderpath = function(fm) {
 	});
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/places.js
- */
 
 /**
  * @class elFinder places/favorites ui
@@ -6440,9 +6367,6 @@ $.fn.elfinderplaces = function(fm, opts) {
 	});
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/searchbutton.js
- */
 
 /**
  * @class  elFinder toolbar search button widget.
@@ -6531,9 +6455,6 @@ $.fn.elfindersearchbutton = function(cmd) {
 	});
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/sortbutton.js
- */
 
 /**
  * @class  elFinder toolbar button menu with sort variants.
@@ -6623,12 +6544,6 @@ $.fn.elfindersortbutton = function(cmd) {
 }
 
 
-
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/stat.js
- */
-
 /**
  * @class elFinder ui
  * Display number of files/selected files and its size in statusbar
@@ -6688,9 +6603,6 @@ $.fn.elfinderstat = function(fm) {
 	})
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/toolbar.js
- */
 
 /**
  * @class  elFinder toolbar
@@ -6730,9 +6642,6 @@ $.fn.elfindertoolbar = function(fm, opts) {
 	return this;
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/tree.js
- */
 
 /**
  * @class  elFinder folders tree
@@ -7284,10 +7193,6 @@ $.fn.elfindertree = function(fm, opts) {
 }
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/uploadButton.js
- */
-
 /**
  * @class  elFinder toolbar's button tor upload file
  *
@@ -7317,10 +7222,6 @@ $.fn.elfinderuploadbutton = function(cmd) {
 }
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/viewbutton.js
- */
-
 /**
  * @class  elFinder toolbar button to switch current directory view.
  *
@@ -7340,9 +7241,6 @@ $.fn.elfinderviewbutton = function(cmd) {
 	});
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/ui/workzone.js
- */
 
 /**
  * @class elfinderworkzone - elFinder container for nav and current directory
@@ -7373,12 +7271,6 @@ $.fn.elfinderworkzone = function(fm) {
 	return this;
 }
 
-
-
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/archive.js
- */
 
 /**
  * @class  elFinder command "archive"
@@ -7446,9 +7338,6 @@ elFinder.prototype.commands.archive = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/back.js
- */
 
 /**
  * @class  elFinder command "back"
@@ -7473,9 +7362,6 @@ elFinder.prototype.commands.back = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/copy.js
- */
 
 /**
  * @class elFinder command "copy".
@@ -7515,9 +7401,6 @@ elFinder.prototype.commands.copy = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/cut.js
- */
 
 /**
  * @class elFinder command "copy".
@@ -7560,9 +7443,6 @@ elFinder.prototype.commands.cut = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/download.js
- */
 
 /**
  * @class elFinder command "download". 
@@ -7632,9 +7512,6 @@ elFinder.prototype.commands.download = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/duplicate.js
- */
 
 /**
  * @class elFinder command "duplicate"
@@ -7686,9 +7563,6 @@ elFinder.prototype.commands.duplicate = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/edit.js
- */
 
 /**
  * @class elFinder command "edit". 
@@ -7913,9 +7787,6 @@ elFinder.prototype.commands.edit = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/extract.js
- */
 
 /**
  * @class  elFinder command "extract"
@@ -8074,9 +7945,6 @@ elFinder.prototype.commands.extract = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/forward.js
- */
 
 /**
  * @class  elFinder command "forward"
@@ -8101,9 +7969,6 @@ elFinder.prototype.commands.forward = function() {
 	
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/getfile.js
- */
 
 /**
  * @class elFinder command "getfile". 
@@ -8212,9 +8077,6 @@ elFinder.prototype.commands.getfile = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/help.js
- */
 
 /**
  * @class  elFinder command "help"
@@ -8369,10 +8231,6 @@ elFinder.prototype.commands.help = function() {
 }
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/home.js
- */
-
 
 elFinder.prototype.commands.home = function() {
 	this.title = 'Home';
@@ -8397,9 +8255,6 @@ elFinder.prototype.commands.home = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/info.js
- */
 
 /**
  * @class elFinder command "info". 
@@ -8610,10 +8465,6 @@ elFinder.prototype.commands.info = function() {
 }
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/mkdir.js
- */
-
 /**
  * @class  elFinder command "mkdir"
  * Create new folder
@@ -8638,10 +8489,6 @@ elFinder.prototype.commands.mkdir = function() {
 }
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/mkfile.js
- */
-
 /**
  * @class  elFinder command "mkfile"
  * Create new empty file
@@ -8661,10 +8508,6 @@ elFinder.prototype.commands.mkfile = function() {
 
 }
 
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/netmount.js
- */
 
 /**
  * @class  elFinder command "netmount"
@@ -8764,9 +8607,6 @@ elFinder.prototype.commands.netmount = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/open.js
- */
 
 /**
  * @class  elFinder command "open"
@@ -8878,9 +8718,6 @@ elFinder.prototype.commands.open = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/paste.js
- */
 
 /**
  * @class  elFinder command "paste"
@@ -9115,9 +8952,6 @@ elFinder.prototype.commands.paste = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/quicklook.js
- */
 
 /**
  * @class  elFinder command "quicklook"
@@ -9551,11 +9385,6 @@ elFinder.prototype.commands.quicklook = function() {
 
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/quicklook.plugins.js
- */
-
-
 elFinder.prototype.commands.quicklook.plugins = [
 	
 	/**
@@ -9891,9 +9720,6 @@ elFinder.prototype.commands.quicklook.plugins = [
 	
 ]
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/reload.js
- */
 
 /**
  * @class  elFinder command "reload"
@@ -9930,9 +9756,6 @@ elFinder.prototype.commands.reload = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/rename.js
- */
 
 /**
  * @class elFinder command "rename". 
@@ -10063,10 +9886,6 @@ elFinder.prototype.commands.rename = function() {
 
 }
 
-
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/resize.js
- */
 
 /**
  * @class  elFinder command "resize"
@@ -10889,10 +10708,6 @@ elFinder.prototype.commands.resize = function() {
 })(jQuery);
 
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/rm.js
- */
-
 /**
  * @class  elFinder command "rm"
  * Delete files
@@ -10979,9 +10794,6 @@ elFinder.prototype.commands.rm = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/search.js
- */
 
 /**
  * @class  elFinder command "search"
@@ -11028,9 +10840,6 @@ elFinder.prototype.commands.search = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/sort.js
- */
 
 /**
  * @class  elFinder command "sort"
@@ -11064,9 +10873,6 @@ elFinder.prototype.commands.sort = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/up.js
- */
 
 /**
  * @class  elFinder command "up"
@@ -11092,9 +10898,6 @@ elFinder.prototype.commands.up = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/upload.js
- */
 
 /**
  * @class elFinder command "upload"
@@ -11207,9 +11010,6 @@ elFinder.prototype.commands.upload = function() {
 
 }
 
-/*
- * File: /Users/andy/Work/Currell/currell-group/fuel/packages/cmf/modules/admin/public/assets/elfinder/js/commands/view.js
- */
 
 /**
  * @class  elFinder command "view"

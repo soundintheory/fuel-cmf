@@ -6,7 +6,7 @@ class Controller_Lang extends Controller_Base {
 	
 	public function action_set($code = null)
 	{
-		$referrer = \Input::referrer('/admin');
+		$referrer = \Input::referrer(\CMF::adminUrl());
 		
 		// Don't bother if no code
 		if (is_null($code)) return \Response::redirect($referrer);
@@ -65,7 +65,7 @@ class Controller_Lang extends Controller_Base {
 
 		\Session::set_flash('main_alert', array( 'attributes' => array( 'class' => 'alert-success' ), 'msg' => \Lang::get('admin.messages.translations_save_success') ));
 
-		$referrer = \Input::referrer('/admin');
+		$referrer = \Input::referrer(\CMF::adminPath());
 		return \Response::redirect($referrer);
 	}
 	

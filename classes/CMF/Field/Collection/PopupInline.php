@@ -17,11 +17,11 @@ class PopupInline extends Multiselect {
     {
         return array(
             'js' => array(
-                '/admin/assets/fancybox/jquery.fancybox.pack.js',
-                '/admin/assets/js/fields/collection/popup-inline.js'
+                '/assets/fancybox/jquery.fancybox.pack.js',
+                '/assets/js/fields/collection/popup-inline.js'
             ),
             'css' => array(
-                '/admin/assets/fancybox/jquery.fancybox.css'
+                '/assets/fancybox/jquery.fancybox.css'
             )
         );
     }
@@ -81,7 +81,7 @@ class PopupInline extends Multiselect {
                 'singular' => $type::singular(),
                 'prefix' => $prefix,
                 'can_duplicate' => !$type::_static() && @$settings['create'],
-                'edit_link' => \Uri::create('/admin/'.$metadata->table['name'].'/__ID__/edit'.$edit_qs),
+                'edit_link' => \CMF::adminUrl('/'.$metadata->table['name'].'/__ID__/edit'.$edit_qs),
                 'hidden_fields' => array(
                     'id' => \Form::hidden($prefix.'[id]', '', array( 'class' => 'item-id', 'data-field-name' => 'id' )),
                     'pos' => \Form::hidden($prefix.'[pos]', '', array( 'data-field-name' => 'pos' )),
@@ -93,7 +93,7 @@ class PopupInline extends Multiselect {
                 'singular' => $type::singular(),
                 'plural' => $type::plural(),
                 'icon' => $type::icon(),
-                'add_link' => \Uri::create('/admin/'.$metadata->table['name'].'/create'.$edit_qs)
+                'add_link' => \CMF::adminUrl('/'.$metadata->table['name'].'/create'.$edit_qs)
             );
         }
         
@@ -110,7 +110,7 @@ class PopupInline extends Multiselect {
             $row = array(
                 '_icon_' => $type::icon(),
                 '_title_' => $item->display(),
-                'edit_link' => \Uri::create('/admin/'.$metadata->table['name'].'/'.$item->id.'/edit'.$edit_qs),
+                'edit_link' => \CMF::adminUrl('/'.$metadata->table['name'].'/'.$item->id.'/edit'.$edit_qs),
                 'can_duplicate' => !$type::_static() && @$settings['create'],
                 'hidden_fields' => array(
                     'id' => \Form::hidden($prefix.'[id]', $item->id, array( 'class' => 'item-id', 'data-field-name' => 'id' )),

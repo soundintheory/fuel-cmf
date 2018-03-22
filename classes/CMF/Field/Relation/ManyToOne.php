@@ -30,8 +30,8 @@ class ManyToOne extends \CMF\Field\Base {
     public static function getAssets()
     {
         return array(
-            'js' => array('/admin/assets/fancybox/jquery.fancybox.pack.js'),
-            'css' => array('/admin/assets/fancybox/jquery.fancybox.css')
+            'js' => array('/assets/fancybox/jquery.fancybox.pack.js'),
+            'css' => array('/assets/fancybox/jquery.fancybox.css')
         );
     }
     
@@ -48,7 +48,7 @@ class ManyToOne extends \CMF\Field\Base {
         $target_table = \CMF\Admin::getTableForClass($target_class);
         $target_prop = ($settings['mapping']['isOwningSide'] === true) ? $settings['mapping']['inversedBy'] : $settings['mapping']['mappedBy'];
         if (empty($target_prop) || is_null($model->id)) $target_prop = false;
-        $add_link = \Uri::create('/admin/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : ''));
+        $add_link = \CMF::adminUrl('/'.$target_table.'/create?_mode=inline&_cid='.$settings['cid'].($target_prop !== false ? '&'.$target_prop.'='.$model->id : ''));
     	$options = $target_class::options(\Arr::get($settings, 'filters', array()), array(), null, null, null, is_array($settings['select2']), \Arr::get($settings, 'group_by'));
         $has_controls = $settings['create'] !== false;
 
@@ -97,8 +97,8 @@ class ManyToOne extends \CMF\Field\Base {
                 'content' => html_tag('div', array( 'class' => 'controls control-group'.($has_controls ? ' field-with-controls' : '').($has_errors ? ' error' : ''), 'id' => $settings['cid'] ), $label.$description.$input.$controls_top).'<div class="clear"><!-- --></div>',
                 'widget' => false,
                 'assets' => array(
-                    'css' => array('/admin/assets/select2/select2.css'),
-                    'js' => array('/admin/assets/select2/select2.min.js', '/admin/assets/js/fields/select2.js')
+                    'css' => array('/assets/select2/select2.css'),
+                    'js' => array('/assets/select2/select2.min.js', '/assets/js/fields/select2.js')
                 ),
                 'js_data' => $settings['select2']
             );

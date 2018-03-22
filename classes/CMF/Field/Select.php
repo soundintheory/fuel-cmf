@@ -115,8 +115,8 @@ class Select extends Base {
                 'content' => $content.html_tag('div', array(), ''),
                 'widget' => @$settings['widget'],
                 'assets' => array(
-                    'css' => array('/admin/assets/select2/select2.css'),
-                    'js' => array('/admin/assets/select2/select2.min.js', '/admin/assets/js/fields/select2.js')
+                    'css' => array('/assets/select2/select2.css'),
+                    'js' => array('/assets/select2/select2.min.js', '/assets/js/fields/select2.js')
                 ),
                 'js_data' => $settings['select2']
             );
@@ -139,8 +139,8 @@ class Select extends Base {
     public static function getAssets()
     {
         return array(
-            //'js' => array('/admin/assets/js/fields/base.js'),
-            //'css' => array('/admin/assets/css/fields/base.css'),
+            //'js' => array('/assets/js/fields/base.js'),
+            //'css' => array('/assets/css/fields/base.css'),
         );
     }
 	
