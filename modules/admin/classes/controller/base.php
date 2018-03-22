@@ -86,7 +86,9 @@ class Controller_Base extends \Controller {
         $this->dashboard_title = \Lang::get('admin.modules.'.\Admin::$current_module.'.title', array(), \Config::get('cmf.admin.modules.'.\Admin::$current_module.'.title', \Lang::get('admin.common.dashboard', array(), 'Dashboard')));
         
         $this->headers['X-XSS-Protection'] = 0;
-        
+        $this->headers['X-Frame-Options'] = 'SAMEORIGIN';
+        $this->headers['Content-Security-Policy'] = "frame-ancestors 'self'";
+
         return \Response::forge(\View::forge($this->template, $this->data, false), $this->status, $this->headers);
     }
     
