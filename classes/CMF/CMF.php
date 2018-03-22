@@ -440,7 +440,7 @@ class CMF
     public static function adminPath($path = null)
     {
         $base = trim(\Config::get('cmf.admin.base_url', 'admin'), '/');
-        return !empty($path) ? "/$base/".ltrim(preg_replace('#^/?admin/?#', '', $path), '/') : "/$base";
+        return !empty($path) ? "/$base/".ltrim(preg_replace('#^/?'.preg_quote($base, '#').'/?#', '', $path), '/') : "/$base";
     }
 
     /**

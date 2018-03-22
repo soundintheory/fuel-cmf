@@ -21,7 +21,7 @@
 			
 			<form method="post" action="{{ admin_url('/login') }}">
 				
-				<input type="hidden" value="{{ form_val('next', admin_url())|escape }}" name="next" />
+				<input type="hidden" value="{{ form_val('next', admin_path())|escape }}" name="next" />
 				
 				
 				<fieldset>
