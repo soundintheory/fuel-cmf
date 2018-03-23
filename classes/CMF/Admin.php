@@ -354,8 +354,8 @@ class Admin
 		foreach ($hierarchy as $model_class)
 		{
 			$lang_key = "admin.models.$model_class.fields.$key.$attribute";
-			$value = \Lang::get($lang_key);
-			if (!empty($value) && $value != $lang_key) {
+			$value = \Lang::get($lang_key, [], '___empty___');
+			if (!empty($value) && $value != '___empty___') {
 				break;
 			} else {
 				$value = null;
@@ -365,8 +365,8 @@ class Admin
 		// Finally, check common field translations
 		if (empty($value)) {
 			$lang_key = "admin.models.common.fields.$key.$attribute";
-			$value = \Lang::get($lang_key);
-			if ($value == $lang_key) $value = null;
+			$value = \Lang::get($lang_key, [], '___empty___');
+			if ($value == $lang_key || $value == '___empty___') $value = null;
 		}
 
 		// Check field settings
