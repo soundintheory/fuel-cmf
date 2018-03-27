@@ -8,6 +8,10 @@ class Simple implements Driver {
 	protected $path;
 	protected $content_type = 'text/html';
 	protected $files = array();
+	protected $headers = array(
+        'Cache-Control' => 'public',
+        'X-UA-Compatible' => 'IE=edge'
+    );
 	
 	public function get($url)
 	{
@@ -34,12 +38,7 @@ class Simple implements Driver {
 		$status = 200;
 		
 		// Set the response headers for cache etc
-		$headers = array(
-			'Cache-Control' => 'public',
-			'Last-Modified' => gmdate('D, d M Y H:i:s', $cache_last_modified).' GMT',
-			'Content-Type' => $this->content_type,
-			'X-UA-Compatible' => 'IE=edge'
-		);
+		$this->headers['Last-Modified'] = gmdate('D, d M Y H:i:s', $cache_last_modified).' GMT';
 		
 		// Still call the before method on the controller... is this a good idea? Perhaps not.
 		/* if (isset($this->request) && $controller = $this->request->controller_instance) {
@@ -48,7 +47,7 @@ class Simple implements Driver {
 		
 		// Return 304 not modified if the content hasn't changed, but only if the profiler isn't enabled.
 		if (!\Fuel::$profiling) {
-			$headers['Content-Length'] = strlen($content);
+            $this->headers['Content-Length'] = strlen($content);
 			
 			if ($header_modified_since >= $cache_last_modified) {
 				header('HTTP/1.1 304 Not Modified');
@@ -58,7 +57,7 @@ class Simple implements Driver {
 		}
 		
 		// Send the response
-		\Response::forge($content, $status, $headers)->send(true);
+		\Response::forge($content, $status, $this->headers)->send(true);
 		
 		if (\Fuel::$profiling) {
 			\Profiler::mark('CMF Cache Served');

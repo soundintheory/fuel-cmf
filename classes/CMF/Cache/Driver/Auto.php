@@ -44,7 +44,14 @@ class Auto extends Simple {
 			}
 			
 			// See if the cache defines a content type
-			if (isset($contents['content-type'])) $this->content_type = $contents['content-type'];
+			if (isset($contents['content-type'])) $this->headers['Content-Type'] = $contents['content-type'];
+
+			// Set any other headers that were stored
+            if (!empty($contents['headers']) && is_array($contents['headers'])) {
+                foreach ($contents['headers'] as $headerName => $headerValue) {
+                    $this->headers[$headerName] = $headerValue;
+                }
+            }
 			
 			// We are home and dry - the cache is completely valid.
 			// Replicate any logs that were made in the original request
@@ -270,18 +277,27 @@ class Auto extends Simple {
 		$result['content'] = strval($this->request->response);
 		$result['nocache'] = \CMF\Cache::getNoCacheAreas($result['content']);
 		$result['logs_made'] = \CMF\Log::$logs_made;
-		$result['content-type'] = 'text/html; charset=utf-8';
 		$result['template'] = \CMF::$template;
 		$result['module'] = \CMF::$module;
-		
-		// Store the content type header if it's set
+		$result['headers'] = [];
+
+		// Store any custom headers that were sent
 		$headers = headers_list();
-		foreach ($headers as $header) {
-			if (stripos($header, 'content-type: ') === 0) {
-				$result['content-type'] = substr($header, 14);
-				break;
-			}
+		foreach ($headers as $header)
+		{
+            if (stripos($header, ':') === false) {
+                continue;
+            }
+            if (stripos($header, 'x-powered-by') === 0) {
+                continue;
+            }
+            $parts = array_map('trim', explode(':', $header));
+
+            if (count($parts) === 2) {
+                $result['headers'][$parts[0]] = $parts[1];
+            }
 		}
+
 		// serialize and write it to disk
 		\CMF\Cache::writeCacheFile($this->path, serialize($result));
 		
