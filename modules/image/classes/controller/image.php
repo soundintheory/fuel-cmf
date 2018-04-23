@@ -27,6 +27,16 @@ class Controller_Image extends \Controller {
 	 */
 	public function action_crop($cropx = null, $cropy = null, $cropw = null, $croph = null, $w = null, $h = null, $path = null)
 	{
+	    // empty crop size will default to 'crop' resize
+	    if (empty(intval($cropx)) && empty(intval($cropy))) {
+            $this->outputImage($this->getImagePath(7), array(
+                'w' => intval($w),
+                'h' => intval($h),
+                'fit' => 'crop'
+            ));
+            return;
+        }
+
 		$this->outputImage($this->getImagePath(7), array(
 			'w' => intval($w),
 			'h' => intval($h),
