@@ -42,13 +42,6 @@
 		<!-- elFinder initialization (REQUIRED) -->
 		<script type="text/javascript" charset="utf-8">
 
-			current_lang = {{ current_lang|json_encode }};
-			fallback_lang = {{ fallback_lang|json_encode }};
-			lang = {{ lang_lines|json_encode }};
-			CMF = {
-				baseUrl: {{ base()|rtrim('/')|json_encode }}
-			};
-
 			// Helper function to get parameters from the query string.
 			function getUrlParam(paramName) {
 				var reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i') ;
