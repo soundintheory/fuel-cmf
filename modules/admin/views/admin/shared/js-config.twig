@@ -1,0 +1,9 @@
+<script type="text/javascript">
+	current_lang = {{ current_lang|json_encode }};
+	fallback_lang = {{ fallback_lang|json_encode }};
+	lang = {{ lang_lines|json_encode }};
+	CMF = {
+		baseUrl: {{ base()|rtrim('/')|json_encode }},
+		adminUrl: {{ admin_url()|json_encode }}
+	};
+</script>

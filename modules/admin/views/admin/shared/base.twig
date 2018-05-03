@@ -43,15 +43,7 @@
     <script src="{{ admin_url('/assets/js/bootstrap-modal.js?v=28') }}"></script>
     <script src="{{ admin_url('/assets/js/bootstrap-modalmanager.js?v=28') }}"></script>
 
-    <script type="text/javascript">
-    	current_lang = {{ current_lang|json_encode }};
-    	fallback_lang = {{ fallback_lang|json_encode }};
-    	lang = {{ lang_lines|json_encode }};
-    	CMF = {
-    		baseUrl: {{ base()|rtrim('/')|json_encode }},
-			adminUrl: {{ admin_url()|json_encode }}
-    	};
-    </script>
+    {% include 'admin/shared/js-config.twig' %}
     
 	{% block admin_js %}
 	<script type="text/javascript">
