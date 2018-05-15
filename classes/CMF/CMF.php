@@ -964,7 +964,7 @@ class CMF
 			}
 			$link = $link->getArrayResult();
 			$output = (count($link) > 0) ? static::link($link[0]['url']) : null;
-		} else if (strpos($output, 'http') !== 0 && strpos($output, '//') !== 0) {
+		} else if ((strpos($output, 'http') !== 0 || strpos($output, 'https') !== 0) && strpos($output, '//') !== 0) {
 			$output = "http://" . $output;
 		}
 		return strval($output);
