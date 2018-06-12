@@ -92,6 +92,9 @@ class Base extends \ViewModel
 
             $current_uri = $uri = '/'.trim(\CMF::original_uri(), '/');
 
+            if(!empty($_SERVER['QUERY_STRING']))
+                $current_uri .= "?".$_SERVER['QUERY_STRING'];
+
             if (property_exists($model, 'url')) {
                 $url = $model->url;
                 if (!empty($url) && !empty($url->url)) {
