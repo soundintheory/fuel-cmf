@@ -1083,6 +1083,7 @@ class User extends Base
 	
 	/**
      * @ORM\ManyToMany(targetEntity="\CMF\Model\Role")
+     * @ORM\JoinTable(name="model_user_role")
      **/
     protected $roles;
 	

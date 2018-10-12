@@ -40,6 +40,7 @@ class Role extends Base
     
 	/**
      * @ORM\ManyToMany(targetEntity="\CMF\Model\Permission", inversedBy="roles")
+     * @ORM\JoinTable(name="role_permission")
      **/
     protected $permissions;    
 }

@@ -65,6 +65,11 @@ class D extends \Fuel\Doctrine
 		$config->setAutoGenerateProxyClasses(\Arr::get($settings, 'auto_generate_proxy_classes', false));
 		$config->setMetadataDriverImpl(static::_init_metadata($config, $settings));
 
+		$namingStrategy = new \CMF\ORM\ModuleNamingStrategy();
+
+		$config->setNamingStrategy($namingStrategy);
+
+
 		$EventManager = new \Doctrine\Common\EventManager();
 
 		static::$_managers[$connection] = \Doctrine\ORM\EntityManager::create($settings['connection'], $config, $EventManager);
