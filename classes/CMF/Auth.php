@@ -234,6 +234,15 @@ class Auth
         return static::driver()->authenticate_user($username_or_email, $password, $type, $remember);
     }
 
+    public static function authenticate_no_login($username_or_email,$password, $type = 'Admin\\Model_User'){
+        if (empty($username_or_email) || empty($password)) {
+            return false;
+        }
+
+        return static::driver()->authenticate_user_no_login($username_or_email, $password, $type);
+    }
+
+
     /**
      * Attempt to log in a user by using an http based authentication method.
      *

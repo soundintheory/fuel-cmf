@@ -1,0 +1,39 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block content %}
+	{% include 'admin/shared/topbar.twig' %}
+	<div id="login-container" class="row-fluid">
+		
+		<div id="login-header">
+			<h3>Enter Code</h3>
+		</div> <!-- #login-header -->
+		
+		{% set main_alert = get_flash('main_alert') %}
+		{% if main_alert %}
+		<!-- Alert area! -->
+		<div class="alert {{ main_alert.attributes.class }}">
+		    <button class="close" data-dismiss="alert">×</button>
+		    {{ main_alert.msg }}
+		</div>
+		{% endif %}
+		
+		<div id="twofactor-code" class="clearfix">
+			
+			<form method="post" action="{{ admin_url('/twofactorinput') }}">
+                
+				<input type="text" name="code" placeholder="Enter code">
+				<div>
+					<button type="submit" class="btn-primary btn-large">Submit Code</button>
+				</div>
+				
+			</form>
+			
+		</div> <!-- #login-content -->
+		
+		<!-- div id="login-extra">
+			<p><a href="#">Forgotten your password?</a></p>
+		</div --> <!-- #login-extra -->
+		
+	</div> <!-- #login-container -->
+	
+{% endblock %}

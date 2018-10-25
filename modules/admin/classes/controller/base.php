@@ -24,6 +24,12 @@ class Controller_Base extends \Controller {
 		
 		if (!\CMF\Auth::check(null, 'view', 'admin_site')) {
             \CMF::adminRedirect("/login?next=".\CMF::original_uri(), 'location');
+        }else{
+            if(\CMF\TwoFactorAuth::isGlobalTwoFactorEnabled()){
+                if(!\CMF\TwoFactorAuth::isTwoFactorAuthComplete()){
+                    \CMF\TwoFactorAuth::defaultRoutingForUser();
+                }
+            }
         }
 
         \Lang::$autosave = false;

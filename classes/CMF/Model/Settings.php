@@ -42,6 +42,14 @@ class Settings extends Base
      * @ORM\Column(type="htaccess", nullable=true)
      */
     protected $htaccess;
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $twofa_enabled;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $twofa_method;
     
     /** inheritdoc */
     public function get($field, $default_value = null)

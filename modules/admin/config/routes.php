@@ -24,6 +24,8 @@ return array(
 	// Auth actions
 	'admin/login'             => array(array('GET', new Route('admin/auth/login')), array('POST', new Route('admin/auth/perform_login'))),
 	'admin/logout'            => 'admin/auth/logout',
+	'admin/twofactorsetup'		  => array(array('GET', new Route('admin/auth/twofactor')), array('POST', new Route('admin/auth/perform_twofactor'))),
+	'admin/twofactorinput'		  => array(array('GET', new Route('admin/auth/twofactor_codeinput')), array('POST', new Route('admin/auth/perform_twofactor_codeinput'))),
 	'admin/install/(:any)'    => 'admin/install/$1',
 	'admin/install'           => 'admin/install',
 	
