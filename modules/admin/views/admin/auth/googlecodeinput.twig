@@ -17,11 +17,14 @@
 		</div>
 		{% endif %}
 		
-		<div id="twofactor-code" class="clearfix">
+		<div id="login-content" class="clearfix">
 			
 			<form method="post" action="{{ admin_url('/twofactorinput') }}">
-                
-				<input type="text" name="code" placeholder="Enter code">
+                <h3>Google Authenticator</h3>
+				<p style="margin-bottom: 20px;">Please Enter the code displayed on your Google Authenticator App</p>
+				<div>
+				<input type="text" name="code" placeholder="Enter code"  style="margin-bottom: 20px; width:100%; min-height: 30px; box-sizing: border-box; display:block;">
+				</div>
 				<div>
 					<button type="submit" class="btn-primary btn-large">Submit Code</button>
 				</div>

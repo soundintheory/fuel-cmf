@@ -91,7 +91,7 @@ class GoogleAuth
             $code = $_POST['code'];
             $user = \Admin\Model_User::find($userId);
             $username = $user->username;
-            $secret = $user->twofa_secret;
+            $secret = $user->getTwoFactorSecret();
             $auth = new GoogleAuthenticator();
             return $auth->checkCode($secret,$code);
             

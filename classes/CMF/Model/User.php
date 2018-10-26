@@ -1113,10 +1113,15 @@ class User extends Base
     }
 
     public function saveTwofactorSecret($secret){
+        $secret = base64_encode($secret);
         $this->twofa_secret = $secret;
         $em = \D::manager();
 		$em->persist($this);
 		$em->flush();
+    }
+
+    public function getTwoFactorSecret(){
+        return base64_decode($this->twofa_secret);
     }
     
 	/////////////////// BEGIN DB PROPERTIES ///////////////////
