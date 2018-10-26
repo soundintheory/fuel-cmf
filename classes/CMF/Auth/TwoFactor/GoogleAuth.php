@@ -50,13 +50,10 @@ class GoogleAuth
     {
         $username = $user->username;
         $auth = new GoogleAuthenticator();
-        $salt = '7WAOQFANYIKBFLSWEUUWLVMTVBgrwaeg';
-        $secret = $username.$salt;
         $secret = $auth->generateSecret();
         $user->saveTwofactorSecret($secret);
-        $host = "www.randomsite.com";
+        $host = $_SERVER['HTTP_HOST'];
         $url = $auth->getURL($username, $host, $secret);
-        
         return $url;
     }
 
