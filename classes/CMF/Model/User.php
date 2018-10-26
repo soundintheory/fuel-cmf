@@ -1088,7 +1088,9 @@ class User extends Base
             'field' => 'CMF\\Field\\Collection\\Checkbox'
         ),
         'reset_password_sent_at' => array( 'visible' => false ),
-        'reset_password_token' => array( 'visible' => false )
+        'reset_password_token' => array( 'visible' => false ),
+        'twofa_enabled' => array('visible' => false),
+        'twofa_secret' => array('visible' => false)
     );
     
     protected static $_list_fields = array(
