@@ -43,6 +43,8 @@ class GoogleAuth
     {
         // Store config
         $this->config = $config;
+        $userId = \Session::get('Admin\\Model_User_logged');
+		$this->user = \Admin\Model_User::find($userId);
     }
 
    
@@ -58,22 +60,23 @@ class GoogleAuth
     }
 
     public function enabledUserTwoFactorAuth(){
-        $userId = \Session::get('Admin\\Model_User_logged');
-		$user = \Admin\Model_User::find($userId);
-		
-        $user->EnabledTwoFactorAuth();
+        $this->user->EnabledTwoFactorAuth();
         \CMF::adminRedirect('/login', 'location');
     }
 
+    public function hasUserEnabledTwoFactor($user){
+        if($this->user->twofa_enabled == 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public function twoFactorSetup(){
-		$userId = \Session::get('Admin\\Model_User_logged');
 		$data = array();
-		if(!empty($userId)){
-			$user = \Admin\Model_User::find($userId);
-            $data['img'] = \CMF\TwoFactorAuth::createCode($user);
-            
+		if(!empty($this->user)){
+            $data['img'] = \CMF\TwoFactorAuth::createCode($this->user);
 		}
-		
 		return \View::forge('admin/auth/twofactor.twig',$data);
     }
 
@@ -83,12 +86,12 @@ class GoogleAuth
     }
 
     public function checkCode(){
-        $userId = \Session::get('Admin\\Model_User_logged');
-        if(!empty($userId)){
-            $code = $_POST['code'];
-            $user = \Admin\Model_User::find($userId);
-            $username = $user->username;
-            $secret = $user->getTwoFactorSecret();
+        if(!empty($this->user)){
+            if(!isset($_POST['code'])){
+                return false;
+            }
+            $code = str_replace(" ", "", $_POST['code']);
+            $secret = $this->user->getTwoFactorSecret();
             $auth = new GoogleAuthenticator();
             return $auth->checkCode($secret,$code);
             

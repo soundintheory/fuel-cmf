@@ -57,6 +57,10 @@ return array (
             'users' => array(
                 //'user' => 'password'
             )
+        ),
+        'two_factor_methods' => array(
+            'Google Authenticator' => 'CMF\\Auth\\TwoFactor\\GoogleAuth',
+            'Email Authentication' => 'CMF\\Auth\\TwoFactor\\EmailAuth'
         )
     ),
     

@@ -63,7 +63,9 @@ return array(
 		'common_term'				=> 'Common term',
 		'common_terms'				=> 'Common terms',
 		'save_all'					=> 'Save all',
-		'clear_all'					=> 'Clear all'
+		'clear_all'					=> 'Clear all',
+		'submit_code'				=> 'Submit Code',
+		'enter_code'				=> 'Enter Code'
 	),
 
 	'verbs' => array(
@@ -217,6 +219,14 @@ return array(
 			'file_parse_error'		=> 'There was an unknown problem parsing the file for import. Please check the formatting'
 		)
 
-	)
+		),
+		'twofactor' => array(
+			'two_factor_auth_setup' => 'Two Factor Authentication Setup',
+			'google_authenication' => 'Google Authentication',
+			'google_authenicator' => 'Google Authenticator',
+			'enable_two_factor' => 'Enable Two Factor Authentication',
+			'add_account_warning' => 'Make sure you have scanned and added the QR code to your device before you click to enable two factor authentication you will no longer be able to view the QR code once enabled.',
+			'please_enter_code' => 'Please Enter the code displayed on your Google Authenticator App'
+		)
 
 );

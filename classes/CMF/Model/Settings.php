@@ -16,7 +16,7 @@ class Settings extends Base
     protected static $_fields = array(
         'start_page' => array( 'super' => true, 'after' => 'site_title', 'field' => 'CMF\\Field\\Admin\\StartPage' ),
         'htaccess'  => array( 'visible' => false ),
-        'twofa_method' => array('visible' => false),
+        'twofa_method' => array('title' => 'Method of authentication', 'field' => "CMF\\Field\\Select", 'options' => array('Google Authenticator'), 'group' => 'twofactor'),
         'twofa_enabled' => array('title' => 'Enable Two Factor Authentication', 'group' => 'twofactor')
     );
 

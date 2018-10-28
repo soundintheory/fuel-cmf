@@ -5,7 +5,7 @@
 	<div id="login-container" class="row-fluid">
 		
 		<div id="login-header">
-			<h3>Two Factor Authentication Setup</h3>
+			<h3>{{ _('admin.twofactor.two_factor_auth_setup') }}</h3>
 		</div> <!-- #login-header -->
 		
 		{% set main_alert = get_flash('main_alert') %}
@@ -18,27 +18,24 @@
 		{% endif %}
 		
 		<div id="login-content" class="clearfix">
-			<h3>Google Authentication</h3>
+			<h3>{{ _('admin.twofactor.google_authenication') }}</h3>
 			<p>
-			Download google authenticator from <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en">Google Play</a> or the 
+			Download Google Authenticator from the <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en">Google Play Store</a> or the 
 			<a href="https://itunes.apple.com/gb/app/google-authenticator/id388497605?mt=8">App Store</a> and scan the QR code below to add an account.<br>
 			</p>
 			<form method="post" action="{{ admin_url('/twofactorsetup') }}">
 			<div class="row" style="margin-top:30px; margin-bottom:30px;">
 				<img style="display:block; margin: auto;" src="{{img}}"/>
 			</div>
-				<p>Make sure you have scanned and added the QR code to your device before you click to enable two factor authentication you will no longer be able to view the QR code once enabled.</p>
+				<p>{{ _('admin.twofactor.add_account_warning') }}</p>
 				<div style="margin-top:30px;">
-					<button type="submit" class="btn-primary btn-large" >Enabled Two Factor Authentication</button>
+					<button type="submit" class="btn-primary btn-large" >{{ _('admin.twofactor.enable_two_factor') }}</button>
 				</div>
 				
 			</form>
 			
-		</div> <!-- #login-content -->
+		</div>
 		
-		<!-- div id="login-extra">
-			<p><a href="#">Forgotten your password?</a></p>
-		</div --> <!-- #login-extra -->
 		
 	</div> <!-- #login-container -->
 	

@@ -10,7 +10,7 @@ use Hautelook\Phpass\PasswordHash,
     CMF\Model\Settings,
     Google\Authenticator\GoogleAuthenticator;
 /**
- * A static class through which all authentication functionality can be accessed
+ * A static class through which all two factor authentication functionality can be accessed
  *
  * @package CMF
  */
@@ -20,12 +20,7 @@ class TwoFactorAuth
     protected static $_all_actions = null;
     protected static $_extra_resources = null;
     
-    /**
-     * The driver used. Override the default driver and set it via the 'cmf.auth.driver'
-     * setting to add custom functionality.
-     *
-     * @var \CMF\Auth\Driver
-     */
+    
     public $driver;
 
     /**
@@ -36,15 +31,17 @@ class TwoFactorAuth
     /**
      * Return a static instance.
      *
-     * @return Auth
+     * @return TwoFactorAuth
      */
     public static function forge($config = array())
     {
         static $instance = null;
         // Load the Auth instance
         if ($instance === null) {
-            $config = array_merge(\Config::get('cmf.auth', array()), $config);
-            $driver = \Arr::get($config, 'driver', 'CMF\\Auth\\TwoFactor\\GoogleAuth');
+            $settings = \CMF\CMF::settings();
+            $method = $settings->twofa_method;
+            $config = array_merge(\Config::get('cmf.auth.two_factor_methods', array()), $config);
+            $driver = \Arr::get($config, $method, 'CMF\\Auth\\TwoFactor\\GoogleAuth');
             $instance = new static;
             $instance->driver = new $driver($config);
         }
@@ -55,28 +52,35 @@ class TwoFactorAuth
     public static function createCode(User $user){
         return static::driver()->createCode($user);
     }
-
+    //called when the code input page is requested
+    //can return a view to controller
     public static function twoFactorCodeInput(){
         return static::driver()->twoFactorCodeInput();
     }
-
+    //called when the user submits a code
     public static function checkCode(){
         if(static::driver()->checkCode()){
-            \Session::set('twoFactorAuth','1'); //code passed so remove the session check
+            \Session::set('twoFactorAuth','1'); //code passed so set to 1
             static::driver()->codePassed();
         }else{
             static::driver()->codeFailed();
         }
     }
-
+    //called when the setup page is requested
+    //Can return a view to controller
     public static function twoFactorSetup(){
         return static::driver()->twoFactorSetup();
     }
-
+    //enables two factor auth for user
     public static function enabledUserTwoFactorAuth(){
         static::driver()->enabledUserTwoFactorAuth();
     }
+    //check to see is user has enabled two factor
+    public static function hasUserEnabledTwoFactor($user){
+        return static::driver()->hasUserEnabledTwoFactor($user);
+    }
 
+    //checks settings to see if user has enabled two factor auth on account
     public static function isGlobalTwoFactorEnabled(){
         $settings = \CMF\CMF::settings();
         if(!empty($settings) && $settings->twofa_enabled == 1){
@@ -84,26 +88,18 @@ class TwoFactorAuth
         }else{
             return false;
         }
-
     }
-
+    //checks session to see if auth has been completed, returns false is nothing has been set
     public static function isTwoFactorAuthComplete(){
         $complete = \Session::get('twoFactorAuth','0');
-        
         if($complete == '1'){
             return true;
         }else{
             return false;
         }
     }
-    public static function hasUserEnabledTwoFactor($user){
-        if($user->twofa_enabled == 1){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
+    
+    //default routing for twofactor auth, either takes user to setup page or code entry page
     public static function defaultRoutingForUser(){
         $currentUser = \CMF\Auth::current_user();
         if($currentUser){
@@ -120,7 +116,6 @@ class TwoFactorAuth
     /**
      * Fetches the auth driver instance
      *
-     * @return \CMF\Auth\Driver
      */
     protected static function driver()
     {
