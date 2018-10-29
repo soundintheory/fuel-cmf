@@ -50,10 +50,10 @@ class GoogleAuth
    
     public function createCode($user)
     {
-        $username = $user->username;
+        $username = $this->user->username;
         $auth = new GoogleAuthenticator();
         $secret = $auth->generateSecret();
-        $user->saveTwofactorSecret($secret);
+        $this->user->saveTwofactorSecret($secret);
         $host = $_SERVER['HTTP_HOST'];
         $url = $auth->getURL($username, $host, $secret);
         return $url;
