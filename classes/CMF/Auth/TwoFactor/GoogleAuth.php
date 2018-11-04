@@ -56,7 +56,32 @@ class GoogleAuth
         $this->user->saveTwofactorSecret($secret);
         $host = $_SERVER['HTTP_HOST'];
         $url = $auth->getURL($username, $host, $secret);
-        return $url;
+        $filename = $this->saveQrCode($url);
+        $imageUrl = "/admin/qrcode/".$filename;
+        return $imageUrl;
+    }
+
+    function saveQrCode($url){
+        $dir = APPPATH."storage\\qrcodes";
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $filename = $this->createFileName(10);
+        $saveto = $dir."\\".$filename.".jpg";
+        $image = file_get_contents($url);
+        file_put_contents($saveto,$image);
+
+        return $filename;
+    }
+
+    private function createFileName($length){
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 
     public function enabledUserTwoFactorAuth(){

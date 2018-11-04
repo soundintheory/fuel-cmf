@@ -72,5 +72,23 @@ class Controller_Auth extends \Controller {
 		\CMF\TwoFactorAuth::checkCode();
 		return false;
 	}
+
+	public function action_serve_qrcode($filename){
+		$name = APPPATH.'storage\\qrcodes\\'.$filename.".jpg";
+		$image = fopen($name, 'rb');
+
+		// send headers
+		header("Content-Type: image/jpeg");
+		header("Content-Length: " . filesize($name));
+
+		// dump the picture
+		readfile($name);
+
+		//delete image after sending
+		// chmod($name,0777);
+		// unlink($name);
+
+		
+	}
 	
 }
