@@ -109,6 +109,11 @@ class Select extends Base {
             $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $settings['mapping']['fieldName'], array( 'class' => 'item-label' ));
             $input = \Form::select($settings['mapping']['fieldName'], $value, $options, $input_attributes);
             $content = $label.$description.$input;
+
+            if (@$settings['multiple']) {
+                $content .= \Form::hidden($settings['mapping']['fieldName']."[]", "", array());
+            }
+
             if (!(isset($settings['wrap']) && $settings['wrap'] === false)) $content = html_tag('div', array( 'class' => 'controls control-group'.($has_errors ? ' error' : '') ), $content);
             
             return array(

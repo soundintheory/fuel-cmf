@@ -9,6 +9,11 @@ class ArrayConfig extends ArraySelect {
     {
         $settings = static::settings($settings);
         if (!is_array($value)) return array($value);
+
+        if (($key = array_search("", $value)) !== false) {
+            unset($value[$key]);
+        }
+
         return $value;
     }
 	
