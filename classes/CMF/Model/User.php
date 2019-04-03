@@ -80,6 +80,32 @@ class User extends Base
 
         return null;
     }
+    public static function find_by_id($id = null)
+    {
+        if (empty($id)) {
+            return null;
+        }
+
+		$em = \D::manager();
+        $called_class = get_called_class();
+
+	
+        // $id = \DB::escape($id);
+
+        $record = $called_class::select('item')
+        ->where("item.id = $id")
+        ->getQuery()->getResult();
+        
+		if (count($record) == 0) return null;
+        		
+		$record = $record[0];
+		
+        if ($record) {
+            return $record;
+        }
+
+        return null;
+    }
         /**
          * Authenticates and allows a user to enter either their email address or
          * their username into the username field.
@@ -1062,7 +1088,9 @@ class User extends Base
             'field' => 'CMF\\Field\\Collection\\Checkbox'
         ),
         'reset_password_sent_at' => array( 'visible' => false ),
-        'reset_password_token' => array( 'visible' => false )
+        'reset_password_token' => array( 'visible' => false ),
+        'twofa_enabled' => array('visible' => false),
+        'twofa_secret' => array('visible' => false)
     );
     
     protected static $_list_fields = array(
@@ -1077,6 +1105,25 @@ class User extends Base
     public function display()
     {
         return $this->username;
+    }
+
+    public function EnabledTwoFactorAuth(){
+        $this->twofa_enabled = true;
+        $em = \D::manager();
+		$em->persist($this);
+		$em->flush();
+    }
+
+    public function saveTwofactorSecret($secret){
+        $secret = base64_encode($secret);
+        $this->twofa_secret = $secret;
+        $em = \D::manager();
+		$em->persist($this);
+		$em->flush();
+    }
+
+    public function getTwoFactorSecret(){
+        return base64_decode($this->twofa_secret);
     }
     
 	/////////////////// BEGIN DB PROPERTIES ///////////////////
@@ -1129,4 +1176,14 @@ class User extends Base
      * @ORM\Column(type="boolean")
      **/
     protected $super_user = false;
+
+    /**
+     * @ORM\Column(type="boolean")
+     **/
+    protected $twofa_enabled = false;
+
+    /**
+     * @ORM\Column(type="string")
+     **/
+    protected $twofa_secret = "";
 }

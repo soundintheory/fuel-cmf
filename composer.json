@@ -14,7 +14,7 @@
     "support": {
         "email": "andy@soundintheory.co.uk"
     },
-    "require": {
+    "require": {      
         "soundintheory/hooked-package-installer": "*",
         "aspendigital/fuel-doctrine2": "~1.0.0",
         "symfony/validator": "2.2.*",
@@ -64,7 +64,10 @@
             "classes/CMF/Doctrine/Extensions/TranslatableListener.php",
             "classes/Intervention/Image/Gd/Commands/CropCommand.php",
             "classes/Intervention/Image/Imagick/Commands/CropCommand.php"
-        ]
+        ],
+        "psr-4": {
+            "Google\\Authenticator\\": "classes/Google/Authenticator/"
+        }
     },
     "minimum-stability": "dev",
     "extra": {

@@ -1,0 +1,42 @@
+{% extends "admin/shared/base.twig" %}
+
+{% block content %}
+	{% include 'admin/shared/topbar.twig' %}
+	<div id="login-container" class="row-fluid">
+		
+		<div id="login-header">
+			<h3>{{ _('admin.twofactor.two_factor_auth_setup') }}</h3>
+		</div> <!-- #login-header -->
+		
+		{% set main_alert = get_flash('main_alert') %}
+		{% if main_alert %}
+		<!-- Alert area! -->
+		<div class="alert {{ main_alert.attributes.class }}">
+		    <button class="close" data-dismiss="alert">×</button>
+		    {{ main_alert.msg }}
+		</div>
+		{% endif %}
+		
+		<div id="login-content" class="clearfix">
+			<h3>{{ _('admin.twofactor.google_authenication') }}</h3>
+			<p>
+			Download Google Authenticator from the <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en">Google Play Store</a> or the 
+			<a href="https://itunes.apple.com/gb/app/google-authenticator/id388497605?mt=8">App Store</a> and scan the QR code below to add an account.<br>
+			</p>
+			<form method="post" action="{{ admin_url('/twofactorsetup') }}">
+			<div class="row" style="margin-top:30px; margin-bottom:30px;">
+				<img style="display:block; margin: auto;" src="{{img}}"/>
+			</div>
+				<p>{{ _('admin.twofactor.add_account_warning') }}</p>
+				<div style="margin-top:30px;">
+					<button type="submit" class="btn-primary btn-large" >{{ _('admin.twofactor.enable_two_factor') }}</button>
+				</div>
+				
+			</form>
+			
+		</div>
+		
+		
+	</div> <!-- #login-container -->
+	
+{% endblock %}
