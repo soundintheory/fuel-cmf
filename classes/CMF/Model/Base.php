@@ -2,6 +2,7 @@
 
 namespace CMF\Model;
 
+use CMF\Field\DateTime;
 use Doctrine\ORM\Mapping as ORM,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\DBAL\LockMode,
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM,
 /**
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
+ * @Gedmo\SoftDeleteable(fieldName="deleted_at", timeAware=false)
  **/
 class Base extends \CMF\Doctrine\Model implements \JsonSerializable
 {
@@ -30,9 +32,14 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     /**
      * @Gedmo\Timestampable(on="update")
      * @ORM\Column(type="datetime")
-     * @var datetime
+     * @var Datetime
      **/
     protected $updated_at;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $deleted_at = null;
     
     /**
      * @ORM\Column(type="object", nullable=true)
@@ -74,6 +81,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     	'id' => array( 'visible' => false ),
     	'created_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
     	'updated_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
+        'deleted_at' => array( 'readonly' => true, 'visible' => false, 'format' => 'Y-m-d H:i:s' ),
         'visible' => array( 'visible' => false ),
         'settings' => array( 'visible' => false, 'fields' => array(
             'original_id' => array( 'type' => 'integer' )
