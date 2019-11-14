@@ -29,7 +29,12 @@
         "leafo/lessphp": "0.4.*",
         "doctrine/orm": "2.4.4",
         "doctrine/collections": "1.2",
-        "doctrine/dbal": "dev-master as 2.4.2"
+        "doctrine/dbal": "2.5.4",
+        "doctrine/common": "2.6.1",
+        "doctrine/lexer": "1.0.1",
+        "doctrine/inflector": "1.1.0",
+        "doctrine/cache": "1.6.0",
+        "doctrine/annotations": "1.2.7"
     },
     "suggest": {
         "phpoffice/phpexcel": "To allow the import of .xls or .xlsx spreadsheets",
