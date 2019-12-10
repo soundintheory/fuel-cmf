@@ -13,7 +13,7 @@ class GooglePlace extends \CMF\Field\Base
         return array(
             'js' => array(
                 'https://maps.googleapis.com/maps/api/js?libraries=places'.$keyQueryString,
-                '/assets/js/fields/googleplace.js'
+                '/admin/assets/js/fields/googleplace.js',
             )
         );
     }
