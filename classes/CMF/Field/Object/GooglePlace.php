@@ -6,13 +6,14 @@ class GooglePlace extends \CMF\Field\Base
 {
     public static function getAssets()
     {
+        $keyQueryString = "";
+        $api_key = \Config::get('google_maps_api_key');
+        if(!empty($api_key))
+            $keyQueryString = "&key=".$api_key;
         return array(
             'js' => array(
-                'https://maps.googleapis.com/maps/api/js?key=AIzaSyDIhfu1YbgNMYFjQeyV0GbqYQUs7p86YU4&libraries=places',
-                '/admin/assets/js/fields/googleplace.js',
-            ),
-            'css' => array(
-                ''
+                'https://maps.googleapis.com/maps/api/js?libraries=places'.$keyQueryString,
+                '/assets/js/fields/googleplace.js'
             )
         );
     }
