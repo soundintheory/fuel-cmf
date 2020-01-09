@@ -477,6 +477,9 @@
                     bgColor:     'white',
                     bgOpacity:   .5
                 },
+
+                $invertBut = $('<span class="btn btn-info btn-reset"> ' + _('admin.image.invert_backgrounbd_color') + '</span>').on('click', invertCropAreaBG),
+                invertedBG = false,
                 
                 // The inputs we'll be updating
                 $inputX = $wrap.find('input[name="' + fieldName + '[crop][' + cropId + '][x]"]'),
@@ -567,6 +570,7 @@
                     $footerLeft.find('.btn-reset').detach();
                     $footerLeft.html('');
                     $footerLeft.append($resetBut);
+                    $footerLeft.append($invertBut);
                     $footerLeft.append($('<div class="slider-label">' + _('admin.image.scale') + ': </div>'));
                     $footerLeft.append($zoomSlider);
                     
@@ -576,7 +580,7 @@
                     
                     if ($zoomSlider !== null) { return; }
                     
-                    $zoomSlider = $('<div class="zoom-slider" id="zoom-slider-'+cropId+'" style="width: 260px; margin: 15px;"></div>');
+                    $zoomSlider = $('<div class="zoom-slider" id="zoom-slider-'+cropId+'" style="width: 214px; margin: 15px;"></div>');
                     $zoomSlider.slider({
                         value: parseInt($inputS.val()),
                         orientation: "horizontal",
@@ -631,6 +635,16 @@
                     $img.css({ 'top':origin.y, 'left':origin.x, 'width':sImageWidth, 'height':sImageHeight });
                 }
                 
+                function invertCropAreaBG() {
+                    if (!invertedBG) {
+                        $('.jcrop-holder').css('background-color', 'black');
+                        invertedBG = true;
+                    } else {
+                        $('.jcrop-holder').css('background-color', 'white');
+                        invertedBG = false;
+                    }
+                }
+
                 function resetCropArea() {
                     
                     initZoomSlider();
