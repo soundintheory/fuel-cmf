@@ -1,6 +1,5 @@
 {
     "name": "soundintheory/fuel-cmf",
-    "type": "hooked-package",
     "description": "A CMF for rapid web application development, built upon FuelPHP and Doctrine ORM",
     "keywords": ["cmf", "admin", "bootstrap"],
     "homepage": "https://github.com/soundintheory/fuel-cmf",
@@ -15,7 +14,6 @@
         "email": "andy@soundintheory.co.uk"
     },
     "require": {
-        "soundintheory/hooked-package-installer": "*",
         "aspendigital/fuel-doctrine2": "~1.0.0",
         "symfony/validator": "2.2.*",
         "gedmo/doctrine-extensions": "2.3.*",
