@@ -23,7 +23,7 @@
         "twig/extensions": "~1.0.0",
         "roderik/pwgen-php": "0.1.7",
         "soundintheory/php-sql-parser": "*",
-        "hautelook/phpass": "0.3.*",
+        "bordoni/phpass": "0.3.*",
         "soundintheory/php-sql-parser": "1.*",
         "helios-ag/fm-elfinder-php-connector": "1.1.*",
         "leafo/lessphp": "0.4.*",
