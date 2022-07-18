@@ -2,7 +2,7 @@
 
 namespace CMF\Core;
 
-class Error extends \Fuel\Core\Error
+class FuelError extends \Fuel\Core\FuelError
 {
 	public static function show_production_error(\Exception $e)
 	{

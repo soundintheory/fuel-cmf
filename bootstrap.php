@@ -41,7 +41,7 @@ Autoloader::add_classes(array(
     'CMF\\Core\\Image_Driver'  => __DIR__.'/classes/CMF/Core/Image_Driver.php',
     'CMF\\Core\\Lang'  => __DIR__.'/classes/CMF/Core/Lang.php',
     'CMF\\Core\\Format'  => __DIR__.'/classes/CMF/Core/Format.php',
-    'CMF\\Core\\Error'  => __DIR__.'/classes/CMF/Core/Error.php',
+    'CMF\\Core\\FuelError'  => __DIR__.'/classes/CMF/Core/FuelError.php',
     'CMF\\Core\\HttpException'  => __DIR__.'/classes/CMF/Core/HttpException.php'
 ));
 

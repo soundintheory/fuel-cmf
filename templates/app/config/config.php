@@ -69,7 +69,7 @@ return array(
 		// 'continue_on'  => array(),
 		// How many errors should we show before we stop showing them? (prevents out-of-memory errors)
 		// 'throttle'     => 10,
-		// Should notices from Error::notice() be shown?
+		// Should notices from FuelError::notice() be shown?
 		// 'notices'      => true,
 		// Render previous contents or show it as HTML?
 		// 'render_prior' => false,
