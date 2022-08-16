@@ -1,6 +1,6 @@
 {
     "name": "soundintheory/fuel-cmf",
-    "type": "hooked-package",
+    "type": "fuel-package",
     "description": "A CMF for rapid web application development, built upon FuelPHP and Doctrine ORM",
     "keywords": ["cmf", "admin", "bootstrap"],
     "homepage": "https://github.com/soundintheory/fuel-cmf",
@@ -15,7 +15,7 @@
         "email": "andy@soundintheory.co.uk"
     },
     "require": {
-        "soundintheory/hooked-package-installer": "*",
+        "composer/installers": "~1.0",
         "aspendigital/fuel-doctrine2": "~1.0.0",
         "symfony/validator": "2.2.*",
         "gedmo/doctrine-extensions": "2.3.*",
@@ -23,7 +23,7 @@
         "twig/extensions": "~1.0.0",
         "roderik/pwgen-php": "0.1.*",
         "soundintheory/php-sql-parser": "*",
-        "hautelook/phpass": "0.3.*",
+        "bordoni/phpass": "0.3.*",
         "soundintheory/php-sql-parser": "1.*",
         "helios-ag/fm-elfinder-php-connector": "1.1.*",
         "leafo/lessphp": "0.4.*",
