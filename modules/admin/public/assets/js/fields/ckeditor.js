@@ -63,7 +63,7 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
             if (initialised) return;
 
         	var removePlugins = [
-        		"about", "a11yhelp", "bidi", "colorbutton", "colordialog", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo", "language"
+        		"about", "a11yhelp", "bidi", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo", "language"
         	];
         	
         	var extraPlugins = [
@@ -79,7 +79,7 @@ return!0}return g.call(b,d)});if(i.length){var b=new a.Deferred;a.when.apply(thi
         	];
         	
         	// REMOVED PLUGINS:
-        	// "about", "a11yhelp", "bidi", "colorbutton", "colordialog", "div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo"
+        	// "about", "a11yhelp", "bidi", div", "elementspath", "find", "font", "forms", "iframe", "smiley", "maximize", "newpage", "pagebreak", "preview", "print", "resize", "save", "undo"
         	
         	var config = {
         		skin: 'moonocolor',

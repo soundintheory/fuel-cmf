@@ -140,14 +140,14 @@
 {% block admin_css %}
     {{ parent() }}
     {% for css in form.assets.css %}
-        <link rel="stylesheet" type="text/css" href="{{ css }}{% if 'http://' not in css and 'https://' not in css %}{{ ('?' in css) ? '&' : '?' }}v=26{% endif %}">
+        <link rel="stylesheet" type="text/css" href="{{ css }}{% if 'http://' not in css and 'https://' not in css %}{{ ('?' in css) ? '&' : '?' }}v=27{% endif %}">
     {% endfor %}
 {% endblock %}
 
 {% block admin_js %}
     {{ parent() }}
     {% for js in form.assets.js %}
-        <script type="text/javascript" src="{{ js }}{% if 'http://' not in js and 'https://' not in js %}{{ ('?' in js) ? '&' : '?' }}v=26{% endif %}"></script>
+        <script type="text/javascript" src="{{ js }}{% if 'http://' not in js and 'https://' not in js %}{{ ('?' in js) ? '&' : '?' }}v=27{% endif %}"></script>
     {% endfor %}
     <script type="text/javascript">
         var field_settings = {{ form.js_field_settings|json_encode }};
