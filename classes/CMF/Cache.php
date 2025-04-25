@@ -33,7 +33,7 @@ class Cache {
 		}
 		
 		// Check for excluded URLS
-		$uri = '/'.str_replace(array('?debug', '&debug'), '', trim($_SERVER['REQUEST_URI'], '/'));
+		$uri = \Uri::create('/'.str_replace(array('?debug', '&debug'), '', trim($_SERVER['REQUEST_URI'], '/')));
         if ($uriPath = parse_url($uri, PHP_URL_PATH)) {
             $uri = $uriPath;
         }
