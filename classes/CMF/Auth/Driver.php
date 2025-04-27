@@ -139,7 +139,7 @@ class Driver
                     $role_passed = 0;
                     $resource_permissions = 0;
                     foreach ($role->permissions as $permission) {
-                        if ($permission->action == 'all' && in_array($permission->resource, $resource) && $permission->item_id === $resource_id) {
+                        if ($permission->action == 'all' && in_array($permission->resource, $resource) /*&& $permission->item_id === $resource_id*/) {
                             $role_passed = count($action);
                             break;
                         }
@@ -151,8 +151,8 @@ class Driver
                         }
                         
                     }
-                    if ($resource_permissions === 0) $role_passed = count($action);
-                    $passed += $role_passed;
+                    //if ($resource_permissions !== 0) $role_passed = count($action);
+                    $passed = $role_passed;
                     
                 }
                 
@@ -175,8 +175,8 @@ class Driver
                             $resource_permissions++;
                         }
                     }
-                    if ($resource_permissions === 0) $role_passed = count($action);
-                    $passed += $role_passed;
+                    //if ($resource_permissions !== 0) $role_passed = count($action);
+                    $passed = $role_passed;
                     
                 }
                 
