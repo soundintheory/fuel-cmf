@@ -29,9 +29,9 @@ return array(
 			'CMF\\Doctrine\\Extensions\\Spatial',
 			'CMF\\Doctrine\\Extensions\\URL',
 			'CMF\\Doctrine\\Extensions\\Sortable',
-			//'CMF\\Doctrine\\Extensions\\Translatable',
+            'CMF\\Doctrine\\Extensions\\SoftDeletable'
+            //'CMF\\Doctrine\\Extensions\\Translatable',
 			//'CMF\\Doctrine\\Extensions\\Loggable',
-			//'CMF\\Doctrine\\Extensions\\SoftDeletable'
 		),
 		
 		/**
