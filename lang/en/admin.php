@@ -154,7 +154,8 @@ return array(
 	    'alt'                       => 'Alternative Text',
 		'reset_crop'				=> 'Reset crop',
 		'scale'						=> 'Scale',
-		'edit_crop_info'			=> 'Select an option above to edit the different crops for this image'
+		'edit_crop_info'			=> 'Select an option above to edit the different crops for this image',
+		'invert_backgrounbd_color' => 'Invert BG'
 	),
 
 	'errors' => array(
