@@ -2,10 +2,6 @@
 
 namespace Admin;
 
-use FM\ElFinderPHP\Connector\ElFinderConnector,
-	FM\ElFinderPHP\ElFinder,
-	FM\ElFinderPHP\Driver\ElFinderVolumeLocalFileSystem;
-
 class Controller_Finder extends Controller_Base {
 	
 	public function action_index()
@@ -21,10 +17,23 @@ class Controller_Finder extends Controller_Base {
 
 	    // Make sure the various directories exist
 	    if (!is_dir($opts['path'])) @mkdir($opts['path'], 0775, true);
-	    if (!is_dir($opts['startPath'])) @mkdir($opts['startPath'], 0775, true);
+	    if (isset($opts['startPath']) && !is_dir($opts['startPath'])) @mkdir($opts['startPath'], 0775, true);
 
-	    $connector = new elFinderConnector(new ElFinder(array(
+	    // elFinder's default session forces secure cookies, which breaks it over plain http (local development)
+	    $session = new \elFinderSession(array(
+	        'base64encode' => false,
+	        'keys' => array( 'default' => 'elFinderCaches', 'netvolume' => 'elFinderNetVolumes' ),
+	        'cookieParams' => array(
+	            'path' => '/',
+	            'secure' => \Input::protocol() == 'https',
+	            'httponly' => true,
+	            'samesite' => 'Lax'
+	        )
+	    ));
+
+	    $connector = new \elFinderConnector(new \elFinder(array(
 	        //'debug' => true,
+	        'session' => $session,
 	        'roots' => array(
 	        	$opts
 	        )

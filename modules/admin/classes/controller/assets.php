@@ -18,6 +18,8 @@ class Controller_Assets extends \Controller {
 	    'jpeg' => 'image/jpeg',
 	    'gif' => 'image/gif',
 	    'png' => 'image/png',
+	    'svg' => 'image/svg+xml',
+	    'wav' => 'audio/wav',
 	);
 	
 	public function action_index()
@@ -38,43 +40,28 @@ class Controller_Assets extends \Controller {
 		}
 		
 		$header_modified_since = strtotime(\Input::server('HTTP_IF_MODIFIED_SINCE', 0));
-		include_once(VENDORPATH.'leafo/lessphp/lessc.inc.php');
 		ob_clean();
 		
-		// load the cache
-		$cache_fname = $path.".cache";
-		if (file_exists($cache_fname)) {
-			$cache = unserialize(file_get_contents($cache_fname));
-		} else {
-			$cache = $path;
-		}
-		
-		try {
-			$new_cache = \lessc::cexecute($cache);
-		} catch (\Exception $e) {
-			$cache = $path;
-			$new_cache = \lessc::cexecute($cache);
-		}
-		
-		if (!is_array($cache) || $new_cache['updated'] > $cache['updated']) {
-			file_put_contents($cache_fname, serialize($new_cache));
-			$cache = $new_cache;
-		}
+		// Compile with less.php, which caches the output (and tracks imports) in its cache dir
+		$cache_dir = APPPATH.'cache/less/';
+		if (!is_dir($cache_dir)) mkdir($cache_dir, 0777, true);
+		$compiled = $cache_dir.\Less_Cache::Get(array( $path => '' ), array( 'cache_dir' => $cache_dir ));
+		$updated = filemtime($compiled);
 		
 		// Set the response headers for cache etc
 		$headers = array(
 			'Cache-Control' => 'public',
-			'Last-Modified' => gmdate('D, d M Y H:i:s', $new_cache['updated']).' GMT',
+			'Last-Modified' => gmdate('D, d M Y H:i:s', $updated).' GMT',
 			'Content-Type' => 'text/css'
 		);
 		
 		// Return 304 not modified if the file hasn't changed
-		if ($header_modified_since >= $new_cache['updated']) {
+		if ($header_modified_since >= $updated) {
 			return \Response::forge(null, 304, $headers);
 		}
 		
 		// Serve up the file
-		return \Response::forge($cache['compiled'], 200, $headers);
+		return \Response::forge(file_get_contents($compiled), 200, $headers);
 	}
 	
 	/**
