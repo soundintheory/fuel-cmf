@@ -224,7 +224,7 @@ class TranslatorListener implements EventSubscriber
             }
 
             \D::manager()->persist($entity);
-            \D::manager()->flush($entity);
+            \D::manager()->flush();
 
         } else {
             // An error response has been returned

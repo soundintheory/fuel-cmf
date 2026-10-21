@@ -7,12 +7,10 @@ use Doctrine\ORM\Mapping as ORM,
 	Symfony\Component\Validator\Constraints as Assert,
 	CMF\Model\Base;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="urls")
- * @ORM\HasLifecycleCallbacks
- * @Assert\UniqueEntity("url")
- **/
+#[Assert\UniqueEntity(fields: 'url')]
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'urls')]
 class URL extends Base
 {
     protected static $_fields = array(
@@ -89,45 +87,29 @@ class URL extends Base
 
     public $processed = false;
     
-    /**
-     * @ORM\Column(type="integer", length=11, nullable=true)
-     **/
+    #[ORM\Column(type: 'integer', length: 11, nullable: true)]
     protected $item_id;
 
-    /**
-     * @ORM\Column(type="integer", length=11, nullable=true)
-     **/
+    #[ORM\Column(type: 'integer', length: 11, nullable: true)]
     protected $parent_id;
     
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $url;
     
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $slug;
     
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $prefix;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="URL", inversedBy="aliases")
-     * @ORM\JoinColumn(name="alias_id", referencedColumnName="id", onDelete="SET NULL")
-     */
+    #[ORM\ManyToOne(targetEntity: \CMF\Model\URL::class, inversedBy: 'aliases')]
+    #[ORM\JoinColumn(name: 'alias_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected $alias;
 
-    /**
-     * @ORM\OneToMany(targetEntity="URL", mappedBy="alias")
-     */
+    #[ORM\OneToMany(targetEntity: \CMF\Model\URL::class, mappedBy: 'alias')]
     protected $aliases;
     
-    /**
-     * @ORM\Column(type="string"))
-     **/
+    #[ORM\Column(type: 'string')]
     protected $type = '';
 
 }

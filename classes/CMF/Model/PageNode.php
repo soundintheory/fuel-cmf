@@ -6,10 +6,8 @@ use Doctrine\ORM\Mapping as ORM,
 	Gedmo\Mapping\Annotation as Gedmo,
 	Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\MappedSuperclass
- * @ORM\HasLifecycleCallbacks
- **/
+#[ORM\MappedSuperclass]
+#[ORM\HasLifecycleCallbacks]
 class PageNode extends Node
 {
     protected static $_fields = array(
@@ -62,47 +60,38 @@ class PageNode extends Node
         if (!$this->html_title) $this->html_title = $this->title;
     }
     
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $menu_title;
     
-    /**
-     * @ORM\OneToOne(targetEntity="CMF\Model\URL", orphanRemoval=true)
-     **/
+    #[ORM\OneToOne(targetEntity: \CMF\Model\URL::class, orphanRemoval: true)]
     protected $url;
     
-    /**
-     * @ORM\Column(type="string", nullable=true))
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $html_title;
     
-    /**
-     * @ORM\Column(type="string", nullable=true))
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $meta_desc;
 	
-	/**
-     * @ORM\Column(type="richtext", nullable=true))
-     **/
+	#[ORM\Column(type: 'richtext', nullable: true)]
     protected $content;
     
     /**
-     * @Gedmo\TreeParent
-     * @ORM\ManyToOne(targetEntity="Page", inversedBy="children")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="SET NULL")
+     * Mapped by each concrete tree root entity, eg:
+     *
+     *   #[Gedmo\TreeParent]
+     *   #[ORM\ManyToOne(targetEntity: Model_X::class, inversedBy: 'children')]
+     *   #[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
+     *   protected $parent;
+     *
+     *   #[ORM\OneToMany(targetEntity: Model_X::class, mappedBy: 'parent')]
+     *   #[ORM\OrderBy(['lft' => 'ASC'])]
+     *   protected $children;
      */
     protected $parent;
     
-    /**
-     * @ORM\OneToMany(targetEntity="Page", mappedBy="parent")
-     * @ORM\OrderBy({"lft" = "ASC"})
-     */
     protected $children;
     
-    /**
-     * @ORM\Column(type="object", nullable=true))
-     **/
+    #[ORM\Column(type: 'object', nullable: true)]
     protected $extra_meta = array();
 	
 }

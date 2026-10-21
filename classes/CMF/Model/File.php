@@ -7,62 +7,40 @@ use Doctrine\ORM\Mapping as ORM,
 	Symfony\Component\Validator\Constraints as Assert,
 	CMF\Model\Base;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="_files")
- **/
+#[ORM\Entity]
+#[ORM\Table(name: '_files')]
 class File extends \CMF\Doctrine\Model implements \JsonSerializable
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     **/
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @ORM\Column(type="string")
-     **/
+    #[ORM\Column(type: 'string')]
     protected $path;
     
-    /**
-     * @ORM\Column(type="string")
-     **/
+    #[ORM\Column(type: 'string')]
     protected $url;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     protected $storage;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $type;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $field;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $params;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     protected $parent;
 
-    /**
-     * @ORM\Column(type="datetime")
-     **/
+    #[ORM\Column(type: 'datetime')]
     protected $created_at;
 
-    /**
-     * @ORM\Column(type="datetime")
-     **/
+    #[ORM\Column(type: 'datetime')]
     protected $updated_at;
 
     public function display()

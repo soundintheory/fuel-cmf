@@ -55,7 +55,6 @@
             "classes/CMF/Twig/Twig_Loader_Filesystem.php",
             "classes/Symfony/Component/Validator/Constraints/UniqueEntity.php",
             "classes/Symfony/Component/Validator/Constraints/UniqueEntityValidator.php",
-            "classes/CMF/Doctrine/Extensions/TranslatableListener.php",
             "classes/Intervention/Image/Gd/Commands/CropCommand.php",
             "classes/Intervention/Image/Imagick/Commands/CropCommand.php"
         ]

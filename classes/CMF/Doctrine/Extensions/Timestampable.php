@@ -14,7 +14,6 @@ class Timestampable extends Extension
 	{
 		static::$listener = $listener = new \Gedmo\Timestampable\TimestampableListener();
 
-		$listener->setAnnotationReader($reader);
 		$em->getEventManager()->addEventSubscriber($listener);
 	}
 

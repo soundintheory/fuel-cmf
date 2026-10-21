@@ -2,7 +2,7 @@
 
 namespace Admin;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataInfo;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class Controller_List extends Controller_Base {

@@ -6,10 +6,8 @@ use Doctrine\ORM\Mapping as ORM,
     Gedmo\Mapping\Annotation as Gedmo,
     Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\MappedSuperclass
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\MappedSuperclass]
+#[ORM\HasLifecycleCallbacks]
 class Node extends Base
 {
     
@@ -143,11 +141,8 @@ class Node extends Base
         }, $children);
     }
 	
-	/**
-	 * @ORM\PrePersist
-     * Event that creates a root node if one doesn't exist
-     */
-	public function createRootNode()
+	#[ORM\PrePersist]
+    public function createRootNode()
 	{
 	    if ($this->is_root) return;
 	    
@@ -325,52 +320,43 @@ class Node extends Base
         return $called_class::$instances[$called_class];
     }
 	
-	/**
-     * @ORM\Column(type="boolean")
-     **/
+	#[ORM\Column(type: 'boolean')]
     protected $is_root = false;
     
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\NotBlank
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank]
     protected $title;
     
-    /**
-     * @Gedmo\TreeLeft
-     * @ORM\Column(name="lft", type="integer")
-     */
+    #[Gedmo\TreeLeft]
+    #[ORM\Column(name: 'lft', type: 'integer')]
     protected $lft;
 
-    /**
-     * @Gedmo\TreeLevel
-     * @ORM\Column(name="lvl", type="integer")
-     */
+    #[Gedmo\TreeLevel]
+    #[ORM\Column(name: 'lvl', type: 'integer')]
     protected $lvl;
 
-    /**
-     * @Gedmo\TreeRight
-     * @ORM\Column(name="rgt", type="integer")
-     */
+    #[Gedmo\TreeRight]
+    #[ORM\Column(name: 'rgt', type: 'integer')]
     protected $rgt;
 
-    /**
-     * @Gedmo\TreeRoot
-     * @ORM\Column(name="root", type="integer", nullable=true)
-     */
+    #[Gedmo\TreeRoot]
+    #[ORM\Column(name: 'root', type: 'integer', nullable: true)]
     protected $root;
     
     /**
-     * @Gedmo\TreeParent
-     * @ORM\ManyToOne(targetEntity="Node", inversedBy="children")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="SET NULL")
+     * Mapped by each concrete tree root entity, eg:
+     *
+     *   #[Gedmo\TreeParent]
+     *   #[ORM\ManyToOne(targetEntity: Model_X::class, inversedBy: 'children')]
+     *   #[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
+     *   protected $parent;
+     *
+     *   #[ORM\OneToMany(targetEntity: Model_X::class, mappedBy: 'parent')]
+     *   #[ORM\OrderBy(['lft' => 'ASC'])]
+     *   protected $children;
      */
     protected $parent;
     
-    /**
-     * @ORM\OneToMany(targetEntity="Node", mappedBy="parent")
-     * @ORM\OrderBy({"lft" = "ASC"})
-     */
     protected $children;
 	
 }

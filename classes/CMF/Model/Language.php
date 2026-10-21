@@ -6,11 +6,9 @@ use Doctrine\ORM\Mapping as ORM,
 	Gedmo\Mapping\Annotation as Gedmo,
 	Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="languages")
- * @ORM\HasLifecycleCallbacks
- **/
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'languages')]
 class Language extends Base
 {
     protected static $_fields = array(
@@ -71,19 +69,13 @@ class Language extends Base
         return false;
     }
     
-    /**
-     * @ORM\Column(type="language")
-     **/
+    #[ORM\Column(type: 'language')]
     protected $code;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\CMF\Model\Language")
-     */
+    #[ORM\ManyToOne(targetEntity: \CMF\Model\Language::class)]
     protected $update_from;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $top_level_domain;
 	
 }

@@ -5,11 +5,10 @@ namespace CMF\Doctrine\Extensions;
 use Doctrine\Common\EventArgs,
     Doctrine\ORM\Event\OnFlushEventArgs,
     Doctrine\ORM\Event\PostFlushEventArgs,
-    Doctrine\ORM\Event\LifecycleEventArgs,
+    Doctrine\Persistence\Event\LifecycleEventArgs,
     Doctrine\Common\NotifyPropertyChanged,
-    Doctrine\Common\Annotations\Reader,
     Doctrine\Common\EventSubscriber,
-    Doctrine\ORM\Mapping\ClassMetadataInfo;
+    Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataInfo;
 
 class URLListener implements EventSubscriber
 {
@@ -44,9 +43,9 @@ class URLListener implements EventSubscriber
         if (static::$disableProcessing) return;
 
         $this->init();
-        $em = $args->getEntityManager();
+        $em = $args->getObjectManager();
         $uow = $em->getUnitOfWork();
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
 
         $this->processNew($entity, $em, $uow);
     }
@@ -56,7 +55,7 @@ class URLListener implements EventSubscriber
         if (static::$disableProcessing) return;
 
         $this->init();
-        $em = $args->getEntityManager();
+        $em = $args->getObjectManager();
         
         if (count($this->toFlush) > 0) {
             
@@ -80,7 +79,7 @@ class URLListener implements EventSubscriber
         $this->init();
         $this->toFlush = array();
         
-        $em = $args->getEntityManager();
+        $em = $args->getObjectManager();
         $uow = $em->getUnitOfWork();
         
         foreach ($uow->getScheduledEntityInsertions() AS $entity) {

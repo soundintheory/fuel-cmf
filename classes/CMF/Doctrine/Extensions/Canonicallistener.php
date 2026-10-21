@@ -25,7 +25,7 @@ class Canonicallistener implements EventSubscriber
         $this->toProcessPostFush = array();
         $this->toProcessPostFushDelete = array();
 
-        $em = $args->getEntityManager();
+        $em = $args->getObjectManager();
         $uow = $em->getUnitOfWork();
 
         // Process the aliases after the other stuff

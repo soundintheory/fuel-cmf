@@ -1,51 +1,68 @@
 <?php
 
-use Doctrine\DBAL\Types\Type,
-	Doctrine\Common\Annotations\AnnotationRegistry,
-	Doctrine\Common\Annotations\AnnotationReader,
-	Doctrine\Common\Annotations\CachedReader,
-	Doctrine\ORM\Mapping\Driver\AnnotationDriver,
-	Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain,
+use Doctrine\DBAL\DriverManager,
+	Doctrine\DBAL\Types\Type,
+	Doctrine\DBAL\Event\Listeners\SQLSessionInit,
+	Doctrine\ORM\EntityManager,
+	Doctrine\ORM\Mapping\Driver\AttributeDriver,
+	Doctrine\Persistence\Mapping\Driver\MappingDriverChain,
 	Gedmo\DoctrineExtensions,
-	Symfony\Component\Validator\Validator,
-	Symfony\Component\Validator\DefaultTranslator,
-	Symfony\Component\Validator\Mapping\ClassMetadataFactory as ValidatorMetadataFactory,
-    Symfony\Component\Validator\Mapping\Loader\AnnotationLoader as ValidatorAnnotationLoader,
-    Symfony\Component\Validator\ConstraintValidatorFactory,
-    Doctrine\DBAL\Event\Listeners\MysqlSessionInit;
+	Symfony\Component\Cache\Adapter\ArrayAdapter,
+	Symfony\Component\Cache\Adapter\ApcuAdapter,
+	Symfony\Component\Cache\Adapter\FilesystemAdapter,
+	Symfony\Component\Validator\Validation;
 
 class DoctrineException extends \FuelException {}
 
 /**
- * @inheritdoc
+ * Wraps Doctrine configuration with FuelPHP features. Formerly extended
+ * aspendigital/fuel-doctrine2's \Fuel\Doctrine, which has been folded in here.
+ *
+ * <code>
+ * $em = \D::manager();
+ * $em->createQuery(...);
+ * </code>
  */
-class D extends \Fuel\Doctrine
+class D
 {
+	/** @var array */
+	protected static $_managers;
+
+	/** @var array */
+	protected static $settings;
+
+	/**
+	 * Map cache types to PSR-6 cache adapters
+	 */
 	protected static $cache_drivers = array(
-		'array'=>'ArrayCache',
-		'apc'=>'ApcCache',
-		'xcache'=>'XcacheCache',
-		'wincache'=>'WinCache',
-		'zend'=>'ZendDataCache',
-		'file'=>'FilesystemCache',
-		'filesystem'=>'FilesystemCache'
+		'array'=>ArrayAdapter::class,
+		'apc'=>ApcuAdapter::class,
+		'apcu'=>ApcuAdapter::class,
+		'file'=>FilesystemAdapter::class,
+		'filesystem'=>FilesystemAdapter::class
 	);
 
-	/** @var \Symfony\Component\Validator\Validator */
+	/** @var \Symfony\Component\Validator\Validator\ValidatorInterface */
 	protected static $_validator;
 	
 	/** @var \Doctrine\DBAL\Logging\SQLLogger */
 	protected static $_logger;
 
 	public static $clear_cache = false;
+
+	/**
+	 * Read configuration
+	 */
+	public static function _init()
+	{
+		static::$settings = \Config::load('db', true);
+	}
 	
 	/**
-	 * @inheritdoc
+	 * Sets up the entity manager for a connection
 	 */
 	public static function _init_manager($connection)
 	{
-		///////////////////////// START FROM PARENT METHOD //////////////////////////
-
 		$settings = static::connection_settings($connection);
 
 		$config = new \Doctrine\ORM\Configuration();
@@ -53,29 +70,28 @@ class D extends \Fuel\Doctrine
 		$cache = static::_init_cache($settings);
 		if ($cache)
 		{
-			$config->setMetadataCacheImpl($cache);
+			$config->setMetadataCache($cache);
 			if (!\CMF::$lang_enabled) {
-				$config->setQueryCacheImpl($cache);
+				$config->setQueryCache($cache);
 			}
-			$config->setResultCacheImpl($cache);
+			$config->setResultCache($cache);
 		}
 
-		$config->setProxyDir($settings['proxy_dir']);
-		$config->setProxyNamespace($settings['proxy_namespace']);
-		$config->setAutoGenerateProxyClasses(\Arr::get($settings, 'auto_generate_proxy_classes', false));
+		// PHP 8.4 native lazy objects replace generated proxy classes
+		$config->enableNativeLazyObjects(true);
 		$config->setMetadataDriverImpl(static::_init_metadata($config, $settings));
-
-		$namingStrategy = new \CMF\ORM\ModuleNamingStrategy();
-
-		$config->setNamingStrategy($namingStrategy);
-
+		$config->setNamingStrategy(new \CMF\ORM\ModuleNamingStrategy());
 
 		$EventManager = new \Doctrine\Common\EventManager();
 
-		static::$_managers[$connection] = \Doctrine\ORM\EntityManager::create($settings['connection'], $config, $EventManager);
+		// Matches the connection collation used before the PHP 8 upgrade
+		$EventManager->addEventSubscriber(new SQLSessionInit("SET NAMES utf8 COLLATE utf8_unicode_ci"));
+
+		$conn = DriverManager::getConnection($settings['connection'], $config, $EventManager);
+		static::$_managers[$connection] = new EntityManager($conn, $config, $EventManager);
 
 		if (!empty($settings['profiling']))
-			static::$_managers[$connection]->getConnection()->getConfiguration()->setSQLLogger(new \CMF\Doctrine\QueryLogger());
+			$conn->getConfiguration()->setSQLLogger(new \CMF\Doctrine\QueryLogger());
 
 		// Connection init callback
 		if (!empty($settings['init_callback']))
@@ -86,15 +102,13 @@ class D extends \Fuel\Doctrine
 
 			call_user_func($settings['init_callback'], static::$_managers[$connection], $connection);
 		}
-
-		///////////////////////// END FROM PARENT METHOD //////////////////////////
 		
 		if (isset(static::$_logger)) {
-			$current_logger = static::$_managers[$connection]->getConnection()->getConfiguration()->getSQLLogger(static::$_logger);
+			$current_logger = $conn->getConfiguration()->getSQLLogger();
 			if (!is_null($current_logger) && method_exists(static::$_logger, 'setLogger')) {
 				static::$_logger->setLogger($current_logger);
 			}
-			static::$_managers[$connection]->getConnection()->getConfiguration()->setSQLLogger(static::$_logger);
+			$conn->getConfiguration()->setSQLLogger(static::$_logger);
 		}
 		
 		if (empty($connection) || is_null($connection))
@@ -117,14 +131,10 @@ class D extends \Fuel\Doctrine
 		}
 		
 		// Now initialise any extensions from our config
-		$evm = $em->getEventManager();
-		$reader = $em->getConfiguration()->getMetadataDriverImpl()->getDefaultDriver()->getReader();
 		$extensions = \Arr::get(static::$settings, 'doctrine2.extensions', array());
 
 		// Add custom DQL functions
 		$em->getConfiguration()->addCustomStringFunction('TYPE', 'CMF\\Doctrine\\Functions\\TypeFunction');
-		// Ensure UTF-8 support
-		$em->getEventManager()->addEventSubscriber(new MysqlSessionInit("utf8", "utf8_unicode_ci"));
 
 		//Add Event Listener For exporting language canonicals
 		$language =  \Config::get('language');
@@ -136,69 +146,38 @@ class D extends \Fuel\Doctrine
 		
 		foreach ($extensions as $extension_class) {
 			if (!is_subclass_of($extension_class, 'CMF\\Doctrine\\Extensions\\Extension'))
-				throw new \Exception($extension_class.' is not a subclass of Doctrine\\Fuel\\Extensions\\Extension');
+				throw new \Exception($extension_class.' is not a subclass of CMF\\Doctrine\\Extensions\\Extension');
 			
-			$extension_class::init($em, $reader);
+			$extension_class::init($em, null);
 		}
 	}
 	
 	/**
-	 * @inheritdoc
+	 * Builds the attribute metadata driver chain, including Gedmo's mapped superclasses
 	 */
 	protected static function _init_metadata($config, $connection_settings)
 	{
-		$type = \Arr::get($connection_settings, 'metadata_driver', 'annotation');
-		if (!array_key_exists($type, static::$metadata_drivers))
-			throw new DoctrineException('Invalid Doctrine2 metadata driver: ' . $type);
+		$driverChain = new MappingDriverChain();
 
-		if ($type == 'annotation') {
-			
-			// Register the doctrine annotations
-			AnnotationRegistry::registerFile(realpath(VENDORPATH).'/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
-			
-			// Symfony Validator annotations
-			AnnotationRegistry::registerAutoloadNamespace(
-				'Symfony\\Component\\Validator\\Constraints', array(realpath(VENDORPATH).'/symfony/validator', PKGPATH.'cmf/classes')
-			);
-			
-			// Create cached annotation reader
-			$cachedAnnotationReader = new CachedReader(new AnnotationReader(), $config->getMetadataCacheImpl());
-			
-			// Create a driver chain for metadata reading
-			$driverChain = new MappingDriverChain();
-			
-			// Initialise Gedmo with the driver chain and reader
-			DoctrineExtensions::registerAbstractMappingIntoDriverChainORM(
-			    $driverChain,
-			    $cachedAnnotationReader
-			);
+		// Initialise Gedmo with the driver chain (uses attributes when no annotation reader is passed)
+		DoctrineExtensions::registerAbstractMappingIntoDriverChainORM($driverChain);
 
-			// Create the annotation driver
-			$annotationDriver = new AnnotationDriver(
-			    $cachedAnnotationReader,
-			    \Arr::get($connection_settings, 'metadata_path', array())
-			);
-			
-			// Add the driver for the configured namespaces
-			$namespaces = array_unique(\Arr::get($connection_settings, 'entity_namespaces', array()));
-			foreach ($namespaces as $namespace) {
-				$driverChain->addDriver($annotationDriver, $namespace);
-			}
-			
-			// And set it as the default driver for good measure
-			$driverChain->setDefaultDriver($annotationDriver);
-			
-			return $driverChain;
+		$attributeDriver = new AttributeDriver(\Arr::get($connection_settings, 'metadata_path', array()));
+
+		// Add the driver for the configured namespaces
+		$namespaces = array_unique(\Arr::get($connection_settings, 'entity_namespaces', array()));
+		foreach ($namespaces as $namespace) {
+			$driverChain->addDriver($attributeDriver, $namespace);
 		}
 
-		$class = '\\Doctrine\\ORM\\Mapping\\Driver\\' . static::$metadata_drivers[$type];
-		return new $class($connection_settings['metadata_path']);
+		// And set it as the default driver for good measure
+		$driverChain->setDefaultDriver($attributeDriver);
+
+		return $driverChain;
 	}
 	
 	/**
-	 * @inheritdoc
-	 * 
-	 * Including a CMF mod: setting cache namespace / correct file caching path upon creation.
+	 * Creates the PSR-6 cache pool used for metadata, queries and results.
 	 * The cache namespace is set in the 'db.doctrine2.cache_namespace' config setting.
 	 */
 	protected static function _init_cache($connection_settings)
@@ -208,27 +187,27 @@ class D extends \Fuel\Doctrine
 			if (!array_key_exists($type, static::$cache_drivers))
 				throw new DoctrineException('Invalid Doctrine2 cache driver: ' . $type);
 
-			$cache = false;
-			$class = '\\Doctrine\\Common\\Cache\\' . static::$cache_drivers[$type];
+			$class = static::$cache_drivers[$type];
 			$namespace = \Arr::get($connection_settings, 'cache_namespace', basename(realpath(APPPATH.'..'.DS.'../')));
-			
-			switch ($type) {
-				case 'file':
-				case 'phpfile':
-				case 'filesystem':
-					$cache = new $class(APPPATH.'cache/doctrine2');
+			$namespace = preg_replace('/[^-+.A-Za-z0-9_]/', '_', $namespace);
+
+			switch ($class) {
+				case FilesystemAdapter::class:
+					$cache = new FilesystemAdapter($namespace, 0, APPPATH.'cache/doctrine2');
 					break;
-					
+
+				case ApcuAdapter::class:
+					$cache = new ApcuAdapter($namespace);
+					break;
+
 				default:
-					$cache = new $class();
-					$cache->setNamespace($namespace);
+					$cache = new ArrayAdapter();
 					break;
 			}
 
 			if (\Input::param('clearcache', false) !== false || static::$clear_cache === true) {
 				try {
-					$cache->flushAll();
-					$cache->deleteAll();
+					$cache->clear();
 				} catch (\Exception $e) {
 					// Nothing
 				}
@@ -239,37 +218,109 @@ class D extends \Fuel\Doctrine
 		
 		return false;
 	}
+
+	/**
+	 * Translates the Fuel DB config for a connection into Doctrine settings
+	 */
+	public static function connection_settings($connection)
+	{
+		if (!isset(static::$settings['doctrine2']))
+			throw new DoctrineException('Missing "doctrine2" key in DB config');
+		
+		if (!isset(static::$settings[$connection]) or !isset(static::$settings[$connection]['connection']))
+			throw new DoctrineException("No connection configuration for '$connection'");
+
+		$connection_settings = static::$settings[$connection];
+		$settings = static::$settings['doctrine2'];
+		if (isset($connection_settings['doctrine2']))
+		{
+			$settings = array_replace($settings, $connection_settings['doctrine2']);
+			unset($connection_settings['doctrine2']);
+		}
+
+		// Required settings
+		foreach (array('metadata_path') as $key)
+		{
+			if (!isset($settings[$key]))
+				throw new DoctrineException("'$key' not configured for connection '$connection'");
+		}
+
+		// Translate DB connection config to terms Doctrine understands
+		$options = array();
+		if (isset($connection_settings['type']))
+		{
+			$options['user'] = \Arr::get($connection_settings['connection'], 'username', null);
+			switch ($connection_settings['type'])
+			{
+				case 'mysql':
+				case 'mysqli':
+					$options['host'] = \Arr::get($connection_settings['connection'], 'hostname', null);
+					$options['dbname'] = \Arr::get($connection_settings['connection'], 'database', null);
+					$options['driver'] = 'pdo_mysql';
+					break;
+				case 'pdo':
+					$parts = explode(':', \Arr::get($connection_settings['connection'], 'dsn', ':'), 2);
+					if (!in_array($parts[0], array('mysql', 'sqlite', 'pgsql', 'oci', 'sqlsrv')))
+						throw new DoctrineException('Unsupported driver '.$parts[0]);
+					$options['driver'] = 'pdo_'.$parts[0];
+					$conf = explode(';', $parts[1]);
+					foreach ($conf as $opt)
+					{
+						$v = explode('=', $opt, 2);
+						if (count($v) == 2) $options[$v[0]] = $v[1];
+					}
+					break;
+				default:
+					throw new DoctrineException('Unsupported connection type '.$connection_settings['type']);
+			}
+		}
+
+		if (isset($connection_settings['charset']))
+			$options['charset'] = $connection_settings['charset'];
+			
+		$options = array_filter($options);
+		$settings['connection'] = array_merge($options, $connection_settings['connection']);
+		$settings['profiling'] = \Arr::get($connection_settings, 'profiling', false);
+		$settings['init_callback'] = \Arr::get($settings, 'init_callback');
+
+		return $settings;
+	}
+
+	/**
+	 * @return \Doctrine\ORM\EntityManager
+	 */
+	public static function manager($connection = null)
+	{
+		if (empty($connection))
+			$connection = static::$settings['active'];
+
+		if (!isset(static::$_managers[$connection]))
+			static::_init_manager($connection);
+
+		return static::$_managers[$connection];
+	}
 	
 	/**
-	 * @return \Symfony\Component\Validator\Validator
+	 * @return \Symfony\Component\Validator\Validator\ValidatorInterface
 	 */
 	public static function validator($connection = null)
 	{
-		$em = static::manager($connection);
-		
-		if (empty($connection) || is_null($connection))
-			$connection = static::$settings['active'];
-		
 		if (!isset(static::$_validator))
-			static::_init_validator($em);
+			static::_init_validator(static::manager($connection));
 
 		return static::$_validator;
 	}
 	
 	/**
-	 * Initialises up the Symfony Validator
+	 * Initialises up the Symfony Validator, reading constraints from attributes
 	 * 
 	 * @return void
 	 */
 	protected static function _init_validator($em)
 	{
-	    $annotationLoader = new ValidatorAnnotationLoader($em->getConfiguration()->getMetadataDriverImpl()->getDefaultDriver()->getReader());
-	    
-	    static::$_validator = new Validator(
-	    	new ValidatorMetadataFactory($annotationLoader),
-	    	new ConstraintValidatorFactory(),
-	    	new DefaultTranslator()
-	    );
+		static::$_validator = Validation::createValidatorBuilder()
+			->enableAttributeMapping()
+			->getValidator();
 	}
 	
 	/**
@@ -293,3 +344,6 @@ class D extends \Fuel\Doctrine
 	}
 	
 }
+
+
+D::_init();

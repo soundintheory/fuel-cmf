@@ -6,12 +6,11 @@ use Doctrine\ORM\Mapping as ORM,
 	Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="roles")
- *
  * @package    CMF
  * @subpackage Model
  **/
+#[ORM\Entity]
+#[ORM\Table(name: 'roles')]
 class Role extends Base
 {
     protected static $_icon = 'tags';
@@ -28,19 +27,13 @@ class Role extends Base
         return $this->name;
     }
 	
-    /**
-     * @ORM\Column(type="string", length=20)
-     **/
+    #[ORM\Column(type: 'string', length: 20)]
     protected $name;
     
-    /**
-     * @ORM\Column(type="string", length=100)
-     **/
+    #[ORM\Column(type: 'string', length: 100)]
     protected $description;
     
-	/**
-     * @ORM\ManyToMany(targetEntity="\CMF\Model\Permission", inversedBy="roles")
-     * @ORM\JoinTable(name="role_permission")
-     **/
+	#[ORM\ManyToMany(targetEntity: \CMF\Model\Permission::class, inversedBy: 'roles')]
+    #[ORM\JoinTable(name: 'role_permission')]
     protected $permissions;    
 }

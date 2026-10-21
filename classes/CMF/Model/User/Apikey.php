@@ -7,11 +7,9 @@ use Doctrine\ORM\Mapping as ORM,
 	CMF\Model\Base,
 	Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\HasLifecycleCallbacks
- * @ORM\Table(name="api_keys")
- * @ORM\Entity
- **/
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Entity]
+#[ORM\Table(name: 'api_keys')]
 class Apikey extends Base
 {
     protected static $_fields = array(
@@ -30,28 +28,18 @@ class Apikey extends Base
         'expires_at'
     );
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $user_type = 'Admin\\Model_User';
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     **/
+    #[ORM\Column(type: 'integer', nullable: true)]
     protected $user_id;
 
-    /**
-     * @ORM\Column(type="random_key")
-     */
+    #[ORM\Column(type: 'random_key')]
     protected $access_token;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $scope = 'api';
 
-    /**
-     * @ORM\Column(type="datetime")
-     **/
+    #[ORM\Column(type: 'datetime')]
     protected $expires_at;
 }

@@ -6,11 +6,9 @@ use Doctrine\ORM\Mapping as ORM,
 	Gedmo\Mapping\Annotation as Gedmo,
 	Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="dev_settings")
- * @ORM\HasLifecycleCallbacks
- **/
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'dev_settings')]
 class DevSettings extends Base
 {
     protected static $_fields = array(
@@ -21,19 +19,13 @@ class DevSettings extends Base
     protected static $_icon = 'cog';
     protected static $_static = true;
     
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $parent_site;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $parent_site_api_key;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     **/
+    #[ORM\Column(type: 'boolean', nullable: true)]
     protected $use_canonical = true;
     
     /** inheritdoc */

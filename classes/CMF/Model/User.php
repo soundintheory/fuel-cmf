@@ -12,12 +12,11 @@ use CMF\Auth,
 	Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\MappedSuperclass
- * @ORM\HasLifecycleCallbacks
- *
  * @package    CMF
  * @subpackage Model
  **/
+#[ORM\MappedSuperclass]
+#[ORM\HasLifecycleCallbacks]
 class User extends Base
 {
 	
@@ -752,25 +751,14 @@ class User extends Base
         return false;
     }
 
-    /**
-	 * @ORM\PrePersist
-     * Event that does the following:
-     *
-     * - tests if a username or email exists in the database.
-     * - downcases and trims username and email.
-     * - validates and ensures an encrypted password exists if the password has changed.
-     * - checks for unique fields.
-     * - adds a default role, if one was specified in the config file
-     */
+    #[ORM\PrePersist]
     public function _event_before_save()
     {
 		$this->_is_tracking = true;
 		//$this->_add_default_role();
     }
     
-    /**
-	 * @ORM\PreFlush
-     */
+    #[ORM\PreFlush]
     public function _event_before_update()
     {
 		$this->_is_tracking = true;
@@ -793,11 +781,9 @@ class User extends Base
     }
 
     /**
-	 * @ORM\PostUpdate
-     * Event that makes sure password is unset once the model is saved.
-     *
      * @return void
      */
+    #[ORM\PostUpdate]
     public function _event_after_save()
     {
         $this->_is_tracking = false;
@@ -1080,53 +1066,36 @@ class User extends Base
     }
     
 	/////////////////// BEGIN DB PROPERTIES ///////////////////
-	
-	/**
-     * @ORM\ManyToMany(targetEntity="\CMF\Model\Role")
-     * @ORM\JoinTable(name="model_user_role")
-     **/
+    #[ORM\ManyToMany(targetEntity: \CMF\Model\Role::class)]
+    #[ORM\JoinTable(name: 'model_user_role')]
     protected $roles;
 	
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\Email
-     * @Assert\NotBlank
-     **/
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\Email]
+    #[Assert\NotBlank]
     protected $email;
 
-	/**
-     * @ORM\Column(type="string", length=32, nullable=true)
-     **/
+	#[ORM\Column(type: 'string', length: 32, nullable: true)]
     protected $username;
 	
-	/**
-     * @ORM\Column(type="binary", length=60)
-     **/
+	#[ORM\Column(type: 'binary', length: 60)]
     protected $encrypted_password;
     
-    /**
-     * @ORM\Column(type="binary", length=60, nullable=true)
-     **/
+    #[ORM\Column(type: 'binary', length: 60, nullable: true)]
     protected $authentication_token = null; 
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
      * @var datetime
      **/
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected $reset_password_sent_at = null;
 
-    /**
-     * @ORM\Column(type="binary", length=60, nullable=true)
-     **/
+    #[ORM\Column(type: 'binary', length: 60, nullable: true)]
     protected $reset_password_token = null;
 	
-	/**
-     * @ORM\Column(type="binary", length=60, nullable=true)
-     **/
+	#[ORM\Column(type: 'binary', length: 60, nullable: true)]
     protected $remember_token = null;
     
-    /**
-     * @ORM\Column(type="boolean")
-     **/
+    #[ORM\Column(type: 'boolean')]
     protected $super_user = false;
 }

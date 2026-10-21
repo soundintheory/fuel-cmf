@@ -652,7 +652,7 @@ class Rest_Query
 	/**
 	 * The metadata associated with the query's model
 	 * 
-	 * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
+	 * @return \Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataInfo
 	 */
 	protected function getMetadata()
 	{

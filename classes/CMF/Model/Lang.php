@@ -6,14 +6,10 @@ use Doctrine\ORM\Mapping as ORM,
 	Gedmo\Mapping\Annotation as Gedmo,
 	Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="lang")
- * @ORM\HasLifecycleCallbacks
- * @Assert\UniqueEntity(
- *     fields={"identifier", "language"}
- * )
- **/
+#[Assert\UniqueEntity(fields: ['identifier', 'language'])]
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'lang')]
 class Lang extends Base
 {
     protected static $_fields = array(
@@ -26,24 +22,16 @@ class Lang extends Base
     protected static $_plural = 'Common Phrases';
     protected static $_singular = 'Common Phrase';
     
-    /**
-     * @ORM\Column(type="string", length=100, nullable=false)
-     */
+    #[ORM\Column(type: 'string', length: 100, nullable: false)]
     protected $identifier;
     
-    /**
-     * @ORM\Column(type="string", length=10, nullable=false)
-     */
+    #[ORM\Column(type: 'string', length: 10, nullable: false)]
     protected $language;
     
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
+    #[ORM\Column(type: 'text', nullable: false)]
     protected $lang;
     
-    /**
-     * @ORM\Column(type="string", length=13, nullable=false)
-     */
+    #[ORM\Column(type: 'string', length: 13, nullable: false)]
     protected $hash;
 	
 }

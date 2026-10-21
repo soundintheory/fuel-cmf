@@ -3,56 +3,50 @@
 namespace CMF\Model;
 
 use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataInfo,
     Doctrine\DBAL\LockMode,
 	Gedmo\Mapping\Annotation as Gedmo,
 	CMF\Model\URL;
 
-/**
- * @ORM\MappedSuperclass
- * @ORM\HasLifecycleCallbacks
- **/
+#[ORM\MappedSuperclass]
+#[ORM\HasLifecycleCallbacks]
 class Base extends \CMF\Doctrine\Model implements \JsonSerializable
 {
     /**
-     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
      * @var int
      **/
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected $id;
     
     /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
      * @var datetime
      **/
+    #[Gedmo\Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime')]
     protected $created_at;
 
     /**
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime")
      * @var datetime
      **/
+    #[Gedmo\Timestampable(on: 'update')]
+    #[ORM\Column(type: 'datetime')]
     protected $updated_at;
     
-    /**
-     * @ORM\Column(type="object", nullable=true)
-     **/
+    #[ORM\Column(type: 'object', nullable: true)]
     protected $settings;
     
-    /**
-     * @ORM\Column(type="boolean", nullable=true))
-     **/
+    #[ORM\Column(type: 'boolean', nullable: true)]
     protected $visible = true;
     
     /**
-     * @ORM\Column(type="integer", nullable=true)
      * @var int
      **/
+    #[ORM\Column(type: 'integer', nullable: true)]
     protected $pos = -1;
     
-    /**
-     * @Gedmo\Locale
-     */
+    #[Gedmo\Locale]
     protected $locale;
     
     public $_translated = array();
@@ -673,12 +667,12 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     
     /**
      * Checks the $changed property at the 'PreFlush' stage and if it is true, updates the
-     * $updated_at property. This means that even if only relations of the model have been 
+     * $updated_at property. This means that even if only relations of the model have been
      * changed through it's setter methods, the model will still register as updated.
-     * 
-     * @ORM\PreFlush
+     *
      * @return void
      */
+    #[ORM\PreFlush]
     public function preFlush()
     {
         if ($this->changed) {
@@ -1424,7 +1418,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
                 $result->blank();
                 
                 \D::manager()->persist($result);
-                \D::manager()->flush($result);
+                \D::manager()->flush();
                 $called_class::$instances[$called_class] = $result;
             } else {
                 $called_class::$instances[$called_class] = $result[0];

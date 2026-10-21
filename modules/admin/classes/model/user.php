@@ -7,13 +7,12 @@ use Doctrine\ORM\Mapping as ORM,
 	Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Table(name="users")
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks
- * @Assert\UniqueEntity("username")
- *
  * @package    Admin
  **/
+#[Assert\UniqueEntity(fields: 'username')]
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'users')]
 class Model_User extends \CMF\Model\User
 {
     protected static $_fields = array(
@@ -35,9 +34,7 @@ class Model_User extends \CMF\Model\User
         return $this->username;
     }
     
-    /**
-     * @ORM\Column(type="language", nullable=true)
-     */
+    #[ORM\Column(type: 'language', nullable: true)]
     protected $default_language;
     
 	

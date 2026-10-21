@@ -3,7 +3,7 @@
 namespace CMF\Doctrine;
 
 use Doctrine\DBAL\LockMode,
-	Doctrine\Common\Persistence\Mapping\ClassMetadata,
+	Doctrine\Persistence\Mapping\ClassMetadata,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection;
 
@@ -16,7 +16,7 @@ abstract class Model
     /**
      * A stored version of this model's metadata for efficiency.
      * 
-     * @var \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @var \Doctrine\Persistence\Mapping\ClassMetadata
      */
     protected static $metadata = null;
 
@@ -601,7 +601,7 @@ abstract class Model
     /**
      * Used internally as an alternative to the static version.
      *
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @return \Doctrine\Persistence\Mapping\ClassMetadata
      */
     protected function _metadata()
     {
@@ -613,7 +613,7 @@ abstract class Model
     /**
      * Get Doctrine Metadata for the model.
      *
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @return \Doctrine\Persistence\Mapping\ClassMetadata
      */
     public static function metadata()
     {

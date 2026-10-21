@@ -13,7 +13,7 @@ class Translatable extends Extension
 	public static function init($em, $reader)
 	{
 		// http://www.w3schools.com/tags/ref_language_codes.asp
-		static::$listener = $listener = new \Gedmo\Translatable\TranslatableListener();
+		static::$listener = $listener = new TranslatableListener();
 		
 		// Current translation locale should be set from session or hook later into the listener
 		// Most importantly, before the entity manager is flushed
@@ -23,7 +23,6 @@ class Translatable extends Extension
 		
 		$listener->setTranslatableLocale($lang);
 		$listener->setDefaultLocale($default);
-		$listener->setAnnotationReader($reader);
 		$listener->setTranslationFallback(true);
 		
 		$em->getEventManager()->addEventSubscriber($listener);

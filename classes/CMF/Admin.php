@@ -5,12 +5,8 @@ namespace CMF;
 use DoctrineFuel,
     Doctrine\DBAL\LockMode,
     Gedmo\Mapping\ExtensionMetadataFactory,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Annotations\CachedReader,
-    Doctrine\Common\Cache\ArrayCache,
-    Doctrine\Common\Annotations\Reader,
     Gedmo\Mapping\MappedEventSubscriber,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataInfo,
     CMF\Forms\ItemForm;
 
 /**
@@ -264,7 +260,7 @@ class Admin
 		$field_mappings = $metadata->fieldMappings;
 		$association_mappings = $metadata->associationMappings;
 		
-		$field_list = array_keys(\Arr::merge($fields, $metadata->reflFields));
+		$field_list = array_keys(\Arr::merge($fields, $metadata->propertyAccessors));
 		
 		foreach ($field_list as $key) {
 			

@@ -13,7 +13,6 @@ class Tree extends Extension
 	public static function init($em, $reader)
 	{
 		static::$listener = new \Gedmo\Tree\TreeListener();
-		static::$listener->setAnnotationReader($reader);
 		$em->getEventManager()->addEventSubscriber(static::$listener);
 	}
 

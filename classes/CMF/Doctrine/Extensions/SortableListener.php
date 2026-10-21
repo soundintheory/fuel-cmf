@@ -5,11 +5,10 @@ namespace CMF\Doctrine\Extensions;
 use Doctrine\Common\EventArgs,
     Doctrine\ORM\Event\OnFlushEventArgs,
     Doctrine\ORM\Event\PostFlushEventArgs,
-    Doctrine\ORM\Event\LifecycleEventArgs,
+    Doctrine\Persistence\Event\LifecycleEventArgs,
     Doctrine\Common\NotifyPropertyChanged,
-    Doctrine\Common\Annotations\Reader,
     Doctrine\Common\EventSubscriber,
-    Doctrine\ORM\Mapping\ClassMetadataInfo;
+    Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataInfo;
 
 class SortableListener implements EventSubscriber
 {
@@ -33,7 +32,7 @@ class SortableListener implements EventSubscriber
         if (static::$disableProcessing) return;
 
         $this->relocations = array();
-        $em = $args->getEntityManager();
+        $em = $args->getObjectManager();
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityInsertions() AS $entity) {

@@ -6,10 +6,8 @@ use Doctrine\ORM\Mapping as ORM,
 	Gedmo\Mapping\Annotation as Gedmo,
 	Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\MappedSuperclass
- * @ORM\HasLifecycleCallbacks
- **/
+#[ORM\MappedSuperclass]
+#[ORM\HasLifecycleCallbacks]
 class Settings extends Base
 {
     
@@ -27,20 +25,14 @@ class Settings extends Base
     protected static $_icon = 'cog';
     protected static $_static = true;
     
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $site_title;
     
-    /**
-     * @ORM\ManyToOne(targetEntity="\CMF\Model\URL")
-     * @ORM\JoinColumn(onDelete="SET NULL")
-     */
+    #[ORM\ManyToOne(targetEntity: \CMF\Model\URL::class)]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     protected $start_page;
 
-    /**
-     * @ORM\Column(type="htaccess", nullable=true)
-     */
+    #[ORM\Column(type: 'htaccess', nullable: true)]
     protected $htaccess;
     
     /** inheritdoc */

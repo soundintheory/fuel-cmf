@@ -2,6 +2,10 @@
 
 namespace CMF\Doctrine;
 
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\SqlWalker;
 
 class SortableNullsWalker extends SqlWalker
@@ -9,7 +13,7 @@ class SortableNullsWalker extends SqlWalker
     const NULLS_FIRST = 'NULLS FIRST';
     const NULLS_LAST = 'NULLS LAST';
 
-    public function walkOrderByClause($orderByClause)
+    public function walkOrderByClause(AST\OrderByClause $orderByClause): string
     {
         $sql = parent::walkOrderByClause($orderByClause);
 
@@ -17,7 +21,8 @@ class SortableNullsWalker extends SqlWalker
         {
             if (is_array($nullFields))
             {
-                $platform = $this->getConnection()->getDatabasePlatform()->getName();
+                $platform = $this->getConnection()->getDatabasePlatform();
+                $platform = $platform instanceof AbstractMySQLPlatform ? 'mysql' : ($platform instanceof OraclePlatform ? 'oracle' : ($platform instanceof PostgreSQLPlatform ? 'postgresql' : ''));
                 switch ($platform)
                 {
                 case 'mysql':

@@ -6,10 +6,8 @@ use Doctrine\ORM\Mapping as ORM,
 	Gedmo\Mapping\Annotation as Gedmo,
 	Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\MappedSuperclass
- * @ORM\HasLifecycleCallbacks
- **/
+#[ORM\MappedSuperclass]
+#[ORM\HasLifecycleCallbacks]
 class Page extends Base
 {
     protected static $_fields = array(
@@ -61,39 +59,25 @@ class Page extends Base
         $this->title = $this->menu_title = $this->html_title = $this_class::singular();
     }
     
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $menu_title;
     
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\NotBlank
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank]
     protected $title;
     
-    /**
-     * @ORM\OneToOne(targetEntity="CMF\Model\URL", orphanRemoval=true)
-     **/
+    #[ORM\OneToOne(targetEntity: \CMF\Model\URL::class, orphanRemoval: true)]
     protected $url;
     
-    /**
-     * @ORM\Column(type="string", nullable=true))
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $html_title;
     
-    /**
-     * @ORM\Column(type="string", nullable=true))
-     **/
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $meta_desc;	
     
-	/**
-     * @ORM\Column(type="richtext", nullable=true))
-     **/
+	#[ORM\Column(type: 'richtext', nullable: true)]
     protected $content;
     
-    /**
-     * @ORM\Column(type="object", nullable=true))
-     **/
+    #[ORM\Column(type: 'object', nullable: true)]
     protected $extra_meta = array();
 }
