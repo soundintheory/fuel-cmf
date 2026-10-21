@@ -766,14 +766,14 @@ class CMF
 		static::$path = strpos($template, '.') === false ? $template : substr($template, 0, -strlen(strrchr($template, '.')));
 
 		// determine the viewmodel namespace and classname
-		if (empty(static::$module)) static::$module = \Request::active() ? ucfirst(\Request::active()->module) : '';
+		if (empty(static::$module)) static::$module = \Request::active() ? ucfirst((string) \Request::active()->module) : '';
 
 		// Strip the first part of the path off for module templates
 		if (!empty(static::$module) && strpos(static::$path, static::$module) === 0) {
 			static::$path = str_replace(static::$module.'/', '', static::$path);
 		}
 
-		$viewmodel_class = ucfirst(static::$module).'\\View_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', str_replace('-', '', static::$path) )));
+		$viewmodel_class = ucfirst((string) static::$module).'\\View_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', str_replace('-', '', static::$path) )));
 
 		if (class_exists($viewmodel_class)) return $viewmodel_class;
 		return false;
@@ -791,14 +791,14 @@ class CMF
 		static::$path = strpos($template, '.') === false ? $template : substr($template, 0, -strlen(strrchr($template, '.')));
 		
 		// determine the viewmodel namespace and classname
-		if (empty(static::$module)) static::$module = \Request::active() ? ucfirst(\Request::active()->module) : '';
+		if (empty(static::$module)) static::$module = \Request::active() ? ucfirst((string) \Request::active()->module) : '';
 
 		// Strip the first part of the path off for module templates
 		if (!empty(static::$module) && strpos(static::$path, static::$module) === 0) {
 			static::$path = str_replace(static::$module.'/', '', static::$path);
 		}
 
-		$controller_class = ucfirst(static::$module).'\\Controller_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', static::$path)));
+		$controller_class = ucfirst((string) static::$module).'\\Controller_'.\Inflector::words_to_upper(ucfirst(str_replace(array('/', DS), '_', static::$path)));
 		
 		return class_exists($controller_class);
 	}
@@ -1105,7 +1105,7 @@ class CMF
 			}
 			else
 			{
-				$viewClass = ucfirst(\CMF::$module).'\\View_Base';
+				$viewClass = ucfirst((string) \CMF::$module).'\\View_Base';
 				if (!class_exists($viewClass)) $viewClass = '\\View_Base';
 				$view = new $viewClass('view', false, $template);
 			}
@@ -1125,7 +1125,7 @@ class CMF
 				}
 				else
 				{
-					$viewClass = ucfirst(\CMF::$module).'\\View_Base';
+					$viewClass = ucfirst((string) \CMF::$module).'\\View_Base';
 					if (!class_exists($viewClass)) $viewClass = '\\View_Base';
 					$view = new $viewClass('view', false, $default_template);
 				}

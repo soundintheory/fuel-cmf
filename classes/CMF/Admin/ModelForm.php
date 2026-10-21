@@ -259,7 +259,7 @@ class ModelForm
 		
 		// Order the groups...
 		uasort($this->groups, function($a, $b) {
-			return $a['order'] >= $b['order'];
+			return $a['order'] <=> $b['order'];
 		});
 		
 		// File them off into their tabs...

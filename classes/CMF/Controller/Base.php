@@ -82,7 +82,7 @@ class Base extends \Controller
     
     public function show404($msg = null)
     {
-        throw new \HttpException($msg, \HttpException::NOT_FOUND);
+        throw new \HttpException((string) $msg, \HttpException::NOT_FOUND);
     }
 	
 	/**
