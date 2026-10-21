@@ -1418,7 +1418,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
                 $result->blank();
                 
                 \D::manager()->persist($result);
-                \D::manager()->flush();
+                \D::flushOnly($result);
                 $called_class::$instances[$called_class] = $result;
             } else {
                 $called_class::$instances[$called_class] = $result[0];

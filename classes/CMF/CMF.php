@@ -723,7 +723,7 @@ class CMF
 				$existingUrl->set('updated_at', new \DateTime());
 				$existingUrl->set('type', strval($type));
 				\D::manager()->persist($existingUrl);
-				\D::manager()->flush();
+				\D::flushOnly($existingUrl);
 				return $existingUrl;
 			}
 		}
@@ -745,7 +745,7 @@ class CMF
 		    'type' => strval($type)
 		));
 		\D::manager()->persist($redirect);
-		\D::manager()->flush();
+		\D::flushOnly($redirect);
 		return $redirect;
 	}
 	

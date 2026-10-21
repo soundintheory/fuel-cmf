@@ -301,6 +301,38 @@ class D
 	}
 	
 	/**
+	 * Flushes changes to the given entities only, plus any pending inserts and
+	 * removals: what ORM 2's flush($entity) did. ORM 3's flush() checks every
+	 * managed entity for changes, which gets slow when many are loaded (eg. imports).
+	 *
+	 * @param object|object[] $entities
+	 */
+	public static function flushOnly($entities, $connection = null)
+	{
+		$em = static::manager($connection);
+		$switched = array();
+
+		// With explicit change tracking, flush() only checks entities passed to persist()
+		foreach ($em->getMetadataFactory()->getLoadedMetadata() as $metadata) {
+			if ($metadata->isChangeTrackingDeferredImplicit()) {
+				$metadata->setChangeTrackingPolicy(\Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT);
+				$switched[] = $metadata;
+			}
+		}
+
+		try {
+			foreach ((is_array($entities) ? $entities : array($entities)) as $entity) {
+				if ($entity !== null) $em->persist($entity);
+			}
+			$em->flush();
+		} finally {
+			foreach ($switched as $metadata) {
+				$metadata->setChangeTrackingPolicy(\Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
+			}
+		}
+	}
+
+	/**
 	 * @return \Symfony\Component\Validator\Validator\ValidatorInterface
 	 */
 	public static function validator($connection = null)
