@@ -62,7 +62,7 @@ class Driver
             
             try {
                 $user = $type::select('item')->where("item.id = $auth_token")->getQuery()->getResult();
-            } catch (\Doctrine\DBAL\DBALException $e) {
+            } catch (\Doctrine\DBAL\Exception $e) {
                 throw new \Exception("There was a problem loading the CMF user. Try running 'php oil r cmf:sync', as there may be a necessary database upgrade.", 1);
             }
             

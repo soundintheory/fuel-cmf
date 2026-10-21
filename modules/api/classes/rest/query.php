@@ -18,6 +18,7 @@ class Rest_Query
 	protected $builder;
 	protected $params;
 	protected $root;
+	protected $rootOutput;
 	protected $rootOuput;
 	protected $field;
 	protected $reserved_names = array('fields');

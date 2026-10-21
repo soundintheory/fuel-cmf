@@ -39,7 +39,7 @@ class Crop extends Glide\Manipulators\BaseManipulator
      */
     public function getCoordinates(Image $image)
     {
-        $coordinates = explode(',', $this->crop);
+        $coordinates = explode(',', (string) $this->crop);
 
         if (count($coordinates) !== 4 or
             (!is_numeric($coordinates[0])) or

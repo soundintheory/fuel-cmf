@@ -40,7 +40,7 @@ class Date extends Base {
         $required = isset($settings['required']) ? $settings['required'] : false;
         $errors = $model->getErrorsForField($settings['mapping']['fieldName']);
         $has_errors = count($errors) > 0;
-        $inputId = preg_replace('/[^\w-_]+/', '-', $settings['mapping']['fieldName']);
+        $inputId = preg_replace('/[^\w-]+/', '-', $settings['mapping']['fieldName']);
         $input_attributes = isset($settings['input_attributes']) ? $settings['input_attributes'] : array( 'class' => 'input-large', 'id' => $inputId );
         $label = (!$include_label) ? '' : \Form::label($settings['title'].($required ? ' *' : '').($has_errors ? ' - '.$errors[0] : ''), $inputId, array( 'class' => 'item-label' ));
         $input = \Form::input($settings['mapping']['fieldName'], $value->format($settings['format']), $input_attributes);

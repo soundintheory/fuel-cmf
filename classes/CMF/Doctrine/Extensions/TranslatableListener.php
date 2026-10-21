@@ -11,69 +11,52 @@ use Doctrine\Common\EventArgs;
 class TranslatableListener extends \Gedmo\Translatable\TranslatableListener
 {
     /**
-     * Same as the parent implementation, with the CMF additions marked
+     * Mirrors the parent's private $defaultTranslationValue
      */
+    protected $cmfDefaultTranslationValue = null;
+
+    public function setDefaultTranslationValue(?string $defaultTranslationValue): void
+    {
+        parent::setDefaultTranslationValue($defaultTranslationValue);
+        $this->cmfDefaultTranslationValue = $defaultTranslationValue;
+    }
+
     public function postLoad(EventArgs $args)
     {
+        parent::postLoad($args);
+
         $ea = $this->getEventAdapter($args);
-        $om = $ea->getObjectManager();
         $object = $ea->getObject();
+        if (!$object instanceof \CMF\Model\Base || $this->isSkipOnLoad()) return;
+
+        $om = $ea->getObjectManager();
         $meta = $om->getClassMetadata(get_class($object));
         $config = $this->getConfiguration($om, $meta->getName());
-        $locale = $this->defaultLocale;
-        $oid = null;
-        if (isset($config['fields'])) {
-            $locale = $this->getTranslatableLocale($object, $meta, $om);
-            $oid = spl_object_id($object);
-            $this->translatedInLocale[$oid] = $locale;
-        }
+        $locale = isset($config['fields']) ? $this->getTranslatableLocale($object, $meta, $om) : $this->getDefaultLocale();
 
-        if ($this->skipOnLoad) {
+        // In the default locale, everything counts as translated
+        if (!isset($config['fields']) || ($locale === $this->getDefaultLocale() && !$this->getPersistDefaultLocaleTranslation())) {
+            $object->_translated = \Admin::getTranslatable($meta->name);
             return;
         }
 
-        if (isset($config['fields']) && ($locale !== $this->defaultLocale || $this->persistDefaultLocaleTranslation)) {
-            // fetch translations
-            $translationClass = $this->getTranslationClass($ea, $config['useObjectClass']);
-            $result = $ea->loadTranslations(
-                $object,
-                $translationClass,
-                $locale,
-                $config['useObjectClass']
-            );
-            // translate object's translatable properties
-            foreach ($config['fields'] as $field) {
-                $translated = $this->defaultTranslationValue;
-
-                foreach ($result as $entry) {
-                    if ($entry['field'] == $field) {
-                        $translated = $entry['content'] ?? null;
-
-                        break;
-                    }
-                }
-
-                // update translation
-                if ($this->defaultTranslationValue !== $translated
-                    || (!$this->translationFallback && (!isset($config['fallback'][$field]) || !$config['fallback'][$field]))
-                    || ($this->translationFallback && isset($config['fallback'][$field]) && !$config['fallback'][$field])
-                ) {
-                    // CMF: record the translated field
-                    if ($object instanceof \CMF\Model\Base) $object->_translated[] = $field;
-
-                    $ea->setTranslationValue($object, $field, $translated);
-                    // ensure clean changeset
-                    $ea->setOriginalObjectProperty(
-                        $om->getUnitOfWork(),
-                        $object,
-                        $field,
-                        $meta->getFieldValue($object, $field)
-                    );
+        // Same rule the parent uses to decide whether to apply a field's translation
+        $result = $ea->loadTranslations($object, $this->getTranslationClass($ea, $config['useObjectClass']), $locale, $config['useObjectClass']);
+        foreach ($config['fields'] as $field) {
+            $translated = $this->cmfDefaultTranslationValue;
+            foreach ($result as $entry) {
+                if ($entry['field'] == $field) {
+                    $translated = $entry['content'] ?? null;
+                    break;
                 }
             }
-        } else if ($object instanceof \CMF\Model\Base) {
-            // CMF: in the default locale, everything counts as translated
-            $object->_translated = \Admin::getTranslatable($meta->name);
+
+            if ($this->cmfDefaultTranslationValue !== $translated
+                || (!$this->getTranslationFallback() && (!isset($config['fallback'][$field]) || !$config['fallback'][$field]))
+                || ($this->getTranslationFallback() && isset($config['fallback'][$field]) && !$config['fallback'][$field])
+            ) {
+                $object->_translated[] = $field;
+            }
         }
     }
 }

@@ -23,50 +23,30 @@ class QueryLogger implements SQLLogger {
 		if ($this->logAllQueries || substr($sql, 0, 6) == 'SELECT') {
 			
 			if ($params) {
-				// Attempt to replace placeholders so that we can log a final SQL query for profiler's EXPLAIN statement
-				// (this is not perfect-- getPlaceholderPositions has some flaws-- but it should generally work with ORM-generated queries)
-				
-				$is_positional = is_numeric(key($params));
-				list($sql, $params, $types) = \Doctrine\DBAL\SQLParserUtils::expandListParameters($sql, $params, $types);
-				if (empty($types))
-					$types = array();
-				$placeholders = \Doctrine\DBAL\SQLParserUtils::getPlaceholderPositions($sql, $is_positional);
-				
-				if ($is_positional)
-					$map = array_flip($placeholders);
-				else
-				{
-					$map = array();
-					foreach ($placeholders as $name=>$positions)
-					{
-						foreach ($positions as $pos)
-							$map[$pos] = $name;
-					}
+				// Replace placeholders so that we can log a final SQL query for profiler's EXPLAIN statement
+				// (not a full SQL parser - placeholders inside string literals aren't skipped - but fine for ORM-generated queries)
+				$conn = \D::manager()->getConnection();
+				$quote = function($value, $type) use ($conn) {
+					if (is_array($value)) return implode(', ', array_map(array($conn, 'quote'), array_map('strval', $value)));
+					if ($value === null) return 'NULL';
+					if (is_bool($value)) return $value ? '1' : '0';
+					if ($value instanceof \DateTimeInterface) $value = $value->format('Y-m-d H:i:s');
+					return is_int($value) ? (string) $value : $conn->quote((string) $value);
+				};
+
+				if (is_numeric(key($params))) {
+					$values = array_values($params);
+					$types = is_array($types) ? array_values($types) : array();
+					$i = 0;
+					$final_sql = preg_replace_callback('/\?/', function() use (&$i, $values, $types, $quote) {
+						$index = $i++;
+						return array_key_exists($index, $values) ? $quote($values[$index], \Arr::get($types, $index)) : '?';
+					}, $sql);
+				} else {
+					$final_sql = preg_replace_callback('/(?<!:):([a-zA-Z_][a-zA-Z0-9_]*)/', function($m) use ($params, $types, $quote) {
+						return array_key_exists($m[1], $params) ? $quote($params[$m[1]], \Arr::get((array) $types, $m[1])) : $m[0];
+					}, $sql);
 				}
-				
-				ksort($map);
-				$src_pos = 0;
-				$final_sql = '';
-				$first_param_index = key($params);
-				foreach ($map as $pos=>$replace_name)
-				{
-					$final_sql .= substr($sql, $src_pos, $pos-$src_pos);
-					
-					if ($sql[$pos] == ':')
-					{
-						$src_pos = $pos + strlen($replace_name);
-						$index = trim($replace_name, ':');
-					}
-					else // '?' positional placeholder
-					{
-						$src_pos = $pos + 1;
-						$index = $replace_name + $first_param_index;
-					}
-					
-					$final_sql .= \D::manager()->getConnection()->quote( $params[ $index ], \Arr::get($types, $index) );
-				}
-				
-				$final_sql .= substr($sql, $src_pos);
 				
 				$this->queries[] = $final_sql;
 				
