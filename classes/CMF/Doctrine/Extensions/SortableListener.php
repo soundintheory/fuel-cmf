@@ -120,7 +120,7 @@ class SortableListener implements EventSubscriber
             $metadata = $em->getClassMetadata($class);
             $group_by = $class_relocations['__settings__']['group_by'];
             $has_group = $class_relocations['__settings__']['has_group'];
-            $is_assocation = $metadata->hasAssociation($group_by);
+            $is_assocation = $has_group && $metadata->hasAssociation($group_by);
 
             if ($has_group) {
 
