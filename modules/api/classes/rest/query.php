@@ -483,7 +483,7 @@ class Rest_Query
 
 		if ($polymorphic)
 		{
-			$typeField = is_array($metadata->discriminatorColumn) ? \Arr::get($metadata->discriminatorColumn, 'name') : null;
+			$typeField = !empty($metadata->discriminatorColumn) ? \Arr::get(\CMF\Doctrine\Mapping::discriminatorColumn($metadata), 'name') : null;
 			if ($typeField) {
 				$data[$typeField] = $metadata->discriminatorValue;
 			}

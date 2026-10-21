@@ -18,6 +18,8 @@ class ModelForm
 	public $plural = null;
 	public $singular = null;
 	
+	public $title;
+
 	// For internal workings
 	protected $tabs;
 	protected $groups;
@@ -61,7 +63,7 @@ class ModelForm
 			$this->fields = \Arr::merge($this->fields, $extra_settings);
 		}
 
-		$this->validator_meta = \D::validator()->getMetadataFactory()->getMetadataFor($class_name);
+		$this->validator_meta = \D::validator()->getMetadataFor($class_name);
 		
 		// Merge any DB settings into the mix...
 		$model_settings = $model->settings;
@@ -478,8 +480,8 @@ class ModelForm
 	
 	protected function hasConstraint($field_name, $constraint_type)
 	{
-		if (!array_key_exists((string) $field_name, $this->validator_meta->members)) return false;
-		$constraints = $this->validator_meta->members[$field_name][0]->constraints;
+		if (!$this->validator_meta->hasPropertyMetadata((string) $field_name)) return false;
+		$constraints = $this->validator_meta->getPropertyMetadata((string) $field_name)[0]->getConstraints();
 		
 		if (is_array($constraint_type)) {
 			

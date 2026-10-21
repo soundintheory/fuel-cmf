@@ -136,7 +136,7 @@ class Cmf
         foreach ($driver->getAllClassNames() as $class) {
             
             $metadata = $em->getClassMetadata($class);
-            $fields = $metadata->fieldMappings;
+            $fields = \CMF\Doctrine\Mapping::fields($metadata);
             $convert = array();
             
             foreach ($fields as $field_name => $field) {

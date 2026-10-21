@@ -285,7 +285,7 @@ class Storage
 		foreach ($driver->getAllClassNames() as $class) {
 		    
 		    $metadata = $em->getClassMetadata($class);
-		    $fields = $metadata->fieldMappings;
+		    $fields = \CMF\Doctrine\Mapping::fields($metadata);
 		    $file_fields = array();
 		    
 		    foreach ($fields as $field_name => $field)
@@ -385,7 +385,7 @@ class Storage
 		if (!\Config::get('cmf.cdn.enabled')) return;
 
 		$metadata = $model->metadata();
-		$fields = $metadata->fieldMappings;
+		$fields = \CMF\Doctrine\Mapping::fields($metadata);
 		$staticFiles = array();
 		$localAdaper = static::adapter();
 		$cdn = static::getCDNAdapter();

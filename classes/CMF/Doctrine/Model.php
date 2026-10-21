@@ -679,7 +679,7 @@ abstract class Model
         }
         
         $output = array();
-        foreach ($metadata->fieldMappings as $field_name => $field)
+        foreach (\CMF\Doctrine\Mapping::fields($metadata) as $field_name => $field)
         {
             if (!in_array($field_name, $fields)) continue;
 
@@ -703,7 +703,7 @@ abstract class Model
         
         if ($include_associations === false) return $this->array_data = $output;
         
-        foreach ($metadata->associationMappings as $assoc_name => $assoc)
+        foreach (\CMF\Doctrine\Mapping::associations($metadata) as $assoc_name => $assoc)
         {
             if (!in_array($assoc_name, $fields)) continue;
 
@@ -780,7 +780,7 @@ abstract class Model
         {
             if (in_array($associationName, $excludeFields)) continue;
 
-            $associationMapping = $metadata->getAssociationMapping($associationName);
+            $associationMapping = \CMF\Doctrine\Mapping::toArray($metadata->getAssociationMapping($associationName));
             $value = $this->get($associationName);
             $shouldCopy = ($associationMapping['orphanRemoval'] || $associationMapping['isCascadeRemove']);
             $isTreeChildren = ($isTree && $associationName == 'children');
@@ -895,7 +895,7 @@ abstract class Model
         $class = $metadata->name;
         if (!$metadata->hasField($fieldName)) return null;
 
-        $fieldMapping = $metadata->getFieldMapping($fieldName);
+        $fieldMapping = \CMF\Doctrine\Mapping::toArray($metadata->getFieldMapping($fieldName));
         if (!isset($fieldMapping['type']) || $fieldMapping['type'] != 'string') return null;
         
         $value = $newValue = $this->get($fieldName);

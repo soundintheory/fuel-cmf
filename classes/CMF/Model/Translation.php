@@ -13,7 +13,8 @@ use Doctrine\ORM\Mapping as ORM,
 #[ORM\Table(name: 'ext_translations')]
 #[ORM\Index(name: 'translations_lookup_idx', columns: ['locale', 'object_class', 'foreign_key'])]
 #[ORM\UniqueConstraint(name: 'lookup_unique_idx', columns: ['locale', 'object_class', 'field', 'foreign_key'])]
-class Translation extends \Gedmo\Translatable\Entity\Translation
+#[ORM\AttributeOverrides([new ORM\AttributeOverride(name: 'objectClass', column: new ORM\Column(name: 'object_class', type: 'string', length: 255))])]
+class Translation extends \Gedmo\Translatable\Entity\MappedSuperclass\AbstractTranslation
 {
     /**
      * All required columns are mapped through inherited superclass

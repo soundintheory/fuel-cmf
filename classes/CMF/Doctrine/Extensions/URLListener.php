@@ -166,7 +166,7 @@ class URLListener implements EventSubscriber
         if ($metadata->name == 'CMF\\Model\\URL') return;
 
         $entity_namespace = trim(\CMF::slug(str_replace('\\', '/', \Inflector::get_namespace($entity_class))), '/');
-    	$url_associations = $metadata->getAssociationsByTargetClass('CMF\\Model\\URL');
+    	$url_associations = \CMF\Doctrine\Mapping::associationsByTargetClass($metadata, 'CMF\\Model\\URL');
         
     	if (!empty($url_associations)) {
             
@@ -327,7 +327,7 @@ class URLListener implements EventSubscriber
         $entity_class = $metadata->name;
         if ($entity_class::urlProcess() !== true) return;
 
-        $url_associations = $metadata->getAssociationsByTargetClass('CMF\\Model\\URL');
+        $url_associations = \CMF\Doctrine\Mapping::associationsByTargetClass($metadata, 'CMF\\Model\\URL');
         
         if (!empty($url_associations)) {
             

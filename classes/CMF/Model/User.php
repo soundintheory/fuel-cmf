@@ -19,6 +19,21 @@ use CMF\Auth,
 #[ORM\HasLifecycleCallbacks]
 class User extends Base
 {
+    /**
+     * Used by the optional confirmable / trackable / lockable features. Subclasses
+     * map whichever of these they use as database columns.
+     */
+    protected $_is_tracking;
+    protected $is_confirmed;
+    protected $confirmation_token;
+    protected $confirmation_sent_at;
+    protected $sign_in_count;
+    protected $current_sign_in_at;
+    protected $current_sign_in_ip;
+    protected $last_sign_in_at;
+    protected $last_sign_in_ip;
+    protected $locked_at;
+    protected $unlock_token;
 	
 	/**
      * Validation regular expression for username
@@ -1066,8 +1081,11 @@ class User extends Base
     }
     
 	/////////////////// BEGIN DB PROPERTIES ///////////////////
+    // join columns named explicitly: ORM 3 would otherwise derive 'user_id' from this mapped superclass
     #[ORM\ManyToMany(targetEntity: \CMF\Model\Role::class)]
     #[ORM\JoinTable(name: 'model_user_role')]
+    #[ORM\JoinColumn(name: 'model_user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'role_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected $roles;
 	
     #[ORM\Column(type: 'string', length: 255)]

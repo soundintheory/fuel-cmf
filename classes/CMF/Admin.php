@@ -207,7 +207,7 @@ class Admin
 		if (\Input::param('alias', false) !== false) {
 
 			// Check for URL...
-			$urls = $metadata->getAssociationsByTargetClass('CMF\Model\URL');
+			$urls = \CMF\Doctrine\Mapping::associationsByTargetClass($metadata, 'CMF\Model\URL');
 			if (count($urls) > 0) {
 
 				// Find the URL field and hide all others if found
@@ -257,8 +257,8 @@ class Admin
 
 		}
 
-		$field_mappings = $metadata->fieldMappings;
-		$association_mappings = $metadata->associationMappings;
+		$field_mappings = \CMF\Doctrine\Mapping::fields($metadata);
+		$association_mappings = \CMF\Doctrine\Mapping::associations($metadata);
 		
 		$field_list = array_keys(\Arr::merge($fields, $metadata->propertyAccessors));
 		
@@ -270,6 +270,9 @@ class Admin
 				$field = array( 'visible' => !$alias );
 			} else if ($field === false) {
 				$field = array( 'visible' => false );
+			} else if (!is_array($field)) {
+				// PHP < 7.1 silently turned empty strings into arrays on assignment
+				$field = array();
 			}
 			
 			if (isset($field_mappings[$key])) {

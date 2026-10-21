@@ -1085,7 +1085,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         $metadata = \D::manager()->getClassMetadata($called_class);
         $qb = $called_class::select('item');
         
-        foreach ($metadata->associationMappings as $field => $mapping) {
+        foreach (\CMF\Doctrine\Mapping::associations($metadata) as $field => $mapping) {
             $qb->leftJoin('item.'.$field, $field)->addSelect($field);
         }
         
@@ -1098,7 +1098,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
             \D::manager()->persist($item);
 
             // Persist associations!
-            foreach ($metadata->associationMappings as $field => $mapping)
+            foreach (\CMF\Doctrine\Mapping::associations($metadata) as $field => $mapping)
             {
                 $collection = $metadata->isCollectionValuedAssociation($field);
                 $cascadePersist = \Arr::get($mapping, 'isCascadePersist', false);
@@ -1312,7 +1312,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
     {
         $called_class = get_called_class();
         $metadata = $called_class::metadata();
-        $url_associations = $metadata->getAssociationsByTargetClass('CMF\\Model\\URL');
+        $url_associations = \CMF\Doctrine\Mapping::associationsByTargetClass($metadata, 'CMF\\Model\\URL');
 
         if (!empty($url_associations)) {
             
@@ -1366,7 +1366,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         
         // Get the field mappings
         $metadata = $this->_metadata();
-        $field_mappings = $metadata->fieldMappings;
+        $field_mappings = \CMF\Doctrine\Mapping::fields($metadata);
         
         // Make sure any non nullable fields are filled in...
         foreach ($field_mappings as $field_name => $field_mapping) {

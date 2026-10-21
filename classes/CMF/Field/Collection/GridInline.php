@@ -52,7 +52,7 @@ class GridInline extends Multiselect {
         
         // Detect an image field if one hasn't been specified
         if ($image_field === null) {
-            foreach ($target_metadata->fieldMappings as $field_name => $field_mapping) {
+            foreach (\CMF\Doctrine\Mapping::fields($target_metadata) as $field_name => $field_mapping) {
                 if ($field_mapping['type'] == 'image') {
                     $image_field = $field_name;
                     break;

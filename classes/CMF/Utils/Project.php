@@ -248,6 +248,37 @@ MIGRATION;
 	 */
 	protected static function getDiff()
     {
+        $sql = static::getDiffSql();
+        if (isset($sql['error'])) return $sql;
+
+        $up = static::buildCodeFromSql($sql['up']);
+        $down = static::buildCodeFromSql($sql['down']);
+        
+        // TODO: Create a more generic way of implementing data fixtures for each class
+        if ($sql['creates_languages']) {
+        	
+        	$up .= "\n\t\t// Creating the first language";
+        	$up .= "\n\t\t\$lang = new \CMF\Model\Language();";
+        	$up .= "\n\t\t\$lang->set('code', \Lang::get_lang());";
+        	$up .= "\n\t\t\D::manager()->persist(\$lang);";
+        	$up .= "\n\t\t\D::manager()->flush();";
+        	
+        }
+        
+        if ( ! $up && ! $down) {
+			return array( 'error' => "\tNo changes detected in your mapping information.\n" );
+		}
+		
+		return array( 'up' => $up, 'down' => $down );
+    }
+
+	/**
+	 * The SQL needed to bring the database in line with the mapping ('up') and back ('down')
+	 * 
+	 * @return array	'up' and 'down' arrays of SQL statements, or 'error'
+	 */
+	public static function getDiffSql()
+    {
         $em = \D::manager();
         $conn = $em->getConnection();
         $platform = $conn->getDatabasePlatform();
@@ -265,7 +296,8 @@ MIGRATION;
         }
         
         $tool = new SchemaTool($em);
-        $fromSchema = $conn->getSchemaManager()->createSchema();
+        $schemaManager = $conn->createSchemaManager();
+        $fromSchema = $schemaManager->introspectSchema();
         $toSchema = $tool->getSchemaFromMetadata($metadata);
 		
 		// Ignore tables...
@@ -321,25 +353,13 @@ MIGRATION;
 			if ($toSchema->hasTable($ignored_table)) $toSchema->dropTable($ignored_table);
 		}
 		
-        $up = static::buildCodeFromSql($fromSchema->getMigrateToSql($toSchema, $platform));
-        $down = static::buildCodeFromSql($fromSchema->getMigrateFromSql($toSchema, $platform));
-        
-        // TODO: Create a more generic way of implementing data fixtures for each class
-        if ($toSchema->hasTable('languages') && !$fromSchema->hasTable('languages')) {
-        	
-        	$up .= "\n\t\t// Creating the first language";
-        	$up .= "\n\t\t\$lang = new \CMF\Model\Language();";
-        	$up .= "\n\t\t\$lang->set('code', \Lang::get_lang());";
-        	$up .= "\n\t\t\D::manager()->persist(\$lang);";
-        	$up .= "\n\t\t\D::manager()->flush();";
-        	
-        }
-        
-        if ( ! $up && ! $down) {
-			return array( 'error' => "\tNo changes detected in your mapping information.\n" );
-		}
-		
-		return array( 'up' => $up, 'down' => $down );
+        $comparator = $schemaManager->createComparator();
+
+        return array(
+        	'up' => $platform->getAlterSchemaSQL($comparator->compareSchemas($fromSchema, $toSchema)),
+        	'down' => $platform->getAlterSchemaSQL($comparator->compareSchemas($toSchema, $fromSchema)),
+        	'creates_languages' => $toSchema->hasTable('languages') && !$fromSchema->hasTable('languages'),
+        );
     }
 	
 	/**

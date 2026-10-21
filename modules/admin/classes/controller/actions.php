@@ -25,7 +25,7 @@ class Controller_Actions extends Controller_Base {
 		foreach ($driver->getAllClassNames() as $class) {
 		    
 		    $metadata = $em->getClassMetadata($class);
-		    $fields = $metadata->fieldMappings;
+		    $fields = \CMF\Doctrine\Mapping::fields($metadata);
 		    $image_fields = array();
 		    
 		    foreach ($fields as $field_name => $field) {
