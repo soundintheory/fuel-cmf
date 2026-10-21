@@ -2,7 +2,6 @@
 
 use Doctrine\DBAL\DriverManager,
 	Doctrine\DBAL\Types\Type,
-	Doctrine\DBAL\Event\Listeners\SQLSessionInit,
 	Doctrine\ORM\EntityManager,
 	Doctrine\ORM\Mapping\Driver\AttributeDriver,
 	Doctrine\Persistence\Mapping\Driver\MappingDriverChain,
@@ -83,9 +82,6 @@ class D
 		$config->setNamingStrategy(new \CMF\ORM\ModuleNamingStrategy());
 
 		$EventManager = new \Doctrine\Common\EventManager();
-
-		// Matches the connection collation used before the PHP 8 upgrade
-		$EventManager->addEventSubscriber(new SQLSessionInit("SET NAMES utf8 COLLATE utf8_unicode_ci"));
 
 		$conn = DriverManager::getConnection($settings['connection'], $config, $EventManager);
 		static::$_managers[$connection] = new EntityManager($conn, $config, $EventManager);
