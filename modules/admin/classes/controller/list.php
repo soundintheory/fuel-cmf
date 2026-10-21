@@ -131,7 +131,7 @@ class Controller_List extends Controller_Base {
 			// This could be a method on the model
 			if (!isset($fields[$field])) {
 				
-				if (array_key_exists($field_name, $manual_joins)) {
+				if (array_key_exists((string) $field_name, $manual_joins)) {
 
 					$join_heading = \Inflector::humanize(\Inflector::underscore($field_name));
 					$parts = explode(".", $field);
@@ -170,7 +170,7 @@ class Controller_List extends Controller_Base {
 		            $methods[] = $field_name;
 		            $columns[] = $column; 
 		            				
-				} else if (array_key_exists($field_name, $custom_columns)) {
+				} else if (array_key_exists((string) $field_name, $custom_columns)) {
 
 				    $title = \Inflector::humanize($field_name);
 				    $column = array(
@@ -198,10 +198,10 @@ class Controller_List extends Controller_Base {
 				continue;
 			}
 			
-			if ($metadata->isSingleValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists($field_name, $manual_joins)) {
+			if ($metadata->isSingleValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists((string) $field_name, $manual_joins)) {
 				$qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
 				$joins[] = $field_name;
-			} else if ($metadata->isCollectionValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists($field_name, $manual_joins)) {
+			} else if ($metadata->isCollectionValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists((string) $field_name, $manual_joins)) {
 				$qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
 				$joins[] = $field_name;
 			}
@@ -266,7 +266,7 @@ class Controller_List extends Controller_Base {
 						'options' => $filter_options
 					);
 
-					if (!in_array($filter_field, $joins) && !array_key_exists($filter_field, $manual_joins)) {
+					if (!in_array($filter_field, $joins) && !array_key_exists((string) $filter_field, $manual_joins)) {
 						$qb->leftJoin('item.'.$filter_field, $filter_field)->addSelect($filter_field);
 						$joins[] = $filter_field;
 					}
@@ -380,9 +380,9 @@ class Controller_List extends Controller_Base {
 		    		$assoc_field = array_shift($parts);
 		    	}
 		    	
-		        if (array_key_exists($field_name, $manual_joins)) {
+		        if (array_key_exists((string) $field_name, $manual_joins)) {
 		        	$qb->addOrderBy("$field_name.$assoc_field", $direction);
-		        } else if (array_key_exists($field_name, $custom_columns)) {
+		        } else if (array_key_exists((string) $field_name, $custom_columns)) {
                     $qb->addOrderBy("$field_name", $direction);
                 } else if ($metadata->hasAssociation($field_name)) {
 		            $assoc_class = $metadata->getAssociationTargetClass($field_name);
@@ -650,7 +650,7 @@ class Controller_List extends Controller_Base {
             // This could be a method on the model
             if (!isset($fields[$field])) {
 
-                if (array_key_exists($field_name, $manual_joins)) {
+                if (array_key_exists((string) $field_name, $manual_joins)) {
 
                     $join_heading = \Inflector::humanize(\Inflector::underscore($field_name));
                     $parts = explode(".", $field);
@@ -667,7 +667,7 @@ class Controller_List extends Controller_Base {
                         'type' => 'method',
                         'title' => \Inflector::humanize(\Inflector::underscore($field_name))
                     );
-                } else if (array_key_exists($field_name, $custom_columns)) {
+                } else if (array_key_exists((string) $field_name, $custom_columns)) {
 
                     $title = \Inflector::humanize($field_name);
                     $columns[$field_name] = array(
@@ -679,10 +679,10 @@ class Controller_List extends Controller_Base {
                 continue;
             }
 
-            if ($metadata->isSingleValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists($field_name, $manual_joins)) {
+            if ($metadata->isSingleValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists((string) $field_name, $manual_joins)) {
                 $qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
                 $joins[] = $field_name;
-            } else if ($metadata->isCollectionValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists($field_name, $manual_joins)) {
+            } else if ($metadata->isCollectionValuedAssociation($field_name) && !in_array($field_name, $joins) && !array_key_exists((string) $field_name, $manual_joins)) {
                 $qb->leftJoin('item.'.$field_name, $field_name)->addSelect($field_name);
                 $joins[] = $field_name;
             }
@@ -728,7 +728,7 @@ class Controller_List extends Controller_Base {
                         'options' => $filter_options
                     );
 
-                    if (!in_array($filter_field, $joins) && !array_key_exists($filter_field, $manual_joins)) {
+                    if (!in_array($filter_field, $joins) && !array_key_exists((string) $filter_field, $manual_joins)) {
                         $qb->leftJoin('item.'.$filter_field, $filter_field)->addSelect($filter_field);
                         $joins[] = $filter_field;
                     }
@@ -826,9 +826,9 @@ class Controller_List extends Controller_Base {
                     $assoc_field = array_shift($parts);
                 }
 
-                if (array_key_exists($field_name, $manual_joins)) {
+                if (array_key_exists((string) $field_name, $manual_joins)) {
                     $qb->addOrderBy("$field_name.$assoc_field", $direction);
-                } else if (array_key_exists($field_name, $custom_columns)) {
+                } else if (array_key_exists((string) $field_name, $custom_columns)) {
                     $qb->addOrderBy("$field_name", $direction);
                 } else if ($metadata->hasAssociation($field_name)) {
                     $assoc_class = $metadata->getAssociationTargetClass($field_name);
@@ -986,7 +986,7 @@ class Controller_List extends Controller_Base {
 	    	if ((array_key_exists('all', $actions) && intval($actions['all']) === 1)) {
 	    		if ($permission->action != 'none') $em->remove($permission);
 	    		$actions = array( 'all' => 1 );
-	    	} elseif ((!array_key_exists($permission->action, $actions) || intval($actions[$permission->action]) === 0)) {
+	    	} elseif ((!array_key_exists((string) $permission->action, $actions) || intval($actions[$permission->action]) === 0)) {
 	    		if ($permission->action != 'none') $em->remove($permission);
 	    	}
 	    	$post[$permission->item_id] = $actions;

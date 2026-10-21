@@ -2,7 +2,7 @@
 
 namespace CMF\Field\Object;
 
-class File extends Object {
+class File extends ObjectField {
     
     protected static $defaults = array(
         'path' => 'uploads/files/',

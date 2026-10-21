@@ -4,7 +4,7 @@ namespace CMF\Core;
 
 class FuelError extends \Fuel\Core\FuelError
 {
-	public static function show_production_error(\Exception $e)
+	public static function show_production_error(\Throwable $e)
 	{
 		// when we're on CLI, always show the php error
 		if (\Fuel::$is_cli)
@@ -21,19 +21,19 @@ class FuelError extends \Fuel\Core\FuelError
 		$response = '';
 		try {
 			$response = \CMF::getCustomErrorResponse(\Lang::get("site.errors.http.500", array( 'resource' => 'page' ), \Lang::get("site.errors.http.default", array( 'resource' => 'page' ), 'Please contact the website administrator')));
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$response = \View::forge('errors'.DS.'production');
 		}
 
 		exit($response);
 	}
 
-	public static function exception_handler(\Exception $e)
+	public static function exception_handler(\Throwable $e)
 	{
 		// Try and stop the cache
 		try {
 			\CMF\Cache::stop();
-		} catch (\Exception $e) {}
+		} catch (\Throwable $e) {}
 
 		parent::exception_handler($e);
 	}

@@ -411,7 +411,7 @@ class Admin
 	    if ($translate !== false) {
 	    	static::activateModule($segments[1]);
 	    	unset($segments[1]);
-	    	return  '/'.implode($segments, '/');
+	    	return  '/'.implode('/', $segments);
 	    }
 	    
 	    return $uri;

@@ -15,7 +15,7 @@ class QueryLogger implements SQLLogger {
 		$this->logger = $logger;
 	}
 
-	public function startQuery($sql, array $params = null, array $types = null)
+	public function startQuery($sql, ?array $params = null, ?array $types = null)
 	{
 		if ($this->logger) $this->logger->startQuery($sql, $params, $types);
 		

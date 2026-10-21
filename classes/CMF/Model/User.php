@@ -214,7 +214,7 @@ class User extends Base
         $old_current = $this->current_sign_in_at;
         $new_current = \DB::expr('CURRENT_TIMESTAMP');
 		return false;
-		
+
 		//TODO: Port this for doctrine2
 		//
         //$this->last_sign_in_at = ($old_current != static::$_properties['last_sign_in_at']['default'])
@@ -515,7 +515,7 @@ class User extends Base
 			$em->persist($this);
 			$em->flush();
 		}
-		
+
 		return true;
 
         //return (bool)($save === true ? $this->save(false) : true);
@@ -633,9 +633,9 @@ class User extends Base
 			\D::manager()->persist($this)->flush();
 			return true;
 		}
-		
+
 		return false;
-		
+
         //return (bool)($save === true ? $this->save(false) : false);
     }
 

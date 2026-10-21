@@ -162,7 +162,7 @@ class Auth
      *
      * @return bool Returns true on success or false on failure
      */
-    public static function has_access($role, User $user = null)
+    public static function has_access($role, ?User $user = null)
     {
         return static::driver()->has_access($role, $user);
     }

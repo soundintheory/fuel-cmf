@@ -85,7 +85,8 @@ class Installer
         }
         
         // Connect to the MySQL instance
-        $con = @mysql_connect($host, $username, $password) or $db_error = mysql_error();
+        mysqli_report(MYSQLI_REPORT_OFF);
+        $con = @mysqli_connect($host, $username, $password) or $db_error = mysqli_connect_error();
         if (!$con) {
             return array(
                 'error' => 'Could not make connection. '.$db_error
@@ -102,7 +103,7 @@ class Installer
                 if (empty($database)) \Cli::error('You must enter a database name!');
             }
             
-            $exists = mysql_num_rows(mysql_query("SHOW DATABASES LIKE '".$database."'", $con)) > 0;
+            $exists = mysqli_num_rows(mysqli_query($con, "SHOW DATABASES LIKE '".mysqli_real_escape_string($con, $database)."'")) > 0;
             
             while ($exists && !$overwrite) {
                 $overwrite = \Cli::prompt("The database '$database' already exists. Would you still like to use this?", array('y','n')) == 'y';
@@ -115,17 +116,18 @@ class Installer
                     }
                 }
                 
-                $exists = mysql_num_rows(mysql_query("SHOW DATABASES LIKE '".$database."'", $con)) > 0;
+                $exists = mysqli_num_rows(mysqli_query($con, "SHOW DATABASES LIKE '".mysqli_real_escape_string($con, $database)."'")) > 0;
             }
         }
         
         // Try and create the database
-        if (mysql_query("CREATE DATABASE IF NOT EXISTS ".$database, $con)) {
-            mysql_close($con);
+        if (mysqli_query($con, "CREATE DATABASE IF NOT EXISTS `".str_replace('`', '``', $database)."`")) {
+            mysqli_close($con);
         } else {
-            mysql_close($con);
+            $db_error = mysqli_error($con);
+            mysqli_close($con);
             return array(
-                'error' => 'Error creating database: '.mysql_error()
+                'error' => 'Error creating database: '.$db_error
             );
         }
         

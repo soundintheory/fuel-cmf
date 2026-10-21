@@ -2,7 +2,7 @@
 
 namespace CMF\Field\Object;
 
-class BingMap extends Object {
+class BingMap extends ObjectField {
 	
 	protected static $options = null;
     

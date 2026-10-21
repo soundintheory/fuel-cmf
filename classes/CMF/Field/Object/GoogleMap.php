@@ -2,7 +2,7 @@
 
 namespace CMF\Field\Object;
 
-class GoogleMap extends Object {
+class GoogleMap extends ObjectField {
 	
 	protected static $options = null;
     

@@ -1529,6 +1529,7 @@ class Base extends \CMF\Doctrine\Model implements \JsonSerializable
         return get_object_vars($this);
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toArray();

@@ -83,7 +83,7 @@ class Driver
      *
      * @return bool
      */
-    public function has_access($role, User $user = null)
+    public function has_access($role, ?User $user = null)
     {
         $status = !!$user;
 

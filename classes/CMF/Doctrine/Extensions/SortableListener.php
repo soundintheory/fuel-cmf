@@ -85,7 +85,7 @@ class SortableListener implements EventSubscriber
         $changed = false;
         $group_by = is_callable($class.'::sortGroup') ? $class::sortGroup() : null;
         $has_group = !is_null($group_by) && property_exists($class, $group_by);
-        $changed = ($has_group && array_key_exists($group_by, $changeset)) || array_key_exists('pos', $changeset);
+        $changed = ($has_group && array_key_exists((string) $group_by, $changeset)) || array_key_exists('pos', $changeset);
 
         if (!$changed) return;
 

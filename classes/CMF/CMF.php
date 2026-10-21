@@ -155,7 +155,7 @@ class CMF
 		$translate = \Config::get('cmf.module_urls.'.$segments[0], false);
 		if ($translate !== false) {
 			$segments[0] = static::$module = $translate;
-			return '/'.implode($segments, '/');
+			return '/'.implode('/', $segments);
 		}
 		
 		return $uri;

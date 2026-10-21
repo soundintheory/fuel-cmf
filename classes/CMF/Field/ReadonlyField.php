@@ -2,7 +2,7 @@
 
 namespace CMF\Field;
 
-class Readonly extends Base {
+class ReadonlyField extends Base {
 	
 	/** inheritdoc */
 	public static function displayForm($value, &$settings, $model)

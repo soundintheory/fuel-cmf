@@ -217,7 +217,7 @@ abstract class Model
     public static function findLast(array $order = array())
     {
         $called_class = get_called_class();
-        $key = $called_class::_metadata()->getSingleIdentifierFieldName();
+        $key = $called_class::metadata()->getSingleIdentifierFieldName();
         $order = array_merge(array( $key => 'ASC' ), $called_class::$_order, $order);
         $order = array_map(function($dir) {
             return ($dir == 'DESC') ? 'ASC' : 'DESC';

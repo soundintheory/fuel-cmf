@@ -4,7 +4,7 @@ namespace CMF\Field\Object;
 
 use CMF\Admin\ObjectForm;
 
-class ArrayField extends Object {
+class ArrayField extends ObjectField {
     
     protected static $defaults = array(
         'dynamic' => true,
@@ -39,7 +39,7 @@ class ArrayField extends Object {
     {
         $settings = static::settings($settings);
         if ($settings['array'] !== true) {
-            $field_class = 'CMF\\Field\\Object\\Object';
+            $field_class = 'CMF\\Field\\Object\\ObjectField';
             return $field_class::displayForm($value, $settings, $model);
         }
         

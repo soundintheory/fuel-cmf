@@ -2,7 +2,7 @@
 
 namespace CMF\Field\Object;
 
-class Link extends Object {
+class Link extends ObjectField {
 	
 	protected static $options = null;
     

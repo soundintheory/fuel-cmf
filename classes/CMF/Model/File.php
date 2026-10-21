@@ -72,9 +72,10 @@ class File extends \CMF\Doctrine\Model implements \JsonSerializable
     
     public function __toString()
     {
-        return $this->path;
+        return (string) $this->path;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toArray();

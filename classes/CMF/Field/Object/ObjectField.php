@@ -5,7 +5,7 @@ namespace CMF\Field\Object;
 use CMF\Admin\ObjectForm,
     CMF\Field\Data\ObjectData;
 
-class Object extends \CMF\Field\Base {
+class ObjectField extends \CMF\Field\Base {
     
     protected static $defaults = array(
         'dynamic' => true,
@@ -32,7 +32,7 @@ class Object extends \CMF\Field\Base {
             
             foreach ($settings['fields'] as $field_name => $field_value) {
                 $delete_field = isset($field_value['delete']) && $field_value['delete'] === true;
-                if (array_key_exists($field_name, $current_value) && !array_key_exists($field_name, $value) && !$delete_field) {
+                if (array_key_exists((string) $field_name, $current_value) && !array_key_exists($field_name, $value) && !$delete_field) {
                     $value[$field_name] = $current_value[$field_name];
                 }
                 //if (isset($value[$field_name]) && $delete_field) unset($value[$field_name]);

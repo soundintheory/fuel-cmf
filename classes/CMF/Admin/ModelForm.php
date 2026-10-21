@@ -131,7 +131,7 @@ class ModelForm
 	
 	protected function getFieldCollection($field_name, &$collection)
 	{
-		if (!array_key_exists($field_name, $this->fields)) return;
+		if (!array_key_exists((string) $field_name, $this->fields)) return;
 		$field_settings = $this->fields[$field_name];
 		if (isset($field_settings['fields_before'])) {
 			foreach ($field_settings['fields_before'] as $field_before) {
@@ -478,7 +478,7 @@ class ModelForm
 	
 	protected function hasConstraint($field_name, $constraint_type)
 	{
-		if (!array_key_exists($field_name, $this->validator_meta->members)) return false;
+		if (!array_key_exists((string) $field_name, $this->validator_meta->members)) return false;
 		$constraints = $this->validator_meta->members[$field_name][0]->constraints;
 		
 		if (is_array($constraint_type)) {
