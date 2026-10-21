@@ -8,6 +8,7 @@ class QueryLogger implements SQLLogger {
 	
 	protected $logger;
 	public $queries = array();
+	public $logAllQueries = false;
 	
 	public function __construct($logger = null)
 	{
@@ -19,7 +20,7 @@ class QueryLogger implements SQLLogger {
 		if ($this->logger) $this->logger->startQuery($sql, $params, $types);
 		
 		// Store select queries for later use
-		if (substr($sql, 0, 6) == 'SELECT') {
+		if ($this->logAllQueries || substr($sql, 0, 6) == 'SELECT') {
 			
 			if ($params) {
 				// Attempt to replace placeholders so that we can log a final SQL query for profiler's EXPLAIN statement

@@ -45,7 +45,7 @@ class MySQLDump
 		if ($connection->connect_errno) {
 			throw new Exception($connection->connect_error);
 
-		} elseif (!$connection->set_charset('utf8')) { // was added in MySQL 5.0.7 and PHP 5.0.5, fixed in PHP 5.1.5)
+		} elseif (!$connection->set_charset('utf8mb4')) { // was added in MySQL 5.0.7 and PHP 5.0.5, fixed in PHP 5.1.5)
 			throw new Exception($connection->error);
 		}
 	}
@@ -95,7 +95,7 @@ class MySQLDump
 			. "-- MySQL Server: " . $this->connection->server_info . "\n"
 			. "-- Database: " . $db[0] . "\n"
 			. "\n"
-			. "SET NAMES utf8;\n"
+			. "SET NAMES utf8mb4;\n"
 			. "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\n"
 			. "SET FOREIGN_KEY_CHECKS=0;\n"
 		);

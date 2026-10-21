@@ -143,11 +143,13 @@ class Auto extends Simple {
 		// Construct an allowed list of tables for the cache queries
 		$em = \D::manager();
 		foreach ($model_classes as $model) {
-			$meta = $em->getClassMetadata($model);
-			if ($meta->isMappedSuperclass || !isset($meta->columnNames['updated_at']) || $meta->rootEntityName != $meta->name) continue;
-			if (!in_array($meta->table['name'], $tables)) {
-				$tables[] = $meta->table['name'];
-			}
+			try {
+				$meta = $em->getClassMetadata($model);
+				if ($meta->isMappedSuperclass || !isset($meta->columnNames['updated_at']) || $meta->rootEntityName != $meta->name) continue;
+				if (!in_array($meta->table['name'], $tables)) {
+					$tables[] = $meta->table['name'];
+				}
+			} catch (\Exception $e) { }
 		}
 		
 		// Remove the app path from each file path, making them relative
