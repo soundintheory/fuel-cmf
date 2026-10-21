@@ -2,14 +2,15 @@
 
 namespace CMF\Core;
 
-use Twig_Loader_Filesystem;
 
 class View_Twig extends \Parser\View_Twig
 {
+	protected static $_loader_class = '\\CMF\\Twig\\FilesystemLoader';
+
 	
 	/**
 	 * Allows access to the Twig loader, which is useful if you need to get a list of all loaded templates
-	 * @return Twig_Loader_Filesystem
+	 * @return \CMF\Twig\FilesystemLoader
 	 */
 	public static function loader()
 	{
@@ -22,12 +23,12 @@ class View_Twig extends \Parser\View_Twig
 	public static function initLoader()
 	{
 		$views_paths = \Config::get('parser.View_Twig.views_paths', array(APPPATH . 'views'));
-        static::$_parser_loader = new Twig_Loader_Filesystem($views_paths);
+        static::$_parser_loader = new static::$_loader_class($views_paths);
 	}
 	
 	/**
 	 * Allows the setting of the loader to a different kind
-	 * @param Twig_LoaderInterface
+	 * @param \Twig\Loader\LoaderInterface
 	 */
 	public static function setLoader($loader)
 	{

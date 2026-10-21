@@ -2,15 +2,12 @@
 
 namespace CMF\Twig;
 
-use Twig_Extension,
-	Twig_Function_Function,
-	Twig_Function_Method,
-	Twig_Filter_Method;
+use Twig\Extension\AbstractExtension;
 
 /**
  * Provides Twig support for commonly used FuelPHP classes and methods.
  */
-class Cache extends Twig_Extension
+class Cache extends AbstractExtension
 {
 	/**
 	 * Gets the name of the extension.
@@ -25,7 +22,7 @@ class Cache extends Twig_Extension
 	/**
      * Returns the token parser instance to add to the existing list.
      *
-     * @return array An array of Twig_TokenParser instances
+     * @return array An array of token parser instances
      */
     public function getTokenParsers()
     {

@@ -2,10 +2,6 @@
 
 namespace CMF\Field;
 
-use Twig_Autoloader,
-    Twig_Environment,
-    Twig_Loader_String;
-
 class Textarea extends Base
 {
     public static $always_process = true;

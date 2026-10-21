@@ -65,7 +65,7 @@ class Controller_Image extends \Controller {
 			\CMF\Image::server()->outputImage($path, $this->getImageParams($params));
 		} catch (\Exception $e) {
 			// Output a placeholder - exception could mean file doesn't exist, or some other environment issue
-			if (!\CMF\Image::server()->getSource()->has('assets/images/placeholder.png')) {
+			if (!\CMF\Image::server()->getSource()->fileExists('assets/images/placeholder.png')) {
 				\CMF\Image::server()->setSource(\CMF\Storage::adapter(CMFPATH.'modules/image/public'));
 			}
 			\CMF\Image::server()->outputImage('assets/images/placeholder.png', array(

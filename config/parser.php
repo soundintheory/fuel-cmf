@@ -13,8 +13,8 @@ return array(
 			PKGPATH.'cmf'.DS.'modules'.DS.'admin'.DS.'views',
 		),
 		'extensions' => array(
-			'Twig_Extensions_Extension_Text',
-			'Twig_Extension_StringLoader',
+			'CMF\\Twig\\TextExtension',
+			'Twig\\Extension\\StringLoaderExtension',
 			'CMF\\Twig\\Extension',
 			'CMF\\Twig\\Cache',
 		),

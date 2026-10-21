@@ -65,7 +65,7 @@ class CropCommand extends ResizeCommand
         $transIndex = imagecolortransparent($resource);
 
         if ($transIndex != -1) {
-            $rgba = imagecolorsforindex($modified, $transIndex);
+            $rgba = imagecolorsforindex($resource, $transIndex);
             $transColor = imagecolorallocatealpha($modified, $rgba['red'], $rgba['green'], $rgba['blue'], 127);
             imagefill($modified, 0, 0, $transColor);
             imagecolortransparent($modified, $transColor);

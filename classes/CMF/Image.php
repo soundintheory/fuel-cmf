@@ -136,7 +136,7 @@ class Image
 			if (is_null($resizedInfo))
 			{
 				// Write the file to CDN if it doesn't exist there
-				if (!$cdn->has($remote))
+				if (!$cdn->fileExists($remote))
 					$cdn->write($remote, $sourceAdapter->read($resized), array( 'visibility' => 'public' ));
 				$url = '/'.$remote;
 

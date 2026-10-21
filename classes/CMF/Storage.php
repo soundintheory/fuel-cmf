@@ -21,7 +21,7 @@ class Storage
 		if (empty($path)) $path = static::getDocumentRoot();
 		if (!isset(static::$_adapters[$path])) {
 			static::$_adapters[$path] = new Flysystem\Filesystem(
-				new Flysystem\Adapter\Local($path)
+				new Flysystem\Local\LocalFilesystemAdapter($path)
 			);
 		}
 		return static::$_adapters[$path];
@@ -68,14 +68,13 @@ class Storage
 		// Try using the configured base URL
 		if (!empty($base)) return $base.'/'.$path;
 
-		// Manually get the URL from the CDN adapter
+		// Ask the CDN adapter for the URL (eg. S3 object URLs)
 		if ($filesystem = static::getCDNAdapter())
 		{
-			switch (get_class($filesystem->getAdapter())) {
-				case 'League\\Flysystem\\AwsS3v3\\AwsS3Adapter':
-					$client = $filesystem->getAdapter()->getClient();
-					$url = $client->getObjectUrl($filesystem->getAdapter()->getBucket(), ltrim(@$info['path'] ?: '', '/')).$q;
-					return $url;
+			try {
+				return $filesystem->publicUrl(ltrim(@$info['path'] ?: '', '/')).$q;
+			} catch (\League\Flysystem\UnableToGeneratePublicUrl $e) {
+				// fall through to the base URL
 			}
 		}
 		return $base.'/'.$path;
@@ -109,7 +108,7 @@ class Storage
 
 			foreach ($syncFiles as $syncFile)
 			{
-				if ($syncFile['type'] != 'file' || strpos($syncFile['basename'], '.') === 0)
+				if ($syncFile['type'] != 'file' || strpos(basename($syncFile['path']), '.') === 0)
 					continue;
 
 				$excluded = false;
@@ -217,7 +216,7 @@ class Storage
 
 		// Upload if it doesn't exist
 		$cdn = static::getCDNAdapter();
-		if (!$cdn->has($pathToUpload)) {
+		if (!$cdn->fileExists($pathToUpload)) {
 			if (\Fuel::$is_cli) {
 				\Cli::write("uploading '$path' to CDN");
 			}
@@ -367,7 +366,7 @@ class Storage
 			{
 				try {
 					// Write the file to CDN if it doesn't exist there
-					if (!$cdn->has($staticFile)) {
+					if (!$cdn->fileExists($staticFile)) {
 						if (\Fuel::$is_cli) {
 							\Cli::write("uploading '$staticFile' to CDN");
 						}
@@ -491,7 +490,7 @@ class Storage
 		{
 			try {
 				// Write the file to CDN if it doesn't exist there
-				if (!$cdn->has($staticFile)) {
+				if (!$cdn->fileExists($staticFile)) {
 					if (\Fuel::$is_cli) {
 						\Cli::write("uploading '$staticFile' to CDN");
 					}

@@ -52,7 +52,6 @@
         },
         "classmap": [
             "classes/CMF/Doctrine/Manager.php",
-            "classes/CMF/Twig/Twig_Loader_Filesystem.php",
             "classes/Symfony/Component/Validator/Constraints/UniqueEntity.php",
             "classes/Symfony/Component/Validator/Constraints/UniqueEntityValidator.php",
             "classes/Intervention/Image/Gd/Commands/CropCommand.php",

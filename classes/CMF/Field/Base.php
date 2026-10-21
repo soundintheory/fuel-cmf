@@ -2,10 +2,6 @@
 
 namespace CMF\Field;
 
-use Twig_Autoloader,
-    Twig_Environment,
-    Twig_Loader_String;
-
 class Base {
     
     public static $always_process = false;
@@ -152,9 +148,8 @@ class Base {
             $twig = \View_Twig::parser();
             $loader = \View_Twig::loader();
             if (!isset($loader) || is_null($loader)) {
-                $loader = new Twig_Loader_String();
-                $twig->setLoader($loader);
-                \View_Twig::setLoader($loader);
+                // No filesystem loader yet, so the template is a string
+                return $twig->createTemplate($settings['template'])->render($context);
             }
             return $twig->render($settings['template'], $context);
             

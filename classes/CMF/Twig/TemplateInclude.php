@@ -2,36 +2,39 @@
 
 namespace CMF\Twig;
 
-use Twig_Template,
-    Twig_Environment;
+use Twig\Template,
+    Twig\Source;
 
-class TemplateInclude extends Twig_Template
+/**
+ * Provides a template context ($this, $context) for including the compiled
+ * bodies of nocache blocks
+ */
+class TemplateInclude extends Template
 {
-    public function __construct(Twig_Environment $env)
-    {
-        parent::__construct($env);
-    }
-    
     public function renderInclude($file, $context = array())
     {
         ob_start();
         include $file;
         return ob_get_clean();
     }
-    
-    public function getTemplateName()
+
+    public function getTemplateName(): string
     {
         return 'nocache';
     }
 
-    public function getDebugInfo()
+    public function getDebugInfo(): array
     {
         return array();
     }
-    
-    protected function doDisplay(array $context, array $blocks = array())
+
+    public function getSourceContext(): Source
     {
-        
+        return new Source('', 'nocache');
     }
-    
+
+    protected function doDisplay(array $context, array $blocks = []): iterable
+    {
+        return array();
+    }
 }

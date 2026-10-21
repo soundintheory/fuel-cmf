@@ -2,9 +2,9 @@
 
 namespace CMF\Twig;
 
-use Twig_Node,
-    Twig_Compiler,
-    Twig_NodeInterface;
+use Twig\Node\Node,
+    Twig\Compiler,
+    Twig\Cache\FilesystemCache;
 
 /*
  * This file is part of Twig.
@@ -16,53 +16,58 @@ use Twig_Node,
  */
 
 /**
- * Represents a nocache node.
+ * Represents a nocache node. The body is compiled into its own file next to the
+ * compiled template, which CMF\Cache includes when serving a cached page.
  */
-class NoCacheNode extends Twig_Node
+class NoCacheNode extends Node
 {
     protected static $counter = 1;
     protected $cache_name;
-    protected $filename;
-    
-    public function __construct(Twig_NodeInterface $body, $lineno, $filename, $tag = null, $name = null)
+    protected $template_name;
+
+    public function __construct(Node $body, $lineno, $template_name, $name = null)
     {
-        $this->filename = $filename;
+        $this->template_name = $template_name;
         $this->cache_name = ($name !== null) ? $name : 'nc'.(static::$counter++);
-        parent::__construct(array('body' => $body), array(), $lineno, $tag);
+        parent::__construct(array('body' => $body), array(), $lineno);
     }
-    
+
     /**
      * Compiles the node to PHP.
      *
-     * @param Twig_Compiler A Twig_Compiler instance
+     * @param Compiler $compiler
      */
-    public function compile(Twig_Compiler $compiler)
+    public function compile(Compiler $compiler)
     {
         $env = $compiler->getEnvironment();
-        $cachefile_parts = explode('.', $env->getCacheFilename($this->filename));
+        $cache = $env->getCache(false);
+        if (is_string($cache)) $cache = new FilesystemCache($cache);
+        if (!$cache instanceof FilesystemCache) {
+            throw new \RuntimeException('The nocache tag requires a filesystem template cache.');
+        }
+
+        $cachefile_parts = explode('.', $cache->generateKey($this->template_name, $env->getTemplateClass($this->template_name)));
         array_pop($cachefile_parts);
         $cachefile = implode('.', $cachefile_parts).'_'.$this->cache_name.'.php';
         $dir = dirname($cachefile);
-        
+
         if (!is_dir($dir)) {
             if (false === @mkdir($dir, 0777, true) && !is_dir($dir)) {
-                throw new RuntimeException(sprintf("Unable to create the cache directory (%s).", $dir));
+                throw new \RuntimeException(sprintf("Unable to create the cache directory (%s).", $dir));
             }
         } elseif (!is_writable($dir)) {
-            throw new RuntimeException(sprintf("Unable to write in the cache directory (%s).", $dir));
+            throw new \RuntimeException(sprintf("Unable to write in the cache directory (%s).", $dir));
         }
-        
-        $subcompiler = new Twig_Compiler($env);
+
+        $subcompiler = new Compiler($env);
         $subcompiler->write('echo "<!-- nocache_'.$this->cache_name.' \''.$cachefile.'\' -->\n";');
-        foreach ($this->nodes as $node) {
-            $node->compile($subcompiler);
-        }
+        $subcompiler->subcompile($this->getNode('body'));
         $subcompiler->write('echo "<!-- endnocache_'.$this->cache_name.' -->\n";');
-        
+
         // Write the subcompiled code to a file
         @file_put_contents($cachefile, "<?php\n\n".$subcompiler->getSource());
-        
+
         // Include that file
-        $compiler->write("include('$cachefile');");
+        $compiler->write("include('$cachefile');\n");
     }
 }

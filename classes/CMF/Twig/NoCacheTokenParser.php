@@ -2,9 +2,8 @@
 
 namespace CMF\Twig;
 
-use Twig_TokenParser,
-    Twig_Token,
-    Twig_Parser;
+use Twig\TokenParser\AbstractTokenParser,
+    Twig\Token;
 
 /*
  * This file is part of Twig.
@@ -16,49 +15,36 @@ use Twig_TokenParser,
  */
 
 /**
- * Base class for all token parsers.
- *
- * @package twig
- * @author  Fabien Potencier <fabien@symfony.com>
+ * Parses {% nocache %}...{% endnocache %} blocks
  */
-class NoCacheTokenParser extends Twig_TokenParser
+class NoCacheTokenParser extends AbstractTokenParser
 {
-    /**
-     * Sets the parser associated with this token parser
-     *
-     * @param $parser A Twig_Parser instance
-     */
-    public function setParser(Twig_Parser $parser)
-    {
-        $this->parser = $parser;
-    }
-    
     /**
      * Parses a token and returns a node.
      *
-     * @param Twig_Token $token A Twig_Token instance
+     * @param Token $token
      *
-     * @return Twig_NodeInterface A Twig_NodeInterface instance
+     * @return NoCacheNode
      */
-    public function parse(Twig_Token $token)
+    public function parse(Token $token)
     {
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
-        $filename = $stream->getFilename();
-        $expr = null;
-        
-        if ($stream->test(Twig_Token::BLOCK_END_TYPE)) {
+        $template_name = $stream->getSourceContext()->getName();
+
+        if ($stream->test(Token::BLOCK_END_TYPE)) {
             $stream->next();
             $body = $this->parser->subparse(array($this, 'decideBlockEnd'), true);
         } else {
-            $body = $this->parser->getExpressionParser()->parseExpression();
+            $body = $this->parser->parseExpression();
         }
-        $stream->expect(Twig_Token::BLOCK_END_TYPE);
-        
-        return new NoCacheNode($body, $lineno, $filename, $this->getTag());
+
+        $stream->expect(Token::BLOCK_END_TYPE);
+
+        return new NoCacheNode($body, $lineno, $template_name);
     }
-    
-    public function decideBlockEnd(Twig_Token $token)
+
+    public function decideBlockEnd(Token $token)
     {
         return $token->test('endnocache');
     }
@@ -66,7 +52,7 @@ class NoCacheTokenParser extends Twig_TokenParser
     /**
      * Gets the tag name associated with this token parser.
      *
-     * @param string The tag name
+     * @return string The tag name
      */
     public function getTag()
     {
