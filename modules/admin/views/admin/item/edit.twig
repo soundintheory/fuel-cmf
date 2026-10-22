@@ -33,7 +33,7 @@
         <h2 class="main-heading pull-left"><i class="fa fa-{{ form.icon }}"></i> {{ _('admin.common.edit_resource', { resource:form.title }) }}</h2>
         <div class="item-actions-top pull-right">
             {% for action_id, action in (actions)|filter((action, action_id) => action.edit is not defined or action.edit != false) %}
-            {{ attribute(this, 'action_'~action.type, [action_id, action, model, table_name, 'list']) }}
+            {% if action.type == 'link' %}{{ this.action_link(action_id, action, model, table_name, 'list') }}{% elseif action.type == 'method' %}{{ this.action_method(action_id, action, model, table_name, 'list') }}{% endif %}
             {% endfor %}
         </div>
         {% if viewLink %}

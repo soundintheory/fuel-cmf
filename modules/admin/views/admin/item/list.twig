@@ -157,7 +157,7 @@
                             {% endfor %}
                             <td class="actions"><span>
                                 {% for action_id, action in (actions)|filter((action, action_id) => action.list is not defined or action.list != false) %}
-                                {{ attribute(this, 'action_'~action.type, [action_id, action, row, table_name, 'list']) }}
+                                {% if action.type == 'link' %}{{ this.action_link(action_id, action, row, table_name, 'list') }}{% elseif action.type == 'method' %}{{ this.action_method(action_id, action, row, table_name, 'list') }}{% endif %}
                                 {% endfor %}{% if editable %}<a class="btn btn-small btn-icon" href="{{ edit_link }}" rel="tooltip" title="{{ _('admin.verbs.edit') }}"><i class="fa fa-pencil"></i></a>{% endif %}{% if can_create and not row.isStatic() %}<a class="btn btn-small btn-icon" href="{{ duplicate_link }}" rel="tooltip" title="{{ _('admin.verbs.clone') }}"><i class="fa fa-clone"></i></a>{% endif %}{% if deletable %}<a class="btn btn-small btn-icon btn-danger btn-remove" href="{{ admin_url('/'~table_name~'/'~row.get('id')~'/delete') }}" rel="tooltip" title="{{ _('admin.verbs.delete') }}" data-singular="{{ singular }}"><i class="fa fa-remove icon-white"></i></a>{% endif %}
                             </span></td>
                             
