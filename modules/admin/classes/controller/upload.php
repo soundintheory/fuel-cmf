@@ -375,7 +375,13 @@ class Controller_Upload extends Controller_Base {
      * @param string $str
      */
     protected function toBytes($str){
-        $val = (int) trim($str);
+        $str = trim($str);
+
+        if ($str === '') {
+            return 0;
+        }
+
+        $val = (int) $str;
         $last = strtolower($str[strlen($str)-1]);
         switch($last) {
             case 'g': $val *= 1024;
